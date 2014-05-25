@@ -184,6 +184,7 @@ class  ChatInfo : public IObject
 {
 private:
     ZString             m_strMessage;
+	ZString				m_strTimestamp;
     Color               m_colorMessage;
 
     TRef<ImodelIGC>     m_pmodelTarget;
@@ -207,6 +208,7 @@ public:
     ChatTarget      GetChatTarget(void) const       { return m_ctRecipient; }
 
     const ZString&  GetMessage(void) const          { return m_strMessage; }
+	const ZString&	GetTimestamp(void) const		{ return m_strTimestamp; }
     const Color&    GetColor(void) const            { return m_colorMessage; }
 
     CommandID       GetCommandID(void) const        { return m_cidCommand; }
@@ -692,6 +694,8 @@ private:
     short                   m_cStaticMapInfo;
 
     ZString                 m_strCDKey;
+	int						m_launcherPID;
+	Time					m_lastLauncherCheck;
 
     BallotList              m_listBallots;
 
@@ -861,7 +865,7 @@ public:
     {
         return m_strCDKey;
     }
-    virtual void        SetCDKey(const ZString& strCDKey);
+    virtual void        SetCDKey(const ZString& strCDKey, int processID);
 
     virtual void        OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason) = 0;
     virtual void        OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason) = 0;
@@ -888,6 +892,7 @@ public:
       m_fmClub.SendMessages(m_fmClub.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
     }
     virtual HRESULT     ReceiveMessages(void);
+	virtual HRESULT     CheckLauncher(void);
     virtual HRESULT     OnSessionLost(char * szReason, FedMessaging * pthis);
     virtual void        OnSessionFound(FedMessaging * pthis, FMSessionDesc * pSessionDesc);
     virtual HRESULT     HandleMsg(FEDMESSAGE* pfm, Time lastUpdate, Time now);

@@ -179,6 +179,19 @@ float ModelData::GetMass()
 	return f;
 }
 
+//Spunky #315
+ZString ModelData::GetRadius()
+{
+	ImodelIGC*      pmodel = GetModel();
+	if(pmodel && (pmodel->GetObjectType() == OT_station || pmodel->GetObjectType() == OT_asteroid) && pmodel->GetSide() != trekClient.GetSide())
+	{
+		float radius = pmodel->GetRadius();
+		return " r=" + (ZString)radius;
+	}
+	return "";
+}
+
+
 float ModelData::GetRange()
 {
     float   range = -1.0f;
@@ -661,16 +674,44 @@ bool ModelData::IsVisible()
  }
 
 //Andon: Gets the Scan Range of the target
-//Only works on self
+//Turkey: made work on all
 float ModelData::GetScanRange()
 {
-	float f=0.0f;
-	
+	float f=-1.0f;
+
 	ImodelIGC*	pmodel	=	GetModel();
-	IshipIGC*	pship	=	GetShip();
-	if(pmodel == trekClient.GetShip() || pmodel == trekClient.GetShip()->GetParentShip())
+	if (!pmodel) return f;
+
+	IshipIGC*	pship	=	(pmodel->GetObjectType() == OT_ship) ? GetShip() : NULL;
+	IshipIGC*	pme		=   trekClient.GetShip();
+	
+	if(pmodel == pme || pmodel == pme->GetParentShip())
 	{
 		f = pship->GetHullType()->GetScannerRange();
+	}
+	else if (pmodel->GetSide() != pme->GetSide() && trekClient.GetShip()->CanSee(pmodel))
+	{
+		switch (pmodel->GetObjectType())
+		{
+		case OT_ship:
+			f = pship->GetHullType()->GetScannerRange();
+			break;
+		case OT_station:
+			f = ((IstationIGC*) pmodel)->GetStationType()->GetScannerRange();
+			break;
+		case OT_probe:
+			f = ((IprobeIGC*) pmodel)->GetProbeType()->GetScannerRange();
+			break;
+		default:
+			return -1.0f;
+		}
+
+		//this line un-applies the scan range GA from the result. Uncomment if the SCAN target info is giving too much information about enemy tech levels.
+		//f /= pmodel->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaScanRange);
+
+		f /= pme->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaSignature);
+		f *= pme->GetSignature();
+		f += pme->GetRadius() + pmodel->GetRadius();
 	}
 
 	return f;
@@ -692,56 +733,147 @@ float PartWrapper::GetRange()
         return 0;
 
     EquipmentType et = m_ppart->GetPartType()->GetEquipmentType();
+	 //Spunky #314, #316
+	IshipIGC* me = trekClient.GetShip();
+	float forwardSpeed = me->GetVelocity() * me->GetOrientation().GetForward().Normalize();
+	float rangeMultiplier = 0;
+	const GlobalAttributeSet&   ga = trekClient.GetSide()->GetGlobalAttributeSet();
 
-    if (et == ET_Weapon)
+	if (et == ET_Weapon || et == ET_Dispenser)
     {
-        IprojectileTypeIGC* ppt = ((IweaponIGC*)(IpartIGC*)m_ppart)->GetProjectileType();
-        float               range = ppt->GetSpeed()*ppt->GetLifespan();
+		IprojectileTypeIGC* ppt = 0;
+		
+		if (et == ET_Weapon)
+		{
+			ppt = ((IweaponIGC*)(IpartIGC*)m_ppart)->GetProjectileType();
+			rangeMultiplier = ga.GetAttribute(((IweaponIGC*)(IpartIGC*)m_ppart)->GetAmmoPerShot() ? c_gaSpeedAmmo : c_gaLifespanEnergy);
+		}
+		else if (((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType()->GetObjectType() == OT_probeType)
+		{
+			ppt = ((IprobeTypeIGC*)((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType())->GetProjectileType();
+			rangeMultiplier = ga.GetAttribute(c_gaSpeedAmmo) / 1.2f;
+		}
 
-        const GlobalAttributeSet&   ga = trekClient.GetSide()->GetGlobalAttributeSet();
-        range *= ga.GetAttribute((((IweaponIGC*)(IpartIGC*)m_ppart)->GetAmmoPerShot())
-                                 ? c_gaSpeedAmmo
-                                 : c_gaLifespanEnergy);
+		if (!ppt)
+			return 0;
+
+		float range = ppt->GetSpeed() * ppt->GetLifespan() * rangeMultiplier;
+		if (!ppt->GetAbsoluteF() && et == ET_Weapon)
+			range += forwardSpeed * ppt->GetLifespan();
 
         return range;
     }
     else if (et == ET_Magazine)
     {
-        ImissileTypeIGC* pmt = (ImissileTypeIGC*)((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType();
-        float range = pmt->GetLifespan()*(pmt->GetInitialSpeed()+0.5f*pmt->GetLifespan()*pmt->GetAcceleration());
+		ImissileTypeIGC* pmt = (ImissileTypeIGC*)((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType();
+		//Spunky #314
+        float range = pmt->GetLifespan() * (pmt->GetInitialSpeed() + forwardSpeed + 0.5f * pmt->GetLifespan() * pmt->GetAcceleration());
         return range;
     }
-    else
-    {
-        ZAssert(false);
-        return 0;
-    }
+    //ZAssert(false);
+    return 0;
 }
 
 float PartWrapper::GetDamage()
 {
     if (!m_ppart)
         return 0;
-
+	m_damageColor = Color::White();
     EquipmentType et = m_ppart->GetPartType()->GetEquipmentType();
-
+	//Spunky #314
+	float damage; 
+	DamageTypeID dt;
+	IshipIGC* me = trekClient.GetShip();
     const GlobalAttributeSet&   ga = trekClient.GetSide()->GetGlobalAttributeSet();
 
     if (et == ET_Weapon)
     {
         IprojectileTypeIGC* ppt = ((IweaponIGC*)(IpartIGC*)m_ppart)->GetProjectileType();
-        return (ppt->GetPower() + ppt->GetBlastPower()) * ga.GetAttribute(c_gaDamageGuns);
+        damage = (ppt->GetPower() + ppt->GetBlastPower()) * ga.GetAttribute(c_gaDamageGuns);
+		dt = ppt->GetDamageType();//Spunky #314
     }
     else if (et == ET_Magazine)
     {
         ImissileTypeIGC* pmt = (ImissileTypeIGC*)((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType();
-        return (pmt->GetPower() + pmt->GetBlastPower()) * ga.GetAttribute(c_gaDamageMissiles);
+        damage = (pmt->GetPower() + pmt->GetBlastPower()) * ga.GetAttribute(c_gaDamageMissiles);
+		dt = pmt->GetDamageType();//Spunky #314
     }
+	else if (et == ET_Dispenser) //Spunky #316
+	{
+		IprojectileTypeIGC* ppt = 0;
+		if (((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType()->GetObjectType() == OT_probeType)
+			ppt = ((IprobeTypeIGC*)((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType())->GetProjectileType();
+		if (!ppt)
+			return 0;
+		damage = (ppt->GetPower() + ppt->GetBlastPower()) * ga.GetAttribute(c_gaDamageGuns);
+		dt = ppt->GetDamageType();
+	}
     else
     {
-        ZAssert(false);
+        //ZAssert(false);
         return 0;
     }
+	//Spunky #314
+	if (ImodelIGC* target = me->GetCommandTarget(c_cmdCurrent))
+	{
+		
+		float df;
+		float down = me->GetMission()->GetFloatConstant(c_fcidDownedShield);
+		switch (target->GetObjectType())
+		{
+		case OT_ship:
+			{
+				IshieldIGC* shield = (IshieldIGC*)((IshipIGC*)target)->GetMountedPart(ET_Shield, 0);
+				if (shield && shield->GetFraction() > down)
+					df = me->GetMission()->GetDamageConstant(dt, shield->GetDefenseType());
+				else
+					df = me->GetMission()->GetDamageConstant(dt, ((IshipIGC*)target)->GetHullType()->GetDefenseType());
+				break;
+			}
+		
+		case OT_station:
+			{
+				IstationIGC* targetStation = (IstationIGC*)target;
+				if (targetStation->GetShieldFraction() > down)
+					df = me->GetMission()->GetDamageConstant(dt, targetStation->GetStationType()->GetShieldDefenseType());
+				else
+					df = me->GetMission()->GetDamageConstant(dt, targetStation->GetStationType()->GetArmorDefenseType());
+				break;
+			}
+		
+		case OT_probe:
+			df = me->GetMission()->GetDamageConstant(dt, ((IprobeIGC*)target)->GetProbeType()->GetDefenseType());
+			break;
+		
+		case OT_mine:
+			df = me->GetMission()->GetDamageConstant(dt, ((ImineIGC*)target)->GetMineType()->GetDefenseType());
+			break;
+		
+		case OT_missile:
+			df = me->GetMission()->GetDamageConstant(dt, ((ImissileIGC*)target)->GetMissileType()->GetDefenseType());
+			break;
+		
+		case OT_asteroid:
+			df = me->GetMission()->GetDamageConstant(dt, c_defidAsteroid);
+			break;
+		
+		default:
+			df = 0;
+		}
+		
+		damage *= df;
+		if (df > 0.75)
+			m_damageColor = Color::Green();
+		else if (df > 0.5)
+			m_damageColor = Color::Yellow();
+		else if (df > 0.25)
+			m_damageColor = Color::Red();
+		else
+			m_damageColor = Color::Blue();
+	}
+	return damage;
+		
+
 }
 
 float PartWrapper::GetRate()
@@ -750,18 +882,26 @@ float PartWrapper::GetRate()
         return 0;
 
 	EquipmentType et = m_ppart->GetPartType()->GetEquipmentType();
+	IprobeTypeIGC* pprobet = 0;
+	
 
 	if (et == ET_Weapon)
     {
         DataWeaponTypeIGC*  pdwt = (DataWeaponTypeIGC*)((IpartTypeIGC*)m_ppart->GetPartType())->GetData();
         return (1.0f /pdwt->dtimeBurst);
     }
-    
-    else
-    {
-        ZAssert(false);
+	else if (et == ET_Dispenser && 
+		((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType()->GetObjectType() == OT_probeType) //Spunky #316
+	{
+		IprojectileTypeIGC* ppt = 0;
+		pprobet = (IprobeTypeIGC*)((IlauncherTypeIGC*)m_ppart->GetPartType())->GetExpendableType();
+		ppt = pprobet->GetProjectileType();
+		if (!ppt)
+			return 0;
+		return 1.0 / pprobet->GetDtBurst();
+	}
+    //ZAssert(false);
         return 0;
-    }
 }
 
 float PartWrapper::GetCount()
@@ -1135,7 +1275,9 @@ float PartWrapper::IsOutOfAmmo()
     
     ObjectType type = m_ppart->GetObjectType();
 
-    if (type == OT_weapon)
+	IpartIGC* ppart = m_ppart;
+
+	if (type == OT_weapon && ((IweaponIGC*)ppart)->GetAmmoPerShot() > 0) //turkey #355 06/13 added ammoPerShot>0
     {
         return (m_ppart->GetShip()->GetAmmo() == 0) ? 1.0f : 0.0f;
     }

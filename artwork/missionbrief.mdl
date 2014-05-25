@@ -5,7 +5,7 @@ use "custombrief";
 
 ///////////////////////////////////////////////////////////////////////////////
 // Tip of the Game
-numTips = "40";
+numTips = "45";
 
 Tip1 = "Use your I key to toggle between Radar modes. None-target only-default-all";
 Tip2 = "Use Ctrl-G to turn on the grid feature when flying.";
@@ -17,13 +17,12 @@ Tip7 = "Alephs are arranged in sectors geometrically. Use F3 to scout the map.";
 Tip8 = "Place your probes off-plane (above and below the grid) to lower the chances of them being found.";
 Tip9 = "Did you know you can ripcord while boosting? Hit R while holding the boost button.";
 Tip10 = "Rixian combat pods only fire on what you have targeted when you deploy them (they won't switch targets with you).";
-//Tip11 = "Phoenix bombers (and all Nix piloted ships) can *NOT* be repaired with a nanite gun.";
-Tip11 = "Use Shift+F6 when commanding to see how long your teammates have been in base."; //Imago 7/11
+Tip11 = "Use Shift+F6 when commanding to see how long your teammates have been in base.";
 Tip12 = "A Belter Stealth Fighter can be an awesome nan for a Stealth Bomber";
 Tip13 = "Ctrl-w lets you select all weapons. Pressing 1,2 or 3 will activate that gun only.";
 Tip14 = "Prox mines, as you're flying forward, appear behind you. Backpedal, and they'll appear in front.";
 Tip15 = "Camp means to gather at a choke point, an aleph (usually), or an enemy base opening.";
-Tip16 = "Calling the drop, BIOS figs, non tf scouts, have prox mines, a 'drop' command means to drop prox mines at the choke point (in preparation of an incoming bomber, etc.)";
+Tip16 = "Calling the drop: BIOS figs and most scouts have prox mines. A 'drop' command means to drop prox mines at the choke point (in preparation of an incoming bomber, etc.)";
 Tip17 = "You can boost immediately during the launch sequence when exiting a base. Useful when exiting a base that is camped.";
 Tip18 = "Place your probes off-plane (above and below the grid) to lesson the chances of them being found.";
 Tip19 = "When turreting, your throttle controls act as a 'zoom' feature; use this to your advantage.";
@@ -41,13 +40,18 @@ Tip30 = "If no one probes then the enemy will always surprise you, always have t
 Tip31 = "Exploring with an int or fig does not work because their scan range is very low.";
 Tip32 = "Do not attempt to command on the regular server until you have a LOT of experience. You need to know other aspects of the game well to be a successful commander.";
 Tip33 = "TEK is a downloadable tool which can be used to look up scan ranges, damage charts, and much more.";
-Tip34 = "Teamspeak (TS for short) is a program that Allegiance players use to communicate with each other by voice.  Visit the Academy or the Wiki to find out how to use it.";
+Tip34 = "Mumble is a program that Allegiance players use to communicate with each other by voice.  Visit the Wiki to find out how to use it.";
 Tip35 = "Press ENTER to start composing a chat.  Press tilde '~' to access the quick chat menu.  Press TAB when composing a message to change the chat target.";
 Tip36 = "Bios pods have the unique ability to ripcord.  They also are able to equip a heavy cloak on almost all their ships.";
 Tip37 = "You can pick up objects dropped by your enemy or spawned randomly.  The 'T' symbol in F3 indicates an unresearched technology.  Pick them up and return them to base.";
 Tip38 = "Commanders use the team's income as they feel is best for the team.  Not all ships are free.  You must request to purchase them, but the commander will not always say yes.";
 Tip39 = "Pay attention to the map preview shown before entering a game.  Learn what each map looks like and you will be able to find alephs much faster.";
-Tip40 = "Some of the best players in the game fly with a mouse and some fly with a joystick.  A couple even fly with controllers.  You should avoid using the keyboard to fly.";
+Tip40 = "It is strongly recommended to remap the default keys to something comfortable for you. *NEVER* use the keyboard to fly! Always use your mouse, or a joystick if you prefer. The keyboard should supplement your primary input device.";
+Tip41 = "Use your I key to toggle between Radar modes. None-target only-default-all";
+Tip42 = "Did you know you can greatly improve the graphics in Allegiance?  Visit the Art and Ingame Content forum at FreeAllegiance.org for information on downloading high resolution textures.";
+Tip43 = "If you are too close to a friendly con it will think you're on a collision course, and try and avoid you. This can delay its building time allowing the enemy the precious seconds needed to destroy it.";
+Tip44 = "Picking up teammates who are in a lifepod transports them instantly back to base, where they can immediately launch to help defend, attack, or whatever again.";
+Tip45 = "Killing an enemy life pod does not increase your kill count. All it does is return the enemy pilot straight back to base and resets his kill bonus.";
 
 ///////////////////////////////////////////////////////////////////////////////
 // civ-specific strings
@@ -312,25 +316,34 @@ missionBriefingMapStr = StringPane(missionBriefingMapType, white, Point(118, 32)
 missionBriefingTextBody = AnimatedImagePaneRect(StringImage(JustifyLeft, 306, medVerdana, white, missionBriefingBodyText), Rect(0, -131, 306, 0));
 missionBriefingCountDown = StringPane(NumberString(countdown), white, Point(36, 36), JustifyCenter, hugeBoldFont);
 missionBriefingTeamImage = AnimatedImagePaneRect(teamImage, Rect(0, 0, 73, 68));
-missionTipText = AnimatedImagePaneRect(StringImage(JustifyLeft, 250, medVerdana, white, missionBriefingTipText), Rect(0, -131, 306, 0));
+missionTipText = AnimatedImagePaneRect(StringImage(JustifyLeft, 416, medVerdana, white, missionBriefingTipText), Rect(0, -131, 416, 0));
+
+
 
 // R4
 //mapPreviewPane      = MapPreviewPane(Rect(0, 0, 120, 96),false,true);
-mapPreviewPane      = MapPreviewPane(ImportImage("sectormapbkgndbmp",false),false,true);
+sectormapbg_opaque = ImportImageFromFile("sectormapbg_opaque.png", false);
+mapPreviewPane      = MapPreviewPane(sectormapbg_opaque,false,true);
+
+completeBriefingPane =
+	ImagePane(
+		ImportImageFromFile("cortui_core_missionbriefbkgnd.png", true),
+		[
+			(missionBriefingTeamImage, Point(8,160)),
+			(missionBriefingCountDown, Point(406, 333)),
+			(missionBriefingFaction, Point(95, 170)),
+			(missionBriefingString, Point(95, 195)),
+			(missionBriefingTextBody, Point(27, 240)),
+			(missionBriefingMapStr, Point(365, 162)),
+			(mapPreviewPane, Point(365, 177)), //R4
+			(missionTipText, Point(45, 72)) //R4
+		]
+	);
 
 MissionBriefDialog =
-        (
-            ImagePane(
-              ImportImage("missionbriefbkgndbmp", false),
-                [
-                  (missionBriefingTeamImage, Point(8,160)),
-                  (missionBriefingCountDown, Point(406, 333)),
-                  (missionBriefingFaction, Point(95, 170)),
-			(missionBriefingString, Point(95, 195)),
-                  (missionBriefingTextBody, Point(27, 240)),
-			(missionBriefingMapStr, Point(365, 162)),
-                  (mapPreviewPane, Point(365, 177)), //R4
-			(missionTipText, Point(225, 82)) //R4
-                ]
-            )
-        );
+    ImagePane(
+        ImportImageFromFile("cortui_core_transparentbackground.png", true),
+        [
+            (completeBriefingPane, Point(264, -8))
+        ]
+    );

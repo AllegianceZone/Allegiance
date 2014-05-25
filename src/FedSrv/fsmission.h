@@ -82,6 +82,7 @@ typedef int BallotType;
 #define BALLOT_OFFERDRAW   2
 #define BALLOT_ACCEPTDRAW  3
 #define BALLOT_MUTINY      4
+#define BALLOT_REMOVECOM   5
 
 class Ballot
 {
@@ -107,6 +108,8 @@ public:
   virtual ~Ballot() {};
 
 protected:
+  // // initializes the ballot for a given vote proposed by a player about somebody else on the server
+  void Init(CFSPlayer* pfsInitiator, const ZString& strProposalName, const ZString& strBallotText, ShipID sidTarget);
 
   // initializes the ballot for a given vote proposed by a player to their team
   void Init(CFSPlayer* pfsInitiator, const ZString& pzProposal, const ZString& strBallotText);
@@ -160,12 +163,24 @@ protected:
   // KGJV #110
   bool m_bHideToLeader;
 
+  //#317
+  bool m_bPollEveryone;
+
   // mmf/KGJV 09/07 allow only one ballot of each type at a time
   BallotType m_type;
 
 };
 
 typedef TList<Ballot*> BallotList;
+
+class RemoveComBallot : public Ballot
+{
+	IsideIGC* m_pside;
+	ShipID m_idTargetShip;
+public:
+	RemoveComBallot(CFSPlayer* pfsInitiator, SideID sideID);
+	virtual void OnPassed();
+};
 
 // KGJV #110
 class MutinyBallot : public Ballot
@@ -351,6 +366,7 @@ public:
   bool                  RemoveJoinRequest(CFSPlayer * pfsPlayer, IsideIGC * psideDest);
   SideID                PickNewSide(CFSPlayer* pfsPlayer, bool bAllowTeamLobby, unsigned char bannedSideMask);
   void                  DoTick(Time timeNow);
+  void 					UpdateAnyPendingBallots(Time &timeNow);//Spunky #177
   void                  CreateCluster(IclusterIGC * pIclusterIGC);
   void                  DeleteCluster(IclusterIGC * pIclusterIGC);
   const std::vector<CFSCluster*> * GetFSClusters() 
@@ -435,6 +451,7 @@ public:
   void                  AddBallot(Ballot * pBallot);
   void                  TallyVote(CFSPlayer* pfsPlayer, BallotID ballotID, bool bVote);
   bool					HasBallots(BallotType iType); // mmf/KGJV 09/07 allow only one ballot of each type at a time
+  bool					HasBallots() { return !m_ballots.IsEmpty(); } //Spunky #177
 
   void                  MakeOverrideTechBits(); // alloc memory for overriding tech bits as needed
 
@@ -445,6 +462,12 @@ public:
 
   const char*           GetStoryText() const {return m_strStoryText;}
   
+  //Spunky #276
+  CFSPlayer*			GetLastBallotInitiator() { return m_lastBallotBy; }
+  void					SetLastBallotInitiator(CFSPlayer* pfsPlayer) { m_lastBallotBy = pfsPlayer; }
+  Time					GetLastBallotTime() { return m_lastBallotTime; }
+  void					SetLastBallotIime(Time time) { m_lastBallotTime = time; }
+
 private:
   void                  InitSide(SideID sid);
   void                  MaintainSquadLeadership(SideID sid);
@@ -501,6 +524,10 @@ private:
   ZString               m_strStoryText;
 
   bool                  m_bDraw;
+
+  //Spunky #276
+  Time					m_lastBallotTime;
+  CFSPlayer*			m_lastBallotBy;
 };
 
 #endif 

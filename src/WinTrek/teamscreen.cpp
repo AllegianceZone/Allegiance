@@ -33,7 +33,10 @@ class TeamScreen :
 	public IMenuCommandSink // #ALLY RMB sink
 {
 private:
-    TRef<Pane>       m_ppane;
+    TRef<ModifiableString> m_pstringCurrentVote; //Spunky #177
+    TRef<ModifiableNumber> m_pnumberHasVote; //Spunky #177
+	
+	TRef<Pane>       m_ppane;
 
 	bool m_bRipChecked;
     SideID m_sideCurrent;
@@ -907,7 +910,7 @@ private:
             }
 
 			//Xynth #170 removed selection until bugs can be worked out
-			//m_pcomboCiv->AddItem("Random", RANDOM_ID); //Xynth #170 8/2010
+			m_pcomboCiv->AddItem("Random", RANDOM_ID); //Xynth #170 8/2010
 
             m_peditPaneTeamName->SetHidden(true);
         }
@@ -1137,6 +1140,9 @@ public:
         pnsTeamScreenData->AddMember("statsCount", m_pnumberStatsCount = new ModifiableNumber(0));
         pnsTeamScreenData->AddMember("squadStatsCount", m_pnumberSquadStatsCount = new ModifiableNumber(0));
         pnsTeamScreenData->AddMember("civColor", m_pcolorCiv = new ModifiableColorValue(Color::Black()));
+		pnsTeamScreenData->AddMember("CurrentVote", m_pstringCurrentVote = new ModifiableString("")); //Spunky #177
+		pnsTeamScreenData->AddMember("HasVote", m_pnumberHasVote = new ModifiableNumber(0)); //Spunky #177 - export so we can hide
+
 		//KGJV added: core name & server name export 
 		// so we can use strServerName and strCoreName in teamscreen.mdl
 		const char* szServerName = trekClient.MyMission()->GetMissionDef().szServerName;
@@ -1446,6 +1452,12 @@ public:
         GetWindow()->SetChatListPane(NULL);
     }
 
+	//Spunky #177 - ugly because only teamscreen uses this
+	virtual bool HasVote()
+	{
+		return m_pnumberHasVote->GetValue();
+	};
+
     SideID GetCurrentSide()
     {
         return m_sideCurrent;
@@ -1657,7 +1669,13 @@ public:
     }
     void OnFrame()
     {
-        UpdateCountdownText();
+        //Spunky #177
+		BallotInfo* pballotinfo = trekClient.GetCurrentBallot();
+        m_pnumberHasVote->SetValue(pballotinfo ? 1.0f : 0.0f);
+        m_pstringCurrentVote->SetValue(pballotinfo ? ZString(pballotinfo->GetBallotText()) : ZString());
+
+		
+		UpdateCountdownText();
 
         // if we should show the mission briefing...
         if (trekClient.GetSideID() != SIDE_TEAMLOBBY 
@@ -2484,7 +2502,7 @@ public:
 		//Imago #114 7/10
 		if (trekClient.MyPlayerInfo()->IsTeamLeader() && !m_pbuttonAwayFromKeyboard->GetChecked() && trekClient.GetSideID() != sideID)
 		{
-			if (!trekClient.GetShip()->GetSide()->GetRandomCivilization())  //Xynth #170 8/2010
+			if (!trekClient.GetShip()->GetSide()->GetRandomCivilization() && !trekClient.GetCore()->GetSide(sideID)->GetRandomCivilization())  //Xynth #170 8/2010 //Turkey #311 7/12
 			{
 			m_pbuttonTeamReady->SetChecked(false);
 			OnButtonTeamReady();
@@ -2645,7 +2663,7 @@ public:
             m_plistPanePlayers->ForceRefresh();
 		//Xynth #170 8/10 Randomize random factions again and resend to all players.  This mitigates joiners
 		//seeing the faction picked randomly
-		if (!trekClient.MyMissionInProgress() && trekClient.MyPlayerInfo()->IsMissionOwner() && (abs(Time::Now() - lastRandCivUpdate)  > 5.0))//only the GC does this
+		if (m_pMission->GetStage() == STAGE_NOTSTARTED && trekClient.MyPlayerInfo()->IsMissionOwner() && (abs(Time::Now() - lastRandCivUpdate)  > 5.0))//only the GC does this
 		{
 			lastRandCivUpdate = Time::Now();
 			numCivilizations = 0;
@@ -3391,6 +3409,10 @@ public:
 				if (!m_bShowingRandomizeWarning)
 					strMessage = "You have been removed from your team and assigned to another because the teams have been balanced.";
 
+			case QSR_RemovedByBallot: //#317
+				strMessage = "You have been removed from command by majority vote.";
+				break;
+
             case QSR_Quit:
             case QSR_LinkDead:
             case QSR_DuplicateLocalLogon:
@@ -3429,7 +3451,16 @@ public:
     {
         if (trekClient.MyPlayerInfo()->ShipID() == pPlayerInfo->ShipID())
         {
-            UpdateButtonStates();
+			//Turkey #131
+			//If we've flagged ourself as not ready but the button isn't checked, fix it
+			//up and let OnButtonAwayFromKeyboard tell everyone about it.
+			if (!pPlayerInfo->IsReady() && !m_pbuttonAwayFromKeyboard->GetChecked())
+			{
+				m_pbuttonAwayFromKeyboard->SetChecked(true);
+				OnButtonAwayFromKeyboard();
+			}
+			
+			UpdateButtonStates();
         }
         UpdateStatusText();
     }

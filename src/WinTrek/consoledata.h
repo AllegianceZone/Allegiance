@@ -169,6 +169,7 @@ public:
     float       GetSpeed();
     float       GetMass();
     float       GetRange();
+	ZString		GetRadius(); //Spunky #315
     float       GetPercentHitPoints();
     float       GetPercentShields();
     float       GetPercentEnergy();
@@ -217,7 +218,8 @@ public:
 		pns->AddMember("GetSpeed",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetSpeed, 0.0f));
         pns->AddMember("GetMass",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetMass, 0.0f));
         pns->AddMember("GetRange",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetRange, 0.0f));
-        pns->AddMember("GetPercentHitPoints",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetPercentHitPoints, 0.0f));
+        pns->AddMember("GetRadius",  new TMemberSnapshotValueFactory<ModelData, ZString>(&ModelData::GetRadius, "")); //Spunky #315
+		pns->AddMember("GetPercentHitPoints",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetPercentHitPoints, 0.0f));
         pns->AddMember("GetPercentShields",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetPercentShields, 0.0f));
         pns->AddMember("GetPercentEnergy",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetPercentEnergy, 0.0f));
         pns->AddMember("GetAmmo",  new TMemberSnapshotValueFactory<ModelData, float>(&ModelData::GetAmmo, 0.0f));
@@ -267,9 +269,12 @@ protected:
     TRef<EventSourceImpl>   m_peventSourceOnChange;
 
 private:
+	Color m_damageColor; //Spunky #314
 
 public:
-    PartWrapper() :
+    Color GetDamageColor() {return m_damageColor;} //Spunky #314
+
+	PartWrapper() :
         m_peventSourceOnChange(new EventSourceImpl())
     {
     }
@@ -326,7 +331,8 @@ public:
     static void ExportAccessors(INameSpace* pns)
     {
 		// mdvalley: like earlier, pointers and class names
-        pns->AddMember("GetPartName",  new TMemberSnapshotValueFactory<PartWrapper, ZString>(&PartWrapper::GetPartName, ""));
+		pns->AddMember("GetDamageColor",  new TMemberSnapshotValueFactory<PartWrapper, Color>(&PartWrapper::GetDamageColor,  Color::White())); //Spunky #314
+		pns->AddMember("GetPartName",  new TMemberSnapshotValueFactory<PartWrapper, ZString>(&PartWrapper::GetPartName, ""));
         pns->AddMember("GetCount",  new TMemberSnapshotValueFactory<PartWrapper, float>(&PartWrapper::GetCount, 1.0f));
         pns->AddMember("GetWeaponRange",  new TMemberSnapshotValueFactory<PartWrapper, float>(&PartWrapper::GetRange, 0.0f));
         pns->AddMember("GetDamage",  new TMemberSnapshotValueFactory<PartWrapper, float>(&PartWrapper::GetDamage, 0.0f));

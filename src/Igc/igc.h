@@ -755,7 +755,7 @@ const ExpendableAbilityBitMask  c_eabmWarpBombDual    = 0x02; // KGJV: both side
 const ExpendableAbilityBitMask  c_eabmWarpBombSingle  = 0x04; // KGJV: one side aleph rez
 const ExpendableAbilityBitMask  c_eabmWarpBomb        = c_eabmWarpBombDual | c_eabmWarpBombSingle; // KGJV: both types into one for backward compatibility
 const ExpendableAbilityBitMask  c_eabmQuickReady      = 0x08;
-const ExpendableAbilityBitMask  c_eabmRipcord         = 0x10;
+const ExpendableAbilityBitMask  c_eabmWarn            = 0x10; //Turkey #354 changed all instances from c_eabmRipcord. To check ripcord, use (GetRipcordDelay() >= 0.0f) instead.
 const ExpendableAbilityBitMask  c_eabmShootStations   = 0x20;
 const ExpendableAbilityBitMask  c_eabmShootShips      = 0x40;
 const ExpendableAbilityBitMask  c_eabmShootMissiles   = 0x80;
@@ -796,6 +796,17 @@ enum    ShipControlStateIGC
     wantsToMineMaskIGC          =  2 * chaffFireIGC,                //wants to mine an asteroid
     buildingMaskIGC             =  2 * wantsToMineMaskIGC           //in the process of building at an asteroid
 };
+
+//Spunky #288
+enum ClusterQuality
+{
+	cqNone = 0,
+	cqNoEye = 1,
+	cqPositiveBOP = 2,
+	cqIncludeNeutral = 4,
+	cqNoCheck = 8
+};
+
 
 // No "*Types" please if the VALUE of variable is a not a type of something! :-)
 // ships have a capacity, and mounted parts use up that capacity (drain)
@@ -869,10 +880,12 @@ const CommandID   c_cidPickup       =  4;
 const CommandID   c_cidGoto         =  5;
 const CommandID   c_cidRepair       =  6;
 const CommandID   c_cidJoin         =  7;
-const CommandID   c_cidMine         =  8;
-const CommandID   c_cidBuild        =  9;
+const CommandID   c_cidStop			=  8; //#321
+const CommandID   c_cidHide			=  9; //#320
+const CommandID   c_cidMine         =  10;
+const CommandID   c_cidBuild        =  11;
 
-const CommandID   c_cidMax = 10;
+const CommandID   c_cidMax = 12; //#321 increased from 10
 extern const CommandData   c_cdAllCommands[c_cidMax];
 
 struct GlobalAttributeSet
@@ -1061,6 +1074,14 @@ class ImapMakerIGC
                                             ImissionIGC*         pMission) = 0;
 };
 
+//Spunky #300
+typedef short KB;
+
+const KB c_noKB		= 0;
+const KB c_lowKB	= 1;
+const KB c_stdKB	= 2;
+
+
 
 struct MissionParams
 {
@@ -1109,6 +1130,7 @@ struct MissionParams
     bool        bAutoRestart        : 1;                //Does the game restart automatically
     bool        bAllowRestart       : 1;                //Can the game be restarted at all?
 	bool        bExperimental       : 1;                // mmf 10/07 Experimental game type
+	KB			KBlevel;								//Spunky #300
 	float       fGoalTeamMoney;                         //Cost of win the game tech = fGoalTeamMoney * WinTheGameMoney, 0 == no win the game tech
     int         verIGCcore;                             //this is set only by the server, so the client can know whether it needs to get a new igc static core
     float       nPlayerSectorTreasureRate;              //# of treasures that generate/second in player sectors
@@ -1222,6 +1244,7 @@ struct MissionParams
         bAutoRestart                    = false;
         bAllowRestart                   = true;
 		bExperimental                   = false; // mmf 10/07 Experimental game type
+		KBlevel							= c_stdKB; //Spunky #300
         nInvitationListID               = 0;
 
         fStartCountdown                 = 15.0f;
@@ -2595,6 +2618,7 @@ struct  DataStationIGC
     BytePercentage      bpHull;
     BytePercentage      bpShield;
     char                name[c_cbName];
+	StationTypeID		knownStationTypeID[c_cSidesMax]; //Turkey #307 02/31
 };
 
 struct  DataStationTypeIGC : public DataBuyableIGC
@@ -3373,6 +3397,7 @@ class IshipIGC : public IscannerIGC
 
         //Miners
         virtual float               GetOre(void) const = 0;
+		virtual void				SetOre(float ore) = 0;//Spunky #344
 };
 
 class IbuoyIGC : public ImodelIGC
@@ -3483,7 +3508,10 @@ class IstationIGC : public IscannerIGC
 
 		virtual void SetRoidSide(SideID sid, bool bset = true) = 0;
 		virtual bool GetRoidSide(SideID sid) = 0;
-		//
+		
+		//Turkey #307 02/13
+		virtual void SetKnownStationType(SideID sid, IstationTypeIGC* pst) = 0;
+		virtual IstationTypeIGC* GetKnownStationType(SideID sid) = 0;
 
         virtual float                   GetShieldFraction(void) const = 0;
         virtual void                    SetShieldFraction(float sf) = 0;
@@ -3606,6 +3634,7 @@ class IbucketIGC : public IbuyableIGC
         virtual int                     GetPercentBought(void) const = 0;
         virtual int                     GetPercentComplete(void) const = 0;
         virtual bool                    GetCompleteF(void) const = 0;
+		virtual bool					IsAvailableForFree(void) const = 0;
         virtual void                    ForceComplete(Time now) = 0;
 
         virtual DWORD                   GetTime(void) const = 0;
@@ -4064,6 +4093,7 @@ class IclusterIGC : public IbaseIGC
         virtual float            GetCost(void) const = 0;
 		virtual void			 SetHighlight(bool hl) = 0; //Xynth #208
 		virtual bool			 GetHighlight(void) const = 0;
+		virtual bool			 IsFriendlyCluster(IsideIGC* pside, ClusterQuality cqlty) = 0; //Spunky - #?
 };
 
 class IasteroidIGC : public IdamageIGC
@@ -4095,6 +4125,11 @@ class IasteroidIGC : public IdamageIGC
 		virtual void SetBuilderSeenSide(ObjectID oid) = 0;
 		virtual bool GetBuilderSeenSide(ObjectID oid) = 0;
 		virtual void SetInhibitUpdate(bool inhib) = 0; //Xynth #225 9/10
+
+		//Turkey #307 02/13
+		virtual void					Kill(SideID sid) = 0;
+		virtual bool					IsDead(void) = 0;
+		virtual bool					IsDead(SideID sid) = 0;
 };
 
 class IwarpIGC : public ImodelIGC
@@ -4269,7 +4304,7 @@ class ItreasureSetIGC : public IbaseIGC
         virtual const TreasureData&         GetRandomTreasureData(void) const = 0;
 };
 
-typedef short   AssetMask;
+typedef unsigned short   AssetMask;
 const AssetMask     c_amFighter           = 0x01;
 const AssetMask     c_amMiner             = 0x02;
 const AssetMask     c_amBuilder           = 0x04;
@@ -4285,6 +4320,7 @@ const AssetMask     c_amCarrier           = 0x800;
 const AssetMask     c_amEnemyTeleport     = 0x1000;
 const AssetMask     c_amEnemyTeleportShip = 0x2000;
 const AssetMask     c_amEnemyBomber       = 0x4000;
+const AssetMask		c_amEnemyProbe		  = 0x8000; //turkey #354 3/13 set when a warn probe is dropped
 
 typedef short   ClusterWarning;
 const ClusterWarning    c_cwNoThreat                = 0;
@@ -4515,9 +4551,12 @@ enum TargetType
     c_ttMine        = 0x4000,
     c_ttProbe       = 0x8000,
 
-    c_ttLeastTargeted = 0x10000,
-    c_ttNoRipcord     = 0x20000,
-    c_ttCowardly      = 0x40000,
+    c_ttLeastTargeted  = 0x10000,
+    c_ttNoRipcord      = 0x20000,
+    c_ttCowardly       = 0x40000,
+	c_ttPositiveBOP    = 0x80000, //Spunky #288
+	c_ttNoEye		   = 0x100000, //Spunky #288
+	c_ttCowardlyNeutOK = 0x200000, //Spunky  #293
 
     c_ttShipTypes   = c_ttShip | c_ttStation,
 

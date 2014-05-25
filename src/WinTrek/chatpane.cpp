@@ -20,12 +20,18 @@ private:
     
 public:
 
-    ChatListItem(ChatInfo* pchatInfo, const WinPoint& ptLineSize) :
+    ChatListItem(ChatInfo* pchatInfo, const WinPoint& ptLineSize, bool bShowTimestamp = false) :
         m_lData((long)pchatInfo),
         m_pchatInfo(pchatInfo),
         m_ptLineSize(ptLineSize)
     {
         ZString strMsg = CensorBadWords (m_pchatInfo->GetMessage());
+		// #360
+		if (bShowTimestamp)
+		{
+			strMsg = m_pchatInfo->GetTimestamp() + strMsg;
+		}
+
 		IEngineFont* pfont = pchatInfo->IsFromLeader() ? TrekResources::SmallBoldFont() : TrekResources::SmallFont();
         int nStrLenLeft = strMsg.GetLength();
         int nStrLenLine;
@@ -114,9 +120,10 @@ class ChatListPaneImpl :    public ChatListPane,
 private:
     TRef<ListPaneOld>      m_pListPane;
     WinPoint               m_ptItemSize;
+	WinPoint			   m_ptSize;		// #294
     TList<ChatTarget>      m_listChannels;
     TRef<IKeyboardInput>   m_keyboardDelegate;
-    TRef<IEventTarget>     m_targetAutoscrollOn;
+    TRef<IEventTargetAlleg>     m_targetAutoscrollOn;
     bool                   m_bAutoscroll;
     bool                   m_bPlayerChatsOnly;
     bool                   m_bIgnoreScrollingEvents;
@@ -125,10 +132,10 @@ public:
 
 
     ChatListPaneImpl(const WinPoint& ptSize):
-        m_ptItemSize(ptSize.X(), 12), m_bAutoscroll(true), m_bIgnoreScrollingEvents(false)
+        m_ptItemSize(ptSize.X(), 12), m_bAutoscroll(true), m_bIgnoreScrollingEvents(false), m_ptSize(ptSize)
     {
         m_bPlayerChatsOnly = true;
-        m_pListPane = ListPaneOld::Create(ptSize, 12, true, NULL),
+        m_pListPane = ListPaneOld::Create(m_ptSize, 12, true, NULL),
         InsertAtBottom(m_pListPane);
 		//mdvalley: I hate C3867.
         AddEventTarget(&ChatListPaneImpl::OnListSelect, m_pListPane->GetEventSource());
@@ -154,7 +161,7 @@ public:
             m_targetAutoscrollOn->Disconnect();
 
         m_targetAutoscrollOn = 
-            new TEventTarget<ChatListPaneImpl>(this, &ChatListPaneImpl::OnAutoscrollTimeout, GetWindow(), 10);
+            new TEventTarget<ChatListPaneImpl>(this, &ChatListPaneImpl::OnAutoscrollTimeout, GetWindow(), 30);  //turkey changed the timer from 10 to 30 seconds
     }
 
     void AutoscrollOn()
@@ -301,7 +308,7 @@ public:
         if (ChatPassesFilter(pchatInfo))
         {
             m_bIgnoreScrollingEvents = true;
-            int idx = m_pListPane->AppendItem(new ChatListItem(pchatInfo, m_ptItemSize));
+			int idx = m_pListPane->AppendItem(new ChatListItem(pchatInfo, m_ptItemSize, GetWindow()->IsShowingTimestamp()));
             
             if (m_bAutoscroll)
             {
@@ -335,6 +342,13 @@ public:
         DefaultUpdateLayout();
     }
 
+	// #294
+	void SetChatLines(int lines)
+	{
+		m_ptSize.SetY(lines * m_ptItemSize.Y() + 8);
+		m_pListPane->SetListSize(m_ptSize);
+		UpdateContents();
+	}
 };
 
 

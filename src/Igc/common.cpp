@@ -48,6 +48,8 @@ const CommandData   c_cdAllCommands[c_cidMax] =
                         { "goto",       "acgotobmp",    "qugotobmp" },
                         { "repair",     "acrepairbmp",  "qurepairbmp" },
                         { "join",       "acjoinbmp",    "qujoinbmp" },
+						{ "stop",		"acstopbmp",	"qustopbmp" }, //#321
+						{ "hide",		"achidebmp",	"quhidebmp" }, //#320
                         { "mine",       "acminebmp",    "quminebmp" },
                         { "build",      "acbuildbmp",   "qubuildbmp" }
                     };
@@ -352,80 +354,6 @@ bool  FindableModel(ImodelIGC*          m,
     return okF;
 }
 
-static bool IsFriendlyCluster(IclusterIGC*  pcluster, IsideIGC* pside)
-{
-    StationLinkIGC* psl = pcluster->GetStations()->first();
-    if (psl == NULL)
-        return false;                   //No stations == unfriendly
-
-    bool    rc = false;
-    do
-    {
-        IstationIGC*    ps = psl->data();
-        if ((!ps->GetStationType()->HasCapability(c_sabmPedestal)) &&
-            ps->SeenBySide(pside))
-        {
-			if ((pside != ps->GetSide()) && !IsideIGC::AlliedSides(pside, ps->GetSide()))		// #ALLY FIXED 7/10/09 imago - was: pside != ps->GetSide(
-                return false;               //enemy has a station == unfriendly
-
-            rc = true;
-        }
-
-        psl = psl->next();
-    }
-    while (psl != NULL);
-	//It has stations but no enemy stations ... therefore at least one friendly station
-
-	// mmf 10/07 controversial change, enable it with Experimental game type
-	ImissionIGC*         pmission = pside->GetMission();  // mmf 10/07 added so we can get at bExperimental game type
-    const MissionParams* pmp = pmission->GetMissionParams(); // mmf 10/07
-
-	if (!(pmp->bExperimental)) {
-	  return rc; // mmf 10/07 orig code
-	}
-    // mmf else if Experimental game type fall through to yp's code
-	// yp: Improving AI: no reason to check further if we already know its a hostile sector
-	if(rc == false)
-		return rc;
-	// we should also check to see if there is a lot of enemy in the sector.
-	// we wouldnt want to go somewhere hostile even if we do have a base there.
-	if(pcluster->GetShips() != NULL)
-	{
-		int friendlyShipCount = 0;
-
-		for (ShipLinkIGC*   psl = pcluster->GetShips()->first(); (psl != NULL); psl = psl->next()) // mmf changed this to pcluste->GetShips from pside
-        {
-            IshipIGC*   pship = psl->data();
-			// If our team knows that ship is there or its one of our ships, then we can count it.
-            if (pship->SeenBySide(pside) || pship->GetSide() == pside)
-			{
-				//if (pside != pship->GetSide()) // if its not our side then we subtract 1 from our count
-				if ((pside != pship->GetSide()) && !IsideIGC::AlliedSides(pside,pship->GetSide())) //#ALLY -was: line above IMAGO FIXED LIKE THIS ALL OVER 7/8/09
-				{// count hostiles in the system.
-					// TODO: Make smarter: Assign differnt ship hulls a differnt amount of points, could also handle drones differntly
-					friendlyShipCount--;
-				}
-				else//, otherwise we increment it.
-				{// count friendlys in the system.
-					friendlyShipCount++;
-				}
-			}
-        }
-
-		if(friendlyShipCount>=0)// do we have a good chance of being safe?
-		{
-			rc = true; // to do this...
-		}
-		else
-		{
-			rc = false;
-		}
-	}
-    // yp end
-
-    return rc;
-}
-
 struct  ClusterPosition
 {
     IclusterIGC*    pcluster;
@@ -452,6 +380,8 @@ static void    NewCP(CPList*   cpl, IclusterIGC*   pc, const Vector* pposition)
 
     cpl->last(l);
 }
+
+//NOTES: pmodelCurrent is used as a starting point for target search
 
 ImodelIGC*  FindTarget(IshipIGC*           pship,
                        int                 ttMask,
@@ -532,8 +462,8 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
         {
             ImodelIGC*  m = l->data();
 
-			//You never target yourself or something marked as hidden
-            if ((m != pship) && ((!pship) || pship->CanSee(m)) && FindableModel(m, pside, ttMask, abmAbilities,iAllies))
+			//You never target yourself, something marked as hidden, #319 or a dead asteroid
+            if ((m != pship) && ((!pship) || pship->CanSee(m)) && FindableModel(m, pside, ttMask, abmAbilities,iAllies) && !(m->GetObjectType() == OT_asteroid && ((IasteroidIGC*)m)->IsDead(pside->GetObjectID())))
             {
                 if (ttBest)
                 {
@@ -615,11 +545,16 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
         while (l != mLink);
     }
 
-    if ((pmodelTarget) ||
-        ((ttMask & c_ttAnyCluster) == 0) ||
-        ((ttMask & (c_ttStation | c_ttAsteroid | c_ttTreasure | c_ttWarp)) == 0) ||
-        (maxDistance == 0))
-        return pmodelTarget;
+	//Spunky - check current sector for cowardliness #288, #293
+	if  (ttMask & c_ttCowardly && !pcluster->IsFriendlyCluster(pside, cqNone)
+		|| ttMask & c_ttCowardlyNeutOK && !pcluster->IsFriendlyCluster(pside, cqIncludeNeutral)
+		|| ttMask & c_ttNoEye && !pcluster->IsFriendlyCluster(pside, cqNoEye)
+		|| ttMask & c_ttPositiveBOP && !pcluster->IsFriendlyCluster(pside, cqPositiveBOP))
+		pmodelTarget = NULL; 
+	
+	if (pmodelTarget || (ttMask & c_ttAnyCluster) == 0 ||
+	   (ttMask & (c_ttStation | c_ttAsteroid | c_ttTreasure | c_ttWarp)) == 0 || maxDistance == 0)
+		return pmodelTarget;
 
     IclusterIGC*    pclusterStart = pcluster;
     int             distance = 0;
@@ -659,8 +594,11 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
                             //Have we visited pclusterOther?
                             if (clustersVisited.find(pclusterOther) == NULL)
                             {
-                                //No
-                                if (((ttMask & c_ttCowardly) == 0) || IsFriendlyCluster(pclusterOther, pside))
+                                //No 
+                                if (((ttMask & c_ttCowardly) == 0 || pclusterOther->IsFriendlyCluster(pside, cqNone))
+									&& ((ttMask & c_ttNoEye) == 0 || pclusterOther->IsFriendlyCluster(pside, cqNoEye))
+									&& ((ttMask & c_ttPositiveBOP) == 0 || pclusterOther->IsFriendlyCluster(pside, cqPositiveBOP))) //Spunky #288
+
                                     pwlTwoAway->last(pwarpDestination);
                             }
                         }
@@ -740,8 +678,10 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
 	            {
 					if (ps->SeenBySide(pside) || pmp->bAllowAlliedViz) { //Imago VISIBILITY RIPCORD 7/10/09 ALLY
 	                	IclusterIGC*    pc = ps->GetCluster();
-	                	if ((pc != pclusterStart) && UniqueCP(&clustersRipcord, pc) &&
-	                    	(((ttMask & c_ttCowardly) == 0) || IsFriendlyCluster(pc, pside)))
+	                	if ((pc != pclusterStart) && UniqueCP(&clustersRipcord, pc)  //Spunky #288
+	                    	        && ((ttMask & c_ttCowardly) == 0 || pc->IsFriendlyCluster(pside, cqNone))
+									&& ((ttMask & c_ttNoEye) == 0 || pc->IsFriendlyCluster(pside, cqNoEye))
+									&& ((ttMask & c_ttPositiveBOP) == 0 || pc->IsFriendlyCluster(pside, cqPositiveBOP)))
 	                    	NewCP(&clustersRipcord, ps->GetCluster(), &(ps->GetPosition()));
 					}
 	            }
@@ -753,8 +693,11 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
 	            if (ps->GetStationType()->HasCapability(c_sabmRipcord))
 	            {
 	                IclusterIGC*    pc = ps->GetCluster();
-	                if ((pc != pclusterStart) && UniqueCP(&clustersRipcord, pc) &&
-	                    (((ttMask & c_ttCowardly) == 0) || IsFriendlyCluster(pc, pside)))
+	                if ((pc != pclusterStart) && UniqueCP(&clustersRipcord, pc) //Spunky #288
+   	                    	        && ((ttMask & c_ttCowardly) == 0 || pc->IsFriendlyCluster(pside, cqNone))
+									&& ((ttMask & c_ttNoEye) == 0 || pc->IsFriendlyCluster(pside, cqNoEye))
+									&& ((ttMask & c_ttPositiveBOP) == 0 || pc->IsFriendlyCluster(pside, cqPositiveBOP)))
+
 	                    NewCP(&clustersRipcord, ps->GetCluster(), &(ps->GetPosition()));
 	            }
 	        }
@@ -780,7 +723,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
 					if (ps->SeenBySide(pside) || pmp->bAllowAlliedViz) { //Imago VISIBILITY RIPCORD 7/10/09 ALLY
 	                	IclusterIGC*    pc = pigc->GetRipcordCluster(ps, habm);
 	                	if (pc && (pc != pclusterStart) && UniqueCP(&clustersRipcord, pc) &&
-	                    	(((ttMask & c_ttCowardly) == 0) || IsFriendlyCluster(pc, pside)))
+	                    	(((ttMask & c_ttCowardly) == 0) || pc->IsFriendlyCluster(pside, cqNone))) //Spunky #288
 	                    	NewCP(&clustersRipcord, pc, NULL);
 					}
 	            }
@@ -793,7 +736,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
 	            {
 	                IclusterIGC*    pc = pigc->GetRipcordCluster(ps, habm);
 	                if (pc && (pc != pclusterStart) && UniqueCP(&clustersRipcord, pc) &&
-	                    (((ttMask & c_ttCowardly) == 0) || IsFriendlyCluster(pc, pside)))
+	                    (((ttMask & c_ttCowardly) == 0) || pc->IsFriendlyCluster(pside, cqNone))) //Spunky #288
 	                    NewCP(&clustersRipcord, pc, NULL);
 	            }
 	        }
@@ -804,7 +747,7 @@ ImodelIGC*  FindTarget(IshipIGC*           pship,
         {
             IclusterIGC*    pc = pcl->data();
             if ((pc != pclusterStart) && UniqueCP(&clustersRipcord, pc) &&
-                (((ttMask & c_ttCowardly) == 0) || IsFriendlyCluster(pc, pside)))
+                (((ttMask & c_ttCowardly) == 0) || pc->IsFriendlyCluster(pside, cqNone))) //Spunky#288
             {
                 for (ProbeLinkIGC*  ppl = pc->GetProbes()->first(); (ppl != NULL); ppl = ppl->next())
                 {
@@ -863,7 +806,7 @@ typedef Slink_utl<Path> PathLink;
 
 IwarpIGC* FindPath(IshipIGC*    pship,
                    IclusterIGC* pclusterTarget,
-                   bool         bCowardly)
+                   ClusterQuality cq) //Spunky #288
 {
     assert (pship);
     IsideIGC*   pside = pship->GetSide();
@@ -891,9 +834,9 @@ IwarpIGC* FindPath(IshipIGC*    pship,
             {
                 assert (pwarp->GetDestination());
                 IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
-                if ((!bCowardly) ||
+                if ((cq == cqNoCheck) ||
                     (pclusterTarget == pclusterDestination) ||
-                    IsFriendlyCluster(pclusterDestination, pside))
+                     pclusterDestination->IsFriendlyCluster(pside, cq)) //Spunky #288
                 {
                     PathLink*   pl = new PathLink;
                     assert (pl);
@@ -958,9 +901,9 @@ IwarpIGC* FindPath(IshipIGC*    pship,
             {
                 IclusterIGC*    pclusterDestination = pwarp->GetDestination()->GetCluster();
 
-                if ((!bCowardly) ||
+                if ((cq == cqNoCheck) ||
                     (pclusterDestination == pclusterTarget) ||
-                    IsFriendlyCluster(pclusterDestination, pside))
+                    pclusterDestination->IsFriendlyCluster(pside, cq)) //Spunky #288
                 {
                     if (explored.find(pclusterDestination) == NULL)
                     {
@@ -979,6 +922,51 @@ IwarpIGC* FindPath(IshipIGC*    pship,
 
         delete plinkClosest;
     }
+}
+
+//Spunky #288 - if cowardly first try friendly sectors, then neutral. Try to find safer paths for miners. 
+IwarpIGC* FindPath(IshipIGC*    pship,
+                   IclusterIGC* pclusterTarget,
+                   bool bCowardly)
+{
+	IwarpIGC* tempPath = NULL;
+	if (bCowardly)
+	{
+		if (pship->GetPilotType() == c_ptMiner)
+		{
+			tempPath = FindPath(pship, pclusterTarget, (ClusterQuality)(cqNoEye | cqPositiveBOP));
+			if (!tempPath)
+			{
+				tempPath = FindPath(pship, pclusterTarget, cqPositiveBOP);
+			}
+			else 
+			if (!tempPath)
+			{
+				tempPath = FindPath(pship, pclusterTarget, cqNone);
+			}
+			if (!tempPath)
+			{
+				tempPath = FindPath(pship, pclusterTarget, (ClusterQuality)(cqIncludeNeutral | cqNoEye | cqPositiveBOP));
+			}
+			if (!tempPath)
+			{
+				tempPath = FindPath(pship, pclusterTarget, (ClusterQuality)(cqIncludeNeutral | cqPositiveBOP));
+			}
+			if (!tempPath)
+			{
+				tempPath = FindPath(pship, pclusterTarget, cqIncludeNeutral);
+			}
+		}
+		else
+		{
+			tempPath = FindPath(pship, pclusterTarget, cqNone);
+			if (!tempPath)
+				tempPath=FindPath(pship, pclusterTarget, cqIncludeNeutral);
+		}
+		return tempPath;
+	}
+	else
+		return FindPath(pship, pclusterTarget, cqNoCheck);
 }
 
 IwarpIGC* FindPath(IshipIGC*  pShip,
@@ -1607,6 +1595,10 @@ bool    Ignore(IshipIGC*   pship, ImodelIGC* pmodel)
     {
         ignore = true;
     }
+	else if ((type == OT_asteroid) && ((IasteroidIGC*)pmodel)->IsDead(mySide->GetObjectID())) //Turkey 3/13 #307 ignore rocks if we know they're dead
+	{
+		ignore = true;
+	}
 
     return ignore;
 }
@@ -2219,7 +2211,7 @@ bool        LineOfSightExist(const IclusterIGC* pcluster,
     for (ModelLinkIGC* pml = ((ModelListIGC*)(pcluster->GetAsteroids()))->first(); (pml != NULL); pml = pml->next())
     {
         ImodelIGC*  pmodel = pml->data();
-        if (pmodel2 != pmodel)
+		if (pmodel2 != pmodel && !(pmodel->GetObjectType() == OT_asteroid && ((IasteroidIGC*)pmodel)->IsDead(pmodel1->GetSide()->GetObjectID()))) //#307 don't consider an asteroid if we know it's dead
         {
             // P3 is the center of the object that might obscure our view of P2
             const Vector&   P3 = pmodel->GetPosition();
@@ -2366,7 +2358,7 @@ ClusterWarning  GetClusterWarning(AssetMask am, bool bInvulnerableStations)
         cw = c_cwStationCaptureThreat;
     else if ((am & (c_amEnemyTeleport | c_amEnemyTeleportShip)) && (am & c_amStation) && !bInvulnerableStations)
         cw = c_cwStationTeleportThreat;
-    else if ((am & c_amEnemyBomber) && (am & c_amStation) && !bInvulnerableStations)
+    else if ((am & (c_amEnemyBomber | c_amEnemyProbe)) && (am & c_amStation) && !bInvulnerableStations)//#354 included EnemyProbe
         cw = c_cwStationThreatened;
     else if ((am & c_amEnemyAPC) && !bInvulnerableStations)
         cw = c_cwTransportInCluster;

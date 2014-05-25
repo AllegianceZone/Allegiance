@@ -3108,7 +3108,7 @@ bool CommandToDrone(CFSMission*         pfsMission,
 	
 	assert (pfsSender);
 
-    IsideIGC*   pside = pshipTo->GetSide();
+	IsideIGC*   pside = pshipTo->GetSide();
     if ((pcd->commandID != c_cidNone) &&
         (pfsSender->GetIGCShip()->GetSide() == pside))
     {
@@ -3161,7 +3161,6 @@ bool CommandToDrone(CFSMission*         pfsMission,
 
         if (pshipTo->LegalCommand(pcd->commandID, *ppmodelTarget) || bBarelyLegal) //Imago 7/10 drone build sphere rock info ughh
         {
-            pshipTo->SetStayDocked(false);  //Xynth #48 8/2010 reset staydocked on any command
 			bAccepted = true;
             pfsMission->GetSite()->SendChat(pshipTo, CHAT_INDIVIDUAL, pfsSender->GetIGCShip()->GetObjectID(),
                                             voAffirmativeSound, "Affirmative.");
@@ -3175,74 +3174,125 @@ bool CommandToDrone(CFSMission*         pfsMission,
 
                 pshipTo->SetWingID(wid);
 
-                BEGIN_PFM_CREATE(g.fm, pfmWingChange, CS, SET_WINGID)
-                END_PFM_CREATE
-                pfmWingChange->shipID = pshipTo->GetObjectID();
-                pfmWingChange->wingID = wid;
-                pfmWingChange->bCommanded = true;
-                g.fm.SendMessages(CFSSide::FromIGC(pside)->GetGroup(), FM_GUARANTEED, FM_FLUSH);
-            }
-            else
-            {
-                //Set both current and accepted commands
-                pshipTo->SetCommand(c_cmdCurrent,
-                                    *ppmodelTarget,
-                                    pcd->commandID);
-                pshipTo->SetCommand(c_cmdAccepted,
-                                    *ppmodelTarget,
-                                    pcd->commandID);
-            }
-        }
-        else
-        {
-            /*
-            pfsMission->GetSite()->SendChat(pshipTo, CHAT_INDIVIDUAL, pfsSender->GetIGCShip()->GetObjectID(),
-                                            voNegativeSound, "Negative.");
-                                            */
-        }
-    }
+				BEGIN_PFM_CREATE(g.fm, pfmWingChange, CS, SET_WINGID)
+					END_PFM_CREATE
+					pfmWingChange->shipID = pshipTo->GetObjectID();
+				pfmWingChange->wingID = wid;
+				pfmWingChange->bCommanded = true;
+				g.fm.SendMessages(CFSSide::FromIGC(pside)->GetGroup(), FM_GUARANTEED, FM_FLUSH);
+			}
+			else
+			{
+				//Turkey #320 3/13 moved to here from case CS_FM_ORDER_CHANGE below
 
-    return bAccepted;
+				//Spunky #250 #257
+//				bool DoNotExecute = false;
+				// pkk #211 08/05/2010 Allow all drones stay docked
+//				DoNotExecute = true; //don't carry out the sent command later, since we are handling it here
+
+				if (pcd->commandID == c_cidHide)
+				{
+					if (*ppmodelTarget == NULL)
+					{
+						//we find the nearest station server side because the ship's exact location is only available here when we are in a different sector
+						if (pshipTo->GetHullType()->HasCapability(c_habmFighter)) //small enough to dock at any dockable station
+						{
+							*ppmodelTarget = FindTarget(pshipTo, c_ttFriendly | c_ttStation | c_ttNearest| c_ttAnyCluster,
+								NULL, NULL, NULL, NULL, c_sabmRepair);
+						}
+						else
+						{
+							// Find shipyard
+							*ppmodelTarget = FindTarget(pshipTo, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
+								NULL, NULL,NULL, NULL, c_sabmCapLand);
+							if (*ppmodelTarget == NULL) //No shipyard, carrier flees to nearest base for protection
+								*ppmodelTarget = FindTarget(pshipTo, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
+								NULL, NULL, NULL, NULL, c_sabmRepair);
+						}
+						pshipTo->SetStayDocked(true);
+						if (*ppmodelTarget)
+						{
+							//pfsMission->GetSite()->SendChat(pship, CHAT_INDIVIDUAL, pfsPlayer->GetIGCShip()->GetObjectID(),
+							//	voAffirmativeSound, "Affirmative.");
+							pfsMission->GetSite()->SendChat(pshipTo, CHAT_TEAM, pshipTo->GetSide()->GetObjectID(),
+								NA, "Heading back to base. I'll sit tight.");
+						}
+					}
+				}
+
+
+				//pfsMission->GetSite()->SendChat(pship, CHAT_INDIVIDUAL, pfsPlayer->GetIGCShip()->GetObjectID(),
+				//	voAffirmativeSound, "Affirmative. Preparing to launch.");
+				if (pcd->commandID == c_cidGoto && *ppmodelTarget == NULL)
+				{
+					pshipTo->PickDefaultOrder(pshipTo->GetStation()->GetCluster(), pshipTo->GetStation()->GetPosition(), true);
+				}
+				else
+				{
+					//Xynth #48 Spunky #250 #257 End Changes
+					//end #320
+
+					//Set both current and accepted commands
+
+					pshipTo->SetCommand(c_cmdCurrent,
+						*ppmodelTarget,
+						pcd->commandID);
+					pshipTo->SetCommand(c_cmdAccepted,
+						*ppmodelTarget,
+						pcd->commandID);
+				}
+			}
+		}
+		else
+		{
+			/*
+			pfsMission->GetSite()->SendChat(pshipTo, CHAT_INDIVIDUAL, pfsSender->GetIGCShip()->GetObjectID(),
+			voNegativeSound, "Negative.");
+			*/
+		}
+	}
+
+	return bAccepted;
 }
 
 void ForwardChatMessageToWing(CFSMission*         pfsMission,
-                              CFSShip*            pfsSender,
-                              FEDMESSAGE*         pfm,
-                              WingID              wid,
-                              IshipIGC*           pshipSkip)
+	CFSShip*            pfsSender,
+	FEDMESSAGE*         pfm,
+	WingID              wid,
+	IshipIGC*           pshipSkip)
 {
 
-    //Send the message to everyone on the specified wing
-    for (ShipLinkIGC*   psl = pfsSender->GetIGCShip()->GetSide()->GetShips()->first();
-         (psl != NULL);
-         psl = psl->next())
-    {
-        IshipIGC*   pship = psl->data();
-        if ((pship->GetWingID() == wid) && (pship != pshipSkip))
-        {
-            CFSShip* pfsShipTo = (CFSShip*)(pship->GetPrivateData());
+	//Send the message to everyone on the specified wing
+	for (ShipLinkIGC*   psl = pfsSender->GetIGCShip()->GetSide()->GetShips()->first();
+		(psl != NULL);
+		psl = psl->next())
+	{
+		IshipIGC*   pship = psl->data();
+		if ((pship->GetWingID() == wid) && (pship != pshipSkip))
+		{
+			CFSShip* pfsShipTo = (CFSShip*)(pship->GetPrivateData());
 
-            if (pfsShipTo->IsPlayer())
-            {
-              g.fm.ForwardMessage(pfsShipTo->GetPlayer()->GetConnection(), pfm, FM_GUARANTEED);
-            }
-        }
-    }
+			if (pfsShipTo->IsPlayer())
+			{
+				g.fm.ForwardMessage(pfsShipTo->GetPlayer()->GetConnection(), pfm, FM_GUARANTEED);
+			}
+		}
+	}
 	// send allies if command wing and not a drone command HACK: we use shipskip as a boolean--imago 7/3/09
-//	if (wid == 0 && !pshipSkip)
-//		ForwardChatMessageToAllies(pfsMission,pfsSender,pfm);
+	//	if (wid == 0 && !pshipSkip)
+	//		ForwardChatMessageToAllies(pfsMission,pfsSender,pfm);
 }
 
 void ForwardChatMessage(CFSMission*         pfsMission,
-                        CFSShip*            pfsSender,
-                        FEDMESSAGE*         pfm,
-                        ChatData*           pcd,
-                        const char*         pszMsg,
-                        ObjectType          otTarget = NA,
-                        ObjectID            oidTarget = NA,
-                        const DataBuoyIGC*  pdb = NULL)
+	CFSShip*            pfsSender,
+	FEDMESSAGE*         pfm,
+	ChatData*           pcd,
+	const char*         pszMsg,
+	ObjectType          otTarget = NA,
+	ObjectID            oidTarget = NA,
+	const DataBuoyIGC*  pdb = NULL)
 {
-    if (((pcd->commandID == c_cidNone) && (pcd->voiceOver == NA) && ((pszMsg == NULL) || (*pszMsg == '\0'))) ||
+	if (((pcd->commandID == c_cidNone) && (pcd->voiceOver == NA) && ((pszMsg == NULL) || (*pszMsg == '\0'))) ||
         (pcd->commandID < c_cidNone) ||
         (pcd->commandID >= c_cidMax))
         return;     //Invalid chat message
@@ -4404,7 +4454,7 @@ HRESULT FedSrvSiteBase::OnNewConnection(FedMessaging * pthis, CFMConnection & cn
   // we don't do anything until they login
 
   // mmf 10/08 Log ip address (code provided by Imago)
-  char szRemote[16];
+  char szRemote[52]; //Spunky #341
   pthis->GetIPAddress(cnxn, szRemote);
   debugf("New connection ID: %x IP: %s\n",cnxn.GetID(),szRemote);
 
@@ -4760,8 +4810,10 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
             }
           }
 
-          if ((pfsPlayer->GetSide()->GetObjectID() >= 0) && (pfsMission->GetStage() == STAGE_STARTED))
-          {
+          if (pfsPlayer->GetSide()->GetObjectID() >= 0)
+		  {
+			if (pfsMission->GetStage() == STAGE_STARTED) //Spunky #177
+			{
               if (pfmChat->cbMessage > strlen("#resign") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#resign", strlen("#resign")) == 0)
               {
 				// mmf/KGJV 09/07 allow only one ballot of each type at a time
@@ -4778,18 +4830,6 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
                   pfsMission->AddBallot(new OfferDrawBallot(pfsPlayer));
 				else pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
 					NA, "Draw vote already in progress...");
-                bForward = false;
-              }
-				// KGJV #110
-               else if (pfmChat->cbMessage > strlen("#mutiny") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#mutiny", strlen("#mutiny")) == 0)
-              {
-				// leader cant mutiny
-			    if (pfsMission->GetLeader(pfsPlayer->GetSide()->GetObjectID()) != pfsPlayer)
-				  // mmf/KGJV 09/07 allow only one ballot of each type at a time
-				  if (!pfsMission->HasBallots(BALLOT_MUTINY))
-				    pfsMission->AddBallot(new MutinyBallot(pfsPlayer));
-				  else pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
-					NA, "Mutiny vote already in progress...");
                 bForward = false;
               }
 			   // yp Your_Persona bug98 (toggle auto accept after game launch) aug-3-2006
@@ -4817,19 +4857,61 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 				bForward = true;
 				g.fm.ForwardMessage(pfsMission->GetGroupMission(), pfsMission->GetMissionDef(), FM_GUARANTEED); //Imago #4 7/10
 			  }
-			  // mmf 03/22/07 added #list to display all the other # commands
-			  //              keep this at the end of this else if
-			  else if(pfmChat->cbMessage > strlen("#list") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#list", strlen("#list")) == 0)
-              {
-			    // mmf send message to self
-				// KGJV #110 added #mutiny
-				pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
-					NA, "#draw | #resign | #autoaccept | #autobalance [1|2|a|n] | #ban | #mutiny");
-				bForward = false;
+
+			}
+			// KGJV #110 //Spunky #177
+            if (pfmChat->cbMessage > strlen("#mutiny") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#mutiny", strlen("#mutiny")) == 0
+				&& (pfsMission->GetStage() == STAGE_STARTED || pfsMission->GetStage() == STAGE_NOTSTARTED))
+            {
+			// leader cant mutiny
+			if (pfsMission->GetLeader(pfsPlayer->GetSide()->GetObjectID()) != pfsPlayer)
+				// mmf/KGJV 09/07 allow only one ballot of each type at a time
+				if (!pfsMission->HasBallots(BALLOT_MUTINY))
+				pfsMission->AddBallot(new MutinyBallot(pfsPlayer));
+				else pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
+				NA, "Mutiny vote already in progress...");
+			bForward = false;
+			}
+			
+		  }
+		  //turkey #317 6/13
+		  if (pfmChat->cbMessage > strlen("#removecom  ") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#removecom", strlen("#removecom")) == 0
+			  && pfsMission->GetStage() == STAGE_NOTSTARTED)
+		  {
+			  //get the side ID from the end of the chat string
+			  ZString chatString (FM_VAR_REF(pfmChat, Message));
+			  SideID sideID = (SideID)(atoi(&chatString[strlen("#removecom ")]) - 1);
+			  if (sideID < c_cSidesMax && sideID >= 0 && pfsMission->GetLeader(sideID) && pfsMission->GetLeader(sideID) != pfsPlayer)
+			  {
+				  if (!pfsMission->HasBallots(BALLOT_REMOVECOM))
+					  pfsMission->AddBallot(new RemoveComBallot(pfsPlayer, sideID));
+				  else pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
+					  NA, "Remove com vote already in progress...");
+				  bForward = false;
 			  }
-          }
-		 // KGJV: added '#start' (equiv to cheat code 'fifteen') for game owner
-		 // beta feature only  imago made one less define 7/8/09 and fixed for non-debug
+		  }
+		  // mmf 03/22/07 added #list to display all the other # commands
+		  //              keep this at the end of this else if
+		  // turkey #317 moved down and added list for lobby commands
+		  else if(pfmChat->cbMessage > strlen("#list") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#list", strlen("#list")) == 0)
+		  {
+			  // mmf send message to self
+			  // KGJV #110 added #mutiny
+			  if (pfsMission->GetStage() == STAGE_STARTED)
+			  {
+				  pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
+					  NA, "#draw | #resign | #autoaccept | #autobalance [1|2|a|n] | #ban | #mutiny");
+				  bForward = false;
+			  }
+			  else if (pfsMission->GetStage() == STAGE_NOTSTARTED)
+			  {
+				  pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
+					  NA, "#mutiny | #removecom [1|2|...|6]");
+				  bForward = false;
+			  }
+		  }
+		  // KGJV: added '#start' (equiv to cheat code 'fifteen') for game owner
+		  // beta feature only  imago made one less define 7/8/09 and fixed for non-debug
 
 		  else
 		  {
@@ -4947,8 +5029,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
     case FM_C_VOTE:
     {
-      // you must be on a valid team to vote.
-      if (!pfsMission || pfsPlayer->GetSide()->GetObjectID() < 0)
+      if (!pfsMission)
         break;
 
       CASTPFM(pfmVote, C, VOTE, pfm);
@@ -5495,26 +5576,36 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
         pqd->fValid = fValid;
         pqd->dwConnectionID = cnxnFrom.GetID();
 
-		// BT - 12/21/2010 ACSS - Use a message to the lobby server to get the player's rank details instead of
-		// direct calls to the lobby web service.
-		BEGIN_PFM_CREATE(g.fmLobby, pfmPlayerRank, LS, PLAYER_RANK)
-			FM_VAR_PARM(PCC(pqd->szCharacterName), CB_ZTS) 
-			FM_VAR_PARM(PCC(pqd->szReason), CB_ZTS) 
-			FM_VAR_PARM(PCC(pqd->szPassword), CB_ZTS) 
-			FM_VAR_PARM(PCC(pqd->szCDKey), CB_ZTS) 
-		END_PFM_CREATE
+		if (g.fmLobby.IsConnected()) //Spunky #340
+		{
+			// BT - 12/21/2010 ACSS - Use a message to the lobby server to get the player's rank details instead of
+			// direct calls to the lobby web service.
+			BEGIN_PFM_CREATE(g.fmLobby, pfmPlayerRank, LS, PLAYER_RANK)
+				FM_VAR_PARM(PCC(pqd->szCharacterName), CB_ZTS) 
+				FM_VAR_PARM(PCC(pqd->szReason), CB_ZTS) 
+				FM_VAR_PARM(PCC(pqd->szPassword), CB_ZTS) 
+				FM_VAR_PARM(PCC(pqd->szCDKey), CB_ZTS) 
+			END_PFM_CREATE
 
-		pfmPlayerRank->characterID = pqd->characterID;
-		pfmPlayerRank->fCanCheat = pqd->fCanCheat;
-		pfmPlayerRank->fRetry = pqd->fRetry;
-		pfmPlayerRank->dwCookie = pqd->dwCookie;
-		pfmPlayerRank->fValid = pqd->fValid;
-		pfmPlayerRank->dwConnectionID = pqd->dwConnectionID;
-
-		g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
-
-		// Wait for a PLAYER_RANK message to come back from the lobby.
-
+			pfmPlayerRank->characterID = pqd->characterID;
+			pfmPlayerRank->fCanCheat = pqd->fCanCheat;
+			pfmPlayerRank->fRetry = pqd->fRetry;
+			pfmPlayerRank->dwCookie = pqd->dwCookie;
+			pfmPlayerRank->fValid = pqd->fValid;
+			pfmPlayerRank->dwConnectionID = pqd->dwConnectionID;
+			g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
+			// Wait for a PLAYER_RANK message to come back from the lobby.
+		}
+		else
+		{
+			pqd->rank = 0;
+			pqd->sigma = 8.33f;
+			pqd->mu = 25.0;;
+			pqd->commandRank = 0;
+			pqd->commandSigma = 8.33f;
+			pqd->commandMu = 25.0f;
+			PostThreadMessage(g.idReceiveThread, wm_sql_querydone, (WPARAM) NULL, (LPARAM) pquery);
+		}
 
 #if !defined(ALLSRV_STANDALONE)
         if (fValid)
@@ -5533,15 +5624,14 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 
         if (pfmLogon->fedsrvVer < MSGVER)
           wsprintf(szVerError, "The server you are trying to play on has a newer version than you.  "
-            "Please go play online to get the latest auto-update.  If this doesn't work, try deleting "
-            "the file 'filelist.txt' from the install directory and restarting the application.");
+            "You need to update your client to be able to join. If this is a beta server, you need to "
+			"switch to the beta client by using the Play Beta option of ACSS.");
         else /* if (pfmLogon->fedsrvVer > MSGVER) */
         {
 #if defined(ALLSRV_STANDALONE)
-          wsprintf(szVerError, "The server you are trying to play on is out-of-date.  Find another server "
-            "or contact the server's owner and tell them to auto-update by connecting to the zone match-making "
-            "service.  If that doesn't work, have the server's owner try deleting "
-            "the file 'filelist.txt' from the install directory and restarting the server.");
+          wsprintf(szVerError, "The server you are trying to play on is out-of-date.  You need to find "
+			  "an up-to-date server to join. If you are running the beta client, then you need to switch "
+			  "back to the production client by using the Play Online option of ACSS.");
 #else
           wsprintf(szVerError, "The server you are trying to play on is out-of-date.  The Zone needs to update their game server(s).  Please try again later.");
 #endif
@@ -6690,66 +6780,14 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       assert (pship);
 
 	  IsideIGC*   pside = pship->GetSide();
-	  if (pside->GetShip(pfmOC->shipID))  //Xynth #48 8/2010 This msg handler is normally used for 
-	  {									 //ownship commands.  Tagging on miner commands from playerpane
+	  if (pside->GetShip(pfmOC->shipID))
+	  {
       	  pship = pside->GetShip(pfmOC->shipID);		 
 	  }
 
 	  ImodelIGC*  pmodel;
 
-	  //Spunky #250 #257
-	  bool DoNotExecute = false;
-	  // pkk #211 08/05/2010 Allow all drones stay docked
-      if (pship->GetPilotType() < c_ptPlayer)
-	  {
-			DoNotExecute = true; //don't carry out the sent command later, since we are handling it here
-			if (pship->GetStation() != NULL) //if docked..	
-			{ 
-				if (pfmOC->commandID==c_cidDoNothing) //stay docked
-				{
-					pship->SetStayDocked(true);
-					pfsMission->GetSite()->SendChat(pship, CHAT_INDIVIDUAL, pfsPlayer->GetIGCShip()->GetObjectID(),
-                                            voAffirmativeSound, "Affirmative.");
-				}
-			    else //launch
-				{
-					pship->SetStayDocked(false);
-					pfsMission->GetSite()->SendChat(pship, CHAT_INDIVIDUAL, pfsPlayer->GetIGCShip()->GetObjectID(),
-                                            voAffirmativeSound, "Affirmative. Preparing to launch.");
-					pship->PickDefaultOrder(pship->GetStation()->GetCluster(), pship->GetStation()->GetPosition(), true);			  
-				}
-			}
-			else //we are going back to base
-			{
-				//we find the nearest station server side because the ship's exact location is only available here when we are in a different sector
-				if (pship->GetPilotType() != c_ptCarrier)
-				{
-					pmodel = FindTarget(pship, c_ttFriendly | c_ttStation | c_ttNearest| c_ttAnyCluster,
-						NULL, NULL, NULL, NULL, c_sabmRepair);
-				}
-				else
-				{
-					// Find shipyard
-					pmodel = FindTarget(pship, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
-					NULL, NULL,NULL, NULL, c_sabmCapLand);
-					if (pmodel == NULL) //No shipyard, carrier flees to nearest base for protection
-						pmodel = FindTarget(pship, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
-								NULL, NULL, NULL, NULL, c_sabmRepair);
-				}
-				pship->SetStayDocked(true);
-				if (pmodel)
-				{
-					pfsMission->GetSite()->SendChat(pship, CHAT_INDIVIDUAL, pfsPlayer->GetIGCShip()->GetObjectID(),
-                                            voAffirmativeSound, "Affirmative.");
-											pfsMission->GetSite()->SendChat(pship, CHAT_TEAM, pship->GetSide()->GetObjectID(),
-                                            NA, "Heading back to base. I'll sit tight.");
-		
-					pship->SetCommand(pfmOC->command, pmodel, pfmOC->commandID);
-				}
-			}
-	  }//Xynth #48 Spunky #250 #257 End Changes
-
-      if (pside->GetObjectID() >= 0  && !DoNotExecute)
+      if (pside->GetObjectID() >= 0)
       {
 		pmodel = pMission->GetModel(pfmOC->objectType, pfmOC->objectID);
 		pship->SetCommand(pfmOC->command, pmodel, pfmOC->commandID);
@@ -6778,7 +6816,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
         IcivilizationIGC * pciv = pMission->GetCivilization(pfmChangeTeamCiv->civID);
         TrapHackBoot(pciv);
         g.fm.ForwardMessage(pfsMission->GetGroupMission(), pfmChangeTeamCiv, FM_GUARANTEED);
-        pfsMission->SetSideCiv(pside, pciv);
+        pfsMission->SetSideCiv(pMission->GetSide(pfmChangeTeamCiv->iSide), pciv);
       }
     }
     break;
@@ -7018,7 +7056,8 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
       TrapHackBoot(pfsMission->GetOwner() == pfsPlayer);
 
       // if the mission has not started yet but is ready to start, start the mission
-      if (pfsMission->GetStage() == STAGE_NOTSTARTED)
+	  // also check for any pending votes - Spunky #177
+      if (pfsMission->GetStage() == STAGE_NOTSTARTED && !pfsMission->HasBallots() )
       {
         if (pfsMission->FAllReady())
         {
@@ -7519,6 +7558,9 @@ void UpdateMissions(Time timeStart, Time timePrevious)
     if (pfsMission->GetStage() < STAGE_OVER &&
         pfsMission->GetIGCMission() != g.trekCore) // trekCore is a mission, but not a real one
     {
+	  //Spunky #177
+	  pfsMission->UpdateAnyPendingBallots(timeStart);
+
       // if the game is an auto-restart game and needs to have the countdown started, do so
       float dtTimeTillStart = pfsMission->GetMissionDef()->misparms.timeStart - timeStart;
       float dtPreviousTimeTillStart = pfsMission->GetMissionDef()->misparms.timeStart - timePrevious;
@@ -7579,10 +7621,12 @@ void UpdateMissions(Time timeStart, Time timePrevious)
 
 
       // if the countdown for a game has expired (and someone is in the game), start the game
+	  // also make sure there are no pending votes - Spunky #177
       if (pfsMission->GetStage() == STAGE_STARTING
           && timeStart > pfsMission->GetMissionDef()->misparms.timeStart
           && (pfsMission->HasPlayers(NULL, true)
             || pfsMission->GetMissionDef()->misparms.bAllowEmptyTeams)
+		  && !pfsMission->HasBallots()
           )
       {
         pfsMission->StartGame();
@@ -10093,11 +10137,18 @@ class ThingSiteImpl : public ThingSite
 					}
                     else if (type == OT_asteroid)
                     {
+						if (((IasteroidIGC*)pmodel)->IsDead(pside->GetObjectID())) return false; //Turkey #307 02/13
+
                         //if under construction, send the building effect
                         IbuildingEffectIGC* pbe = ((IasteroidIGC*)pmodel)->GetBuildingEffect();
                         if (pbe)
                             ExportObj(pbe, OT_buildingEffect, NULL);
                     }
+					else if (type == OT_station) //Turkey #307 02/13
+					{
+						IstationIGC* ps = (IstationIGC*)pmodel;
+						ps->SetKnownStationType(pside->GetObjectID(), ps->GetBaseStationType());
+					}
 				
                     g.fm.SendMessages(CFSSide::FromIGC(pside)->GetGroup(), FM_GUARANTEED, FM_FLUSH);
                 }
@@ -10662,7 +10713,7 @@ void FedSrvSiteBase::BuildStation(IasteroidIGC* pasteroid,
  		}
 	}
 	//
-	pasteroid->Terminate();
+	//pasteroid->Terminate(); //Turkey commented out #307 02/13
 	//
 	// TE: Fire AGCEvent informing of station created
 	 LPCSTR pszContext = m_pfsMission->GetIGCMission() ? m_pfsMission->GetIGCMission()->GetContextName() : NULL; // this is a timestamp.
@@ -10768,7 +10819,7 @@ void FedSrvSiteBase::UpgradeShip(IshipIGC* pship, const IstationIGC*  pstation)
     IhullTypeIGC* pht = pship->GetBaseHullType();
     assert (pht);
     IhullTypeIGC* phtSuccessor = (IhullTypeIGC*)(pstation->GetSuccessor(pht));
-
+	float ore = pship->GetOre();//Spunky #344
     if (pht != phtSuccessor)
     {
         //Nuke all the parts
@@ -10833,6 +10884,7 @@ void FedSrvSiteBase::UpgradeShip(IshipIGC* pship, const IstationIGC*  pstation)
             }
         }
     }
+	pship->SetOre(ore);//Spunky #344
 }
 
 void FedSrvSiteBase::TerminateModelEvent(ImodelIGC*  pmodel)
@@ -11600,6 +11652,10 @@ void FedSrvSiteBase::KillAsteroidEvent(IasteroidIGC* pasteroid, IsideIGC* side, 
   pfmAsteroidDestroyed->asteroidID = pasteroid->GetObjectID();
   pfmAsteroidDestroyed->explodeF = explodeF;
   g.fm.SendMessages(CFSSide::FromIGC(side)->GetGroup(), FM_GUARANTEED, FM_FLUSH);
+
+   //Turkey #307 02/13
+  pasteroid->Kill(side->GetObjectID());
+  if (pasteroid->IsDead()) pasteroid->Terminate();
 }
 
 void FedSrvSiteBase::KillAsteroidEvent(AsteroidID roid, SectorID soid, IsideIGC* side)
@@ -11610,6 +11666,11 @@ void FedSrvSiteBase::KillAsteroidEvent(AsteroidID roid, SectorID soid, IsideIGC*
   pfmAsteroidDestroyed->asteroidID = roid;
   pfmAsteroidDestroyed->explodeF = false;
   g.fm.SendMessages(CFSSide::FromIGC(side)->GetGroup(), FM_GUARANTEED, FM_FLUSH);
+
+  //Turkey #307 02/13
+  IasteroidIGC* pasteroid = m_pfsMission->GetIGCMission()->GetAsteroid(roid);
+  pasteroid->Kill(side->GetObjectID());
+  if (pasteroid->IsDead()) pasteroid->Terminate();
 }
 
 void FedSrvSiteBase::DrainAsteroidEvent(IasteroidIGC* pasteroid)

@@ -152,8 +152,17 @@ void        CclusterIGC::Update(Time now)
 									continue;
 								bool bEye = bSimpleEye(pship->GetHullType()->GetScannerRange(),GetMission()->GetModel(OT_ship,pship->GetObjectID()),Sig,pstation->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaSignature),Radius,pos);
 								if (bEye) {
-									pstation->SetRoidSide(pship->GetSide()->GetObjectID(),false);
-									GetMission()->GetIgcSite()->KillAsteroidEvent(pstation->GetRoidID(),GetObjectID(),pship->GetSide());
+									//Turkey 3/13 #353: kill asteroids for all sides in that alliance.
+									IsideIGC* pside1 = pship->GetSide();
+									for (SideLinkIGC* sl = m_pMission->GetSides()->first(); sl != NULL; sl = sl->next())
+									{
+										IsideIGC* pside2 = sl->data();
+										if (pside1->AlliedSides(pside1, pside2))
+										{
+											pstation->SetRoidSide(pside2->GetObjectID(),false);
+											GetMission()->GetIgcSite()->KillAsteroidEvent(pstation->GetRoidID(),GetObjectID(),pside2);
+										}
+									}
 								}
 							}
 						}
@@ -733,5 +742,61 @@ IbuildingEffectIGC*      CclusterIGC::CreateBuildingEffect(Time           now,
     pbe->Release();
 
     return pbe;
+}
+
+
+
+bool CclusterIGC::IsFriendlyCluster(IsideIGC* pside, ClusterQuality cqlty) //Spunky #288
+{
+	int balanceOfPower = 0;
+	//carrier or ASS in sector = not friendly - Spunky #290
+	ShipLinkIGC* pshipl = GetShips()->first();
+	if (pshipl)
+	{
+		do
+		{
+			IshipIGC* pship = pshipl->data();
+			if (pship->GetParentShip() == NULL)
+				if (pship->GetSide() != pside && pship->SeenBySide(pside) && !IsideIGC::AlliedSides(pside, pship->GetSide()))
+				{
+					if (pship->GetHullType()->HasCapability(c_habmIsRipcordTarget | c_habmIsLtRipcordTarget))
+						return false;
+					if (pship->GetBaseHullType()->GetScannerRange() > 800 && cqlty & cqNoEye)
+						return false;
+					balanceOfPower--;
+				}
+				else if (pship->GetSide() == pside || IsideIGC::AlliedSides(pside, pship->GetSide()))
+					balanceOfPower++;
+			pshipl = pshipl->next();
+		} while (pshipl);
+	}
+	if (balanceOfPower < 0 && cqlty & cqPositiveBOP)
+		return false;
+		
+	
+	//Spunky #333
+	StationLinkIGC* psl = GetStations()->first();
+	bool ourBaseInCluster = false;
+    if (psl)
+	{
+		do
+		{
+			IstationIGC*    ps = psl->data();
+			if (!ps->GetStationType()->HasCapability(c_sabmPedestal) && ps->SeenBySide(pside))
+			{
+				if (pside != ps->GetSide() && !IsideIGC::AlliedSides(pside, ps->GetSide())) // #ALLY FIXED 7/10/09 imago
+					return false;
+				else 
+					ourBaseInCluster = true;
+			}
+			psl = psl->next();
+		}
+		while (psl != NULL);
+	}
+	
+	if (cqlty & cqIncludeNeutral || ourBaseInCluster)
+		return true;
+	else
+		return false;
 }
 

@@ -91,7 +91,27 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
 
             if (u)
+			{
                 u->Release();
+
+				//Turkey #307 02/31
+				if (pfmExport->objecttype == OT_station) 
+				{
+					
+					IstationIGC* ps = (IstationIGC*)u;
+
+					SideID mySID = GetSideID();
+					if (mySID > -1) {
+						//compare what the station is known as to us, with what the station was exported as. If there's a difference, change it.
+						if (ps->GetBaseStationType() != ps->GetKnownStationType(mySID) && ps->GetKnownStationType(mySID))
+						{
+							ps->SetBaseStationType(ps->GetKnownStationType(mySID));
+							ps->SetName(ps->GetKnownStationType(mySID)->GetName());
+						}
+					}
+
+				}
+			}
             else
             {
                 //Station exports are allowed to "fail" because they may simply update an existing station.
@@ -350,8 +370,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
               && !(pfmBallot->otInitiator == OT_side && pfmBallot->oidInitiator == GetSideID()))
             {
 				// KGJV #110
-				// if bHideToLeader and i'm the team leader then auto vote no
-				if (pfmBallot->bHideToLeader &&	MyPlayerInfo()->IsTeamLeader())
+				// if I'm who it's hidden from autovote no
+				if (pfmBallot->sidHideFrom == GetShipID())
 				{
 					// auto vote no
 					SetMessageType(c_mtGuaranteed);
@@ -2300,6 +2320,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             CASTPFM(pfmMissionStage, S, MISSION_STAGE, pfm);
 
             m_pMissionInfo->SetStage(pfmMissionStage->stage);
+			m_pCoreIGC->SetMissionStage(pfmMissionStage->stage); //#264 This was only being called in case STAGE_STARTED
 
             switch (pfmMissionStage->stage)
             {
@@ -2326,7 +2347,6 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                                    &m_pMissionInfo->GetMissionParams(),
                                    sizeof(m_pMissionInfo->GetMissionParams())) == 0);
 
-                    m_pCoreIGC->SetMissionStage(STAGE_STARTED);
                     m_pClientEventSource->OnMissionStarted(m_pMissionInfo);
 
                     break;
@@ -2517,8 +2537,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             //m_pMissionInfo->SetSideCivID(pfmChangeCiv->iSide, pfmChangeCiv->civID);
 
             m_pCoreIGC->GetSide(pfmChangeCiv->iSide)->SetCivilization(m_pCoreIGC->GetCivilization(pfmChangeCiv->civID));
-            m_pClientEventSource->OnTeamCivChange(m_pMissionInfo, pfmChangeCiv->iSide, pfmChangeCiv->civID);
-			m_pCoreIGC->GetSide(pfmChangeCiv->iSide)->SetRandomCivilization(pfmChangeCiv->random);
+            m_pCoreIGC->GetSide(pfmChangeCiv->iSide)->SetRandomCivilization(pfmChangeCiv->random);
+			m_pClientEventSource->OnTeamCivChange(m_pMissionInfo, pfmChangeCiv->iSide, pfmChangeCiv->civID);
             break;
         }
 
@@ -2945,8 +2965,18 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 }
             }
 
-            if (pplayer == MyPlayerInfo())
+            if (pplayer == MyPlayerInfo()) {
                 PlaySoundEffect(commanderSound);
+				
+				//Turkey #131
+				//Let us know we're not ready, then we can use this flag to sort the rest out later
+				if ((m_pCoreIGC->GetMissionStage() == STAGE_NOTSTARTED) &&
+					!pplayer->IsMissionOwner())
+				{
+					pplayer->SetReady(false);
+				}
+
+			}
 
             m_pClientEventSource->OnPlayerStatusChange(MyMission(), pplayer->SideID(), pplayer);
         }

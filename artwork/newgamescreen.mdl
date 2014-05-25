@@ -438,7 +438,7 @@ hoverImage = StringImage(JustifyLeft, 300, smallFont, white, hoverString);
 hoverPane  = AnimatedImagePaneRect(hoverImage, Rect(0, -30, 300, 0));
 
 // R4 - map preview
-mapPreviewPane = MapPreviewPane(ImportImage("sectormapbkgndbmp",false),true,false);
+mapPreviewPane = MapPreviewPane(ImportImageFromFile("sectormapbg_opaque.png",false),true,false);
 mapPreviewNextButtonPane = ButtonPane(ImportImage("btnexpandbmp",  true), ButtonNormal, false);
 mapPreviewPrevButtonPane = ButtonPane(ImportImage("btncollapsebmp",true), ButtonNormal, false);
 

@@ -714,14 +714,19 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
             return m_commandIDs[i];
         }
-        virtual void                 SetCommand(Command i, ImodelIGC* target, CommandID cid)
-        {
-            assert (i >= 0);
-            assert (i < c_cmdMax);
+        //NOTES: creates a new target and buoy. 
+		//If accepted, also sets current and plan. 
+		//If accepted or current sends out the change event. Current doesn't set waypoint.
+		//If plan, sets the waypoint only.
+		
+		virtual void                 SetCommand(Command i, ImodelIGC* target, CommandID cid)
+		{
+			assert (i >= 0);
+			assert (i < c_cmdMax);
 
-            CommandID cidOld = m_commandIDs[i];
-            ImodelIGC*  pmodelOld = m_commandTargets[i];
-            //if ((target != pmodelOld) || (cid != m_commandIDs[i]))
+			CommandID cidOld = m_commandIDs[i];
+			ImodelIGC*  pmodelOld = m_commandTargets[i];
+			//if ((target != pmodelOld) || (cid != m_commandIDs[i]))
             {
                 m_commandTargets[i] = target;
                 if (target)
@@ -749,9 +754,12 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
                         ResetWaypoint();
 
-                        m_fractionLastOrder = m_fraction;
-                        m_timeRanAway = GetMyLastUpdate();
-                        m_bRunningAway = false;
+						if (cid != c_cidNone) //Spunky #303 - let idling cons run
+						{
+							m_fractionLastOrder = m_fraction;
+							m_timeRanAway = GetMyLastUpdate();
+							m_bRunningAway = false;
+						}
                     }
                     break;
 
@@ -775,7 +783,18 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
                 if ((i == c_cmdAccepted || i == c_cmdCurrent) && 
                     (cidOld != cid || pmodelOld != target))
+				{
                     GetMyMission()->GetIgcSite()->CommandChangedEvent(i, this, target, cid);
+					//turkey #320 3/13 move the setting/resetting of stayDocked to here
+					if (cid == c_cidHide)
+					{
+						SetStayDocked(true);
+					}
+					else if (cid > c_cidNone)
+					{
+						SetStayDocked(false);
+					}
+				}
             }
         }
 
@@ -1549,38 +1568,38 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             {
                 case c_ptCarrier:
                 {
-                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing);
+                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidStop);
                 }
                 break;
                 case c_ptMiner:
                 {
-                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidMine);
+                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidMine) || (cid == c_cidStop) || (cid == c_cidHide);
                 }
                 break;
                 case c_ptLayer:
                 {
-                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidBuild);
+                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidBuild) || (cid == c_cidStop) || (cid == c_cidHide);
                 }
                 break;
 
                 case c_ptBuilder:
                 {
                     bLegal = ((m_stateM & (drillingMaskIGC | buildingMaskIGC)) == 0) &&
-                             ((cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidBuild));
+                             ((cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidJoin) || (cid == c_cidDoNothing) || (cid == c_cidBuild) || (cid == c_cidStop) || (cid == c_cidHide));
                 }
                 break;
 
                 case c_ptWingman:
                 {
 					//AEM 7.9.07 Wingman can now be ordered to Repair (no effect if not equipped with nan)
-                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidAttack) || (cid == c_cidPickup) || (cid == c_cidDoNothing) || (cid == c_cidRepair);
+                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidAttack) || (cid == c_cidPickup) || (cid == c_cidDoNothing) || (cid == c_cidRepair) || (cid == c_cidStop) || (cid == c_cidHide);
                 }
                 break;
 
                 case c_ptPlayer:
                 case c_ptCheatPlayer:
                 {
-                    bLegal = (cid >= c_cidDefault) && (cid < c_cidMine);
+                    bLegal = (cid >= c_cidDefault) && (cid < c_cidHide);
                 }
             }
 
@@ -1591,8 +1610,43 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                                                  ImodelIGC*   pmodel) const
         {
             bool    bLegal = true;
-            if ((pmodel == NULL) || 
-                ((m_stateM & buildingMaskIGC) != 0) ||
+			//Turkey #319 3/13 allowed certain verbs without a target
+            if ((pmodel == NULL) && ((m_stateM & buildingMaskIGC) == 0))
+			{
+				switch (cid)
+				{
+					case c_cidDoNothing:
+					case c_cidStop:
+					{
+						bLegal = true;
+					}
+					break;
+					case c_cidHide:
+					{
+						bLegal = (m_pilotType < c_ptPlayer);
+					}
+					break;
+					case c_cidBuild:
+					{
+						bLegal = (m_pilotType == c_ptBuilder || m_pilotType == c_ptLayer);
+					}
+					break;
+					case c_cidMine:
+					{
+						bLegal = (m_pilotType == c_ptMiner);
+					}
+					break;
+					case c_cidGoto:
+					{
+						bLegal = (m_pilotType < c_ptPlayer);
+					}
+					break;
+					default:
+						bLegal = false;
+				}
+
+			}//end #319
+			else if (((m_stateM & buildingMaskIGC) != 0) ||
                 (pmodel == (ImodelIGC*)this) ||
                 (pmodel->GetMission() != GetMyMission()) ||
                 (pmodel->GetObjectType() == OT_buoy &&
@@ -1608,6 +1662,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
                 switch (cid)
                 {
+					case c_cidStop:
                     case c_cidNone:
                     {
                         bLegal = false;
@@ -1680,8 +1735,9 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                             bLegal = (type == OT_buoy) || (type == OT_warp);
                         else if (m_pilotType == c_ptBuilder)
                         {
-                            bLegal = (type == OT_asteroid) &&
-                                     ((IasteroidIGC*)pmodel)->HasCapability(m_abmOrders);
+                            bLegal = ((type == OT_asteroid) &&
+                                     ((IasteroidIGC*)pmodel)->HasCapability(m_abmOrders)) ||
+									 ((type == OT_buoy) && ((IbuoyIGC*)pmodel)->GetBuoyType() == c_buoyCluster); //#319 allow builders to target a sector
                         }
                         else
                             bLegal = false;
@@ -1696,6 +1752,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                         else
                             bLegal = false;
                     }
+					break;
+
+					case c_cidHide: //#320
+					{
+						bLegal = m_pilotType < c_ptPlayer && 
+							(((type == OT_station) && bFriendly) || ((type == OT_buoy) && ((IbuoyIGC*)pmodel)->GetBuoyType() == c_buoyCluster) || (type == OT_warp));
+					}
                 }
             }
 
@@ -1789,10 +1852,24 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
         virtual float               GetExperienceMultiplier(void) const
         {
-            const float c_maxBonus = 0.5f;
-            const float c_halfExperience = 4.0f;
-
-            return 1.0f + c_maxBonus * m_experience / (m_experience + c_halfExperience);
+            //Spunky #300
+			float maxBonus = 0.5f;
+			float halfExperience = 4.0f;
+			if (GetPilotType() == c_ptPlayer) //otherwise training will crash
+			{
+				KB kb = GetMyMission()->GetMissionParams()->KBlevel;	
+				switch (kb)
+				{
+				case c_noKB:
+					maxBonus = 0;
+					break;
+				case c_lowKB:
+					halfExperience = 8;
+					break;
+				};
+			}
+			
+            return 1.0f + maxBonus * m_experience / (m_experience + halfExperience);
         }
         virtual float               GetExperience(void) const
         {
@@ -2123,50 +2200,168 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                                        GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaMiningCapacity);
                     if (m_fOre < capacity / 2.0f)
                     {
-                        ImodelIGC*  pmodel = FindTarget(this,
+						ImodelIGC*  pmodel = NULL;
+						//Try the mining sector first
+						if (m_miningCluster)
+						{
+							if (m_newMiningCluster)
+							{
+								pmodel = FindTarget(this,
+															c_ttNeutral | c_ttAsteroid | c_ttNearest |
+															c_ttLeastTargeted, //not cowardly to allow assault mining
+															NULL, m_miningCluster, NULL, NULL,
+															m_abmOrders);
+								m_newMiningCluster = false;
+							}
+							else
+								pmodel = FindTarget(this,
+															c_ttNeutral | c_ttAsteroid | c_ttNearest |
+															c_ttLeastTargeted | c_ttCowardlyNeutOK,
+															NULL, m_miningCluster, NULL, NULL,
+															m_abmOrders);
+
+						}
+						//Spunky #288	
+						if (!pmodel)
+						{
+							m_miningCluster = NULL;
+							pmodel = FindTarget(this,
                                                         c_ttNeutral | c_ttAsteroid | c_ttNearest |
-                                                        c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
+                                                        c_ttLeastTargeted | c_ttAnyCluster | c_ttPositiveBOP | c_ttNoEye,
                                                         NULL, pcluster, &position, NULL,
                                                         m_abmOrders);
+						}
 
-                        if (pmodel)
-                        {
-                            SetCommand(c_cmdAccepted, pmodel, c_cidMine);
-                            fGaveOrder = true;
-                        }
-                    }
+						if (!pmodel)
+						{
+							pmodel = FindTarget(this,
+                                                        c_ttNeutral | c_ttAsteroid | c_ttNearest |
+                                                        c_ttLeastTargeted | c_ttAnyCluster | c_ttPositiveBOP,
+                                                        NULL, pcluster, &position, NULL,
+                                                        m_abmOrders);
+						}
+
+						if (!pmodel)
+						{
+							pmodel = FindTarget(this,
+	                                                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
+	                                                    c_ttLeastTargeted | c_ttAnyCluster | c_ttNoEye,
+	                                                    NULL, pcluster, &position, NULL,
+	                                                    m_abmOrders);
+						}
+						if (!pmodel)
+						{
+							pmodel = FindTarget(this,
+	                                                    c_ttNeutral | c_ttAsteroid | c_ttNearest |
+	                                                    c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
+	                                                    NULL, pcluster, &position, NULL,
+	                                                    m_abmOrders);
+							
+							
+						}
+						if (pmodel)
+						{
+							//Spunky #334
+							ImodelIGC*  pRefInCluster = NULL;
+							if (m_fOre > capacity * 0.25f && pmodel->GetCluster() != pcluster)
+							//we have significant ore and are going out of the cluster - unload if there is a ref here
+								 pRefInCluster = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
+                                                NULL, pcluster, &position, NULL,
+                                                c_sabmTeleportUnload);
+							if (pRefInCluster)
+								SetCommand(c_cmdAccepted, pRefInCluster, c_cidGoto);
+							else
+								SetCommand(c_cmdAccepted, pmodel, c_cidMine);
+							fGaveOrder = true;
+						}
+					}
 
                     if ((!m_commandTargets[c_cmdCurrent]) && ((m_fOre > 0.0f) || !bDocked))
                     {
                         ImodelIGC*  pmodel = NULL;
 
                         if (m_fOre > 0.0f)
-                            pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
+						{
+							//Spunky #331
+							pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest,
                                                 NULL, pcluster, &position, NULL,
                                                 c_sabmUnload);
+							if (!pmodel)
+								pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster | c_ttCowardly,
+                                                NULL, pcluster, &position, NULL,
+                                                c_sabmUnload);
+							if (!pmodel)
+								pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
+                                                NULL, pcluster, &position, NULL,
+                                                c_sabmUnload);
+						}
 
                         if (pmodel == NULL)
                             pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
                                                 NULL, pcluster, &position, NULL,
                                                 c_sabmLand);
 
-                        if (pmodel)
-                        {
-                            SetCommand(c_cmdAccepted, pmodel, c_cidGoto);
-                            fGaveOrder = true;
-                        }
+						//Spunky #269 - if we are not almost full, continue mining, but not if a base in sector is closer
+						//than the asteroid
+						if (m_fOre < capacity * 0.75f)
+						{				
+							ImodelIGC*  pmodelAsteroid = NULL;
+							pmodelAsteroid = FindTarget(this,
+                                                        c_ttNeutral | c_ttAsteroid | c_ttNearest | c_ttLeastTargeted | 
+														c_ttPositiveBOP | c_ttNoEye, //very cowardly
+                                                        NULL, pcluster, &position, NULL,
+                                                        m_abmOrders);
+
+							if (pmodelAsteroid && pmodel)
+							{		
+								bool mineAnother = false;
+								if (pmodel->GetCluster() != pcluster)
+									mineAnother = true;
+								else
+								{
+									//Spunky #334
+									if ((((IstationIGC*)pmodel)->GetBaseStationType()->GetCapabilities() & c_sabmTeleportUnload) == 0)	
+									{
+										const Vector basePosition = pmodel->GetPosition();
+										const Vector asteroidPosition = pmodelAsteroid->GetPosition();
+										const float ourDistanceToBase = (position - basePosition).Length();				
+
+								
+										if ((asteroidPosition - basePosition).Length() < ourDistanceToBase * 1.5f 
+											&& (position - asteroidPosition).Length() < ourDistanceToBase)
+											mineAnother = true;
+									}
+								}
+								
+								if (mineAnother)
+								{
+										SetCommand(c_cmdAccepted, pmodelAsteroid, c_cidMine);
+										fGaveOrder = true;
+										break;
+								}
+							}						
+						}
+						if (pmodel)
+						{
+							SetCommand(c_cmdAccepted, pmodel, c_cidGoto);
+							fGaveOrder = true;
+						}
+
+						
                     }
                 }
+				
                 break;
 
                 case c_ptBuilder:
                 {
                     if ((m_abmOrders == c_aabmBuildable) && !bDocked)
                         break;
-
-                    ImodelIGC*  pmodel = FindTarget(this,
+					
+                    //Spunky #304
+					ImodelIGC*  pmodel = FindTarget(this,
                                                     c_ttNeutral | c_ttAsteroid | c_ttNearest |
-                                                    c_ttLeastTargeted | c_ttAnyCluster | c_ttCowardly,
+                                                    c_ttLeastTargeted,
                                                     NULL, pcluster, &position, NULL,
                                                     m_abmOrders);
 
@@ -2174,7 +2369,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     {
                         assert (m_pbaseData);
 
-                        CommandID   cid = (m_abmOrders != c_aabmBuildable) ? c_cidBuild : c_cidGoto;
+                        CommandID   cid = (m_abmOrders != c_aabmBuildable && !m_doNotBuild) ? c_cidBuild : c_cidGoto;//Spunky #304
 
                         SetCommand(c_cmdAccepted, pmodel, cid);
                         fGaveOrder = true;
@@ -2410,6 +2605,9 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
         WarningMask         m_warningMask;
 
 		bool				m_stayDocked;  //Xynth #48 8/10
+		IclusterIGC*		m_miningCluster; //Spunky #268
+		bool				m_newMiningCluster; //Spunky #268
+		bool				m_doNotBuild; //Spunky #304
 };
 
 #endif //__SHIPIGC_H_

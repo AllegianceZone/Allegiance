@@ -25,7 +25,7 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
     HRESULT rc = S_OK;
 
     debugf("Station initialize %d\n", ((DataStationIGC*)data)->stationID);
-    ZRetailAssert (data && (dataSize == sizeof(DataStationIGC)));
+    ZRetailAssert (data && (dataSize == sizeof(DataStationIGC) || dataSize == (sizeof(DataStationIGC) - sizeof(StationTypeID[c_cSidesMax]))));// #307 for back-compatibility with older station data
     {
         DataStationIGC*  dataStation = (DataStationIGC*)data;
 
@@ -52,7 +52,21 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
         {
             m_stationID = dataStation->stationID;
 
-            SetBaseStationType(pMission->GetStationType(dataStation->stationTypeID));
+			//Turkey #307 02/13 only do this if it's station data created post-#307, and therefore has knownStationTypID data
+			if (dataSize == sizeof(DataStationIGC))
+			{
+				for (int sid = 0; sid < c_cSidesMax; sid++)
+				{
+					if (dataStation->knownStationTypeID[sid])
+						SetKnownStationType(sid, GetMyMission()->GetStationType(dataStation->knownStationTypeID[sid]));
+				}
+			}
+
+			if (pMission->GetStationType(dataStation->stationTypeID)) //Turkey 09/12 #335
+				SetBaseStationType(pMission->GetStationType(dataStation->stationTypeID));
+			else
+				SetBaseStationType(pMission->GetSide(dataStation->sideID)->GetCivilization()->GetInitialStationType());
+
             assert (m_myStationType.GetStationType());
 
             SetPosition(dataStation->position);
@@ -77,6 +91,7 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
 
             m_hullFraction = dataStation->bpHull;
             SetShieldFraction(dataStation->bpShield);
+
         }
 
         m_timeLastDamageReport = now;
@@ -108,6 +123,15 @@ int         CstationIGC::Export(void* data) const
 
         dataStation->bpHull = m_hullFraction;
         dataStation->bpShield = m_shieldFraction;
+
+		//Turkey #307 02/31
+		for (int sid = 0; sid < c_cSidesMax; sid++) 
+		{
+			if (m_pKnownStationType[sid])
+				dataStation->knownStationTypeID[sid] = m_pKnownStationType[sid]->GetObjectID();
+			else
+				dataStation->knownStationTypeID[sid] = 0;
+		}
     }
 
     return sizeof(DataStationIGC);
@@ -223,9 +247,11 @@ void                CstationIGC::SetBaseStationType(IstationTypeIGC*    pst)
         SetCluster(NULL);
 
         FreeThingSite();
+
+		m_pKnownStationType[GetSide()->GetObjectID()] = pst;//Turkey #307 02/31
     }
     else
-        assert (!GetSide());
+		assert (!GetSide());
 
     m_myStationType.SetStationType(pst);
 

@@ -130,6 +130,10 @@ void    CshipIGC::ReInitialize(DataShipIGC * dataShip, Time now)
     m_nEjections = dataShip->nEjections;
     m_nKills = dataShip->nKills;
 
+	m_miningCluster = NULL; //Spunky #268
+	m_newMiningCluster = false; //Spunky #268
+	m_doNotBuild = true; //Spunky #304
+
     //Get the ship's hull type
     if (dataShip->hullID == NA)
     {
@@ -612,6 +616,7 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
                                   const CollisionEntry&  entry,
                                   ImodelIGC*             pModel)
 {
+
     const float c_impactDamageCoefficient = 1.0f / 128.0f;
     const float c_impactJiggleCoefficient = 1.0f / 20.0f;
 
@@ -863,7 +868,9 @@ void    CshipIGC::HandleCollision(Time                   timeCollision,
         case OT_buildingEffect:
         case OT_asteroid:
         {
-            //Ignore any collisions between a drilling builder and an asteroid (could get here by fallthrough from OT_station)
+            if (type == OT_asteroid && ((IasteroidIGC*)pModel)->IsDead(GetSide()->GetObjectID())) return; //Turkey dead asteroids can't be collided with #307 02/13
+
+			//Ignore any collisions between a drilling builder and an asteroid (could get here by fallthrough from OT_station)
             if (((m_stateM & drillingMaskIGC) != 0) && (type != OT_station))
             {
                 assert (m_pilotType == c_ptBuilder);
@@ -1658,6 +1665,10 @@ void    CshipIGC::ExecuteTurretMove(Time          timeStart,
     }
 }
 
+/* NOTES: Seems to be for miners and builders only, regularly called from Update.
+Handles running away, mining when close to rock, teleport offloading and executing accepted if no plan.
+Calls PickDefaultOrder after tele offload.
+*/
 void    CshipIGC::PreplotShipMove(Time          timeStop)
 {
     IclusterIGC*    pcluster = GetCluster();
@@ -1670,14 +1681,17 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
         //First ... do we need to run away?
         if (m_pilotType < c_ptCarrier && !fRipcordActive())      //Carriers never run //TurkeyXIII added ripcord 7/10 - Imago
         {
-            if (m_timeRanAway + c_dtCheckRunaway <= timeStop)
+			if ((m_timeRanAway + c_dtCheckRunaway) <= timeStop)
             {
                 bool    bDamage = true;
                 bool    bRunAway = true;
-                if (m_pilotType == c_ptWingman)
+                
+				if (m_commandTargets[c_cmdCurrent] && m_commandTargets[c_cmdCurrent]->GetObjectType() == OT_station) //Spunky #267 
+						bRunAway = false;
+				else if (m_pilotType == c_ptWingman)
 				{
 					// bahdohday&AEM 7.09.07 Added check to allow certain wingmen drones to never run away: if they have a nan in slot 1 or are have a station as their target
-					if ( (m_mountedWeapons[0] && m_mountedWeapons[0]->GetProjectileType()->GetPower() < 0.0 ) || ( m_commandTargets[c_cmdAccepted] && (m_commandTargets[c_cmdAccepted]->GetObjectType() == OT_station) ) )
+					if ( (m_mountedWeapons[0] && m_mountedWeapons[0]->GetProjectileType()->GetPower() < 0.0 ) )
 					{
 						bRunAway = false;
 					}
@@ -1690,10 +1704,11 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                 {
                     if (m_fraction < m_fractionLastOrder)
                     {
-                        if (m_commandIDs[c_cmdAccepted] == c_cidBuild)
+                        if (m_commandIDs[c_cmdAccepted] == c_cidBuild || m_commandIDs[c_cmdAccepted] == c_cidGoto) //Spunky #303
                         {
                             assert ((m_pilotType == c_ptBuilder) || (m_pilotType == c_ptLayer));
 
+							/* Spunky #303
                             //Builders do not run if they are ordered to build & closer to their target than the station
                             //but a station or a target in another cluster is always considered infinitely far away
                             assert (m_commandTargets[c_cmdAccepted]);
@@ -1713,7 +1728,8 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                                 }
                             }
                             else
-                                bRunAway = false;
+							*/ 
+                            bRunAway = false;
                         }
                     }
                     else
@@ -1808,7 +1824,10 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
 
 						if (pmodel)
                         {
-                            SetCommand(c_cmdPlan, pmodel, c_cidGoto);
+							if (m_pilotType == c_ptMiner) //Spunky #266 
+ 								SetCommand(c_cmdAccepted, NULL, c_cidNone); 
+ 		                     
+ 							SetCommand(c_cmdPlan, pmodel, c_cidGoto); 
 
                             if (m_pilotType == c_ptBuilder)
                                 GetMyMission()->GetIgcSite()->SendChat(this, CHAT_TEAM, GetSide()->GetObjectID(),
@@ -1836,8 +1855,10 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
                 {
                     //We want to stop running
                     SetCommand(c_cmdPlan, NULL, c_cidNone);
+					m_fractionLastOrder = m_fraction; //Spunky #303 - need to handle these here instead of SetCommand
+					m_bRunningAway = false;
 					// debugf("mmf %-20s stoped running\n", GetName());
-                    assert (m_bRunningAway == false);   //Set by SetCommand
+                    assert (m_bRunningAway == false);   
                     m_timeRanAway = timeStop;
                 }
             }
@@ -1911,6 +1932,12 @@ void    CshipIGC::PreplotShipMove(Time          timeStop)
     }
 }
 
+
+/*NOTES: Called regularly from Update.
+Handles crowded He3 rocks, actual mining process, unloads when full via SetCommand(plan), calls PickDefaultOrder when rock empty.
+Since PickDefaultOrder resets cmdAccepted, miner re-picks a sector if it wasn't full earlier.
+Also runs the autopilot, and resets command targets and inits building after it's done.
+*/
 void    CshipIGC::PlotShipMove(Time          timeStop)
 {
     if (m_bAutopilot && (m_pshipParent == NULL))
@@ -2069,17 +2096,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                 if (m_fOre + minedOre >= capacity)
                 {
                     minedOre = capacity - m_fOre;
-                    {
-                        ImodelIGC*  pmodel = FindTarget(this, c_ttFriendly | c_ttStation | c_ttNearest | c_ttAnyCluster,
-                                                        NULL, NULL, NULL, NULL, c_sabmUnload);
-
-                        //If we can't find a place to unload ... stick around here for lack of a better place to go
-                        if (pmodel)
-                            SetCommand(c_cmdPlan, pmodel, c_cidGoto);
-						// mmf added else and debugf
-						// else debugf("mmf %-20s no place to unload staying here, I am at %f %f %f\n",
-						// 						GetName(), GetPosition().x, GetPosition().y, GetPosition().z);
-                    }
+					PickDefaultOrder(GetCluster(), GetPosition(), false); //Spunky #268 use the pickdefaultorder facility to unload
                 }
 
                 float   actualOre = pasteroid->MineOre(minedOre);
@@ -2143,7 +2160,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                 else
                 {
                     //Off-track ... clear the masks and get back into position
-                    assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid);
+                    assert (m_commandTargets[c_cmdPlan]->GetObjectType() == OT_asteroid || m_commandTargets[c_cmdPlan]->GetObjectType() == OT_cluster);
 
                     SetStateM(0);
                 }
@@ -2152,26 +2169,78 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 
         if (m_commandTargets[c_cmdPlan] == NULL)
         {
-            if ((m_pilotType < c_ptCarrier) && (m_commandIDs[c_cmdPlan] != c_cidDoNothing))
+			if ((m_pilotType < c_ptCarrier) && (m_commandIDs[c_cmdPlan] != c_cidDoNothing))
             {
                 switch (m_pilotType)
                 {
+					//turkey 2/13 #319: if we have a valid verb without a target, choose a target now
                     case c_ptMiner:
-                        Complain(droneWhereToSound, "Miner requesting He3 asteriod.");
+						if (m_commandIDs[c_cmdPlan] == c_cidMine)
+						{
+							
+							ImodelIGC* pmodel = FindTarget(this, 
+															c_ttAsteroid | c_ttFront | c_ttNearest | c_ttLeastTargeted, 
+															NULL, GetCluster(), &GetPosition(), &GetOrientation(), 
+															c_aabmMineHe3);
+							if (pmodel) 
+							{
+								SetCommand(c_cmdAccepted, pmodel, c_cidMine);
+							}
+							else
+							{
+								PickDefaultOrder(GetCluster(), GetPosition(), false);
+							}
+						} 
+						else
+						{
+							Complain(droneWhereToSound, "Miner requesting He3 asteriod.");
+						}
                         break;
 
                     case c_ptBuilder:
-                        Complain(
-                            ((IstationTypeIGC*)(IbaseIGC*)m_pbaseData)->GetConstructorNeedRockSound(),
-                            "Constructor requesting asteroid.");
+						if (m_commandIDs[c_cmdPlan] == c_cidBuild) 
+						{
+							ImodelIGC* pmodel = FindTarget(this,
+															c_ttNeutral | c_ttAsteroid | c_ttLeastTargeted,
+															NULL, GetCluster(), &(GetPosition()/3), NULL,
+															m_abmOrders);
+							if (pmodel) 
+							{
+								SetCommand(c_cmdAccepted, pmodel, c_cidBuild);
+							}
+							else
+							{
+								PickDefaultOrder(GetCluster(), GetPosition(), false);
+							}
+						}
+						else
+						{
+							Complain(
+								((IstationTypeIGC*)(IbaseIGC*)m_pbaseData)->GetConstructorNeedRockSound(),
+								"Constructor requesting asteroid.");
+						}
+						break;
+
+					case c_ptLayer:
+						if (m_commandIDs[c_cmdPlan] == c_cidBuild)
+						{
+							//build where we are
+							debugf("%s building here\n", GetName());
+
+							GetMyMission()->GetIgcSite()->LayExpendable(timeStart, (IexpendableTypeIGC*)(IbaseIGC*)m_pbaseData, this);
+							//now the ship is destroyed, so skip the rest of this function
+							return;
+						}
+						//end #319
+						else
+						{
+							if (m_pbaseData->GetObjectType() == OT_mineType)
+								Complain(droneWhereToLayMinefieldSound, "Minefield requesting location.");
+							else
+								Complain(droneWhereToLayTowerSound, "Tower requesting location.");
+						}
                         break;
 
-                    case c_ptLayer:
-                        if (m_pbaseData->GetObjectType() == OT_mineType)
-                            Complain(droneWhereToLayMinefieldSound, "Minefield requesting location.");
-                        else
-                            Complain(droneWhereToLayTowerSound, "Tower requesting location.");
-                        break;
                 }
             }
 
@@ -3308,135 +3377,112 @@ ImodelIGC*    CshipIGC::FindRipcordModel(IclusterIGC*   pcluster)
     {
         assert (pcluster);
 
-	ImodelIGC*  pmodelRipcord = NULL;
-	if (pmodelGoal) //TheRock 13-12-2009 Allow ripcording to a probe or ship when a teleport is in the same sector.
-	{
-		if (pmodelGoal->GetObjectType() == OT_probe)
+		ImodelIGC*  pmodelRipcord = NULL;
+		if (pmodelGoal) //TheRock 13-12-2009 Allow ripcording to a selected target
 		{
-			if (pmodelGoal->GetSide()==pside || (pside->AlliedSides(pside,pmodelGoal->GetSide()) && GetMission()->GetMissionParams()->bAllowAlliedRip))
+			if (pmodelGoal->GetSide() == pside || (pside->AlliedSides(pside,pmodelGoal->GetSide()) && GetMission()->GetMissionParams()->bAllowAlliedRip))
 			{
-				IprobeIGC* pProbeSelected = (IprobeIGC*)pmodelGoal;
-				if (pProbeSelected->GetCanRipcord(ripcordSpeed))
+				if (pmodelGoal->GetObjectType() == OT_probe)
 				{
-					pmodelRipcord = pProbeSelected;
+					IprobeIGC* pProbeSelected = (IprobeIGC*)pmodelGoal;
+					if (pProbeSelected->GetCanRipcord(ripcordSpeed))
+					{
+						pmodelRipcord = pProbeSelected;
+					}
 				}
-			}
-		}
-		else if (pmodelGoal->GetObjectType() == OT_ship)
-		{
-			if (pmodelGoal->GetSide()==pside || (pside->AlliedSides(pside,pmodelGoal->GetSide()) && GetMission()->GetMissionParams()->bAllowAlliedRip))
-			{
-				IshipIGC* pShipSelected = (IshipIGC*)pmodelGoal;
-				IhullTypeIGC*   pht = pShipSelected->GetBaseHullType();
-				if (pht) { //TheRock 9-1-2010 fix rev512 (TheRock 13-12-2009)
-					if (GetBaseHullType()->HasCapability(c_habmCanLtRipcord)) {
-						if (pht->HasCapability((c_habmIsRipcordTarget | c_habmIsLtRipcordTarget))) {
-							pmodelRipcord = pShipSelected;
-						} else if (pht->HasCapability(c_habmIsRipcordTarget)) {
-							pmodelRipcord = pShipSelected;
+				else if (pmodelGoal->GetObjectType() == OT_ship)
+				{
+					IshipIGC* pShipSelected = (IshipIGC*)pmodelGoal;
+					IhullTypeIGC*   pht = pShipSelected->GetBaseHullType();
+					if (pht) { //TheRock 9-1-2010 fix rev512 (TheRock 13-12-2009)
+						if (GetBaseHullType()->HasCapability(c_habmCanLtRipcord)) {
+							if (pht->HasCapability((c_habmIsRipcordTarget | c_habmIsLtRipcordTarget))) {
+								pmodelRipcord = pShipSelected;
+							} else if (pht->HasCapability(c_habmIsRipcordTarget)) {
+								pmodelRipcord = pShipSelected;
+							}
 						}
 					}
 				}
+				else if (pmodelGoal->GetObjectType() == OT_station) //Spunky #261 - rip to a selected station even if a probe exists
+				{
+					IstationIGC* pStationSelected = (IstationIGC*)pmodelGoal;
+					if (pStationSelected->GetStationType()->HasCapability(c_sabmRipcord))
+						pmodelRipcord = pStationSelected;
+				}
 			}
 		}
-	}
 
-	if (pmodelRipcord == NULL) {
+		float   d2Goal = FLT_MAX;
+        if ((pmodelRipcord == NULL) && (m_pilotType >= c_ptPlayer)) //Spunky #261 - moved up to prioritize probes over stations 
+		{
+            //try allied  and our probes
+            //Search backwards so that we'll get the most recently dropped probe
+            //if multiple probes without a target
+            for (ProbeLinkIGC*  ppl = pcluster->GetProbes()->last(); (ppl != NULL); ppl = ppl->txen())
+            {
+                IprobeIGC*  pprobe = ppl->data();
+                if ((pprobe->GetSide() == pside || pside->AlliedSides(pside, pprobe->GetSide()) 
+					&& GetMission()->GetMissionParams()->bAllowAlliedRip) 
+					&& pprobe->GetCanRipcord(ripcordSpeed)) //ALLY RIPCORD imago 7/8/09
+                {
+                    if (positionGoal)
+                    {
+                        float   d2 = (pprobe->GetPosition() - *positionGoal).LengthSquared();
+                        if (d2 < d2Goal)
+                        {
+                            pmodelRipcord = pprobe;
+                            d2Goal = d2;
+                        }
+                    }
+                    else
+                    {
+                        pmodelRipcord = pprobe;
+                        break;
+                    }
+                }
+            }
+			
+		}
+		
+		if (pmodelRipcord == NULL) 
         	pmodelRipcord = FindTarget(this, positionGoal ? (c_ttFriendly | c_ttStation | c_ttNearest) : (c_ttFriendly | c_ttStation),
-                                               NULL, pcluster, positionGoal, NULL,
-                                               c_sabmRipcord);
-	}
+                                               NULL, pcluster, positionGoal, NULL, c_sabmRipcord);
+	
 
         if ((pmodelRipcord == NULL) && (m_pilotType >= c_ptPlayer))
         {
-            float   d2Goal = FLT_MAX;
+            float   debtMin = FLT_MAX;
 
-            if (GetMission()->GetMissionParams()->bAllowAlliedRip) {
-                //No station in the cluster to ripcord to ... try allied  and our probes
-                //Search backwords so that we'll get the most recently dropped probe
-                //if multiple probes without a target
-                for (ProbeLinkIGC*  ppl = pcluster->GetProbes()->last(); (ppl != NULL); ppl = ppl->txen())
-                {
-                    IprobeIGC*  pprobe = ppl->data();
-                    if ((pprobe->GetSide() == pside || pside->AlliedSides(pside,pprobe->GetSide())) && pprobe->GetCanRipcord(ripcordSpeed)) //ALLY RIPCORD imago 7/8/09
-                    {
-                        if (positionGoal)
-                        {
-                            float   d2 = (pprobe->GetPosition() - *positionGoal).LengthSquared();
-                            if (d2 < d2Goal)
-                            {
-                                pmodelRipcord = pprobe;
-                                d2Goal = d2;
-                            }
-                        }
-                        else
-                        {
-                            pmodelRipcord = pprobe;
-                            break;
-                        }
-                    }
-                }
-			} else {
-                //No station in the cluster to ripcord to ... try probes
-                //Search backwords so that we'll get the most recently dropped probe
-                //if multiple probes without a target
-                for (ProbeLinkIGC*  ppl = pcluster->GetProbes()->last(); (ppl != NULL); ppl = ppl->txen())
-                {
-                    IprobeIGC*  pprobe = ppl->data();
-                    if ((pprobe->GetSide() == pside) && pprobe->GetCanRipcord(ripcordSpeed))
-                    {
-                        if (positionGoal)
-                        {
-                            float   d2 = (pprobe->GetPosition() - *positionGoal).LengthSquared();
-                            if (d2 < d2Goal)
-                            {
-                                pmodelRipcord = pprobe;
-                                d2Goal = d2;
-                            }
-                        }
-                        else
-                        {
-                            pmodelRipcord = pprobe;
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            if (pmodelRipcord == NULL)
+            //No station or probe in the cluster to ripcord to ... try ships
+            for (ShipPairLink*   psl = pairs.first(); (psl != NULL); psl = psl->next())
             {
-                float   debtMin = FLT_MAX;
-
-                //No station or probe in the cluster to ripcord to ... try ships
-                for (ShipPairLink*   psl = pairs.first(); (psl != NULL); psl = psl->next())
+                if (psl->data().pcluster == pcluster)
                 {
-                    if (psl->data().pcluster == pcluster)
-                    {
-                        float   debt = psl->data().pship->GetRipcordDebt();
+                    float   debt = psl->data().pship->GetRipcordDebt();
 
-                        if (positionGoal == NULL)
+                    if (positionGoal == NULL)
+                    {
+                        if (debt < debtMin)
                         {
-                            if (debt < debtMin)
-                            {
-                                debtMin = debt;
-                                pmodelRipcord = psl->data().pship;
-                            }
+                            debtMin = debt;
+                            pmodelRipcord = psl->data().pship;
                         }
-                        else
+                    }
+                    else
+                    {
+                        float   d2 = (psl->data().pship->GetPosition() - *positionGoal).LengthSquared();
+                        if ((debt < debtMin) ||
+                            ((debt == debtMin) && (d2 < d2Goal)))
                         {
-                            float   d2 = (psl->data().pship->GetPosition() - *positionGoal).LengthSquared();
-                            if ((debt < debtMin) ||
-                                ((debt == debtMin) && (d2 < d2Goal)))
-                            {
-                                debtMin = debt;
-                                d2Goal = d2;
-                                pmodelRipcord = psl->data().pship;
-                            }
+                            debtMin = debt;
+                            d2Goal = d2;
+                            pmodelRipcord = psl->data().pship;
                         }
                     }
                 }
             }
+          
         }
 
         if (pmodelRipcord)
@@ -3521,7 +3567,7 @@ void    CshipIGC::ResetWaypoint(void)
                     o = Waypoint::c_oGoto;
                     if (m_myHullType.GetHullType())
                     {
-                        if ((m_commandIDs[c_cmdPlan] == c_cidGoto) || (m_commandIDs[c_cmdPlan] == c_cidNone))
+                        if ((m_commandIDs[c_cmdPlan] == c_cidGoto) || (m_commandIDs[c_cmdPlan] == c_cidNone) || (m_commandIDs[c_cmdPlan] == c_cidHide)) //#320 added c_cidHide
                         {
 							if ((m_commandTargets[c_cmdPlan]->GetSide() == GetSide()) || IsideIGC::AlliedSides(m_commandTargets[c_cmdPlan]->GetSide(), GetSide())) //#ALLY (TheRock) we can still dock here (Imago) 7/8/09
                             {
@@ -3633,8 +3679,24 @@ void    CshipIGC::ResetWaypoint(void)
                 }
                 break;
 
+				case OT_buoy:
+				{
+						if (m_pilotType == c_ptMiner) //Spunky #268
+						{
+							if (((IbuoyIGC*)m_commandTargets[c_cmdPlan])->GetBuoyType() == c_buoyCluster)
+							{
+								m_miningCluster = m_commandTargets[c_cmdPlan]->GetCluster();
+								m_newMiningCluster = true;
+							}
+						}
+				}
+
                 default:
+				{
+					if (m_commandIDs[c_cmdPlan] == c_cidGoto)
+						m_doNotBuild = false; //Spunky #304
                     o = Waypoint::c_oGoto;
+				}
             }
 
             m_gotoplan.Set(o, m_commandTargets[c_cmdPlan]);
@@ -4044,6 +4106,10 @@ float                MyHullType::GetBackMultiplier(void) const
 }
 float                MyHullType::GetScannerRange(void) const
 {
+	// BT - 10/21/2012 - Fix for server crashing when m_pHullData is null, and bSimpleEye is called.
+	if(m_pHullData == NULL || m_pship == NULL)
+		return 0;
+	
     return m_pHullData->scannerRange * m_pship->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaScanRange);
 }
 
