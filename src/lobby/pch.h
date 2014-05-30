@@ -11,6 +11,9 @@
 #ifndef _LOBBY_PCH_
 #define _LOBBY_PCH_
 
+#define WINVER 0x0500 
+#define _WIN32_WINNT 0x0500
+
 #include "appweb/appweb.h" //Imago 7/5/08 uses version 2.4.2-2 xp
 
 #include <windows.h>
