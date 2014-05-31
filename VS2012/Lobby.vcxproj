@@ -187,6 +187,7 @@
     <None Include="..\src\Lobby\alllobby.rc2" />
     <None Include="..\src\Lobby\Lobby.ico" />
     <None Include="..\src\Lobby\lobby.rgs" />
+    <None Include="lobbyService.thrift" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Lobby\AutoUpdate.h" />
