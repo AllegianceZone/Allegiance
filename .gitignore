@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/objs11/FZDebug
+/VS2012/ipch
+/VS2012/Allegiance.opensdf
+/VS2012/Allegiance.sdf
+/VS2012/Allegiance.v12.suo
+/VS2012/PigConfig.vcxproj.user
