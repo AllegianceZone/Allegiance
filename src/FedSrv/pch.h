@@ -10,6 +10,13 @@
 #ifndef _FEDSRV_PCH_
 #define _FEDSRV_PCH_
 
+#ifndef WINVER
+#define WINVER 0x0501 
+#endif
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+
 #include "appWeb\appWeb.h" //Imago - updated to 2.4.2-2 XP
 
 #define _ATL_STATIC_REGISTRY
