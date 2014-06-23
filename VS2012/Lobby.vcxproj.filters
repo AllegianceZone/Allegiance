@@ -15,7 +15,7 @@
     <None Include="..\src\Lobby\lobby.rgs">
       <Filter>Resources</Filter>
     </None>
-    <None Include="lobbyService.thrift" />
+    <None Include="..\src\lobby\lobbyService.thrift" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Lobby\AutoUpdate.cpp" />
