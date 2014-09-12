@@ -85,6 +85,12 @@
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <PreBuildEvent>
+      <Command>ECHO Building LobbyService.thrift with .\thrift-0.9.1.exe
+cd $(MSBuildProjectDirectory)\.. 
+.\thrift-0.9.1.exe -out .\src\lobby\lobbyService --gen cpp .\src\lobby\lobbyService\lobbyService.thrift
+ECHO Finished Thrift</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">
     <ClCompile>
@@ -187,7 +193,7 @@
     <None Include="..\src\Lobby\alllobby.rc2" />
     <None Include="..\src\Lobby\Lobby.ico" />
     <None Include="..\src\Lobby\lobby.rgs" />
-    <None Include="..\src\lobby\lobbyService.thrift" />
+    <None Include="..\src\lobby\lobbyService\lobbyService.thrift" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Lobby\AutoUpdate.h" />
