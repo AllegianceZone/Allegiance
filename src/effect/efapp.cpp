@@ -291,7 +291,7 @@ public:
         TRef<LightsGeo> plights = new LightsGeo(m_pmodeler, m_ptime);
 
         TRef<IObjectList> plist;  CastTo(plist, (IObject*)stack.Pop());
-
+		plist->GetFirst();
         while (plist->GetCurrent() != NULL) {
             IObjectPair* ppair; CastTo(ppair, plist->GetCurrent());
 
@@ -339,7 +339,7 @@ public:
         TRef<FrameDataListValue> plistValue = new FrameDataListValue();
 
         TRef<IObjectList> plist;  CastTo(plist, (IObject*)stack.Pop());
-
+		plist->GetFirst();
         while (plist->GetCurrent()) {
             IObjectPair* ppair; CastTo(ppair, plist->GetCurrent());
 
