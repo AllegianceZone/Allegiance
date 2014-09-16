@@ -1,10 +1,10 @@
 
 /*-------------------------------------------------------------------------
  * clintlib\AutoDownload.h
- * 
  *
- * Owner: 
- * 
+ *
+ * Owner:
+ *
  * Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
@@ -39,8 +39,8 @@ public:
      *      Set the CRC we can verify that the FTP site has the correct FileList.txt
      *
      * Parameters:
-     *      nCRC: official CRC for filelist.txt at FTP site
-     *      nFileSize: size of filelist.txt at FTP Site
+     *      nCRC: official CRC for FileList.txt at FTP site
+     *      nFileSize: size of FileList.txt at FTP Site
      */
     virtual void SetOfficialFileListAttributes(int nCRC, unsigned nFileSize) = 0;
 
@@ -52,7 +52,7 @@ public:
 
     /*-------------------------------------------------------------------------
      * SetFilelistSubDir()
-     * Since the filename Filelist.txt is hardcoded everywhere, and sometimes
+     * Since the filename FileList.txt is hardcoded everywhere, and sometimes
      * we want differentiate between two filelists, we have this.
      * This is the sub dir of where the filelist is downloaded from; if not
      * set, then the regular base directory is used.
@@ -115,7 +115,7 @@ IAutoDownload * CreateAutoDownload();
  ---------------------------------------------------------------------------------*/
 
 class IAutoUpdateSink :
-    public IHTTPSessionSink  
+    public IHTTPSessionSink
 {
 public:
     virtual void OnBeginRetrievingFileList() {}
@@ -128,12 +128,12 @@ public:
     virtual void OnAnalysisProgress(float fPercentDone) {}
 
     virtual bool ShouldFilterFile(const char * szFileName) // szFileName is base filename (not including path)
-    { 
+    {
       return false; // if returns true, then file is not downloaded
-    } 
+    }
 
     virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes, unsigned cEstimatedSecondsLeft) {}
-    
+
     virtual void OnBeginDownloadProgressBar(unsigned cTotalBytes, int cFiles) {}
 
     virtual void OnUserAbort() {}
@@ -146,14 +146,14 @@ public:
      *
      * Returns: true if the autoupdate system should try again
      */
-    virtual bool OnMoveError(char * szErrorMsg) 
+    virtual bool OnMoveError(char * szErrorMsg)
     {
       return false;
     }
 
     // returns true if file should be registered
     virtual bool ShouldRegister(char * szFullFileName) // path is included in szFullFileName
-    { 
+    {
       return false;
     }
 
@@ -181,8 +181,8 @@ public:
      * MoveFiles()
      *-------------------------------------------------------------------------
      * Purpose:
-     *      Copies temp files into ArtPath.  There's a hardcoded check for 
-     *      Allegiance.exe. Assumes current folder is where Allegiance.exe 
+     *      Copies temp files into ArtPath.  There's a hardcoded check for
+     *      Allegiance.exe. Assumes current folder is where Allegiance.exe
      *      should go (not ArtPath).
      *
      * Paramters:
@@ -198,7 +198,7 @@ public:
      * Returns:
      *      true only on success
      */
-    static bool MoveFiles(const char * szTempPath, const char * szArtPath_, bool bSkipSharingViolation, 
+    static bool MoveFiles(const char * szTempPath, const char * szArtPath_, bool bSkipSharingViolation,
                           bool * pbFilesWereSkipped, bool bNoRegistryWrite, char * szErrorMsg, IAutoUpdateSink * pSink)
     {
 
@@ -234,8 +234,8 @@ public:
       while (INVALID_HANDLE_VALUE != hsearchFiles)
       {
         // skip directory listings "." and ".."; and filelist (filelist is moved last)
-        if (finddata.cFileName[0] != '.' && 
-            _stricmp(finddata.cFileName, "filelist.txt") != 0 &&
+        if (finddata.cFileName[0] != '.' &&
+            _stricmp(finddata.cFileName, "FileList.txt") != 0 &&
             (!pSink || !pSink->ShouldFilterFile(finddata.cFileName)))
         {
             // setup move paths
@@ -279,11 +279,11 @@ public:
       if(!bFilesWereSkipped)
       {
           strcpy(szSource, szTempPath);
-          strcat(szSource, "filelist.txt");
+          strcat(szSource, "FileList.txt");
 
           if (CAutoDownloadUtil::GetFileLength(szSource) != -1) // check for existance
           {
-            GetFileNameWithPath(szDest, "filelist.txt", szArtPath, ".\\");
+            GetFileNameWithPath(szDest, "FileList.txt", szArtPath, ".\\");
 
             if (!MoveFilePrivate(szSource, szDest, bSkipSharingViolation, &bFilesWereSkipped, szErrorMsg, pSink))
                 return false;
@@ -311,12 +311,12 @@ public:
 
     static char * GetEXEFileName(int nIndex)
     {
-        static char * pszEXEFiles[] = 
+        static char * pszEXEFiles[] =
         {
             "CliConfig.exe",
             "fsmon.exe",
             "readme.txt",
-            "patcher.exe", 
+            "patcher.exe",
             "FileList.txt",
             "Reloader.exe",
             "msrgbits.inf",
@@ -336,8 +336,8 @@ public:
      * Returns:
      *      The full path of where the file belongs.
      */
-    static void GetFileNameWithPath(OUT char * szFileNameWithPath, 
-                             IN  const char * szRawFileName, 
+    static void GetFileNameWithPath(OUT char * szFileNameWithPath,
+                             IN  const char * szRawFileName,
                              IN  const char * szArtPath,
                              IN  const char * szEXEPath)
     {
@@ -624,12 +624,12 @@ public:
 
     static unsigned GetFileLength(char *szFileName)
     {
-        HANDLE hFile = CreateFile(szFileName, 
+        HANDLE hFile = CreateFile(szFileName,
                                  0/*GENERIC_READ*/,  // 0 == query only
-                                 FILE_SHARE_READ, 
-                                 NULL, 
-                                 OPEN_EXISTING, 
-                                 FILE_ATTRIBUTE_NORMAL, 
+                                 FILE_SHARE_READ,
+                                 NULL,
+                                 OPEN_EXISTING,
+                                 FILE_ATTRIBUTE_NORMAL,
                                  NULL);
 
         if (hFile == INVALID_HANDLE_VALUE)
@@ -652,19 +652,19 @@ private:
      *
      * returns false if error, true on success
      */
-    static bool MoveFilePrivate(char * szSource, char * szDest, bool bSkipSharingViolation, 
+    static bool MoveFilePrivate(char * szSource, char * szDest, bool bSkipSharingViolation,
                                 bool * pbFilesWereSkipped, char * szErrorMsg, IAutoUpdateSink * pSink)
     {
         bool bErrorOccured;
         bool bTryAgain;
-        
+
         do
         {
             ::DeleteFile(szDest);
 
             // Note: considered using MoveFileEx, but win95/98 doesn't support it
             BOOL bResult = ::MoveFile(szSource, szDest);
-        
+
             if(!bResult)
             {
                 if (bSkipSharingViolation)
@@ -673,15 +673,15 @@ private:
 
                     bool bSkip = (nErr == ERROR_ALREADY_EXISTS || nErr == ERROR_ACCESS_DENIED || nErr == ERROR_SHARING_VIOLATION);
 
-                    if (bSkip) 
+                    if (bSkip)
                     {
                         *pbFilesWereSkipped = true;
                         bErrorOccured = false;
                     }
-                    else 
+                    else
                         bErrorOccured = true;
                 }
-                else 
+                else
 				{
 					if (g_outputdebugstring) { //Imago changed from _DEBUG ifdef 8/17/09
 	                    char sz[40];
@@ -692,7 +692,7 @@ private:
                     bErrorOccured = true;
                 }
             }
-            else 
+            else
                 bErrorOccured = false;
 
             bTryAgain = false;
@@ -708,7 +708,7 @@ private:
                 strcat(szErrorMessage, szSource);
 
                 strcat(szErrorMessage, "\n\r\n\r   Dest: ");
-                
+
                 strcat(szErrorMessage, szDest);
 
                 if (szErrorMsg)
@@ -727,22 +727,22 @@ private:
      * FormatErrorMessage()
      *-------------------------------------------------------------------------
      * Paramters:
-     *    dwErrorCode: take a dwErrorCode and print what it means as text    
-     * 
+     *    dwErrorCode: take a dwErrorCode and print what it means as text
+     *
      */
     static void FormatErrorMessage(char *szBuffer, DWORD dwErrorCode)
     {
 
       sprintf(szBuffer,"(%d) ", dwErrorCode);
 
-      FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | 
-                    FORMAT_MESSAGE_IGNORE_INSERTS, 
-                    NULL, 
-                    dwErrorCode, 
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+      FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL,
+                    dwErrorCode,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                     szBuffer + strlen(szBuffer),
                     128,
-                    NULL 
+                    NULL
                     );
     }
 

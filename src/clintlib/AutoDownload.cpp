@@ -1,12 +1,12 @@
 /*-------------------------------------------------------------------------
  * clintlib\AutoDownload.cpp
- * 
+ *
  * The implementation of IAutoDownload
  *
  * See AutoDownload.h for descriptions of all public functions.
  *
- * Owner: 
- * 
+ * Owner:
+ *
  * Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
@@ -38,7 +38,7 @@ void _debugf(const char* format, ...);
 class CAutoDownloadImpl:
   public IAutoDownload,
   public IHTTPSessionSink
-{    
+{
 
 public:
 
@@ -113,7 +113,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    void SetFTPSite(const char * szFTPSite, const char * szInitialDirectory, const char * szUsername, const char * szPassword) 
+    void SetFTPSite(const char * szFTPSite, const char * szInitialDirectory, const char * szUsername, const char * szPassword)
     {
         //
         // Prepare m_szURL
@@ -201,7 +201,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    void SetFilelistSubDir(const char * pszPath) 
+    void SetFilelistSubDir(const char * pszPath)
     {
         strncpy(m_szFilelistSubDir, pszPath, sizeof(m_szFilelistSubDir));
         // ensure last character is a slash
@@ -214,7 +214,7 @@ public:
     void BeginUpdate(IAutoUpdateSink * pSink, bool bForceCRCCheck, bool bSkipReloader)
     {
         //
-        // Make sure the current path is where Allegiance.exe is for the AutoUpdate: 
+        // Make sure the current path is where Allegiance.exe is for the AutoUpdate:
         // For Download -AND- for Reloader.exe
         //
         char    path[MAX_PATH + 16];
@@ -267,7 +267,7 @@ public:
         ConnectToHTTPSite();
 
         char szURL[256];
-        strcpy(szURL, m_szURL); 
+        strcpy(szURL, m_szURL);
         if (m_szFilelistSubDir[0] != '\0')
         {
            strcat(szURL, m_szFilelistSubDir);
@@ -295,7 +295,7 @@ public:
 
         do
         {
-            if (m_bErrorHasOccurred) 
+            if (m_bErrorHasOccurred)
             {
                 delete this;
                 return;
@@ -321,14 +321,14 @@ public:
 
                     //
                     // If downloading,
-                    // download another block 
+                    // download another block
                     //
                     if(m_pHTTPSession && !m_pHTTPSession->ContinueDownload())
                     {
                         //
                         // At this point we are done downloading either FileList.txt or the actual game files
                         //
-                        if (m_bErrorHasOccurred) 
+                        if (m_bErrorHasOccurred)
                         {
                             delete this;
                             return;
@@ -350,7 +350,7 @@ public:
             }
 
         } while (timeGetTime() < timeStart + dwTimeAlloted);  // spend some time doing this
-    } 
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -371,12 +371,12 @@ public:
 public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    //    
+    //
     // Methods used by CLocalFilesVerifier
     //
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    void DoError(char * szFormat, ...) 
+    void DoError(char * szFormat, ...)
     {
         char szMsg[sizeof(m_szErrorMessage)];
         va_list pArg;
@@ -531,7 +531,7 @@ public:
         ZFile file(szFilename);
 
         int n = file.GetLength(); // -1 means error
-        if (n != -1 && n != 0 && n < 20*1024) 
+        if (n != -1 && n != 0 && n < 20*1024)
         {
             char * pData = new char[n+1];
             memcpy(pData, file.GetPointer(), n);
@@ -550,7 +550,7 @@ public:
                 }
                 Sleep(500);
 
-                return true; 
+                return true;
             }
         }
         return false;
@@ -561,12 +561,12 @@ public:
 public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    //    
+    //
     // Events associated with IFTPSessionUpdateSink
     //
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void OnError(char *szErrorMessage) 
+    virtual void OnError(char *szErrorMessage)
     {
         DoError(szErrorMessage);
     }
@@ -599,17 +599,17 @@ public:
             DoError("File %s was bigger than expected.  Make sure FileList.txt is up-to-date.  Make sure no compressed files at FTP site got bigger when compressed. Make sure lobby server's FileList.txt is the same as one on FTP Site. ", szFileName);
             return true;
         }
-        
+
         if (cBytesSaved > 0)
         {
             //
-            // Decompress the file.  
+            // Decompress the file.
             //
 
             char szDestFileName[MAX_PATH+11];
             strcpy(szDestFileName, szNewFileName);
             strcat(szDestFileName, "_");
-        
+
             OFSTRUCT dum1/*, dum2*/;
 
             unsigned cbDone = 0;
@@ -625,12 +625,12 @@ public:
                 return true;
             }
 
-            HANDLE hDest = CreateFile(szDestFileName, 
-                                     GENERIC_WRITE, 
-                                     FILE_SHARE_READ, 
-                                     NULL, 
-                                     CREATE_ALWAYS, 
-                                     FILE_ATTRIBUTE_NORMAL, 
+            HANDLE hDest = CreateFile(szDestFileName,
+                                     GENERIC_WRITE,
+                                     FILE_SHARE_READ,
+                                     NULL,
+                                     CREATE_ALWAYS,
+                                     FILE_ATTRIBUTE_NORMAL,
                                      NULL);
 
             if (hDest == INVALID_HANDLE_VALUE)
@@ -768,12 +768,12 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes) 
+    virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes)
     {
         if (IsDownloadListBuilt()) // don't send progress update for FileList.txt, only for downloading real list of files
         {
-            // cbUncompressed == total bytes downloaded of already completed file and current file 
-            // (after decompression--except for current file.  
+            // cbUncompressed == total bytes downloaded of already completed file and current file
+            // (after decompression--except for current file.
             //  We don't know if current file is compressed until we are done with it.)
             unsigned cbUncompressed = cTotalBytes + m_cBytesCompressionSavings;
 
@@ -801,7 +801,7 @@ public:
               if (ftimeElapsed > 5000.0f)
                 fWeight = 0.25f;
 
-              if (m_cSecsLeft == -1) 
+              if (m_cSecsLeft == -1)
                 fWeight = 1.0f;
 
               m_fBytesPerMillisecond = m_fBytesPerMillisecond * (1.0f-fWeight) + fCurrentBytesPerMillisecond * fWeight;
@@ -830,7 +830,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void OnTransferFinished() 
+    virtual void OnTransferFinished()
     {
         if (IsDownloadListBuilt()) // don't send progress update for FileList.txt, only for downloading real list of files
         {
@@ -840,7 +840,7 @@ public:
         {
             // if FileList is compressed than it's bar will be inaccurately small, so catch up now
             m_pSink->OnRetrievingFileListProgress(m_nFileListSize, m_nFileListSize);
-        }             
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -877,7 +877,7 @@ private:
         // Convert m_pszFileList be in a format that InitiateDownload() likes,
         // that is, make string pairs like so:
         // "URL1", "localfile1", "URL2", "localfile2", ..., NULL
-        // 
+        //
         char ** pszURLs = new char*[2*m_cFiles+1];
         pszURLs[2*m_cFiles] = NULL;
         char szURL[512];
@@ -909,7 +909,7 @@ private:
             {
                 BeginMainDownload();
             }
-            else 
+            else
             {
                 //
                 // if no files need to be downloaded
@@ -925,7 +925,7 @@ private:
                     // After analysis, we have determined that no files are
                     // needed to be downloaded
                     //
-                    ::DeleteFile("Filelist.txt");
+                    ::DeleteFile("FileList.txt");
 
                     // Note: considered using MoveFileEx, but win95/98 doesn't support it
                     BOOL bResult = ::MoveFile(".\\AutoUpdate\\FileList.txt", "FileList.txt");
@@ -939,7 +939,7 @@ private:
                     return;
                 }
             }
-        } 
+        }
 
         if(m_bErrorHasOccurred)
         {
@@ -958,7 +958,7 @@ private:
     void MoveFilesThenRestartOrRelogOn()
     {
         //
-        // At this point we are done downloading everything.  
+        // At this point we are done downloading everything.
         //
 
         if (!m_bSkipReloader)
@@ -1019,7 +1019,7 @@ private:
 
     //////////////////////////////////////////////////////////////////////////
 
-                                      
+
 
 private: // Data members
 
@@ -1044,7 +1044,7 @@ private: // Data members
     char                 m_szPassword[128];
 
     char **              m_pszFileList;      // list of files to download
-    unsigned             m_cFiles;           
+    unsigned             m_cFiles;
     unsigned long        m_cListAllocSize;   // number of bytes for alloc-ed pointers for list
     CFileInfo *          m_pFileInfo;        // pointer to array of FileInfo's
     unsigned             m_cFilesDownloaded;
@@ -1095,11 +1095,11 @@ IAutoDownload * CreateAutoDownload()
  *-------------------------------------------------------------------------
  * Purpose:
  *    Scan FileList.txt and figure out which files are different that is,
- *    which files need to be downloaded.  
- *  
+ *    which files need to be downloaded.
+ *
  */
 
-class CLocalFilesVerifier 
+class CLocalFilesVerifier
 {
 public:
 
@@ -1122,7 +1122,7 @@ public:
             return;
         }
         int nSize = m_file.GetLength();
-        m_pStart = new char[nSize]; 
+        m_pStart = new char[nSize];
         m_pCurrent = m_pStart;
         if (m_file.Read(m_pCurrent, nSize) != (DWORD) nSize)
         {
@@ -1140,7 +1140,7 @@ public:
 
     ~CLocalFilesVerifier()
     {
-        if (m_pStart) 
+        if (m_pStart)
         {
             delete[] m_pStart;
 
@@ -1235,10 +1235,10 @@ public:
 
                     if (m_pCreator->HasErrorOccurred())
                         return false;
-    
+
                     m_pCurrent = pLineEnd + 2; // + 2 to skip pass "\r\n"
 
-                    if(bTookAlotOfCPUTime) 
+                    if(bTookAlotOfCPUTime)
                         break; // had to check CRC for this file so check how long we've taken
                 }
                 else
@@ -1258,17 +1258,17 @@ public:
         return true;
     }
 
-                                     
-private:                        
+
+private:
 
     /*-------------------------------------------------------------------------
      * IsTimeClose()
      *-------------------------------------------------------------------------
-     * Returns: true only if two system times are somewhat close, within a tolerance  
-     *          of cSeconds.  cSeconds must be low, less than 100 is definintely safe. 
+     * Returns: true only if two system times are somewhat close, within a tolerance
+     *          of cSeconds.  cSeconds must be low, less than 100 is definintely safe.
      *          If you want to go higher and really want to know the max, do the math yourself
      *
-     * Remarks: AutoUpdate needs this because Win98 is flakly, and sometimes 
+     * Remarks: AutoUpdate needs this because Win98 is flakly, and sometimes
      *          when I set the filetime, it's off by a second.
      */
     bool IsTimeClose(SYSTEMTIME * pst1, SYSTEMTIME * pst2, int cSeconds)
@@ -1310,7 +1310,7 @@ private:
      */
     bool ConsiderDownloadingFile(char *szFileName, SYSTEMTIME * psystime, int nCRC, int nFileLength)
     {
-        if (m_pCreator->ShouldFilterFile(szFileName)) 
+        if (m_pCreator->ShouldFilterFile(szFileName))
             return false;
 
         SYSTEMTIME systimeLocal;
@@ -1360,7 +1360,7 @@ private:
                     return true;
                 }
             }
-            
+
             sprintf(szBuffer, ".\\AutoUpdate\\%s", szFileName);
 
             if (bIsFileLengthWrong || nLocalCRC != nCRC || bNewFile)
@@ -1396,9 +1396,9 @@ private:
                 // Make sure file has right time so we don't get here again.
                 SetLocalFileTime(hFile, szFileNameWithPath, psystime);
 
-                // since we already have the right file in the EXE or Artwork folder, delete one 
+                // since we already have the right file in the EXE or Artwork folder, delete one
                 // of same name in AutoUpdate folder (in the rare event that a old copy of one exists there)
-                ::DeleteFile(szBuffer); 
+                ::DeleteFile(szBuffer);
             }
             ::CloseHandle(hFile);
             return true;
@@ -1411,24 +1411,24 @@ private:
 
     HANDLE OpenAndGetFileInfo(char * szFileName, SYSTEMTIME * psystimeTrue, int * pnLocalFileLength)
     {
-        HANDLE hFile = CreateFile(szFileName, 
-                                 GENERIC_READ | GENERIC_WRITE, 
-                                 FILE_SHARE_READ, 
-                                 NULL, 
-                                 OPEN_EXISTING, 
-                                 FILE_ATTRIBUTE_NORMAL, 
+        HANDLE hFile = CreateFile(szFileName,
+                                 GENERIC_READ | GENERIC_WRITE,
+                                 FILE_SHARE_READ,
+                                 NULL,
+                                 OPEN_EXISTING,
+                                 FILE_ATTRIBUTE_NORMAL,
                                  NULL);
 
         if (hFile == INVALID_HANDLE_VALUE)
         {
             // try again with just read rights
 
-            hFile = CreateFile(szFileName, 
-                               GENERIC_READ, 
-                               FILE_SHARE_READ, 
-                               NULL, 
-                               OPEN_EXISTING, 
-                               FILE_ATTRIBUTE_NORMAL, 
+            hFile = CreateFile(szFileName,
+                               GENERIC_READ,
+                               FILE_SHARE_READ,
+                               NULL,
+                               OPEN_EXISTING,
+                               FILE_ATTRIBUTE_NORMAL,
                                NULL);
 
             if (hFile == INVALID_HANDLE_VALUE)
@@ -1488,7 +1488,7 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
 
     char szCommandLine[MAX_PATH];
 
-    char * szReadme = bReLaunchAllegianceAsMinimized ? "-Minimized" : "-Normal"; 
+    char * szReadme = bReLaunchAllegianceAsMinimized ? "-Minimized" : "-Normal";
 
     // This command-line needs to be in sync with the command-line reader in Reloader.exe
     sprintf(szCommandLine, "%ld %s %s", ::GetCurrentProcessId(), szReadme, strchr(::GetCommandLine(), ' '));
@@ -1496,8 +1496,8 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
     //
     //  Launch Reloader.exe
     //
-    int nRet = (int)ShellExecute(0, 
-         "Open", 
+    int nRet = (int)ShellExecute(0,
+         "Open",
          "Reloader.exe",
          szCommandLine,  // re-feed the original command-line back into Allegiance.exe
          NULL,
@@ -1506,15 +1506,15 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
     if(nRet <= 32)
     {
         // check again for dev/manual builds
-        int nRet2 = (int)ShellExecute(0, 
-             "Open", 
+        int nRet2 = (int)ShellExecute(0,
+             "Open",
              "..\\Reloader\\Reloader.exe",
              szCommandLine,  // re-feed the original command-line back into Allegiance.exe
              NULL,
              SW_SHOWNORMAL);
 
         if (nRet2 <= 32)
-            return false; 
+            return false;
     }
 
     //
@@ -1535,12 +1535,12 @@ void SetLocalFileTime(HANDLE hFile, char *szFileName, SYSTEMTIME * psystime)
 
     if (bOpenHere)
     {
-        hFile = CreateFile(szFileName, 
-                                 GENERIC_READ | GENERIC_WRITE, 
-                                 FILE_SHARE_READ, 
-                                 NULL, 
-                                 OPEN_EXISTING, 
-                                 FILE_ATTRIBUTE_NORMAL, 
+        hFile = CreateFile(szFileName,
+                                 GENERIC_READ | GENERIC_WRITE,
+                                 FILE_SHARE_READ,
+                                 NULL,
+                                 OPEN_EXISTING,
+                                 FILE_ATTRIBUTE_NORMAL,
                                  NULL);
 
         if (hFile == INVALID_HANDLE_VALUE)
