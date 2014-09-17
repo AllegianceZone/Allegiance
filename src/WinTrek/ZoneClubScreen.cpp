@@ -396,9 +396,9 @@ public:
     void BeginConfigDownload()
     {
 #ifdef _ALLEGIANCE_PROD_
-        lstrcpy(m_szConfig, "http://autoupdate.alleg.net/allegiance.cfg");  //imago updated 7/4/09
+        lstrcpy(m_szConfig, "http://autoupdate.allegiancezone.com/config/AZ.cfg");  //imago updated 7/4/09 9/14
 #else
-		lstrcpy(m_szConfig, "http://fazdev.alleg.net/FAZ/FAZR6.cfg");  //imago updated 6/10
+		lstrcpy(m_szConfig, "http://autoupdate.allegiancezone.com/config/AZDev.cfg");  //imago updated 6/10 9/14
 #endif
         HKEY hKey;
 

@@ -4102,10 +4102,10 @@ public:
 		// TE: Add version menu, mmf changed format, zero pad YY, that will last us 3 more years and saves an if
 		// TheBored 05-APR-2010: Removed leading 0 from year, hooray 2010!
 		// mmf added ifs to zero pad MM and DD
-		if (MM<10 && DD<10) m_pmenu->AddMenuItem(0, "FAZ R"+dR+" Build # " + ZString(YY) + ".0" + ZString(MM) + ".0" + ZString(DD));
-		if (MM<10 && DD>9)  m_pmenu->AddMenuItem(0, "FAZ R"+dR+" Build # " + ZString(YY) + ".0" + ZString(MM) + "." + ZString(DD));
-		if (MM>9 && DD<10)  m_pmenu->AddMenuItem(0, "FAZ R"+dR+" Build # " + ZString(YY) + "." + ZString(MM) + ".0" + ZString(DD));
-		if (MM>9 && DD>9)   m_pmenu->AddMenuItem(0, "FAZ R"+dR+" Build # " + ZString(YY) + "." + ZString(MM) + "." + ZString(DD));
+		if (MM<10 && DD<10) m_pmenu->AddMenuItem(0, "AZ R"+dR+" Build # " + ZString(YY) + ".0" + ZString(MM) + ".0" + ZString(DD));
+		if (MM<10 && DD>9)  m_pmenu->AddMenuItem(0, "AZ R"+dR+" Build # " + ZString(YY) + ".0" + ZString(MM) + "." + ZString(DD));
+		if (MM>9 && DD<10)  m_pmenu->AddMenuItem(0, "AZ R"+dR+" Build # " + ZString(YY) + "." + ZString(MM) + ".0" + ZString(DD));
+		if (MM>9 && DD>9)   m_pmenu->AddMenuItem(0, "AZ R"+dR+" Build # " + ZString(YY) + "." + ZString(MM) + "." + ZString(DD));
 		//#62 Imago 7/10
 		if (trekClient.m_pMissionInfo) {
 			ZString zVer = UTL::GetServerVersion(trekClient.m_pMissionInfo->GetCookie());

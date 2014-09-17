@@ -12,6 +12,7 @@
 [Rr]elease/
 x64/
 x86/
+objs*/
 build/
 bld/
 [Bb]in/

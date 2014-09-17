@@ -7749,9 +7749,9 @@ IHTTPSession * BeginConfigDownload()
 
   char szConfig[MAX_PATH];
 #ifdef _ALLEGIANCE_PROD_
-  lstrcpy(szConfig, "http://autoupdate.alleg.net/allegiance.cfg"); //Imago 6/10
+  lstrcpy(szConfig, "http://autoupdate.allegiancezone.com/config/AZ.cfg"); //Imago 6/10 9/14
 #else
-  lstrcpy(szConfig, "http://fazdev.alleg.net/FAZ/FAZR6.cfg"); //Imago 6/10
+  lstrcpy(szConfig, "http://autoupdate.allegiancezone.com/config/AZDev.cfg"); //Imago 6/10 9/14
 #endif
 
   CRegKey key;
