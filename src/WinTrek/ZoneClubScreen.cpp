@@ -11,7 +11,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-bool g_fZoneAuth = 
+bool g_fZoneAuth =
 #ifdef USEAUTH
   true;
 #else
@@ -27,7 +27,7 @@ const char * szValidMotd = "THIS IS A VALID MESSAGE OF THE DAY FILE";
 
 class ZoneClubScreen :
     public Screen,
-    public LogonSite, 
+    public LogonSite,
     public TrekClientEventSink,
     public IIntegerEventSink,
     public IAutoUpdateSink,
@@ -63,7 +63,7 @@ private:
     ScreenID           m_screenPostConnect;
 
     static bool s_bWasAuthenticated;
- 
+
 public:
     ZoneClubScreen(Modeler* pmodeler, Number* ptime) :
         m_pSession(NULL),
@@ -95,7 +95,7 @@ public:
         AddEventTarget(&ZoneClubScreen::OnButtonGames, m_pbuttonGames->GetEventSource());
         AddEventTarget(&ZoneClubScreen::OnButtonGames, m_pbuttonGamesBig->GetEventSource());
         AddEventTarget(&ZoneClubScreen::OnButtonMainMenu, m_pbuttonMainMenu->GetEventSource());
-        
+
         if (trekClient.GetIsZoneClub())
         {
             AddEventTarget(&ZoneClubScreen::OnButtonZoneEvents, m_pbuttonZoneEvents->GetEventSource());
@@ -104,8 +104,8 @@ public:
             AddEventTarget(&ZoneClubScreen::OnButtonZoneWeb, m_pbuttonWeb->GetEventSource());
             AddEventTarget(&ZoneClubScreen::OnButtonLeaderBoard, m_pbuttonLeaderboard->GetEventSource());
         }
-        
-        //temporarily disable all buttons 
+
+        //temporarily disable all buttons
         m_pbuttonMainMenu->SetEnabled(false); // force download to finish before leaving this screen
         m_pbuttonGames->SetEnabled(false);
         m_pbuttonGamesBig->SetEnabled(false);
@@ -141,7 +141,7 @@ public:
     }
 
     // connect to either Zone Lobby server or Zone Club (wrapper to provide appropriate prompt)
-    void ConnectToZone(bool bConnectLobby, ScreenID screenid) 
+    void ConnectToZone(bool bConnectLobby, ScreenID screenid)
     {
         ZString strPrompt;
 
@@ -157,7 +157,7 @@ public:
     }
 
     // connect to either Zone Lobby server or Zone Club
-    void ConnectToZone(bool bConnectLobby, ScreenID screenid, const ZString& strPrompt) 
+    void ConnectToZone(bool bConnectLobby, ScreenID screenid, const ZString& strPrompt)
     {
         if (bConnectLobby)
         {
@@ -187,11 +187,11 @@ public:
                     	    : "Please try the Allegiance Zone instead.")
                    	 );
                 	GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
-                	return;			
+                	return;
                 }
             }
         }
-        else 
+        else
         {
             if (trekClient.GetCfgInfo().strClub.IsEmpty())
             {
@@ -217,8 +217,8 @@ public:
             pzac = trekClient.GetZoneAuthClient();
             if (!pzac)
                 pzac = trekClient.CreateZoneAuthClient();
-            
-            if (trekClient.GetCfgInfo().bUsePassport 
+
+            if (trekClient.GetCfgInfo().bUsePassport
                 && !pzac->HasInterface(trekClient.GetCfgInfo().guidZoneAuth))
             {
                 // take them to the web page...
@@ -237,7 +237,7 @@ public:
             else
             {
                 pzac->SetAuthServer(trekClient.GetCfgInfo().strZAuth);
-                
+
                 if (!m_bTriedCurrentLogin)
                     hr = pzac->IsAuthenticated(5000);
             }
@@ -271,14 +271,14 @@ public:
             lstrcpy(m_szName, trekClient.GetSavedCharacterName());
 #endif
 		  // wlp - don't ask for callsign if it was on the command line
-          if (!g_bAskForCallSign) 
+          if (!g_bAskForCallSign)
 		  {
 		  this->OnLogon(trekClient.GetSavedCharacterName(), "", false);
-	      } // wlp - end of dont ask for callsign 
+	      } // wlp - end of dont ask for callsign
 		  else
 		  {
-            TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, 
-                (trekClient.GetIsZoneClub() ? 
+            TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this,
+                (trekClient.GetIsZoneClub() ?
                   LogonAllegianceZone :
 #ifdef USEAUTH
                   LogonFreeZone
@@ -293,7 +293,7 @@ public:
         }
     }
 
-    
+
     bool OnButtonMainMenu()
     {
         GetWindow()->screen(ScreenIDIntroScreen);
@@ -317,7 +317,7 @@ public:
 
     bool OnButtonGames()
     {
-		//imago 7/4/09 - uncommented the code here that was commented out by ? on ?   
+		//imago 7/4/09 - uncommented the code here that was commented out by ? on ?
         if (trekClient.LoggedOnToLobby())
         {
             GetWindow()->screen(ScreenIDGameScreen);
@@ -367,7 +367,7 @@ public:
         {
             ConnectToZone(false, ScreenIDCharInfo);
         }
-#endif 
+#endif
 
         return true;
     }
@@ -393,7 +393,7 @@ public:
         return true;
     }
 
-    void BeginConfigDownload() 
+    void BeginConfigDownload()
     {
 #ifdef _ALLEGIANCE_PROD_
         lstrcpy(m_szConfig, "http://autoupdate.alleg.net/allegiance.cfg");  //imago updated 7/4/09
@@ -420,7 +420,7 @@ public:
             return;
         }
 
-        if (ZString(m_szConfig).Find("http://") == -1) 
+        if (ZString(m_szConfig).Find("http://") == -1)
         {
             debugf("Using local config file due to registry setting for ConfigFile because \"http://\" was missing from it. %s\n", m_szConfig);
 
@@ -459,7 +459,7 @@ public:
             return;
         }
 
-        PCC szMessageOfTheDayFileName = trekClient.GetIsZoneClub() 
+        PCC szMessageOfTheDayFileName = trekClient.GetIsZoneClub()
             ? "clubmessageoftheday.mdl" : "publicmessageoftheday.mdl";
 
         PathString path(trekClient.GetArtPath());
@@ -467,8 +467,8 @@ public:
 
         int crc = FileCRC(PCC(path), NULL);
 
-        if (crc != 0 && crc == (trekClient.GetIsZoneClub() 
-            ? trekClient.GetCfgInfo().crcClubMessageFile 
+        if (crc != 0 && crc == (trekClient.GetIsZoneClub()
+            ? trekClient.GetCfgInfo().crcClubMessageFile
             : trekClient.GetCfgInfo().crcPublicMessageFile))
         {
             debugf("Existing messageoftheday file has the correct CRC, skipping download.\n");
@@ -483,8 +483,8 @@ public:
         if (m_pSession)
             return;
 
-        PCC szMessageOfTheDayURL = trekClient.GetIsZoneClub() 
-            ? PCC(trekClient.GetCfgInfo().strClubMessageURL) 
+        PCC szMessageOfTheDayURL = trekClient.GetIsZoneClub()
+            ? PCC(trekClient.GetCfgInfo().strClubMessageURL)
             : PCC(trekClient.GetCfgInfo().strPublicMessageURL);
 
         debugf("Beginning messageoftheday download: %s.\n", szMessageOfTheDayURL);
@@ -511,7 +511,7 @@ public:
         ZFile file(szFileName);
 
         int n = file.GetLength(); // -1 means error
-        if (n != -1 && n != 0) 
+        if (n != -1 && n != 0)
         {
             char * pData = new char[n+1];
             memcpy(pData, file.GetPointer(), n);
@@ -587,7 +587,7 @@ public:
         }
     }
 
-    void OnConfigDownloadDone(bool bUseEXEFolder, bool bDownloadSuccesful) 
+    void OnConfigDownloadDone(bool bUseEXEFolder, bool bDownloadSuccesful)
     {
         m_bMessageStage = true;
 
@@ -597,7 +597,7 @@ public:
             m_pSession = NULL;
         }
 
-        if (bUseEXEFolder) 
+        if (bUseEXEFolder)
         {
             PathString pathEXE(PathString::GetCurrentDirectory());
             PathString pathConfig(pathEXE + PathString(PathString(m_szConfig).GetFilename()));
@@ -608,14 +608,14 @@ public:
                 trekClient.GetCfgInfo().Load(PCC(pathTemp));
                 debugf("Loaded downloaded config file: %s\n", PCC(pathTemp));
 
-                // rename file, so that next time if there is an error, there is 
+                // rename file, so that next time if there is an error, there is
                 // a recent config file to use.
                 debugf("Renaming %s to %s\n", PCC(pathTemp), PCC(pathConfig));
                 DeleteFile(PCC(pathConfig));
                 MoveFile(PCC(pathTemp), PCC(pathConfig));
-				trekClient.GetCfgInfo().SetCfgFile(pathConfig); 
+				trekClient.GetCfgInfo().SetCfgFile(pathConfig);
             }
-            else 
+            else
             {
                 debugf("Error detected, loading existing config file: %s\n", PCC(pathConfig));
                 trekClient.GetCfgInfo().Load(PCC(pathConfig));
@@ -631,14 +631,14 @@ public:
         {
             if(!g_bSkipAutoUpdate)
             {
-                if (trekClient.GetCfgInfo().crcFileList != 0 && 
-                    trekClient.GetCfgInfo().nFilelistSize != 0 && 
-                    trekClient.GetCfgInfo().strFilelistSite != "" && 
+                if (trekClient.GetCfgInfo().crcFileList != 0 &&
+                    trekClient.GetCfgInfo().nFilelistSize != 0 &&
+                    trekClient.GetCfgInfo().strFilelistSite != "" &&
                     trekClient.GetCfgInfo().strFilelistDirectory != "")
                 {
                     bool bForceFileCheck = trekClient.ShouldCheckFiles();
 
-                    if (bForceFileCheck || trekClient.GetCfgInfo().crcFileList != FileCRC("Filelist.txt", NULL))
+                    if (bForceFileCheck || trekClient.GetCfgInfo().crcFileList != FileCRC("FileList.txt", NULL))
                     {
 						DeleteFile(trekClient.GetArtPath() + ZString("/CommonTextures.Pack")); //#142 Imago 7/10
                         if (trekClient.m_pAutoDownload == NULL)
@@ -652,7 +652,7 @@ public:
                                                                "blah", // account
                                                                "blah"); // pw
 
-                        trekClient.m_pAutoDownload->SetOfficialFileListAttributes(trekClient.GetCfgInfo().crcFileList, 
+                        trekClient.m_pAutoDownload->SetOfficialFileListAttributes(trekClient.GetCfgInfo().crcFileList,
                                                                                   trekClient.GetCfgInfo().nFilelistSize);
 
                         trekClient.m_pAutoDownload->SetArtPath(trekClient.GetArtPath());
@@ -693,7 +693,7 @@ public:
         m_pbuttonMainMenu->SetEnabled(true); // allow users to leave screen even if cfg file failed to download
     }
 
-    void OnMessageOfDayDone(bool bSuccessful) 
+    void OnMessageOfDayDone(bool bSuccessful)
     {
         if (m_pSession)
         {
@@ -706,10 +706,10 @@ public:
         if (bSuccessful)
         {
             debugf("Loading messageoftheday file.\n");
-            m_pMDLFileImage->Load(trekClient.GetIsZoneClub() 
+            m_pMDLFileImage->Load(trekClient.GetIsZoneClub()
                 ? "clubmessageoftheday" : "publicmessageoftheday");
         }
-        else 
+        else
         {
             debugf("Errors detected while downloading message of the day.  Skipping load.\n");
         }
@@ -717,12 +717,12 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////
-    //    
+    //
     // Events associated with IAutoDownloadSink
     //
     ////////////////////////////////////////////////////////////////////
 
-    virtual void OnAutoUpdateSystemTermination(bool bErrorOccurred, bool bRestarting) 
+    virtual void OnAutoUpdateSystemTermination(bool bErrorOccurred, bool bRestarting)
     {
         m_pbuttonMainMenu->SetEnabled(true); // force download to finish before leaving this screen
 
@@ -742,7 +742,7 @@ public:
     }
 
     ////////////////////////////////////////////////////////////////////
-    //    
+    //
     // Events associated with IIntegerEventSink
     //
     ////////////////////////////////////////////////////////////////////
@@ -770,10 +770,10 @@ public:
         lstrcpy(m_szName, strName);
         lstrcpy(m_szPW, strPassword);
         m_fRememberPW = fRememberPW;
-//#ifdef USEAUTH        
+//#ifdef USEAUTH
 //#else
 //        trekClient.SaveCharacterName(strName);
-//#endif        
+//#endif
         GetWindow()->SetWaitCursor();
         TRef<IMessageBox> pmsgBox = CreateMessageBox("Connecting...", NULL, false);
         Point point(c_PopupX, c_PopupY);
@@ -792,7 +792,7 @@ public:
         if (g_fZoneAuth)
         {
             pzac = trekClient.GetZoneAuthClient();
-            hr = pzac->Authenticate(m_szName, m_szPW, 
+            hr = pzac->Authenticate(m_szName, m_szPW,
                     !!lstrcmp(m_szPW, m_szPWOrig), m_fRememberPW, 5000);
         }
 
@@ -828,7 +828,7 @@ public:
 #endif
         {
             s_bWasAuthenticated = true;
-            
+
             BaseClient::ConnectInfo ci;
             DWORD cbZoneTicket = 0;
             ci.pZoneTicket = NULL;
@@ -843,9 +843,9 @@ public:
             else
 #endif
             lstrcpy(ci.szName, m_szName);
-            
+
             ZeroMemory(&ci.ftLastArtUpdate, sizeof(ci.ftLastArtUpdate));
-            
+
             if (m_bConnectLobby)
                 trekClient.ConnectToLobby(&ci);
             else
@@ -885,7 +885,7 @@ public:
 
         }
     }
-    
+
     void OnLogonClub()
     {
         GetWindow()->screen(m_screenPostConnect);
@@ -893,7 +893,7 @@ public:
 
     void OnLogonClubFailed(bool bRetry, const char* szReason)
     {
-        if (bRetry) 
+        if (bRetry)
         {
             s_bWasAuthenticated = false;
             ConnectToZone(false, m_screenPostConnect, szReason);

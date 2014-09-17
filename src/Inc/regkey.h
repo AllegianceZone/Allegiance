@@ -1,12 +1,14 @@
 #pragma once
 
+
+//imago 8/14 - changed back - again, this was an undocument change which breaks our license agreement
 #ifdef  _ALLEGIANCE_DEV_
 #define ALLEGIANCE_REGISTRY_KEY_ROOT   "Software\\Microsoft\\Microsoft Games\\Allegiance\\Dev"
 #else
 #ifdef _ALLEGIANCE_PROD_
 #define ALLEGIANCE_REGISTRY_KEY_ROOT   "Software\\Microsoft\\Microsoft Games\\Allegiance\\1.2"
 #else
-#define ALLEGIANCE_REGISTRY_KEY_ROOT   "Software\\Microsoft\\Microsoft Games\\Allegiance\\1.2"
+#define ALLEGIANCE_REGISTRY_KEY_ROOT   "Software\\Microsoft\\Microsoft Games\\Allegiance\\1.3"
 #endif
 #endif
 

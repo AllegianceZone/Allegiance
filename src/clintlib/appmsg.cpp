@@ -20,9 +20,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
     debugf("Received message type %d of length %d\n", pfm->fmid, pfm->cbmsg);
 #endif // DUMPMSGS
 
-    // keep track of the last server message, but only count unreliable 
+    // keep track of the last server message, but only count unreliable
     // messages while the client is in flight.
-    if (!m_ship || !IsInGame() || GetCluster() == NULL || pfm->fmid == FM_CS_PING 
+    if (!m_ship || !IsInGame() || GetCluster() == NULL || pfm->fmid == FM_CS_PING
         || pfm->fmid == FM_S_HEAVY_SHIPS_UPDATE || pfm->fmid == FM_S_LIGHT_SHIPS_UPDATE)
     {
         m_timeLastServerMessage = now;
@@ -59,7 +59,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 }
             }
 
-            //                                
+            //
             // If we need to download art files, then
             // don't ack logon until done
             //
@@ -95,9 +95,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 u->Release();
 
 				//Turkey #307 02/31
-				if (pfmExport->objecttype == OT_station) 
+				if (pfmExport->objecttype == OT_station)
 				{
-					
+
 					IstationIGC* ps = (IstationIGC*)u;
 
 					SideID mySID = GetSideID();
@@ -136,12 +136,12 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             if (cluster)
             {
                 float   cosLatr = cos(pfmPoster->latitude);
-                Vector  position(cosLatr * cos(pfmPoster->longitude), 
-                                 cosLatr * sin(pfmPoster->longitude), 
+                Vector  position(cosLatr * cos(pfmPoster->longitude),
+                                 cosLatr * sin(pfmPoster->longitude),
                                  sin(pfmPoster->latitude));
 
                 cluster->GetClusterSite()->AddPoster(
-                                            pfmPoster->textureName, 
+                                            pfmPoster->textureName,
                                             position,
                                             pfmPoster->radius);
             }
@@ -334,7 +334,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
                 // I just picked someone up.
                 PlayerInfo* pplayerRescuee = FindPlayer(pfmPlayerRescued->shipIDRescuee);
-                
+
                 if (!pplayerRescuee)
                 {
                     assert(false);
@@ -348,7 +348,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
                 // I was just teleported back to base.
                 PlayerInfo* pplayerRescuer = FindPlayer(pfmPlayerRescued->shipIDRescuer);
-                
+
                 if (!pplayerRescuer)
                 {
                     assert(false);
@@ -384,12 +384,12 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 				{
 	                // then propose the issue.
 					m_listBallots.PushEnd(BallotInfo(
-						(char*)(FM_VAR_REF(pfmBallot, BallotText)) + ZString("Press [Y] to vote yes, [N] to vote no."), 
-						pfmBallot->ballotID, 
+						(char*)(FM_VAR_REF(pfmBallot, BallotText)) + ZString("Press [Y] to vote yes, [N] to vote no."),
+						pfmBallot->ballotID,
 						ClientTimeFromServerTime(pfmBallot->timeExpiration)
 						));
 				}
-		
+
             }
         }
         break;
@@ -520,7 +520,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         PlayerInfo* pPlayerInfo = &(l->data());
                         assert (pPlayerInfo);
 
-                        debugf("Logging off ship for %s, ID=%d\n", 
+                        debugf("Logging off ship for %s, ID=%d\n",
                             pPlayerInfo->CharacterName(), pPlayerInfo->ShipID());
 
                         RemovePlayerFromSide(pPlayerInfo, QSR_Quit);
@@ -549,23 +549,23 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 if (pfmStation->launcher != NA)
                 {
                     IshipIGC * pship = GetCore()->GetShip(pfmStation->launcher);
-                    PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " destroyed " START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s.", 
+                    PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " destroyed " START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s.",
                         (PCC) ConvertColorToString (pship ? pship->GetSide ()->GetColor () : Color::White ()),
-                        (pship ? pship->GetName() : "Unknown ship"), 
+                        (pship ? pship->GetName() : "Unknown ship"),
                         (PCC) ConvertColorToString (station->GetSide ()->GetColor ()),
-                        station->GetSide()->GetName(), 
-                        station->GetName(), 
+                        station->GetSide()->GetName(),
+                        station->GetName(),
                         station->GetCluster()->GetName()
                         );
                 }
                 else
-                    PostText(true, START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s was destroyed.", 
+                    PostText(true, START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s was destroyed.",
                         (PCC) ConvertColorToString (station->GetSide()->GetColor ()),
-                        station->GetSide()->GetName(), 
-                        station->GetName(), 
+                        station->GetSide()->GetName(),
+                        station->GetName(),
                         station->GetCluster()->GetName());
 
-                if (station->GetSide() == GetSide() || GetSide()->AlliedSides(GetSide(),station->GetSide())) //AllY Imago/Rock 7/27/09 
+                if (station->GetSide() == GetSide() || GetSide()->AlliedSides(GetSide(),station->GetSide())) //AllY Imago/Rock 7/27/09
                     PlaySoundEffect(station->GetStationType()->GetDestroyedSound());
                 else
                     PlaySoundEffect(station->GetStationType()->GetEnemyDestroyedSound());
@@ -667,11 +667,11 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 TRef<BucketStatusArray> prgStatus;
 
                 /* NYI: Used to be ... is the new code still valid?
-                if ((pfmStationCapture->iSide != GetSide()->GetObjectID()) && 
+                if ((pfmStationCapture->iSide != GetSide()->GetObjectID()) &&
                     m_mapBucketStatusArray.Find(pfmStationCapture->stationID, prgStatus))
                 */
 
-                if ((pfmStationCapture->sidOld == GetSide()->GetObjectID()) && 
+                if ((pfmStationCapture->sidOld == GetSide()->GetObjectID()) &&
                     m_mapBucketStatusArray.Find(pfmStationCapture->stationID, prgStatus))
                 {
                     // we lost the station... purge the buckets
@@ -682,12 +682,12 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                 IsideIGC*   psideNew = m_pCoreIGC->GetSide(pfmStationCapture->sidNew);
 
-                PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " captured " START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s.", 
+                PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " captured " START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s.",
                     (PCC) ConvertColorToString (GetCore()->GetShip(pfmStationCapture->shipIDCredit)->GetSide ()->GetColor ()),
-                    GetCore()->GetShip(pfmStationCapture->shipIDCredit)->GetName(), 
+                    GetCore()->GetShip(pfmStationCapture->shipIDCredit)->GetName(),
                     (PCC) ConvertColorToString (station->GetSide()->GetColor ()),
-                    station->GetSide()->GetName(), 
-                    station->GetName(), 
+                    station->GetSide()->GetName(),
+                    station->GetName(),
                     station->GetCluster()->GetName()
                     );
 
@@ -771,7 +771,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                             IshieldIGC* pshield = (IshieldIGC*)(pship->GetMountedPart(ET_Shield, 0));
                             if (pshield)
-                                pshield->SetFraction(pfmHeavy->bpTargetShield);                            
+                                pshield->SetFraction(pfmHeavy->bpTargetShield);
                         }
                         break;
 
@@ -858,7 +858,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                 m_pClientEventSource->OnBoardShip(pship, NULL);
                 m_pClientEventSource->OnBoardShip(pshipParent, pship);
-                
+
                 if (pshipParent == m_ship)
                     PostText(true, "You have been demoted to a turret gunner");
                 else if (pship == m_ship)
@@ -940,10 +940,10 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                     assert (pmodelRipcord->GetObjectType() == OT_ship);
 
                     PlayerInfo* ppi = (PlayerInfo*)(((IshipIGC*)pmodelRipcord)->GetPrivateData());
-                    			
+
 					assert (ppi->StatusIsCurrent());
 					pclusterRipcord = m_pCoreIGC->GetCluster(ppi->LastSeenSector());
-   	                assert (pclusterRipcord); 
+   	                assert (pclusterRipcord);
                 }
 
                 const char*     name = pclusterRipcord->GetName();
@@ -1371,11 +1371,11 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         PlayerInfo* ppiFrom = (PlayerInfo*)(pshipFrom->GetPrivateData());
                         ppiFrom->SetMoney(ppiFrom->GetMoney() - pfmMoney->dMoney);
                         m_pClientEventSource->OnMoneyChange(ppiFrom);
-						
+
 						if (pfmMoney->sidTo == sid) {
                             PostText(false, "%s gave you $%d. You now have $%d.",
                                      ppiFrom->CharacterName(), pfmMoney->dMoney, MyPlayerInfo()->GetMoney());
-							
+
 						}
                     }
                 }
@@ -1687,7 +1687,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         {
             CASTPFM(pfmMissileSpoofed, S, MISSILE_SPOOFED, pfm);
 
-            // need to make sure we have a cluster because of a race condition 
+            // need to make sure we have a cluster because of a race condition
             // when changing view clusters.
             if (GetCluster())
             {
@@ -1911,7 +1911,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         {
             if (!IsInGame())
                 break;
-            
+
             if (IsLockedDown())
                 EndLockDown(lockdownTeleporting);
 
@@ -1998,7 +1998,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             Disconnect(); // we could already be calling from Disconnect, if the user Alt-F4ed, but this is handled
             break;
         }
-        
+
         case FM_S_LOADOUT_CHANGE:
         {
             if (IsWaitingForGameRestart())
@@ -2012,7 +2012,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             assert (pship);
             //debugf("Loadout change for %s/%d\n", pship->GetName(), pfmLC->sidShip);
 
-		
+
 
             //If the ship was a passenger, now it is not
             pship->SetParentShip(NULL);
@@ -2078,7 +2078,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                             PostText(true, "%s has boarded your ship as a turret.", pshipChild->GetName());
                         else
                             PostText(true, "%s has boarded your ship as an observer.", pshipChild->GetName());
-                        
+
                         PlaySoundEffect(boardSound);
                     }
                     pshipChild->SetTurretID(ppd->turretID);
@@ -2175,13 +2175,13 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
                 // we have the wrong file - let's bail.
                 Disconnect();
-                
+
                 // not logged on yet, so we have to do this part manually
                 delete m_pMissionInfo;
                 m_pMissionInfo = NULL;
 
                 OnLogonAck(false, false, "The client and server data files are out of sync. Please restart and go to a games list to auto-update "
-                  "the latest files. If this doesn't work, try deleting the file 'filelist.txt' from the install directory and restarting the application.");
+                  "the latest files. If this doesn't work, try deleting the file 'FileList.txt' from the install directory and restarting the application.");
             }
             else
             {
@@ -2244,7 +2244,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 m_listPlayers.last(l);
                 }
             ZAssert(l);
-            
+
             PlayerInfo* pPlayerInfo = &(l->data());
             pPlayerInfo->SetMission(m_pCoreIGC);
 
@@ -2283,7 +2283,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 pPlayerInfo->SetShip(pship);
                 pship->SetExperience(pfmPlayerInfo->fExperience);
             }
-            
+
             // add this player to their team
             AddPlayerToMission(pPlayerInfo);
 
@@ -2589,7 +2589,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 			// update the AET bit
 			if (pfmSideInactive->bChangeAET)
 				m_pMissionInfo->SetAllowEmptyTeams(pfmSideInactive->bAET);
-				
+
             m_pClientEventSource->OnTeamInactive(m_pMissionInfo, pfmSideInactive->sideID);
             m_mapMissions.GetSink()();
             break;
@@ -2620,7 +2620,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             m_mapMissions.GetSink()();
         }
         break;
-        
+
         case FM_CS_LOCK_SIDES:
         {
             CASTPFM(pfmLockSides, CS, LOCK_SIDES, pfm);
@@ -2629,7 +2629,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             m_mapMissions.GetSink()();
         }
         break;
-        
+
         case FM_CS_REQUEST_MONEY:
         {
             CASTPFM(pfmRequest, CS, REQUEST_MONEY, pfm);
@@ -2706,7 +2706,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         case FM_S_SET_START_TIME:
         {
             CASTPFM(pfmStartTime, S, SET_START_TIME, pfm);
-            
+
             ZAssert(MyMission());
             Time timeStart = ClientTimeFromServerTime(pfmStartTime->timeStart);
             MyMission()->UpdateStartTime(timeStart);
@@ -2742,7 +2742,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 if ((pfmShipStatus->status.GetState() == c_ssTurret) !=
                     (pPlayerInfo->LastSeenState()     == c_ssTurret))
                 {
-                    m_pClientEventSource->OnTurretStateChanging(pfmShipStatus->status.GetState() == c_ssTurret);    
+                    m_pClientEventSource->OnTurretStateChanging(pfmShipStatus->status.GetState() == c_ssTurret);
                 }
             }
             break;
@@ -2801,7 +2801,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                     PostText(true, pfmKillShip->bDeathCredit ? "You were killed" : "You ejected");
                 else if (bConstructorOrMiner)
                     PostText(pPlayerInfo->SideID() == GetSideID(), START_COLOR_STRING "%s" END_COLOR_STRING " was killed", (PCC) ConvertColorToString (m_pCoreIGC->GetSide(pPlayerInfo->SideID())->GetColor ()), pszVictim);
-                else 
+                else
                     PostText(false, pfmKillShip->bDeathCredit ? START_COLOR_STRING "%s" END_COLOR_STRING " was killed" : START_COLOR_STRING "%s" END_COLOR_STRING " ejected", (PCC) ConvertColorToString (m_pCoreIGC->GetSide(pPlayerInfo->SideID())->GetColor ()), pszVictim);
             }
             else
@@ -2836,7 +2836,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                     if (bConstructorOrMiner && pPlayerInfo->SideID() != GetSideID())
                         PostText(bConstructorOrMiner,
                                  pfmKillShip->bDeathCredit
-                                 ? (START_COLOR_STRING "%s %s" END_COLOR_STRING " was killed by %s") 
+                                 ? (START_COLOR_STRING "%s %s" END_COLOR_STRING " was killed by %s")
                                  : (START_COLOR_STRING "%s %s" END_COLOR_STRING " was forced to eject by %s"),
                                  (PCC) ConvertColorToString (pPlayerInfo->GetShip()->GetSide()->GetColor ()),
                                  pPlayerInfo->GetShip()->GetSide()->GetName(),
@@ -2878,7 +2878,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                             break;
 
                         case c_ptBuilder:
-                            destroyedSound = 
+                            destroyedSound =
                                 ((IstationTypeIGC*)(IbaseIGC*)(pship->GetBaseData()))
                                     ->GetConstructorDestroyedSound();
                             break;
@@ -2967,7 +2967,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             if (pplayer == MyPlayerInfo()) {
                 PlaySoundEffect(commanderSound);
-				
+
 				//Turkey #131
 				//Let us know we're not ready, then we can use this flag to sort the rest out later
 				if ((m_pCoreIGC->GetMissionStage() == STAGE_NOTSTARTED) &&
@@ -3039,8 +3039,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         case FM_S_SQUAD_INFO_DUDEX:
         {
             // forward messages that go to either of these screens
-            ForwardSquadMessage(pfm); 
-            ForwardCharInfoMessage(pfm); 
+            ForwardSquadMessage(pfm);
+            ForwardCharInfoMessage(pfm);
         }
         break;
 
@@ -3073,7 +3073,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             SetViewCluster(NULL);
             GetShip()->SetCluster(NULL);
-            
+
             // set all of the players to unready with 0 money
             for (PlayerLink*    ppl = GetPlayerList()->first();
                 (ppl != NULL);
@@ -3100,7 +3100,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             for (SideLinkIGC*   psl = GetCore()->GetSides()->first(); (psl != NULL); psl = psl->next())
                 psl->data()->Reset();
-            
+
             GetCore()->ResetMission();
         }
         break;
@@ -3111,7 +3111,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             // update the scores of all of the players
             int cPlayerEndgameInfo = pfmGameOverPlayers->cbrgPlayerInfo / sizeof(PlayerEndgameInfo);
-            PlayerEndgameInfo* vPlayerEndgameInfo 
+            PlayerEndgameInfo* vPlayerEndgameInfo
                 = (PlayerEndgameInfo*)FM_VAR_REF(pfmGameOverPlayers, rgPlayerInfo);
 
             for (int i = 0; i < cPlayerEndgameInfo; i++)
@@ -3154,8 +3154,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 					{
 						if (pfmGain->sideidFlag != SIDE_TEAMLOBBY)
 						{
-							PostText(true, "%s has stolen " START_COLOR_STRING "%s's" END_COLOR_STRING " flag.", 
-								pship->GetName(), 
+							PostText(true, "%s has stolen " START_COLOR_STRING "%s's" END_COLOR_STRING " flag.",
+								pship->GetName(),
 								(PCC) ConvertColorToString (GetCore()->GetSide(pfmGain->sideidFlag)->GetColor ()),
 								GetCore()->GetSide(pfmGain->sideidFlag)->GetName()
 								);
@@ -3164,7 +3164,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 						}
 						else
 						{
-							PostText(true, "%s has found an artifact.", 
+							PostText(true, "%s has found an artifact.",
 								pship->GetName());
 
 							PlaySoundEffect(artifactFoundSound);
@@ -3173,9 +3173,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 					else if (pfmGain->sideidFlag > 0 && pfmGain->sideidFlag == GetSideID())
 					{
 						ZString color = ConvertColorToString (pship->GetSide()->GetColor ());
-						PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " of " START_COLOR_STRING "%s" END_COLOR_STRING " has stolen our flag.", 
+						PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " of " START_COLOR_STRING "%s" END_COLOR_STRING " has stolen our flag.",
 							(PCC) color,
-							pship->GetName(), 
+							pship->GetName(),
 							(PCC) color,
 							pship->GetSide()->GetName()
 							);
@@ -3200,9 +3200,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             m_pClientEventSource->OnPurchaseCompleted(pfmBuyLoadoutAck->fBoughtEverything);
 
-            // if they wanted to board a new ship after disembarking, we are 
-            // finally at a safe place to do so.  
-            if (m_sidBoardAfterDisembark != NA) 
+            // if they wanted to board a new ship after disembarking, we are
+            // finally at a safe place to do so.
+            if (m_sidBoardAfterDisembark != NA)
             {
                 IshipIGC* pshipNewParent = FindPlayer(m_sidBoardAfterDisembark)->GetShip();
 
@@ -3234,7 +3234,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         }
         break;
 
-        case FM_S_OBJECT_SPOTTED: //ALLY imago 7/12/09 					
+        case FM_S_OBJECT_SPOTTED: //ALLY imago 7/12/09
         {							//we can safely assume if an object is spotted by somone not on our team it's an ally 7/13/09
             if (!IsInGame())
                 break;
@@ -3250,33 +3250,33 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
             case OT_station:
 				if (GetCore()->GetStation(pfmObjectSpotted->oidSpotter)->GetSide() != myside) {
-					
+
 
  					strAllies = "\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + "Allied" + END_COLOR_STRING + " " ;
 				} else {
-					strAllies = "Your "; 
+					strAllies = "Your ";
 				}
-                strSpotterName = strAllies 
+                strSpotterName = strAllies
                     + GetCore()->GetStation(pfmObjectSpotted->oidSpotter)->GetName()
                     + " has";
                 break;
 
             case OT_probe:
 				if (GetCore()->GetProbe(pfmObjectSpotted->oidSpotter)->GetSide() != myside) {
-					
+
  					strAllies = "\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + "ally's" + END_COLOR_STRING+" " ;
 				} else {
-					strAllies = "team's"; 
+					strAllies = "team's";
 				}
                 strSpotterName = "One of your "+ZString(strAllies)+" probes has";
                 break;
 
             case OT_ship:
 				if (GetCore()->GetShip(pfmObjectSpotted->oidSpotter)->GetSide() != myside) {
-					
+
  					strAllies = "\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + " (Ally)" + END_COLOR_STRING +" has" ;
 				} else {
-					strAllies = " has"; 
+					strAllies = " has";
 				}
 
                 if (pfmObjectSpotted->oidSpotter == GetShipID())
@@ -3301,7 +3301,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 					if (myside->AlliedSides(myside,pstation->GetSide())) { //ALLY imago for when VIS is OFF
 						PostText(false, strSpotterName + " discovered an allied " + pstation->GetName() + " in sector " + pstation->GetCluster()->GetName()); //#ALLY imago changed enemy to friendly if allied 7/3/09
 					} else {
-                    	PostText(GetShip()->GetWingID() == 0, strSpotterName + " discovered an enemy " + pstation->GetName() + " in sector " + pstation->GetCluster()->GetName()); 
+                    	PostText(GetShip()->GetWingID() == 0, strSpotterName + " discovered an enemy " + pstation->GetName() + " in sector " + pstation->GetCluster()->GetName());
 					}
                 }
                 break;
@@ -3352,7 +3352,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         case FM_LS_SQUAD_MEMBERSHIPS:
         {
             CASTPFM(pfmSquadMemberships, LS, SQUAD_MEMBERSHIPS, pfm);
-            SquadMembership* vSquadMemberships 
+            SquadMembership* vSquadMemberships
                 = (SquadMembership*)FM_VAR_REF(pfmSquadMemberships, squadMemberships);
             m_squadmemberships.SetEmpty();
             for (int iSquad = 0; iSquad < pfmSquadMemberships->cSquadMemberships; iSquad++)
@@ -3368,11 +3368,11 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         {
             CASTPFM(pfmStaticMapInfo, S, STATIC_MAP_INFO, pfm);
 
-            // copy the new static map info into our internal table        
+            // copy the new static map info into our internal table
             if (m_vStaticMapInfo)
                 delete [] m_vStaticMapInfo;
             m_cStaticMapInfo = pfmStaticMapInfo->cbmaps / sizeof(StaticMapInfo);
-            
+
             if (m_cStaticMapInfo > 0)
             {
                 m_vStaticMapInfo = new StaticMapInfo[m_cStaticMapInfo];
@@ -3387,7 +3387,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         {
             CASTPFM(pfmRankInfo, S, RANK_INFO, pfm);
 
-            // copy the new rank info into our internal table        
+            // copy the new rank info into our internal table
             if (m_vRankInfo)
                 delete [] m_vRankInfo;
             m_cRankInfo = pfmRankInfo->cRanks;
@@ -3411,7 +3411,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
         // ************ Lobby Messages *************
 
-        case FM_L_AUTO_UPDATE_INFO: 
+        case FM_L_AUTO_UPDATE_INFO:
         {
             if (m_pAutoDownload == NULL)
                 m_pAutoDownload = CreateAutoDownload();
@@ -3421,16 +3421,16 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             CASTPFM(pfmServerInfo, L, AUTO_UPDATE_INFO, pfm);
 
-            m_pAutoDownload->SetFTPSite(FM_VAR_REF(pfmServerInfo, FTPSite), 
-                                        FM_VAR_REF(pfmServerInfo, FTPInitialDirectory), 
-                                        FM_VAR_REF(pfmServerInfo, FTPAccount), 
+            m_pAutoDownload->SetFTPSite(FM_VAR_REF(pfmServerInfo, FTPSite),
+                                        FM_VAR_REF(pfmServerInfo, FTPInitialDirectory),
+                                        FM_VAR_REF(pfmServerInfo, FTPAccount),
                                         FM_VAR_REF(pfmServerInfo, FTPPassword));
 
-            m_pAutoDownload->SetOfficialFileListAttributes(pfmServerInfo->crcFileList, 
+            m_pAutoDownload->SetOfficialFileListAttributes(pfmServerInfo->crcFileList,
                                                            pfmServerInfo->nFileListSize);
 
             // Disconnect during download
-            DisconnectLobby(); 
+            DisconnectLobby();
 
             m_pAutoDownload->SetArtPath(GetArtPath());
 
@@ -3455,13 +3455,13 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
         case FM_LS_LOBBYMISSIONINFO:
         {
-            if (!LoggedOnToLobby()) 
+            if (!LoggedOnToLobby())
                 break;
 
             CASTPFM(pfmLobbyMissionInfo, LS, LOBBYMISSIONINFO, pfm);
 
-            // The time offset may be off by as much as the maximum server 
-            // latency, but that's OK for just displaying a timer.  Let's 
+            // The time offset may be off by as much as the maximum server
+            // latency, but that's OK for just displaying a timer.  Let's
             // make sure we never assume a starting time in the future, however.
             pfmLobbyMissionInfo->dwStartTime += m_lobbyServerOffset;
             if (now - Time(pfmLobbyMissionInfo->dwStartTime) < 0 && !pfmLobbyMissionInfo->fCountdownStarted)
@@ -3508,7 +3508,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         {
             CASTPFM(pfmMissionGone, LS, MISSION_GONE, pfm);
             MissionInfo * pMission = GetLobbyMission(pfmMissionGone->dwCookie);
- 
+
             if (m_pMissionInfo != NULL && pMission->GetCookie() == MyMission()->GetCookie())
             {
                 if (GetSideID() != NA)
@@ -3596,9 +3596,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
         default:
         {
-            // Note: we can't assert here because there are some messages 
+            // Note: we can't assert here because there are some messages
             // which are only handled in TrekWindowImpl::HandleMessage. TrekIGC.cpp
-            // already asserts that one of the two handles the message, however.  
+            // already asserts that one of the two handles the message, however.
             //ZError("unknown message");
             hr = S_FALSE;
         }

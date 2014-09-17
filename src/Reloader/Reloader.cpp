@@ -8,12 +8,12 @@
  * 1) Waits for Allegiance to exit.
  * 2) Looks in the regristy for ArtPath.
  * 3) Moves Art Files from Temp folder to Art folder.
- *    Moves Special files (Allegiance.exe and Allegiance.pdb) to current folder. (If they 
+ *    Moves Special files (Allegiance.exe and Allegiance.pdb) to current folder. (If they
  *    exist in temp folder.)
  * 4) Reloads Allegiance.exe with the command-line specified to this app.
  *
  *
- * The command-line has two parts.  The first part is a number specifying the Process ID of 
+ * The command-line has two parts.  The first part is a number specifying the Process ID of
  * the currently running Allegiance.exe.  The second part is the orignial command-line sent
  * to Allegiance.exe which is re-fed to the newly spawned Allegiance.exe.
  */
@@ -25,8 +25,8 @@
 #include "..\Zlib\zassert.h" //Imago 6/10
 #include "..\Zlib\FTPSession.h"
 #include "..\Clintlib\AutoDownload.h" // don't included in pch because build process doesn't realize
-                                      // when AutoDownload.h changes, and since this project 
-                                      // only has one cpp file, a pch doesn't help anyway (except 
+                                      // when AutoDownload.h changes, and since this project
+                                      // only has one cpp file, a pch doesn't help anyway (except
                                       // that our build process requires it).
 
 
@@ -65,7 +65,7 @@ char * GetArtPath()
             strcat(pathStr, "\\");
     }
 
-    if (!bResult) 
+    if (!bResult)
     {
 //        ::MessageBox(NULL, "Error reading ArtPath from registry; assuming .\\Artwork\\ if this isn't right, you might need to reinstall.", "AutoUpdate Reloader Error", MB_ICONEXCLAMATION);
 
@@ -153,12 +153,12 @@ class CAutoDownloadSink : public IAutoUpdateSink
 // returns true only if file exists
 bool Exists(const char * szFileName)
 {
-        HANDLE hFile = CreateFile(szFileName, 
-                                 0, 
-                                 FILE_SHARE_READ, 
-                                 NULL, 
-                                 OPEN_EXISTING, 
-                                 FILE_ATTRIBUTE_NORMAL, 
+        HANDLE hFile = CreateFile(szFileName,
+                                 0,
+                                 FILE_SHARE_READ,
+                                 NULL,
+                                 OPEN_EXISTING,
+                                 FILE_ATTRIBUTE_NORMAL,
                                  NULL);
 
         if (hFile == INVALID_HANDLE_VALUE)
@@ -173,12 +173,12 @@ bool Exists(const char * szFileName)
 
 bool GetFileTime(char * szFileName, LPFILETIME pft)
 {
-    HANDLE hFile = CreateFile(szFileName, 
-                           0, 
-                           FILE_SHARE_READ, 
-                           NULL, 
-                           OPEN_EXISTING, 
-                           FILE_ATTRIBUTE_NORMAL, 
+    HANDLE hFile = CreateFile(szFileName,
+                           0,
+                           FILE_SHARE_READ,
+                           NULL,
+                           OPEN_EXISTING,
+                           FILE_ATTRIBUTE_NORMAL,
                            NULL);
 
     if (hFile == INVALID_HANDLE_VALUE)
@@ -201,8 +201,8 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
         if (Exists(szMangled))
         {
             // force another autoupdate to ensure version is correct
-            DeleteFile("Filelist.txt"); 
-            DeleteFile("AutoUpdate\\Filelist.txt"); 
+            DeleteFile("FileList.txt");
+            DeleteFile("AutoUpdate\\FileList.txt");
 
             char szBuffer[MAX_PATH*2 + 20];
 
@@ -211,7 +211,7 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
                 FILETIME ftMangled;
                 FILETIME ftCorrect;
 
-                if (!GetFileTime(szMangled, &ftMangled) || 
+                if (!GetFileTime(szMangled, &ftMangled) ||
                     !GetFileTime(szCorrect, &ftCorrect))
                 {
                     sprintf(szBuffer, "Unable to examine at least one of these files: %s, %s.  Reboot your computer and try again.", szMangled, szCorrect);
@@ -219,7 +219,7 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
                     ExitProcess(-1);
                     return;
                 }
-                
+
                 if (CompareFileTime(&ftCorrect, &ftMangled) > 0) // if existing correct file is newer; keep it
                 {
                     OutputDebugString("\nDeleting old file with mangled name ");
@@ -268,7 +268,7 @@ void RenameMangledFiles()
         char * szCorrect = CAutoDownloadUtil::GetEXEFileName(i);
 
         // we can only handle string of at least 8 characters
-        if (strlen(szCorrect) < 8) 
+        if (strlen(szCorrect) < 8)
             continue;
         //
         // create the mangled counterpart to GetEXEFileName(i)
@@ -356,7 +356,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
         //  Give Allegiance some time to exit
         //
         int counter = 0;
-                                  
+
         while (hProcess && counter++ < 40) // wait about 4 seconds (don't make too high!)
         {
             Sleep(100);
@@ -373,7 +373,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
             // Took too long to shut down!
             // Let's terminate Allegiance (to be sure it shuts down)
             //
-            if (::TerminateProcess(hProcess, 0) == 0) 
+            if (::TerminateProcess(hProcess, 0) == 0)
             {
                 DisplayErrorMsg("Couldn't Terminate Allegiance.  Press OK to try continue update anyway.");
             }
@@ -423,10 +423,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
     strcat(szNewCommandLine, " -reloaded");
 
-    if((int)ShellExecute(0, 
-                         "Open", 
+    if((int)ShellExecute(0,
+                         "Open",
                          "Allegiance.exe",
-                         szNewCommandLine, 
+                         szNewCommandLine,
                          NULL,
                          bLaunchMinimized ? SW_SHOWNOACTIVATE : SW_SHOWNORMAL
                          ) <= 32)
