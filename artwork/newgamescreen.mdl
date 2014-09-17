@@ -298,9 +298,11 @@ GameSkillLevelNames = SkillLevelNames;
 GameSkillLevelMin = SkillLevelMin;
 GameSkillLevelMax = SkillLevelMax;
 
-// map type
-MapTypeNames = ["Single Ring", "Double Ring", "Pinwheel", "Diamond Ring", "Snowflake", "Split Bases", "Brawl", "Big Ring", "HiLo", "HiHigher", "Star", "InsideOut", "Grid", "EastWest", "LargeSplit"];
-MapTypeValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+// map type - Astn - Removed maps that have too many sectors. Maps with too many sectors reduces enemy encounters, and increase pod time. 
+//                   Total effect is a lot of time spent flying around with little action. 
+//                   Smaller maps create a more action packed game.
+MapTypeNames = ["Single Ring", "Double Ring", "Pinwheel", "Diamond Ring", "Snowflake", "Brawl", "Big Ring", "HiLo", "Star", "InsideOut", "Grid"];
+MapTypeValues = [0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12];
 
 // connectivity
 ConnectivityNames = ["Low", "Medium", "High"];
