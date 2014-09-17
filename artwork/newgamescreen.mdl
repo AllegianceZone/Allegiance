@@ -282,10 +282,11 @@ asteriodsPane =
 TeamCountNames = ["2", "3", "4", "5", "6"];
 TeamCountValues = [2, 3, 4, 5, 6];
 
-// maxPlayers - Imago unjacked & properly extended to the new 200 limit 7/10
-MaxPlayersNames = ["1 - 100", "1 - 4", "3 - 6", "4 - 8", "5 - 10", "7 - 15", "10 - 20", "15 - 25", "20 - 30", "25 - 40", "35 - 50", "45 - 60", "55 - 70", "65 - 80", "75 - 90", "85 - 100"];
-MaxPlayersValues = [100, 4, 6, 8, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100];
-MinPlayersValues = [1  , 1, 2, 4,  5,  7, 10, 15, 20, 25, 35, 45, 55, 65, 75,  85];
+// maxPlayers - Astn - restricted team sizes because the game core does not scale dynamically yet.
+//              This would be bad because many tech paths are out of balance as the number of players in the game increase.
+MaxPlayersNames = ["1 - 4", "3 - 6", "4 - 8", "5 - 10", "7 - 15"];
+MaxPlayersValues = [4, 6, 8, 10, 15];
+MinPlayersValues = [1, 3, 4,  5,  7];
 
 
 // maxImbalance
@@ -297,9 +298,11 @@ GameSkillLevelNames = SkillLevelNames;
 GameSkillLevelMin = SkillLevelMin;
 GameSkillLevelMax = SkillLevelMax;
 
-// map type
-MapTypeNames = ["Single Ring", "Double Ring", "Pinwheel", "Diamond Ring", "Snowflake", "Split Bases", "Brawl", "Big Ring", "HiLo", "HiHigher", "Star", "InsideOut", "Grid", "EastWest", "LargeSplit"];
-MapTypeValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+// map type - Astn - Removed maps that have too many sectors. Maps with too many sectors reduces enemy encounters, and increase pod time. 
+//                   Total effect is a lot of time spent flying around with little action. 
+//                   Smaller maps create a more action packed game.
+MapTypeNames = ["Single Ring", "Double Ring", "Pinwheel", "Diamond Ring", "Snowflake", "Brawl", "Big Ring", "HiLo", "Star", "InsideOut", "Grid"];
+MapTypeValues = [0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12];
 
 // connectivity
 ConnectivityNames = ["Low", "Medium", "High"];
