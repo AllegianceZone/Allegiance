@@ -1112,3 +1112,27 @@ TRef<INameSpace> CreateNameSpace(const ZString& str, Modeler* pmodeler, ZFile* p
 
     return NULL;
 }
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Read a lua File
+//
+//////////////////////////////////////////////////////////////////////////////
+
+TRef<INameSpace> CreateNameSpaceLua(const ZString& str, Modeler* pmodeler, ZFile* pfile)
+{
+	TRef<MDLParser> pparser = new MDLParser((PCC)pfile->GetPointer(), pfile->GetLength());
+
+	INameSpaceList list;
+
+	if (pparser->ReadImports(pmodeler, list)) {
+		TRef<INameSpace> pns = ::CreateNameSpace(str, list);
+
+		if (pparser->ReadDefinitionList(pns, true)) {
+			return pns;
+		}
+	}
+
+	return NULL;
+}

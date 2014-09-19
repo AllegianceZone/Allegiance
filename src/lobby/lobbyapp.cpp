@@ -486,6 +486,7 @@ int CLobbyApp::Run()
 }
 
 
+
 int CLobbyApp::OnMessageBox(const char * strText, const char * strCaption, UINT nType)
 {
   char sz[256];
