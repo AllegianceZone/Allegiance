@@ -9,7 +9,6 @@
  *-----------------------------------------------------------------------*/
 #ifndef _LOBBYAPP_H_ 
 #define _LOBBYAPP_H_ 
-
 // mmf added this include so client.cpp has HKLM_FedSrv defined
 #include "regkey.h"
 
@@ -75,7 +74,6 @@ public:
   HRESULT         Init();
   int             Run();
   bool            IsFMServers(FedMessaging * pfm) {return pfm == &m_fmServers;}
-
 #ifdef USECLUB
   // ISQLSite2
   virtual void OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError);
