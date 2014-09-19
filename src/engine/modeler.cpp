@@ -2735,14 +2735,14 @@ public:
         if (pns) {
             return pns;
         }
-		TRef<ZFile> luafile = GetFile(str, "lua", bError);
+		/*TRef<ZFile> luafile = GetFile(str, "lua", bError);
 		if (luafile != NULL)
 		{
 			pns = ::CreateNameSpaceLua(str, this, luafile);
 			m_mapNameSpace.Set(str, pns);
 			return pns;
 			return;
-		}
+		}*/
 
         TRef<ZFile> pfile = GetFile(str, "mdl", bError);
         if (pfile != NULL) 
