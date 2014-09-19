@@ -21,6 +21,8 @@
 #include "AbstractTarget.h"
 #endif  //_ABSTRACT_TARGET_H_
 
+ZString GetKeyName(TrekKey tk);
+
 namespace Training
 {
     //------------------------------------------------------------------------------

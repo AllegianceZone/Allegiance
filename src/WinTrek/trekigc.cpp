@@ -4590,18 +4590,20 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
 					//Xynth #14 7/2010
 					PlayerInfo* ppi = (PlayerInfo*)(pshipSender->GetPrivateData());					
 
+					ZString str = GetKeyName(TK_AcceptCommand);
+
                     if ((cid == c_cidPickup) && (pmodelTarget == pshipSender) &&
                         pshipSender->  GetBaseHullType()->HasCapability(c_habmRescue))
                     {
-                        trekClient.PostText(true, "New orders from %s: prepare for recovery. Press [insert] to accept.", 
+                        trekClient.PostText(true, "New orders from %s: prepare for recovery. Press ["+str+"] to accept.", 
                                             (const char*)strSender);
                     }
                     else
 						if (ppi->IsTeamLeader())  //Xynth #14 7/2010 change color if from comm
-							trekClient.PostText(true, "\x81 " + ConvertColorToString(Color::Orange()) + "New orders from %s to %s: %s. Press [insert] to accept." + END_COLOR_STRING, 
+							trekClient.PostText(true, "\x81 " + ConvertColorToString(Color::Orange()) + "New orders from %s to %s: %s. Press ["+str+"] to accept." + END_COLOR_STRING, 
                                             (const char*)strSender, (const char*)strRecipient, (const char*)strOrder);
 						else
-							trekClient.PostText(true, "New orders from %s to %s: %s. Press [insert] to accept.", 
+							trekClient.PostText(true, "New orders from %s to %s: %s. Press ["+str+"] to accept.", 
                                             (const char*)strSender, (const char*)strRecipient, (const char*)strOrder);
                 }
             }

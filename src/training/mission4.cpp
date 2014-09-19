@@ -290,7 +290,8 @@ namespace Training
 		// SPACEBAR when you are comfortable with them.
         {
             Goal*   pGoal = CreatePlaySoundGoal (tm_4_06Sound);
-            pGoal->AddStartAction (new MessageAction ("Press the TILDE (~) key to activate the quickcomm menu."));
+			ZString str = GetKeyName(TK_QuickChatMenu);
+            pGoal->AddStartAction (new MessageAction ("Press the " + str + " key to activate the quickcomm menu."));
             pGoalList->AddGoal (pGoal);
         }
 
