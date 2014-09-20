@@ -11,7 +11,9 @@
 #define _LOBBYAPP_H_ 
 // mmf added this include so client.cpp has HKLM_FedSrv defined
 #include "regkey.h"
-
+#include "WebConnect.h"
+#include <vcclr.h>
+using namespace System;
 // KGJV moved into regkey.h
 //#define HKLM_AllLobby "SYSTEM\\CurrentControlSet\\Services\\AllLobby"
 
@@ -194,6 +196,7 @@ private:
   void SetVariableGameInfo();
   void SendGameInfo();
   void UpdatePerfCounters();
+  void UpdateWeb();
   void RollCall();
 
   // *** player list stuff *** 
@@ -227,6 +230,9 @@ private:
   FedMessaging      m_fmClients;
   LobbyClientSite   m_psiteClient;
   LobbyServerSite   m_psiteServer;
+
+  // AllegianceZone website integration
+  gcroot<Lobby::WebConnect^> m_webconnect;
 
   // *** Perfmon counter stuff ***
   CPerfShare        m_perfshare;

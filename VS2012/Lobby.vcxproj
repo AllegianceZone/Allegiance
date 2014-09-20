@@ -183,7 +183,7 @@ ECHO Finished Thrift</Command>
     <ClCompile Include="..\src\Lobby\lobbyevents.cpp" />
     <ClCompile Include="..\src\Lobby\lobqguids.cpp" />
     <ClCompile Include="..\src\Lobby\mission.cpp" />
-    <ClCompile Include="..\src\lobby\websiteconnector.cpp" />
+    <ClCompile Include="..\src\lobby\WebConnect.cpp" />
     <ClCompile Include="..\src\Lobby\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">Create</PrecompiledHeader>
@@ -215,7 +215,7 @@ ECHO Finished Thrift</Command>
     <ClInclude Include="..\src\Lobby\messageslc.h" />
     <ClInclude Include="..\src\Lobby\messagesls.h" />
     <ClInclude Include="..\src\Lobby\mission.h" />
-    <ClInclude Include="..\src\lobby\websiteconnector.h">
+    <ClInclude Include="..\src\lobby\WebConnect.h">
       <FileType>CppClass</FileType>
     </ClInclude>
     <ClInclude Include="..\src\Lobby\pch.h" />
