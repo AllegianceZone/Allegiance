@@ -24,11 +24,11 @@ namespace Lobby {
 		WebConnect(void)
 		{
 			RegistryKey^ key = Microsoft::Win32::Registry::LocalMachine->OpenSubKey("Software\\Microsoft\\Microsoft Games\\Allegiance\\1.3\\AllLobby");
-			System::String^ _topicConnectionString = "Endpoint=sb://azstream.servicebus.windows.net/;SharedAccessKeyName=azlobbyinstance;SharedAccessKey=4JwtkNOQeWi0mko/HezOvxr5aaVPmOZ7km4N2hj1OVY=";
+			// eg: "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=azlobbyfoo;SharedAccessKey=4JwtkNOdafeveaef";
 			String^ conn = Convert::ToString(key->GetValue("lobbygames.azurestream.connectionstring"));
 			_jbuffer = gcnew Newtonsoft::Json::Linq::JArray();
 			if (!String::IsNullOrEmpty(conn))
-				tc = TopicClient::CreateFromConnectionString(_topicConnectionString, "lobbygames");
+				tc = TopicClient::CreateFromConnectionString(conn, "lobbygames");
 		}
 		void QueueUpdateWebsite(FMD_LS_LOBBYMISSIONINFO* missionInfo){
 			if (tc){
