@@ -71,7 +71,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalUsingDirectories>C:\Users\msdn_000\Source\Repos\Allegiance\VS2012\packages\Newtonsoft.Json.6.0.5\lib\net40;C:\Users\msdn_000\Source\Repos\Allegiance\VS2012\packages\WindowsAzure.ServiceBus.2.4.3.0\lib\net40-full;C:\Users\msdn_000\Source\Repos\Allegiance\VS2012\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\libs;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\src\Inc;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -114,7 +114,7 @@ ECHO Finished Thrift</Command>
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
-      <AdditionalUsingDirectories>C:\Users\msdn_000\Source\Repos\Allegiance\VS2012\packages\Newtonsoft.Json.6.0.5\lib\net40;C:\Users\msdn_000\Source\Repos\Allegiance\VS2012\packages\WindowsAzure.ServiceBus.2.4.3.0\lib\net40-full;C:\Users\msdn_000\Source\Repos\Allegiance\VS2012\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>..\libs;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\src\Inc;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
