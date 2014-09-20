@@ -5,9 +5,6 @@
 #using <Newtonsoft.Json.dll>
 
 using namespace System;
-using namespace System::ComponentModel;
-using namespace System::Collections;
-using namespace System::Diagnostics;
 using namespace Newtonsoft::Json;
 using namespace Microsoft::ServiceBus::Messaging;
 using namespace Microsoft::WindowsAzure;
@@ -23,7 +20,7 @@ namespace Lobby {
 	public:
 		WebConnect(void)
 		{
-			RegistryKey^ key = Microsoft::Win32::Registry::LocalMachine->OpenSubKey("Software\\Microsoft\\Microsoft Games\\Allegiance\\1.3\\AllLobby");
+			RegistryKey^ key = Microsoft::Win32::Registry::LocalMachine->OpenSubKey(ALLEGIANCE_REGISTRY_KEY_ROOT+"\\AllLobby");
 			// eg: "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=azlobbyfoo;SharedAccessKey=4JwtkNOdafeveaef";
 			String^ conn = Convert::ToString(key->GetValue("lobbygames.azurestream.connectionstring"));
 			_jbuffer = gcnew Newtonsoft::Json::Linq::JArray();
