@@ -72,6 +72,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>false</UseOfAtl>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FZDebug|X64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -200,7 +201,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Guids;..\src\Zone;..\src\Test\Inc;..\src\Inc\appWeb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ALLSRV_STANDALONE;LOBBY;_WIN32_WINNT=0x0403;_ATL_STATIC_REGISTRY;_DEBUG;WIN;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -208,6 +209,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalUsingDirectories>../src/lib/Net;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\src\Inc;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -699,6 +701,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail-Instrumented|X64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\Lobby\server.cpp" />
+    <ClCompile Include="..\src\lobby\WebConnect.cpp" />
     <ClCompile Include="..\src\Lobby\zgameinfo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -727,7 +730,19 @@
     <ClInclude Include="..\src\Lobby\pch.h" />
     <ClInclude Include="..\src\Lobby\resource.h" />
     <ClInclude Include="..\src\Lobby\server.h" />
+    <ClInclude Include="..\src\lobby\WebConnect.h" />
     <ClInclude Include="..\src\Lobby\zgameinfo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.ServiceBus, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\src\Lib\Net\Microsoft.ServiceBus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\src\Lib\Net\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\src\Lib\Net\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
