@@ -960,12 +960,12 @@ public:
         ImagazineIGC* magazine = (ImagazineIGC*)(trekClient.GetShip()->GetMountedPart(ET_Magazine, 0));
         if (magazine)
             rMissileLock = magazine->GetLock();
-        
+        ZString str = GetKeyName(TK_FireMissile);
         if (rMissileLock > 0.0f && rMissileLock < 1.0f && 
                 !(m_rPreviousMissileLock > 0.0f && m_rPreviousMissileLock < 1.0f))
             trekClient.PostText(false, "Partial missile lock - center the target on screen to improve the lock.");
         else if (rMissileLock == 1.0f && m_rPreviousMissileLock != 1.0f)
-            trekClient.PostText(false, "%s", (const char*)(ZString("Missile lock acquired - press [Ctrl]-[Space] to fire a ")
+            trekClient.PostText(false, "%s", (const char*)(ZString("Missile lock acquired - press ["+str+"] to fire a ")
                 + magazine->GetMissileType()->GetName() + " missile at the target."));
         else if (rMissileLock == 0.0f && m_rPreviousMissileLock != 0.0f && !m_fTargetChanged)
             trekClient.PostText(false, "Missile lock lost.");

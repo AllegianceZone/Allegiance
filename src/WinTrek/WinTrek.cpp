@@ -10723,9 +10723,10 @@ public:
 
         if ((pshipSender != trekClient.GetShip()) && GetWindow()->GetConsoleImage())
         {
+			ZString str = GetKeyName(TK_AcceptCommand);
             static const ZString c_str1(" has requested $");
             static const ZString c_str2(" to buy a ");
-            static const ZString c_str3("  Press the [Insert] key to approve it.");
+            static const ZString c_str3("  Press the [" + str + "] key to approve it.");
 
             assert (pshipSender);
             IhullTypeIGC*   pht = trekClient.m_pCoreIGC->GetHullType(hid);
