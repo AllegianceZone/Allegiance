@@ -246,7 +246,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 	  SetConstantGameInfo();
   }
 
-  m_webconnect = gcnew Lobby::WebConnect();
+  //m_webconnect = gcnew Lobby::WebConnect();
   // if zone club lobby
 #ifdef USEAUTH  
   m_pzas = CreateZoneAuthServer();
@@ -364,11 +364,13 @@ void CLobbyApp::UpdateWeb()
 		while (!iterMission.End()){
 			CFLMission* mission = iterMission.Value();
 			FMD_LS_LOBBYMISSIONINFO* info  = mission->GetMissionInfo();
-			m_webconnect->QueueUpdateWebsite(info);
+			// this does not do a sent, only queues a send
+			//m_webconnect->QueueUpdateWebsite(info);
 		}
 		iterCnxn.Next();
 	}
-	//m_webconnect->UpdateWebsite(something cool);
+	// this sends all queued messages
+	//m_webconnect->Flush();
 }
 
 void CLobbyApp::UpdatePerfCounters()

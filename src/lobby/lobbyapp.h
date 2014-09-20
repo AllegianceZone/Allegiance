@@ -232,7 +232,7 @@ private:
   LobbyServerSite   m_psiteServer;
 
   // AllegianceZone website integration
-  gcroot<Lobby::WebConnect^> m_webconnect;
+  //gcroot<Lobby::WebConnect^> m_webconnect;
 
   // *** Perfmon counter stuff ***
   CPerfShare        m_perfshare;

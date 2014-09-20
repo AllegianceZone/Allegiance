@@ -31,7 +31,7 @@ namespace Lobby {
 				tc = TopicClient::CreateFromConnectionString(conn, "lobbygames");
 		}
 		void QueueUpdateWebsite(FMD_LS_LOBBYMISSIONINFO* missionInfo){
-			if (tc){
+			if (tc != nullptr){
 				// convert to managed struct, then add to json object array
 				JObject^ jmi = gcnew JObject(
 					gcnew JProperty("cbmsg", missionInfo->cbmsg),
@@ -87,7 +87,7 @@ namespace Lobby {
 			}
 		}
 		void Flush(){
-			if (tc){
+			if (tc != nullptr){
 				BrokeredMessage^ m = gcnew BrokeredMessage(_jbuffer->ToString(Formatting::None));
 				tc->SendAsync(m);
 			}

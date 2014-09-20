@@ -206,8 +206,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PigConfig", "PigConfig.vcxp
 		{21C70CA0-24C5-475B-8C47-6F0226A374B0} = {21C70CA0-24C5-475B-8C47-6F0226A374B0}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lobby_cs", "..\src\lobbyService_cs\Lobby_cs.csproj", "{534ABB38-2759-4375-A765-CDE57EB29A1F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -866,30 +864,6 @@ Global
 		{52C64275-DA32-486B-AB61-A617E5A07E0A}.Release|Win32.ActiveCfg = FZRetail|Win32
 		{52C64275-DA32-486B-AB61-A617E5A07E0A}.Release|Win32.Build.0 = FZRetail|Win32
 		{52C64275-DA32-486B-AB61-A617E5A07E0A}.Release|X64.ActiveCfg = FZRetail|Win32
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Debug|X64.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZDebug|Any CPU.Build.0 = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZDebug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZDebug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZDebug|Win32.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZDebug|X64.ActiveCfg = Debug|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZRetail|Any CPU.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZRetail|Any CPU.Build.0 = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZRetail|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZRetail|Mixed Platforms.Build.0 = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZRetail|Win32.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.FZRetail|X64.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Release|Win32.ActiveCfg = Release|Any CPU
-		{534ABB38-2759-4375-A765-CDE57EB29A1F}.Release|X64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
