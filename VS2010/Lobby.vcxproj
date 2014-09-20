@@ -90,6 +90,7 @@
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>false</UseOfAtl>
     <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -307,6 +308,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
+      <AdditionalUsingDirectories>..\src\Lib\Net</AdditionalUsingDirectories>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\src\Inc;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
