@@ -246,7 +246,6 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 	  SetConstantGameInfo();
   }
 
-  //m_webconnect = gcnew Lobby::WebConnect();
   // if zone club lobby
 #ifdef USEAUTH  
   m_pzas = CreateZoneAuthServer();
@@ -349,29 +348,6 @@ HRESULT CLobbyApp::Init()
   return hr;
 }
 
-void CLobbyApp::UpdateWeb()
-{
-	// Get all the per server stuff, and agregate the count of missions and players
-	ListConnections::Iterator iterCnxn(*m_fmServers.GetConnections());
-	int cMissions = 0;
-	DWORD cPlayers = 0;
-	int load = 0;
-	while (!iterCnxn.End())
-	{
-		CFLServer * pServerT = CFLServer::FromConnection(*iterCnxn.Value());
-		cMissions += pServerT->GetMissions()->GetCount();
-		MissionList::Iterator iterMission(*pServerT->GetMissions());
-		while (!iterMission.End()){
-			CFLMission* mission = iterMission.Value();
-			FMD_LS_LOBBYMISSIONINFO* info  = mission->GetMissionInfo();
-			// this does not do a sent, only queues a send
-			//m_webconnect->QueueUpdateWebsite(info);
-		}
-		iterCnxn.Next();
-	}
-	// this sends all queued messages
-	//m_webconnect->Flush();
-}
 
 void CLobbyApp::UpdatePerfCounters()
 {
@@ -500,7 +476,6 @@ int CLobbyApp::Run()
       static Time timeRollCall = Time::Now();
       if (GetNow() - timeRollCall >= 5.0f)
       {
-		UpdateWeb();
         RollCall();
         timeRollCall = GetNow();
       }
@@ -509,7 +484,6 @@ int CLobbyApp::Run()
   }
   return 0;
 }
-
 
 
 int CLobbyApp::OnMessageBox(const char * strText, const char * strCaption, UINT nType)
