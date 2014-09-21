@@ -120,6 +120,10 @@ void CLobbyApp::SetVariableGameInfo()
 }
 
 
+//static void doLobbyInfo(void* data, MprThread *threadp) {
+//
+//}
+
 void CLobbyApp::SendGameInfo()
 {
   ZGameServerInfoMsg* gameInfo = GetGameServerInfoMsg();
@@ -134,53 +138,63 @@ void CLobbyApp::SendGameInfo()
   for (int i = 0; i < m_cReportServers; i++)
     ZGameInfoSendTo(m_rgulIP[i], 2000, GetGameServerInfoMsg(), sizeof(m_GameInfoBuf));
 
-	char* szURL= "http://azforum.cloudapp.net/lobbyinfo"; //TODO NYI Imago Registry
-	MaUrl maUrl;
-	maUrl.parse(szURL);
-
-	// First make sure we can write to a socket
-	MprSocket* socket = new MprSocket();
-	socket->openClient(maUrl.host, maUrl.port, 0);
-	int iwrite = socket->_write("GET /\r\n");
-	delete socket;
-
-	MaClient* client = new MaClient();
-	client->setTimeout(3000);
-	client->setRetries(1);
-	client->setKeepAlive(0);
-
-	// make sure we wrote 7 bytes
-	if (iwrite == 7) {
+  //Imago 9/14
+	if (m_fmServers.GetConnections()->GetCount() > 0) {
 		int i = 0;
-		int PostDataSize = sizeof(FMD_LS_LOBBYMISSIONINFO) * m_fmServers.GetConnections()->GetCount();
-		char * PostData = new char [PostDataSize+1];
-		ZeroMemory(PostData,PostDataSize+1);
+		ushort offset = 0;
+		char * PostData = new char[1024 * 24];
+		ZeroMemory(PostData,1024 * 24);
 		ListConnections::Iterator iterCnxn(*m_fmServers.GetConnections());
 		while (!iterCnxn.End()) {
 			CFLServer * pServerT = CFLServer::FromConnection(*iterCnxn.Value());
 			MissionList::Iterator iterMission(*pServerT->GetMissions());
 			while (!iterMission.End()){
 				CFLMission* mission = iterMission.Value();
-				memcpy(PostData + (sizeof(FMD_LS_LOBBYMISSIONINFO) * i),mission->GetMissionInfo(),sizeof(FMD_LS_LOBBYMISSIONINFO));
+				FMD_LS_LOBBYMISSIONINFO *info = mission->GetMissionInfo();
+				memcpy(PostData + offset,info,info->cbmsg);
+				offset += info->cbmsg;
 				i++;
+				iterMission.Next();
 			}
 			iterCnxn.Next();
 		}
-		int length = strlen(PostData);
-		if (length > 0) {
-			client->postRequest(szURL,PostData,length);
-			debugf("****** lobby mission info posted in %i bytes\n",length);
-			ZString zResponse;
-			zResponse.SetEmpty();
-			int contentLen = 0;
-			if (client->getResponseCode() == 200) {
-				zResponse = client->getResponseContent(&contentLen);
-				debugf("lobbyinfo returned: %s ******\n",(PCC)zResponse);
+		if (offset > 0) {
+		//	char mprthname[10]; 
+		//  mprSprintf(mprthname, sizeof(mprthname), "lobbyinfo");
+		//	MprThread* threadp = new MprThread(doLobbyInfo, MPR_NORMAL_PRIORITY, (void*) PostData, mprthname); 
+		//	threadp->start();
+			char* szURL= "http://azforum.cloudapp.net/lobbyinfo/index.cgi"; //TODO NYI Imago Registry
+			MaUrl maUrl;
+			maUrl.parse(szURL);
+
+			// First make sure we can write to a socket
+			MprSocket* socket = new MprSocket();
+			socket->openClient(maUrl.host, maUrl.port, 0);
+			int iwrite = socket->_write("GET /\r\n");
+			delete socket;
+
+			MaClient* client = new MaClient();
+			client->setTimeout(3000);
+			client->setRetries(1);
+			client->setKeepAlive(0);
+
+			// make sure we wrote 7 bytes
+			if (iwrite == 7) {
+				client->postRequest("http://azforum.cloudapp.net/lobbyinfo/index.cgi",PostData,sizeof(char*) * sizeof(PostData));
+				debugf("****** lobby mission info posted in %i bytes\n",sizeof(char*) * sizeof(PostData));
+				ZString zResponse;
+				zResponse.SetEmpty();
+				int contentLen = 0;
+				if (client->getResponseCode() == 200) {
+					zResponse = client->getResponseContent(&contentLen);
+					debugf("lobbyinfo returned: %s ******\n",(PCC)zResponse);
+				}		
 			}
 		}
+		//::VirtualFree((LPVOID)PostData, 0, MEM_RELEASE);
+		delete PostData;
 
 	}
-
 }
 
 CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
