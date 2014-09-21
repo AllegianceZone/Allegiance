@@ -167,8 +167,18 @@ void CLobbyApp::SendGameInfo()
 			iterCnxn.Next();
 		}
 		int length = strlen(PostData);
-		if (length > 0)
+		if (length > 0) {
 			client->postRequest(szURL,PostData,length);
+			debugf("****** lobby mission info posted in %i bytes\n",length);
+			ZString zResponse;
+			zResponse.SetEmpty();
+			int contentLen = 0;
+			if (client->getResponseCode() == 200) {
+				zResponse = client->getResponseContent(&contentLen);
+				debugf("lobbyinfo returned: %s ******\n",(PCC)zResponse);
+			}
+		}
+
 	}
 
 }
