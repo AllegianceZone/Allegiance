@@ -134,8 +134,9 @@ void CLobbyApp::SendGameInfo()
   for (int i = 0; i < m_cReportServers; i++)
     ZGameInfoSendTo(m_rgulIP[i], 2000, GetGameServerInfoMsg(), sizeof(m_GameInfoBuf));
 
+	char* szURL= "http://azforum.cloudapp.net/lobbyinfo"; //TODO NYI Imago Registry
 	MaUrl maUrl;
-	maUrl.parse("http://azforum.cloudapp.net/lobbyinfo");
+	maUrl.parse(szURL);
 
 	// First make sure we can write to a socket
 	MprSocket* socket = new MprSocket();
@@ -151,15 +152,12 @@ void CLobbyApp::SendGameInfo()
 	// make sure we wrote 7 bytes
 	if (iwrite == 7) {
 		int i = 0;
-		int count = m_fmServers.GetConnections()->GetCount();
-		int PostDataSize = sizeof(FMD_LS_LOBBYMISSIONINFO) * count;
+		int PostDataSize = sizeof(FMD_LS_LOBBYMISSIONINFO) * m_fmServers.GetConnections()->GetCount();
 		char * PostData = new char [PostDataSize+1];
+		ZeroMemory(PostData,PostDataSize+1);
 		ListConnections::Iterator iterCnxn(*m_fmServers.GetConnections());
-		int cMissions = 0;
-		DWORD cPlayers = 0;
 		while (!iterCnxn.End()) {
 			CFLServer * pServerT = CFLServer::FromConnection(*iterCnxn.Value());
-			cMissions += pServerT->GetMissions()->GetCount();
 			MissionList::Iterator iterMission(*pServerT->GetMissions());
 			while (!iterMission.End()){
 				CFLMission* mission = iterMission.Value();
@@ -168,7 +166,9 @@ void CLobbyApp::SendGameInfo()
 			}
 			iterCnxn.Next();
 		}
-		client->postRequest(maUrl.uri,PostData,strlen(PostData));
+		int length = strlen(PostData);
+		if (length > 0)
+			client->postRequest(szURL,PostData,length);
 	}
 
 }
