@@ -83,18 +83,18 @@ static void doAuthentication(void* data, MprThread *threadp)
 
 	int resultMessageLength = 1024;
 	char resultMessage[1024];
-	bool succeeded = g_pLobbyApp->CDKeyIsValid(pqd->szCharacterName, pqd->szCDKey, szAddress, resultMessage, resultMessageLength);
+	bool succeeded = true;//g_pLobbyApp->CDKeyIsValid(pqd->szCharacterName, pqd->szCDKey, szAddress, resultMessage, resultMessageLength);
 	
 	printf("doAuthentication(): keycheck for: %s, key: %s, address: %s, result: %s, succeeded: %s\r\n", pqd->szCharacterName, pqd->szCDKey, szAddress, resultMessage, (succeeded == true) ? "true" : "false");
 	
 	if(!succeeded)
 	{
-		mutex->lock();
+//		mutex->lock();
 		pqd->fValid = false;
 		pqd->fRetry = false;
 		pqd->szReason = new char[lstrlen(resultMessage) + 1];
 		Strcpy(pqd->szReason,resultMessage);
-		mutex->unlock();
+//		mutex->unlock();
 	}
 
 	// tell the main thread we've finished, use the existing thread msg for AZ SQL 
@@ -282,18 +282,18 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       }
 
       //Imago - Dogbones's ASGS_ON AllSrv registry entry fiasco... 8/6/09
-      if (g_pLobbyApp->EnforceAuthentication()) {
-	      char mprthname[9]; 
-	      mprSprintf(mprthname, sizeof(mprthname), "%d",pqd->dwConnectionID);
-	      MprThread* threadp = new MprThread(doAuthentication, MPR_NORMAL_PRIORITY, (void*) pquery, mprthname); 
-	      threadp->start(); //this could fail if a player is trying to login /w the same cnxn at the same time? (NYI TrapHack) - Imago 7/22/08
-      } else {
+      //if (g_pLobbyApp->EnforceAuthentication()) {
+	     // char mprthname[9]; 
+	      //mprSprintf(mprthname, sizeof(mprthname), "%d",pqd->dwConnectionID);
+	    //  MprThread* threadp = new MprThread(doAuthentication, MPR_NORMAL_PRIORITY, (void*) pquery, mprthname); 
+	      //threadp->start(); //this could fail if a player is trying to login /w the same cnxn at the same time? (NYI TrapHack) - Imago 7/22/08
+     // } else {
           BEGIN_PFM_CREATE(*pthis, pfmLogonAck, L, LOGON_ACK)
           END_PFM_CREATE
           pfmLogonAck->dwTimeOffset = pfmLogon->dwTime - Time::Now().clock();
           QueueMissions(pthis);
           g_pLobbyApp->GetFMClients().SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
-      }
+      //}
     }
     break;
 

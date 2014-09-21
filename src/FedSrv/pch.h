@@ -17,7 +17,7 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
-#include "appWeb\appWeb.h" //Imago - updated to 2.4.2-2 XP
+//#include "appWeb\appWeb.h" //Imago - updated to 2.4.2-2 XP
 
 #define _ATL_STATIC_REGISTRY
 

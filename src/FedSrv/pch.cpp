@@ -10,7 +10,7 @@
 
 #include "pch.h"
 
-#include <atlbase.h>
+//#include <atlbase.h>
 
 #ifdef _ATL_STATIC_REGISTRY
 #include <statreg.h>

@@ -18,17 +18,12 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
-#include "appweb/appweb.h" //Imago 7/5/08 uses version 2.4.2-2 xp
+#include "appweb/appweb.h" //Imago 7/5/08 uses version 5.x 9/14
 
 #include <windows.h>
 #include <stdlib.h>
 #include <memory.h>
-#include <mmsystem.h> // wlp 2006 added = somehow appweb.h excludes timegetTime in this module 
-
-
 //#include <dplobby.h>
-
-
 
 // This also includes <atlbase.h> and <atlcom.h>
 #include "LobbyModule.h"

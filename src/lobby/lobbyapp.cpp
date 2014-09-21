@@ -164,32 +164,6 @@ void CLobbyApp::SendGameInfo()
 		//	MprThread* threadp = new MprThread(doLobbyInfo, MPR_NORMAL_PRIORITY, (void*) PostData, mprthname); 
 		//	threadp->start();
 			char* szURL= "http://azforum.cloudapp.net/lobbyinfo/index.cgi"; //TODO NYI Imago Registry
-			MaUrl maUrl;
-			maUrl.parse(szURL);
-
-			// First make sure we can write to a socket
-			MprSocket* socket = new MprSocket();
-			socket->openClient(maUrl.host, maUrl.port, 0);
-			int iwrite = socket->_write("GET /\r\n");
-			delete socket;
-
-			MaClient* client = new MaClient();
-			client->setTimeout(3000);
-			client->setRetries(1);
-			client->setKeepAlive(0);
-
-			// make sure we wrote 7 bytes
-			if (iwrite == 7) {
-				client->postRequest("http://azforum.cloudapp.net/lobbyinfo/index.cgi",PostData,sizeof(char*) * sizeof(PostData));
-				debugf("****** lobby mission info posted in %i bytes\n",sizeof(char*) * sizeof(PostData));
-				ZString zResponse;
-				zResponse.SetEmpty();
-				int contentLen = 0;
-				if (client->getResponseCode() == 200) {
-					zResponse = client->getResponseContent(&contentLen);
-					debugf("lobbyinfo returned: %s ******\n",(PCC)zResponse);
-				}		
-			}
 		}
 		//::VirtualFree((LPVOID)PostData, 0, MEM_RELEASE);
 		delete PostData;
@@ -202,7 +176,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
   m_fmServers(&m_psiteServer),
   m_fmClients(&m_psiteClient),
   m_cReportServers(0),
-  m_sGameInfoInterval(0), // doesn't really matter, but...
+  m_sGameInfoInterval(30), // doesn't really matter, but...
   m_fProtocol(true),
   m_cStaticCoreInfo(0),
   m_vStaticCoreInfo(NULL),
@@ -650,7 +624,7 @@ bool CLobbyApp::BootPlayersByCDKey(const ZString& strCDKey, const ZString& strNa
 
   return bBootedSomeone;
 }
-
+/*
 // BT - 12/21/2010 - CSS - Get all rank details from the lobby web service
 bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen)
 {
@@ -817,6 +791,7 @@ bool CLobbyApp::CDKeyIsValid(const char* szPlayerName, const char* szCDKey, cons
 	return succeeded;
 }
 
+*/
 
 void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, CFLMission* pMission, const char* szAddress)
 {
@@ -840,7 +815,7 @@ void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, 
 
 	debugf("SetPlayerMission(): checking valid key for: %s, cdKey: %s, IP: %s\r\n", szPlayerName, szCDKey, szAddress);
 
-	bool cdKeyIsValid = CDKeyIsValid(szPlayerName, szCDKey, szAddress, resultMessage, resultMessageLength);
+	bool cdKeyIsValid = true; //CDKeyIsValid(szPlayerName, szCDKey, szAddress, resultMessage, resultMessageLength);
 
 	debugf("SetPlayerMission(): keycheck for: %s, key: %s, address: %s, result: %s, succeeded: %s\r\n", szPlayerName, szCDKey, szAddress, resultMessage, (cdKeyIsValid == true) ? "true" : "false");
 

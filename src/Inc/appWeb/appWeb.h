@@ -1,126 +1,321 @@
-///
-///	@file 	appweb.h
-/// @brief 	Primary header for the Mbedthis Appweb Library
-//
-/////////////////////////////////// Copyright //////////////////////////////////
-//
-//	@copy	default
-//	
-//	Copyright (c) Mbedthis Software LLC, 2003-2007. All Rights Reserved.
-//	
-//	This software is distributed under commercial and open source licenses.
-//	You may use the GPL open source license described below or you may acquire 
-//	a commercial license from Mbedthis Software. You agree to be fully bound 
-//	by the terms of either license. Consult the LICENSE.TXT distributed with 
-//	this software for full details.
-//	
-//	This software is open source; you can redistribute it and/or modify it 
-//	under the terms of the GNU General Public License as published by the 
-//	Free Software Foundation; either version 2 of the License, or (at your 
-//	option) any later version. See the GNU General Public License for more 
-//	details at: http://www.mbedthis.com/downloads/gplLicense.html
-//	
-//	This program is distributed WITHOUT ANY WARRANTY; without even the 
-//	implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-//	
-//	This GPL license does NOT permit incorporating this software into 
-//	proprietary programs. If you are unable to comply with the GPL, you must
-//	acquire a commercial license to use this software. Commercial licenses 
-//	for this software and support services are available from Mbedthis 
-//	Software at http://www.mbedthis.com 
-//	
-//	@end
-//
-////////////////////////////////// Includes ////////////////////////////////////
+/*
+    appweb.h -- Embedthis Appweb HTTP Web Server header
 
-#ifndef _h_APP_WEB
-#define _h_APP_WEB 1
+    Copyright (c) All Rights Reserved. See details at the end of the file.
+ */
 
-#ifndef  	__cplusplus
-//
-//	C includes
-//
-#include	"capi.h"
-#if BLD_FEATURE_GACOMPAT_MODULE
-#include	"compatApi.h"
-#endif
-#if BLD_FEATURE_ESP_MODULE
-#include	"esp.h"
+#ifndef _h_APPWEB
+#define _h_APPWEB 1
+
+/********************************* Includes ***********************************/
+
+#include    "osdep.h"
+#include    "mpr.h"
+#include    "http.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#else // !__cplusplus
-//
-//	C++ includes
-//
-#include	"mpr.h"
-#include	"http.h"
-#include	"client.h"
+/********************************* Tunables ***********************************/
 
-//
-//	FUTURE -- remove from here. Menu definitions.
-//
-#if WIN
-#define MPR_HTTP_MENU_ABOUT		1
-#define MPR_HTTP_MENU_STOP		2
-#define MPR_HTTP_MENU_HELP		3
-#define MPR_HTTP_MENU_CONSOLE	4
-#endif
+#define MA_UNLOAD_TIMEOUT       "5mins"     /**< Default module inactivity timeout */
 
-#if BLD_FEATURE_ADMIN_MODULE
-#include	"adminHandler.h"
+/********************************** Defines ***********************************/
+/*
+    Pack defaults
+ */
+#ifndef ME_COM_CGI
+    #define ME_COM_CGI 0
 #endif
-#if BLD_FEATURE_AUTH_MODULE
-#include	"authHandler.h"
+#ifndef ME_COM_DIR
+    #define ME_COM_DIR 0
 #endif
-#if BLD_FEATURE_COPY_MODULE
-#include	"copyHandler.h"
+#ifndef ME_COM_EJS
+    #if ME_EJS_PRODUCT
+        #define ME_COM_EJS 1
+    #else
+        #define ME_COM_EJS 0
+    #endif
 #endif
-#if BLD_FEATURE_CGI_MODULE
-#include	"cgiHandler.h"
+#ifndef ME_COM_ESP
+    #if ME_ESP_PRODUCT
+        #define ME_COM_ESP 1
+    #else
+        #define ME_COM_ESP 0
+    #endif
 #endif
-#if BLD_FEATURE_DIR_MODULE
-#include	"dirHandler.h"
+#ifndef ME_COM_MDB
+    #define ME_COM_MDB 0
 #endif
-#if BLD_FEATURE_EGI_MODULE
-#include	"egiHandler.h"
+#ifndef ME_COM_PHP
+    #define ME_COM_PHP 0
 #endif
-#if BLD_FEATURE_ESP_MODULE
-#include	"espHandler.h"
+#ifndef ME_COM_SDB
+    #define ME_COM_SDB 0
 #endif
-#if BLD_FEATURE_SSL_MODULE
-#include	"sslModule.h"
-#endif
-#if BLD_FEATURE_UPLOAD_MODULE
-#include	"uploadHandler.h"
-#endif
-#if BLD_FEATURE_PUT_MODULE
-#include	"putHandler.h"
-#endif
-#if BLD_FEATURE_C_API_MODULE
-#include	"capi.h"
+#ifndef ME_COM_SSL
+    #define ME_COM_SSL 0
 #endif
 
-#if BLD_FEATURE_GACOMPAT_MODULE
-	#include	"gaCompatModule.h"
+/******************************************************************************/
+/*
+    State flags
+ */
+#define MA_PARSE_NON_SERVER     0x1     /**< Command file being parsed by a utility program */
+#define MA_NO_MODULES           0x2     /**< Configure server but do not load modules */
+
+/**
+    Current configuration parse state
+    @stability Evolving
+    @defgroup MaState MaState
+    @see MaDirective MaState maAddDirective maArchiveLog maPopState maPushState maTokenize
+    @stability Evolving
+ */
+typedef struct MaState {
+    HttpHost    *host;                  /**< Current host */
+    HttpAuth    *auth;                  /**< Quick alias for route->auth */
+    HttpRoute   *route;                 /**< Current route */
+    MprFile     *file;                  /**< Config file handle */
+    char        *key;                   /**< Current directive being parsed */
+    char        *configDir;             /**< Directory containing config file */
+    char        *filename;              /**< Config file name */
+    char        *endpoints;             /**< Virtual host endpoints */
+    int         lineNumber;             /**< Current line number */
+    int         enabled;                /**< True if the current block is enabled */
+    int         flags;                  /**< Parsing flags */
+    struct MaState *prev;               /**< Previous (inherited) state */
+    struct MaState *top;                /**< Top level state */
+    struct MaState *current;            /**< Current state */
+} MaState;
+
+/**
+    Appweb configuration file directive parsing callback function
+    @description Directive callbacks are invoked to parse a directive. Directive callbacks are registered using
+        #maAddDirective.
+    @param state Current config parse state.
+    @param key Directive key name
+    @param value Directive key value
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Evolving
+ */
+typedef int (MaDirective)(MaState *state, cchar *key, cchar *value);
+
+/**
+    Define a new appweb configuration file directive
+    @description The appweb configuration file parse is extensible. New directives can be registered by this call. When
+        encountered in the config file, the given callback proc will be invoked to parse.
+    @param directive Directive name
+    @param proc Directive callback procedure of the type #MaDirective. 
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC void maAddDirective(cchar *directive, MaDirective proc);
+
+/** 
+    Configure a web server
+    @description This will configure a web server based on either a configuration file or using the supplied
+        IP address and port. 
+    @param configFile File name of the Appweb configuration file (appweb.conf) that defines the web server configuration.
+    @param home Admin directory for the server. This overrides the value in the config file.
+    @param documents Default directory for web documents to serve. This overrides the value in the config file.
+    @param ip IP address to listen on. This overrides the value specified in the config file.
+    @param port Port address to listen on. This overrides the value specified in the config file.
+    @param flags Set to MA_NO_MODULES to suppress loading modules. Otherwise set to zero.
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC int maConfigureServer(cchar *configFile, cchar *home, cchar *documents, cchar *ip, int port, int flags);
+
+/**
+    Get the argument in a directive
+    @description Break into arguments. Args may be quoted. An outer quoting of the entire arg is removed.
+    @param s String to examine
+    @param tok Next token reference
+    @return Reference to the next token. (Not allocate
+    @ingroup MaState
+    @stability Evolving
+*/
+PUBLIC char *maGetNextArg(char *s, char **tok);
+
+/**
+    Load an appweb module
+    @description Load an appweb module. If the module is already loaded, this call will return successfully without
+        reloading. Modules can be dynamically loaded or may also be pre-loaded using static linking.
+    @param name User name. Must be defined in the system password file.
+    @param libname Library path name
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC int maLoadModule(cchar *name, cchar *libname);
+
+/**
+    Parse an Appweb configuration file
+    @description Parse the configuration file and configure the server. This creates a default host and route
+        and then configures the server based on config file directives.
+    @param path Configuration file pathname.
+    @param flags Parse control flags. Reserved. Set to zero.
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC int maParseConfig(cchar *path, int flags);
+
+/**
+    Parse a configuration file
+    @param state Current state level object
+    @param path Filename to parse
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Prototype
+ */
+PUBLIC int maParseFile(MaState *state, cchar *path);
+
+/**
+    Pop the state 
+    @description This is used when parsing config files to handle nested include files and block level directives
+    @param state Current state
+    @return The next lower level state object
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC MaState *maPopState(MaState *state);
+
+/**
+    Push the state 
+    @description This is used when parsing config files to handle nested include files and block level directives
+    @param state Current state
+    @return The state passed as a parameter which becomes the new top level state
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC MaState *maPushState(MaState *state);
+
+/**
+    Tokenize a string based on route data
+    @description This is a utility routine to parse a string into tokens given a format specifier. 
+    Mandatory tokens can be specified with "%" format specifier. Optional tokens are specified with "?" format. 
+    Values wrapped in quotes will have the outermost quotes trimmed.
+    @param state Current config parsing state
+    @param str String to expand
+    @param fmt Format string specifier
+    Supported tokens:
+    <ul>
+    <li>%B - Boolean. Parses: on/off, true/false, yes/no.</li>
+    <li>%N - Number. Parses numbers in base 10.</li>
+    <li>%S - String. Removes quotes.</li>
+    <li>%P - Path string. Removes quotes and expands ${PathVars}. Resolved relative to host->dir (ServerRoot).</li>
+    <li>%W - Parse words into a list</li>
+    <li>%! - Optional negate. Set value to HTTP_ROUTE_NOT present, otherwise zero.</li>
+    </ul>
+    @return True if the string can be successfully parsed.
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC bool maTokenize(MaState *state, cchar *str, cchar *fmt, ...);
+
+/** 
+    Create and run a simple web server listening on a single IP address.
+    @description Create a simple web server without using a configuration file. The server is created to listen on
+        the specified IP address and port. This routine provides a one-line embedding of Appweb. If you want to 
+        use a config file, try the #maRunWebServer instead. 
+    @param ip IP address on which to listen. Set to "0.0.0.0" to listen on all interfaces.
+    @param port Port number to listen to
+    @param home Home directory for the web server
+    @param documents Directory containing the documents to serve.
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC int maRunSimpleWebServer(cchar *ip, int port, cchar *home, cchar *documents);
+
+/** 
+    Run a web client request
+    @description Create a web server configuration based on the supplied config file. This routine provides 
+        a one-line embedding of Appweb. If you don't want to use a config file, try the #maRunSimpleWebServer 
+        instead.
+    @param method HTTP method to invoke
+    @param uri URI to request
+    @param data Optional data to send with request. Set to null for GET requests.
+    @param response Output parameter to receive the HTTP request response.
+    @param err Output parameter to receive any error messages.
+    @ingroup MaState
+    @see httpRequest
+    @stability Evolving
+ */
+PUBLIC int maRunWebClient(cchar *method, cchar *uri, cchar *data, char **response, char **err);
+
+/** 
+    Create and run a web server based on a configuration file
+    @description Create a web server configuration based on the supplied config file. This routine provides 
+        a one-line embedding of Appweb. If you don't want to use a config file, try the #maRunSimpleWebServer 
+        instead. 
+    @param configFile File name of the Appweb configuration file (appweb.conf) that defines the web server configuration.
+    @return Zero if successful, otherwise a negative Mpr error code. See the Appweb log for diagnostics.
+    @ingroup MaState
+    @stability Evolving
+ */
+PUBLIC int maRunWebServer(cchar *configFile);
+
+/**
+    Save the authorization configuration to a file
+    AuthFile schema:
+        User name password abilities...
+        Role name abilities...
+    @param auth Auth object allocated by #httpCreateAuth.
+    @param path Path name of file
+    @return "Zero" if successful, otherwise a negative MPR error code
+    @ingroup HttpAuth
+    @stability Internal
+    @internal 
+ */
+PUBLIC int maWriteAuthFile(HttpAuth *auth, char *path);
+
+/*
+    Internal
+ */
+PUBLIC int maCgiHandlerInit(Http *http, MprModule *mp);
+PUBLIC int maDirHandlerInit(Http *http, MprModule *mp);
+PUBLIC int maEjsHandlerInit(Http *http, MprModule *mp);
+PUBLIC int maEspHandlerInit(Http *http, MprModule *mp);
+PUBLIC int maPhpHandlerInit(Http *http, MprModule *mp);
+PUBLIC int maSslModuleInit(Http *http, MprModule *mp);
+
+/*
+    This is exported from slink.c which is either manually created or generated locally
+ */
+PUBLIC void appwebStaticInitialize();
+
+#ifdef __cplusplus
+} /* extern C */
 #endif
-//
-//	Internal use only by appweb.cpp
-//
-void maLoadStaticModules();
-void maUnloadStaticModules();
 
-extern "C" 
-{
-    int appWebMain(int argc, char *argv[]);
-}
-#endif // __cplusplus
+/*
+    Permit overrides
+ */
+#include "customize.h"
 
-#endif // _h_HTTP 
+#endif /* _h_APPWEB */
 
-//
-// Local variables:
-// tab-width: 4
-// c-basic-offset: 4
-// End:
-// vim: sw=4 ts=4 
-//
+/*
+    @copy   default
+
+    Copyright (c) Embedthis Software LLC, 2003-2014. All Rights Reserved.
+
+    This software is distributed under commercial and open source licenses.
+    You may use the Embedthis Open Source license or you may acquire a 
+    commercial license from Embedthis Software. You agree to be fully bound
+    by the terms of either license. Consult the LICENSE.md distributed with
+    this software for full details and other copyrights.
+
+    Local variables:
+    tab-width: 4
+    c-basic-offset: 4
+    End:
+    vim: sw=4 ts=4 expandtab
+
+    @end
+ */

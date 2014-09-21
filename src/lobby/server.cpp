@@ -336,7 +336,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		double commandSigma = 0;
 		double commandMu = 0;
 		bool rankRetrieved = false;
-
+/*
 		if(g_pLobbyApp->EnforceAuthentication() == true)
 		{
 			rankRetrieved = g_pLobbyApp->GetRankForCallsign(
@@ -352,6 +352,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		}
 		else
 		{
+		*/
 			// BT - 1/27/2012 - Enables lobby to return ranks when ACSS is disabled using old callsign(rank) format.
 			rankRetrieved = true;
 
@@ -371,7 +372,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 					rank = atoi(rankString);
 				}
 			}
-		}
+		//}
 
 		BEGIN_PFM_CREATE(*pthis, pfmPlayerRankResponse, LS, PLAYER_RANK)
 			FM_VAR_PARM(PCC(szCharacterName), CB_ZTS) 
