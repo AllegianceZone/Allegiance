@@ -320,9 +320,9 @@
     #include    <process.h>
     #include    <windows.h>
     #include    <shlobj.h>
-    #if ME_DEBUG
-        #include <crtdbg.h>
-    #endif
+   // #if ME_DEBUG
+   //     #include <crtdbg.h>
+   // #endif
 #endif
 
 /*
@@ -1141,13 +1141,13 @@ typedef int64 Ticks;
     #define mkdir(a,b)  _mkdir(a)
     #define open        _open
     #define putenv      _putenv
-    //#define read        _read
+    //#define read        _read //imago 9/14
     #define rmdir(a)    _rmdir(a)
     #define stat        _stat
     #define strdup      _strdup
     #define tempnam     _tempnam
     #define umask       _umask
-    #define unlink      _unlink
+   // #define unlink      _unlink
     #define write       _write
     PUBLIC void         sleep(int secs);
     #endif

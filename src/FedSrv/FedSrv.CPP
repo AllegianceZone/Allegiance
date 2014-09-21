@@ -8651,14 +8651,14 @@ DWORD WINAPI ReceiveThread(LPVOID pThreadParameter)
 
   // Setup the database stuff and connect
 //#if !defined(ALLSRV_STANDALONE) Imago 6/10 commented and fixed up
-  if (g.strSQLConfig.m_str) {
-    hr = g.sql.Init(g.strSQLConfig.m_str, g.idReceiveThread, g.csqlSilentThreads, g.csqlNotifyThreads);
+//  if (g.strSQLConfig.m_str) {
+  //  hr = g.sql.Init(g.strSQLConfig.m_str, g.idReceiveThread, g.csqlSilentThreads, g.csqlNotifyThreads);
 
-    if (FAILED(hr))
-    {
-      return hr;
-    }
-  }
+   // if (FAILED(hr))
+   // {
+   //   return hr;
+   // }
+ // }
 //#endif
 
   UTL::SetArtPath(g.strArtPath);
@@ -8963,6 +8963,7 @@ void LoadSettings()
         else g.fTimeOut = true;
 
       //#if !defined(ALLSRV_STANDALONE) Imago revived 6/10
+		/*
         dwValue=0;
         cbValue = sizeof(dwValue);
         if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "SQLThreadsNotify", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
@@ -8978,7 +8979,7 @@ void LoadSettings()
         if (FAILED(LoadRegString(hKey, "SQLConfig", g.strSQLConfig)))
           g.strSQLConfig.Empty(); // default for all developers
       //#endif // !defined(ALLSRV_STANDALONE)
-
+	  */
         ::RegCloseKey(hKey);
     }
 }

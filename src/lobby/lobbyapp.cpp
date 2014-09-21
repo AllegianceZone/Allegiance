@@ -164,6 +164,12 @@ void CLobbyApp::SendGameInfo()
 		//	MprThread* threadp = new MprThread(doLobbyInfo, MPR_NORMAL_PRIORITY, (void*) PostData, mprthname); 
 		//	threadp->start();
 			char* szURL= "http://azforum.cloudapp.net/lobbyinfo/index.cgi"; //TODO NYI Imago Registry
+			FILE* outputFile;
+		    outputFile = fopen("lobbyinfo.dat","wb");
+			 if (outputFile) {
+				fwrite(PostData, offset, 1, outputFile);
+				fclose(outputFile);
+			}
 		}
 		//::VirtualFree((LPVOID)PostData, 0, MEM_RELEASE);
 		delete PostData;

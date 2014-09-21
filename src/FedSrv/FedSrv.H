@@ -248,10 +248,10 @@ struct Global
     fPaused(false),
     fDoublePrecision(true)
 //#if !defined(ALLSRV_STANDALONE) Imago commented 6/10
-    ,
-    csqlSilentThreads(0),
-    csqlNotifyThreads(0),
-    sql(&siteFedSrv)
+    //,
+    //csqlSilentThreads(0),
+    //csqlNotifyThreads(0),
+    //sql(&siteFedSrv)
 //#endif
 	//imagos crap for multi-process servers 6/25/08
 #if defined(SRV_PARENT)
@@ -274,7 +274,7 @@ struct Global
     strAuthServer.SetEmpty();
     strArtPath.SetEmpty();
 //#if !defined(ALLSRV_STANDALONE)
-    strSQLConfig.Empty();
+  //  strSQLConfig.Empty();
 //#endif    
 #if defined(SRV_CHILD)  //imago -store command line arguments
 	strArgName.SetEmpty();
@@ -349,10 +349,10 @@ struct Global
   bool                fDoublePrecision;
   //  CAdminSponsor<CAdminGames>  sponsorGames;
 //#if !defined(ALLSRV_STANDALONE) Imago commented 6/10
-  CSQLCore            sql;
-  DWORD               csqlSilentThreads;
-  DWORD               csqlNotifyThreads;
-  CComBSTR            strSQLConfig;
+ // CSQLCore            sql;
+ // DWORD               csqlSilentThreads;
+ // DWORD               csqlNotifyThreads;
+ // CComBSTR            strSQLConfig;
 //#endif
   // more of imagos crap for one game per exe
 #if defined(SRV_CHILD)
