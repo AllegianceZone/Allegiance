@@ -369,6 +369,7 @@ public:
                   }
                   else
                   {
+					  ::RegDeleteValue(hKey,"MoveInProgress");
                       ::ExitProcess(0);
                       return S_FALSE;
                   }
