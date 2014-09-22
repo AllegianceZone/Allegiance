@@ -18,9 +18,6 @@ const DWORD CFLClient::c_dwID = 19680815;
 bool g_fLogonCRC = true; 
 #endif
 
-//appweb
-static MprMutex* mutex = new MprMutex();
-
 void encodeURL( char * url,char * token) // url = output, token gets append to url
 {
     // wlp - we will do brute force URL encoding - it's normal alphaNumeric or it's URL encoded
@@ -67,6 +64,7 @@ static DWORD GetRegDWORD(const char* szKey, DWORD dwDefault)
 }
 
 // BT / Orion - 9/11/2010 - Performing validation with new method on LobbyApp to share auth logic.
+/*
 static void doAuthentication(void* data, MprThread *threadp) 
 {
 	CSQLQuery * pQuery = (CSQLQuery *)data;  //use the AZ legacy data & callback
@@ -100,7 +98,7 @@ static void doAuthentication(void* data, MprThread *threadp)
 	// tell the main thread we've finished, use the existing thread msg for AZ SQL 
 	PostThreadMessage(_Module.dwThreadID, wm_sql_querydone, (WPARAM) NULL, (LPARAM) pQuery);
 }
-
+*/
 
 void QueueMissions(FedMessaging * pfm)
 {

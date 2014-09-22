@@ -52,12 +52,12 @@ bool CLobbyApp::ProcessMsgPump()
     {
 //Imago removed
 //#ifdef USECLUB
-      case wm_sql_querydone:
-      {
-        CSQLQuery * pQuery = (CSQLQuery *) msg.lParam;
-        pQuery->DataReady();
-        break;
-      }
+  //    case wm_sql_querydone:
+    //  {
+      //  CSQLQuery * pQuery = (CSQLQuery *) msg.lParam;
+        //pQuery->DataReady();
+        //break;
+      //}
 //#endif
 
       case WM_QUIT:
@@ -119,11 +119,7 @@ void CLobbyApp::SetVariableGameInfo()
   gameInfo->info[0].numTablesInUse = 1;
 }
 
-
-//static void doLobbyInfo(void* data, MprThread *threadp) {
-//
-//}
-
+#define BUFFSIZE 4096
 void CLobbyApp::SendGameInfo()
 {
   ZGameServerInfoMsg* gameInfo = GetGameServerInfoMsg();
@@ -141,9 +137,9 @@ void CLobbyApp::SendGameInfo()
   //Imago 9/14
 	if (m_fmServers.GetConnections()->GetCount() > 0) {
 		int i = 0;
-		ushort offset = 0;
-		char * PostData = new char[1024 * 24];
-		ZeroMemory(PostData,1024 * 24);
+		int offset = 0;
+		char * PostData = new char[BUFFSIZE];
+		ZeroMemory(PostData,BUFFSIZE);
 		ListConnections::Iterator iterCnxn(*m_fmServers.GetConnections());
 		while (!iterCnxn.End()) {
 			CFLServer * pServerT = CFLServer::FromConnection(*iterCnxn.Value());
@@ -159,19 +155,50 @@ void CLobbyApp::SendGameInfo()
 			iterCnxn.Next();
 		}
 		if (offset > 0) {
-		//	char mprthname[10]; 
-		//  mprSprintf(mprthname, sizeof(mprthname), "lobbyinfo");
-		//	MprThread* threadp = new MprThread(doLobbyInfo, MPR_NORMAL_PRIORITY, (void*) PostData, mprthname); 
-		//	threadp->start();
-			char* szURL= "http://azforum.cloudapp.net/lobbyinfo/index.cgi"; //TODO NYI Imago Registry
-			FILE* outputFile;
-		    outputFile = fopen("lobbyinfo.dat","wb");
-			 if (outputFile) {
-				fwrite(PostData, offset, 1, outputFile);
-				fclose(outputFile);
-			}
+			 char *szHdrs = "Content-Type: application/octet-stream\r\n";
+			 HINTERNET hSession = InternetOpen( "HttpSendRequestEx", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
+			 if(hSession) {
+				HINTERNET hConnect = InternetConnect(hSession,"allegiancezone.com",INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
+				if (!hConnect)
+					debugf( "Failed to connect\n" );
+				else
+				{
+					HINTERNET hRequest = HttpOpenRequest(hConnect,"POST","/lobbyinfo.ashx",NULL,NULL,NULL,INTERNET_FLAG_NO_CACHE_WRITE,0);
+					if (!hRequest)
+						debugf( "Failed to open request handle\n" );
+					else
+					{
+						if(HttpSendRequest(hRequest,szHdrs,strlen(szHdrs),PostData,offset))
+						{	
+							char pcBuffer[BUFFSIZE];
+							DWORD dwBytesRead;
+
+							debugf("\nThe following was returned by the server:\n");
+							do
+							{	dwBytesRead=0;
+								if(InternetReadFile(hRequest, pcBuffer, BUFFSIZE-1, &dwBytesRead))
+								{
+									pcBuffer[dwBytesRead]=0x00; // Null-terminate buffer
+									debugf("%s", pcBuffer);
+								}
+								else
+									debugf("\nInternetReadFile failed");
+							}while(dwBytesRead>0);
+							debugf("\n");
+						}
+						if (!InternetCloseHandle(hRequest))
+							debugf( "Failed to close Request handle\n" );
+					}
+					if(!InternetCloseHandle(hConnect))
+						debugf("Failed to close Connect handle\n");
+				}
+				if( InternetCloseHandle( hSession ) == FALSE )
+					debugf( "Failed to close Session handle\n" );
+
+				debugf( "\nFinished.\n" );
+			 } else
+				debugf("Failed to open WinInet session\n");
 		}
-		//::VirtualFree((LPVOID)PostData, 0, MEM_RELEASE);
 		delete PostData;
 
 	}
@@ -374,6 +401,7 @@ HRESULT CLobbyApp::Init()
     }
     RegCloseKey(hk);
 
+	/*
     //Orion ACSS : 2009 - Retrieve url of auth server from registry
 	if (m_dwAuthentication)
 	{
@@ -385,6 +413,7 @@ HRESULT CLobbyApp::Init()
 		}
 		RegCloseKey(hk);
 	}
+	*/
   }
 
   return hr;
