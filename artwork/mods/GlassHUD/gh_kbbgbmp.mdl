@@ -1,4 +1,0 @@
-use "model";
-
-gh_kbbgbmp = 
-	ImportImageFromFile("gh_kbbg.png", true);

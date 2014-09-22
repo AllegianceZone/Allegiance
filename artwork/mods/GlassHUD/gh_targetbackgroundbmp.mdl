@@ -1,4 +1,0 @@
-use "model";
-
-gh_targetbackgroundbmp = 
-	ImportImageFromFile("gh_targetbackground.png", true);

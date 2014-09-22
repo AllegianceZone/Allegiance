@@ -1,4 +1,0 @@
-use "model";
-
-gh_hull_backbmp =	
-	ImportImageFromFile("gh_hull_back.png", true);
