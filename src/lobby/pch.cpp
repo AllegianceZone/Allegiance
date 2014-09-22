@@ -17,5 +17,5 @@
 //#include <statreg.cpp> Imago removed (again)
 #endif
 
-#include <atlimpl.cpp>
+//#include <atlimpl.cpp>
 #include <../TCAtl/UserAcct.cpp>
