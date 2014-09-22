@@ -264,6 +264,9 @@ private:
   StaticCoreInfo   *m_vStaticCoreInfo;
   int               m_cStaticCoreInfo;
 
+  //imago 9/16
+  HANDLE			m_threadPost;
+
 #ifdef USECLUB
   // SQL Stuff
   CSQLCore          m_sql;

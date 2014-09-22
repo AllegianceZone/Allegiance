@@ -25,9 +25,10 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 	if(hSession) {
 		HINTERNET hConnect = InternetConnect(hSession,szHost,INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
 		if (!hConnect)
-			debugf( "Failed to connect\n" );
+			debugf( "Failed to connect to %s\n", szHost);
 		else
 		{
+			debugf("%s %s",szVerb,szUri);
 			HINTERNET hRequest = HttpOpenRequest(hConnect,szVerb,szUri,NULL,NULL,NULL,INTERNET_FLAG_NO_CACHE_WRITE,0);
 			if (!hRequest)
 				debugf( "Failed to open request handle\n" );

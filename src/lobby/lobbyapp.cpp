@@ -14,7 +14,7 @@
 #include "client.h"
 
 ALLOC_MSG_LIST;
-
+CRITICAL_SECTION LobbyInfoCriticalSection;
 CLobbyApp * g_pLobbyApp = NULL;
 
 #ifdef USECLUB
@@ -120,6 +120,22 @@ void CLobbyApp::SetVariableGameInfo()
 }
 
 #define BUFFSIZE 4096
+typedef struct {
+	CB size;
+	char host[128];
+	char hdrs[512];
+	char uri[128];
+	char verb[16];
+	char data[BUFFSIZE];
+} pHTTP;
+	DWORD WINAPI PostThread( LPVOID param ) {
+	pHTTP* settings = (pHTTP*) param;
+	EnterCriticalSection(&LobbyInfoCriticalSection); 
+	ZString Response = UTL::DoHTTP(settings->hdrs,settings->host,settings->verb,settings->uri,settings->data,settings->size);
+	debugf("!!!! Got response: %s",(PCC)Response);
+	LeaveCriticalSection(&LobbyInfoCriticalSection); 
+	return 0;
+}
 void CLobbyApp::SendGameInfo()
 {
   ZGameServerInfoMsg* gameInfo = GetGameServerInfoMsg();
@@ -153,14 +169,17 @@ void CLobbyApp::SendGameInfo()
 			iterCnxn.Next();
 		}
 		if (offset > 0) {
-			 char *szHdrs = "Content-Type: application/octet-stream\r\n";
-			 char *szHost = "allegiancezone.com";
-			 //char *szHost = "azforum.cloudapp.net";
-			 char *szVerb = "POST";
-			 char *szUri = "/lobbyinfo.ashx";
-			 //char *szUri = "/lobbyinfo/index.cgi";
-			 ZString Response = UTL::DoHTTP(szHdrs,szHost,szVerb,szUri,PostData,offset);
-			 debugf("!!!! Got response: %s",(PCC)Response);
+			 pHTTP settings;
+			 Strcpy(settings.hdrs,"Content-Type: application/octet-stream\r\n");
+			 Strcpy(settings.verb,"POST");
+			 Strcpy(settings.uri,"/lobbyinfo.ashx");
+			 Strcpy(settings.host,"allegiancezone.com");
+			 ZeroMemory(settings.data,BUFFSIZE);
+			 memcpy(settings.data,PostData,offset);
+			 settings.size = offset;
+			 debugf("Creating post thread.\n");
+			 DWORD dum;
+			 m_threadPost = CreateThread(NULL, 0, PostThread, (void*)&settings, 0, &dum);
 		}
 	}
 }
@@ -437,7 +456,7 @@ int CLobbyApp::Run()
   const DWORD c_dwUpdateInterval = 200; // milliseconds
   DWORD dwSleep = c_dwUpdateInterval;
   DWORD dwWait = WAIT_TIMEOUT;
-
+  InitializeCriticalSectionAndSpinCount(&LobbyInfoCriticalSection, 0x00000400);
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_Running);
   _putts("---------Press Q to exit---------");
    printf("Ready for clients/servers.\n");
@@ -514,6 +533,7 @@ int CLobbyApp::Run()
     }
     Sleep(1);
   }
+  DeleteCriticalSection(&LobbyInfoCriticalSection);
   return 0;
 }
 
