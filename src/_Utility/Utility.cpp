@@ -50,7 +50,7 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 							return Response;
 						}
 						else
-							debugf("\nInternetReadFile failed");
+							debugf("\nInternetReadFile failed\n");
 					}while(dwBytesRead>0);
 					debugf("\n");
 				}

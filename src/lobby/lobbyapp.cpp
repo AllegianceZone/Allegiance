@@ -132,7 +132,7 @@ typedef struct {
 	pHTTP* settings = (pHTTP*) param;
 	EnterCriticalSection(&HttpCriticalSection); 
 	ZString Response = UTL::DoHTTP(settings->hdrs,settings->host,settings->verb,settings->uri,settings->data,settings->size);
-	debugf("!!!! Got response: %s",(PCC)Response);
+	debugf("!!!! Got response: %s\n",(PCC)Response);
 	LeaveCriticalSection(&HttpCriticalSection); 
 	return 0;
 }
