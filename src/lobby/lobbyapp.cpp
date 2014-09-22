@@ -136,7 +136,6 @@ void CLobbyApp::SendGameInfo()
 
   //Imago 9/14
 	if (m_fmServers.GetConnections()->GetCount() > 0) {
-		int i = 0;
 		int offset = 0;
 		char * PostData = new char[BUFFSIZE];
 		ZeroMemory(PostData,BUFFSIZE);
@@ -149,58 +148,20 @@ void CLobbyApp::SendGameInfo()
 				FMD_LS_LOBBYMISSIONINFO *info = mission->GetMissionInfo();
 				memcpy(PostData + offset,info,info->cbmsg);
 				offset += info->cbmsg;
-				i++;
 				iterMission.Next();
 			}
 			iterCnxn.Next();
 		}
 		if (offset > 0) {
 			 char *szHdrs = "Content-Type: application/octet-stream\r\n";
-			 HINTERNET hSession = InternetOpen( "HttpSendRequestEx", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
-			 if(hSession) {
-				HINTERNET hConnect = InternetConnect(hSession,"allegiancezone.com",INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
-				if (!hConnect)
-					debugf( "Failed to connect\n" );
-				else
-				{
-					HINTERNET hRequest = HttpOpenRequest(hConnect,"POST","/lobbyinfo.ashx",NULL,NULL,NULL,INTERNET_FLAG_NO_CACHE_WRITE,0);
-					if (!hRequest)
-						debugf( "Failed to open request handle\n" );
-					else
-					{
-						if(HttpSendRequest(hRequest,szHdrs,strlen(szHdrs),PostData,offset))
-						{	
-							char pcBuffer[BUFFSIZE];
-							DWORD dwBytesRead;
-
-							debugf("\nThe following was returned by the server:\n");
-							do
-							{	dwBytesRead=0;
-								if(InternetReadFile(hRequest, pcBuffer, BUFFSIZE-1, &dwBytesRead))
-								{
-									pcBuffer[dwBytesRead]=0x00; // Null-terminate buffer
-									debugf("%s", pcBuffer);
-								}
-								else
-									debugf("\nInternetReadFile failed");
-							}while(dwBytesRead>0);
-							debugf("\n");
-						}
-						if (!InternetCloseHandle(hRequest))
-							debugf( "Failed to close Request handle\n" );
-					}
-					if(!InternetCloseHandle(hConnect))
-						debugf("Failed to close Connect handle\n");
-				}
-				if( InternetCloseHandle( hSession ) == FALSE )
-					debugf( "Failed to close Session handle\n" );
-
-				debugf( "\nFinished.\n" );
-			 } else
-				debugf("Failed to open WinInet session\n");
+			 char *szHost = "allegiancezone.com";
+			 //char *szHost = "azforum.cloudapp.net";
+			 char *szVerb = "POST";
+			 char *szUri = "/lobbyinfo.ashx";
+			 //char *szUri = "/lobbyinfo/index.cgi";
+			 ZString Response = UTL::DoHTTP(szHdrs,szHost,szVerb,szUri,PostData,offset);
+			 debugf("!!!! Got response: %s",(PCC)Response);
 		}
-		delete PostData;
-
 	}
 }
 

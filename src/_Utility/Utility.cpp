@@ -19,6 +19,56 @@ char    UTL::s_szUrlRoot[MAX_PATH] = ""; // (unused (or ripped out) Imago 6/10)
 TMap<DWORD,ZString> UTL::m_PrivilegedUsersMap;
 TMap<DWORD,ZString> UTL::m_ServerVersionMap;
 
+//Imago 9/14
+ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength) {
+	HINTERNET hSession = InternetOpen( "HttpSendRequestEx", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
+	if(hSession) {
+		HINTERNET hConnect = InternetConnect(hSession,szHost,INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
+		if (!hConnect)
+			debugf( "Failed to connect\n" );
+		else
+		{
+			HINTERNET hRequest = HttpOpenRequest(hConnect,szVerb,szUri,NULL,NULL,NULL,INTERNET_FLAG_NO_CACHE_WRITE,0);
+			if (!hRequest)
+				debugf( "Failed to open request handle\n" );
+			else
+			{
+				if(HttpSendRequest(hRequest,szHdrs,strlen(szHdrs),PostData,PostLength))
+				{	
+					char pcBuffer[4096];
+					DWORD dwBytesRead;
+
+					debugf("\nThe following was returned by the server:\n");
+					do
+					{	dwBytesRead=0;
+						if(InternetReadFile(hRequest, pcBuffer, 4096-1, &dwBytesRead))
+						{
+							pcBuffer[dwBytesRead]=0x00; // Null-terminate buffer
+							debugf("%s", pcBuffer);
+							ZString Response(pcBuffer);
+							return Response;
+						}
+						else
+							debugf("\nInternetReadFile failed");
+					}while(dwBytesRead>0);
+					debugf("\n");
+				}
+				if (!InternetCloseHandle(hRequest))
+					debugf( "Failed to close Request handle\n" );
+			}
+			if(!InternetCloseHandle(hConnect))
+				debugf("Failed to close Connect handle\n");
+		}
+		if( InternetCloseHandle( hSession ) == FALSE )
+			debugf( "Failed to close Session handle\n" );
+		debugf( "\nFinished.\n" );
+		return "Finished\n";
+	} else {
+		debugf("Failed to open WinInet session\n");
+		return "Failed to open WinInet session\n";
+	}
+}
+
 //Imago #62
 void UTL::SetServerVersion(const char * szVersion, DWORD dwCookie) { 
 	m_ServerVersionMap.Set(dwCookie,szVersion);
@@ -675,3 +725,7 @@ void            Rotation::z(D3DVALUE t)
 {
     m_axis.z = t;
 }
+
+/*
+
+*/
