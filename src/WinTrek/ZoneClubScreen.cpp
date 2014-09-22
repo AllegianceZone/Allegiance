@@ -772,7 +772,7 @@ public:
         m_fRememberPW = fRememberPW;
 //#ifdef USEAUTH
 //#else
-//        trekClient.SaveCharacterName(strName);
+        trekClient.SaveCharacterName(strName);
 //#endif
         GetWindow()->SetWaitCursor();
         TRef<IMessageBox> pmsgBox = CreateMessageBox("Connecting...", NULL, false);

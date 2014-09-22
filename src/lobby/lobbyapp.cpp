@@ -162,8 +162,8 @@ void CLobbyApp::SendGameInfo()
 			while (!iterMission.End()){
 				CFLMission* mission = iterMission.Value();
 				FMD_LS_LOBBYMISSIONINFO *info = mission->GetMissionInfo();
-				memcpy(PostData + offset,info,info->cbmsg);
-				offset += info->cbmsg;
+				memcpy(PostData + offset,info,info->cbmsg + sizeof(FMD_LS_LOBBYMISSIONINFO));
+				offset += info->cbmsg +  + sizeof(FMD_LS_LOBBYMISSIONINFO);
 				iterMission.Next();
 			}
 			iterCnxn.Next();
@@ -172,8 +172,10 @@ void CLobbyApp::SendGameInfo()
 			 pHTTP settings;
 			 Strcpy(settings.hdrs,"Content-Type: application/octet-stream\r\n");
 			 Strcpy(settings.verb,"POST");
-			 Strcpy(settings.uri,"/lobbyinfo.ashx");
-			 Strcpy(settings.host,"allegiancezone.com");
+			 //Strcpy(settings.uri,"/lobbyinfo.ashx");
+			 //Strcpy(settings.host,"allegiancezone.com");
+			 Strcpy(settings.uri,"/lobbyinfo/index.cgi");
+			 Strcpy(settings.host,"azforum.cloudapp.net");
 			 ZeroMemory(settings.data,BUFFSIZE);
 			 memcpy(settings.data,PostData,offset);
 			 settings.size = offset;

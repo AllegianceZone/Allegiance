@@ -26,6 +26,7 @@ bool    g_bDisableNewCivs = true;
 bool    g_bQuickstart = false;
 bool    g_bReloaded = false;
 int     g_civStart    = -1;
+ZString g_autoJoin = ""; //dwCookie - imago 9/14
 bool    g_bDownloadNewConfig = true;
 bool    g_bAskForCDKey = 
 //#ifdef USEAUTH // We don't bother with CD keys anymore.
@@ -629,6 +630,14 @@ public:
                     float civStart;
                     if (token.IsNumber(civStart)) 
                         g_civStart = (int)civStart;
+                } else if (str == "autojoin") {
+					//Imago dont quickstart if no saved name 9/14
+					if (trekClient.GetSavedCharacterName().GetLength()) {
+                    	g_bQuickstart = true;
+						ZString cookie;
+						if (token.IsString(cookie)) 
+							g_autoJoin = cookie;
+					}
                 } else if (str == "nocfgdl")  {
                     g_bDownloadNewConfig = false;
                 } else if (str == "checkfiles") {
