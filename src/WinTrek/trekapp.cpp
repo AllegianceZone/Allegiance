@@ -699,8 +699,8 @@ public:
 		//Orion - 2009 ACSS : check the alleg pipe for the auth token
 		ZString cdKey;
 		int processID;
-		ReadAuthPipe(cdKey, processID);
-		trekClient.SetCDKey(cdKey, processID);
+		//ReadAuthPipe(cdKey, processID);
+		//trekClient.SetCDKey(cdKey, processID);
 
         // 
         // Check for other running copies of the app

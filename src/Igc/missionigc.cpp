@@ -3018,12 +3018,17 @@ void CmissionIGC::Initialize(Time now, IIgcSite* pIgcSite)
 
     m_damageTracks.Initialize(now);
 
-    //preload the convex hulls used for the various asteroids
+    //preload the convex hulls used for the various asteroids - new roids 9/14 imago
+	ZVerify(HitTest::Load("bgrnd03"));
+	ZVerify(HitTest::Load("bgrnd05"));
     ZVerify(HitTest::Load("bgrnd50"));
     ZVerify(HitTest::Load("bgrnd51"));
     ZVerify(HitTest::Load("bgrnd52"));
     ZVerify(HitTest::Load("bgrnd53"));
-    ZVerify(HitTest::Load("bgrnd03"));
+	ZVerify(HitTest::Load("bgrnd54"));
+	ZVerify(HitTest::Load("bgrnd55"));
+	ZVerify(HitTest::Load("bgrnd56"));
+	ZVerify(HitTest::Load("bgrnd57"));
 
 
     m_sideTeamLobby = NULL;
