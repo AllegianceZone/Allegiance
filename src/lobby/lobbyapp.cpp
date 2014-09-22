@@ -174,7 +174,7 @@ void CLobbyApp::SendGameInfo()
 			 Strcpy(settings.verb,"POST");
 			 //Strcpy(settings.uri,"/lobbyinfo.ashx");
 			 //Strcpy(settings.host,"allegiancezone.com");
-			 Strcpy(settings.uri,"/lobbyinfo/index.cgi");
+			 Strcpy(settings.uri,"/lobbyinfo.cgi");
 			 Strcpy(settings.host,"azforum.cloudapp.net");
 			 ZeroMemory(settings.data,BUFFSIZE);
 			 memcpy(settings.data,PostData,offset);
