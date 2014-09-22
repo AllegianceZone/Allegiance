@@ -311,7 +311,7 @@
       <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;..\src\Lib\appweb\libappweb.lib;..\src\Lib\appweb\libhttp.lib;..\src\Lib\appweb\libmpr.lib;..\src\Lib\appweb\libpcre.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib;MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

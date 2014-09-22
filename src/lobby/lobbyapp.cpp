@@ -52,12 +52,12 @@ bool CLobbyApp::ProcessMsgPump()
     {
 //Imago removed
 //#ifdef USECLUB
-  //    case wm_sql_querydone:
-    //  {
-      //  CSQLQuery * pQuery = (CSQLQuery *) msg.lParam;
-        //pQuery->DataReady();
-        //break;
-      //}
+      case wm_sql_querydone:
+      {
+        CSQLQuery * pQuery = (CSQLQuery *) msg.lParam;
+        pQuery->DataReady();
+        break;
+      }
 //#endif
 
       case WM_QUIT:

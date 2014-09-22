@@ -18,8 +18,6 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
-//#include "appweb/appweb.h" //Imago 7/5/08 uses version 5.x 9/14
-//#include "afxinet.h"
 #include <Windows.h>
 #include <wininet.h>
 #include <stdlib.h>
@@ -80,7 +78,7 @@
 // This is included very last since it conflicts with <atlwin.h>, included
 // indirectly by <TCAtl.h>.
 //
-//#include <windowsx.h> // For GlobalAllocPtr and GlobalFreePtr
+#include <windowsx.h> // For GlobalAllocPtr and GlobalFreePtr
 
 
 /////////////////////////////////////////////////////////////////////////////
