@@ -243,17 +243,6 @@ public:
 		m_pLogFile(pLogFile),
 		m_z(0) //Imago 8/12/09
     {
-        //
-        // Are we running on NT
-        //
-
-        
-        OSVERSIONINFO osvi = { sizeof(osvi) };
-        ZVerify(GetVersionEx(&osvi));
-
-        if ((VER_PLATFORM_WIN32_NT & osvi.dwPlatformId) != 0) {
-            m_bBuffered = false;
-        }
 
         DDCall(m_pdid->GetCapabilities(&m_didc));
 
