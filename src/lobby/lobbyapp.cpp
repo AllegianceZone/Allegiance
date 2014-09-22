@@ -14,7 +14,7 @@
 #include "client.h"
 
 ALLOC_MSG_LIST;
-CRITICAL_SECTION LobbyInfoCriticalSection;
+CRITICAL_SECTION HttpCriticalSection;
 CLobbyApp * g_pLobbyApp = NULL;
 
 #ifdef USECLUB
@@ -130,10 +130,10 @@ typedef struct {
 } pHTTP;
 	DWORD WINAPI PostThread( LPVOID param ) {
 	pHTTP* settings = (pHTTP*) param;
-	EnterCriticalSection(&LobbyInfoCriticalSection); 
+	EnterCriticalSection(&HttpCriticalSection); 
 	ZString Response = UTL::DoHTTP(settings->hdrs,settings->host,settings->verb,settings->uri,settings->data,settings->size);
 	debugf("!!!! Got response: %s",(PCC)Response);
-	LeaveCriticalSection(&LobbyInfoCriticalSection); 
+	LeaveCriticalSection(&HttpCriticalSection); 
 	return 0;
 }
 void CLobbyApp::SendGameInfo()
@@ -179,9 +179,14 @@ void CLobbyApp::SendGameInfo()
 			 ZeroMemory(settings.data,BUFFSIZE);
 			 memcpy(settings.data,PostData,offset);
 			 settings.size = offset;
-			 debugf("Creating post thread.\n");
-			 DWORD dum;
-			 m_threadPost = CreateThread(NULL, 0, PostThread, (void*)&settings, 0, &dum);
+			 DWORD lpExitCode;
+			 GetExitCodeThread(m_threadPost,&lpExitCode);
+			 if (lpExitCode != STILL_ACTIVE) {
+				debugf("Creating post thread.\n");
+				DWORD dum;
+				m_threadPost = CreateThread(NULL, 0, PostThread, (void*)&settings, 0, &dum);
+			 } else
+				 debugf("Post thread was still running...\n");
 		}
 	}
 }
@@ -458,7 +463,7 @@ int CLobbyApp::Run()
   const DWORD c_dwUpdateInterval = 200; // milliseconds
   DWORD dwSleep = c_dwUpdateInterval;
   DWORD dwWait = WAIT_TIMEOUT;
-  InitializeCriticalSectionAndSpinCount(&LobbyInfoCriticalSection, 0x00000400);
+  InitializeCriticalSectionAndSpinCount(&HttpCriticalSection, 0x00000400);
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_Running);
   _putts("---------Press Q to exit---------");
    printf("Ready for clients/servers.\n");
@@ -535,7 +540,7 @@ int CLobbyApp::Run()
     }
     Sleep(1);
   }
-  DeleteCriticalSection(&LobbyInfoCriticalSection);
+  DeleteCriticalSection(&HttpCriticalSection);
   return 0;
 }
 

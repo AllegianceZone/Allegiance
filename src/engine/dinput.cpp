@@ -247,14 +247,13 @@ public:
         // Are we running on NT
         //
 
-        /*!!!
+        
         OSVERSIONINFO osvi = { sizeof(osvi) };
         ZVerify(GetVersionEx(&osvi));
 
         if ((VER_PLATFORM_WIN32_NT & osvi.dwPlatformId) != 0) {
             m_bBuffered = false;
         }
-        */
 
         DDCall(m_pdid->GetCapabilities(&m_didc));
 
@@ -322,8 +321,6 @@ public:
         }
 		//
 		
-        ///* !!! this only works on NT50
-		/*
         int speed;
         ZVerify(SystemParametersInfo(SPI_GETMOUSESPEED, 0, &speed, 0));
 
@@ -334,7 +331,6 @@ public:
         } else {
            m_sensitivity = float(speed-6) / 4.0f;
         }
-        */
     }
 
     void SetupDevice() 
