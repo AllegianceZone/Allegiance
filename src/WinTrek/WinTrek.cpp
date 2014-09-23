@@ -3864,7 +3864,7 @@ public:
 		//  the compare doesn't work anyway
 		//   if (szURL[0] == '\0')
 		if (szURL[0] == '\0')
-			szURL = "http://www.alleg.net";
+			szURL = "http://www.allegiancezone.com";
 
         if (!IsWindows9x()) {
             /*
