@@ -1293,7 +1293,7 @@ class UTL
         static int hextoi(const char * pHex);
 
 		//imago 9/14
-		static ZString DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength);
+		static ZString DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength, bool bSecure = false);
 
     private:
         static char     s_artworkPath[MAX_PATH];

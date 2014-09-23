@@ -20,16 +20,17 @@ TMap<DWORD,ZString> UTL::m_PrivilegedUsersMap;
 TMap<DWORD,ZString> UTL::m_ServerVersionMap;
 
 //Imago 9/14
-ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength) {
+ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength, bool bSecure) {
 	HINTERNET hSession = InternetOpen( "HttpSendRequestEx", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
 	if(hSession) {
-		HINTERNET hConnect = InternetConnect(hSession,szHost,INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
+
+		HINTERNET hConnect = InternetConnect(hSession,szHost,(bSecure) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
 		if (!hConnect)
 			debugf( "Failed to connect to %s\n", szHost);
 		else
 		{
 			debugf("%s %s",szVerb,szUri);
-			HINTERNET hRequest = HttpOpenRequest(hConnect,szVerb,szUri,NULL,NULL,NULL,INTERNET_FLAG_NO_CACHE_WRITE,0);
+			HINTERNET hRequest = HttpOpenRequest(hConnect,szVerb,szUri,NULL,NULL,NULL,(bSecure) ? INTERNET_FLAG_SECURE|INTERNET_FLAG_NO_CACHE_WRITE : INTERNET_FLAG_NO_CACHE_WRITE,0);
 			if (!hRequest)
 				debugf( "Failed to open request handle\n" );
 			else
