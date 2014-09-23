@@ -391,10 +391,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
     ::Sleep(1000); // we wait a little more to help ensure Allegiance is completely dead.
 
+	
 
     if (!CAutoDownloadUtil::MoveFiles("AutoUpdate\\", szArtPath, false, NULL, false, NULL, &g_AutoDownloadSink))
     {
-        DisplayErrorMsg("Couldn't move at least one of the downloaded files.  Reboot and try again.  As a last resort, you may need to reinstall.");
+        DisplayErrorMsg("Couldn't move at least one of the downloaded files.  If this happens with Allegiance.exe, make sure you have the Application Experience (AeLookupSvc) and Program Compatibility Assistant Service (PcaSvc) enabled!  Also, try deleting FileList.txt.  As a last resort, you may need to reboot or reinstall.");
         return 3;
     }
 

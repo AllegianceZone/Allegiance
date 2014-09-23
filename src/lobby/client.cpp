@@ -286,6 +286,14 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	    //  MprThread* threadp = new MprThread(doAuthentication, MPR_NORMAL_PRIORITY, (void*) pquery, mprthname); 
 	      //threadp->start(); //this could fail if a player is trying to login /w the same cnxn at the same time? (NYI TrapHack) - Imago 7/22/08
      // } else {
+
+
+	  	//char * szPass = "12345";
+		//IsRFC2898Valid("Imago",szPass) ? printf("authed!\n") : printf("not authed!\n");
+		//return 0;
+
+
+
           BEGIN_PFM_CREATE(*pthis, pfmLogonAck, L, LOGON_ACK)
           END_PFM_CREATE
           pfmLogonAck->dwTimeOffset = pfmLogon->dwTime - Time::Now().clock();

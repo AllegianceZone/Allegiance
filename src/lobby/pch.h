@@ -72,7 +72,7 @@
 #include "server.h"
 #include "AutoUpdate.h"
 #include "LobbyEvents.h"
-
+#include "pkcs5.h" //Imago 9/14
 
 /////////////////////////////////////////////////////////////////////////////
 // This is included very last since it conflicts with <atlwin.h>, included

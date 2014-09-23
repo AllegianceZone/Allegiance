@@ -352,7 +352,7 @@ public:
           DWORD cbValue = MAX_PATH;
 
           // NOTE: please keep reloader.cpp's GetArtPath() in sync with this!!!
-          if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
+          if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_ALL_ACCESS, &hKey))
           {
               // Get MoveInProgress from registry
               if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "MoveInProgress", NULL, &dwType, (unsigned char*)&szValue, &cbValue) &&
@@ -370,6 +370,7 @@ public:
                   else
                   {
 					  ::RegDeleteValue(hKey,"MoveInProgress");
+					  ::DeleteFile("FileList.txt");
                       ::ExitProcess(0);
                       return S_FALSE;
                   }
