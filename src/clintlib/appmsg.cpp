@@ -2171,7 +2171,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             // Make sure we have the right static core
             if (lstrcmp(m_pMissionInfo->GetIGCStaticFile(), m_szIGCStaticFile) != 0
-                && !ResetStaticData(m_pMissionInfo->GetIGCStaticFile(), &m_pCoreIGC, now, GetIsZoneClub()))
+                && !ResetStaticData(m_pMissionInfo->GetIGCStaticFile(), &m_pCoreIGC, now, false)) //imago never encrypted 9/14
             {
                 // we have the wrong file - let's bail.
                 Disconnect();

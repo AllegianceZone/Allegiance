@@ -34,7 +34,7 @@ private:
     TRef<ButtonPane>    m_pbuttonOptions;
     TRef<ButtonPane>    m_pbuttonIntro;
     TRef<ButtonPane>    m_pbuttonCredits;
-    //TRef<ButtonPane> m_pbuttonQuickstart;
+    TRef<ButtonPane> m_pbuttonQuickstart;
     TRef<ButtonPane>    m_pbuttonExit;
     TRef<ButtonPane>    m_pbuttonHelp;
     TRef<IMessageBox>   m_pMsgBox;
@@ -595,7 +595,7 @@ public:
         CastTo(m_pbuttonOptions,     pns->FindMember("optionsButtonPane"));
         CastTo(m_pbuttonIntro,      pns->FindMember("introButtonPane"));
         CastTo(m_pbuttonCredits,    pns->FindMember("creditsButtonPane"));
-        //CastTo(m_pbuttonQuickstart, pns->FindMember("quickstartButtonPane"));
+        CastTo(m_pbuttonQuickstart, pns->FindMember("quickstartButtonPane"));
         CastTo(m_pbuttonExit,       pns->FindMember("exitButtonPane" ));
         CastTo(m_pbuttonHelp,       pns->FindMember("helpButtonPane" ));
         
@@ -606,7 +606,7 @@ public:
         AddEventTarget(&IntroScreen::OnButtonExit,        m_pbuttonExit->GetEventSource());
         AddEventTarget(&IntroScreen::OnButtonHelp,        m_pbuttonHelp->GetEventSource());
 #ifdef USEAZ
-        AddEventTarget(OnButtonZoneClub,    m_pbuttonZoneClub->GetEventSource());
+        AddEventTarget(&IntroScreen::OnButtonZoneClub,    m_pbuttonZoneClub->GetEventSource());
 #endif
         AddEventTarget(&IntroScreen::OnButtonInternet,    m_pbuttonPlayInt->GetEventSource());
         AddEventTarget(&IntroScreen::OnButtonLAN,         m_pbuttonPlayLan->GetEventSource());
@@ -619,7 +619,7 @@ public:
         AddEventTarget(&IntroScreen::OnHoverPlayLan,      m_pbuttonPlayLan->GetMouseEnterEventSource());
         AddEventTarget(&IntroScreen::OnHoverPlayInt,      m_pbuttonPlayInt->GetMouseEnterEventSource());
 #ifdef USEAZ
-        AddEventTarget(OnHoverZoneClub,     m_pbuttonZoneClub->GetMouseEnterEventSource());
+        AddEventTarget(&IntroScreen::OnHoverZoneClub,     m_pbuttonZoneClub->GetMouseEnterEventSource());
 #endif
         //AddEventTarget(OnHoverTrain,        m_pbuttonTraining->GetMouseEnterEventSource());
         AddEventTarget(&IntroScreen::OnHoverTrain,        m_pbuttonTrainingBig->GetMouseEnterEventSource());
@@ -627,14 +627,14 @@ public:
         AddEventTarget(&IntroScreen::OnHoverOptions,       m_pbuttonOptions->GetMouseEnterEventSource());
         AddEventTarget(&IntroScreen::OnHoverIntro,        m_pbuttonIntro->GetMouseEnterEventSource());
         AddEventTarget(&IntroScreen::OnHoverCredits,      m_pbuttonCredits->GetMouseEnterEventSource());
-        //AddEventTarget(OnHoverQuickstart,   m_pbuttonQuickstart->GetMouseEnterEventSource());
+        AddEventTarget(&IntroScreen::OnHoverQuickstart,   m_pbuttonQuickstart->GetMouseEnterEventSource());
         AddEventTarget(&IntroScreen::OnHoverExit,         m_pbuttonExit->GetMouseEnterEventSource());
         AddEventTarget(&IntroScreen::OnHoverHelp,         m_pbuttonHelp->GetMouseEnterEventSource());
 
         AddEventTarget(&IntroScreen::OnHoverNone,     m_pbuttonPlayLan->GetMouseLeaveEventSource());
         AddEventTarget(&IntroScreen::OnHoverNone,     m_pbuttonPlayInt->GetMouseLeaveEventSource());
 #ifdef USEAZ
-        AddEventTarget(OnHoverNone,     m_pbuttonZoneClub->GetMouseLeaveEventSource());
+        AddEventTarget(&IntroScreen::OnHoverNone,     m_pbuttonZoneClub->GetMouseLeaveEventSource());
 #endif
         //AddEventTarget(OnHoverNone,     m_pbuttonTraining->GetMouseLeaveEventSource());
         AddEventTarget(&IntroScreen::OnHoverNone,     m_pbuttonTrainingBig->GetMouseLeaveEventSource());
@@ -647,7 +647,7 @@ public:
         AddEventTarget(&IntroScreen::OnHoverNone,     m_pbuttonExit->GetMouseLeaveEventSource());
 
         //m_pbuttonPlayLan->SetEnabled(false);
-        //m_pbuttonPlayInt->SetEnabled(false);
+        m_pbuttonPlayInt->SetEnabled(false); //Imago 9/14
 
         m_pfindServerPopup = new FindServerPopup(pns, this);
           

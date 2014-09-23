@@ -1261,7 +1261,7 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
 { 
     // connect to a particular *game* on this server
     HRESULT hr = S_OK;
-    
+
     // review:  in the event of retry logon after logon failure 
     // we need to treat this as a reconnect and dump first connection...
     // we should see about reusing the connection
@@ -1392,7 +1392,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
 		::RegCloseKey(hKey);
 	}
 */
-	hr = m_fmLobby.JoinSession(GetIsZoneClub() ? FEDLOBBYCLIENTS_GUID : FEDFREELOBBYCLIENTS_GUID, m_ci.strServer, m_ci.szName, GetCfgInfo().dwLobbyPort);
+	hr = m_fmLobby.JoinSession(GetIsZoneClub() ? FEDFREELOBBYCLIENTS_GUID : FEDFREELOBBYCLIENTS_GUID, m_ci.strServer, m_ci.szName, GetCfgInfo().dwLobbyPort); //Imago only one lobby GUID 9/14
     assert(IFF(m_fmLobby.IsConnected(), SUCCEEDED(hr)));
     if (m_fmLobby.IsConnected())
     {
@@ -2007,8 +2007,8 @@ HRESULT BaseClient::ReceiveMessages(void)
     }
 
 	// BT - 1/16/2013 - Added launcher check to ensure launcher was not killed.
-	if(FAILED(hr) == false)
-		hr = CheckLauncher();
+	//if(FAILED(hr) == false)
+	//	hr = CheckLauncher();
 
     return(hr);
 }
@@ -2584,14 +2584,15 @@ ZString BaseClient::LookupRankName(RankID rank, CivID civ)
     const char* szRankNameTemplate = "Unknown (%d)";
     int nClosestRank = -1;
 
-    if (m_cRankInfo <= 0 && !GetIsZoneClub())
+    if (m_cRankInfo <= 0) //&& !GetIsZoneClub()) //Imago 9/14 revisit NYI
     {
-        assert(!m_fm.IsConnected() || !GetIsZoneClub());
+        assert(!m_fm.IsConnected()) ;//|| !GetIsZoneClub());
         szRankNameTemplate = "";
     }
     else
     {
-      if (!GetIsZoneClub()) civ = -1;
+      //if (!GetIsZoneClub()) //Imago REVISIT 9/14
+		  civ = -1;
         // 'slow', but probably still fast enough
         for (int iEntry = 0; iEntry < m_cRankInfo; iEntry++)
         {
@@ -4154,42 +4155,42 @@ void CfgInfo::Load(const char * szConfig)
     const char * c_szCfgApp = "Allegiance";
     char szStr[128]; // random number;
     
-    GetPrivateProfileString(c_szCfgApp, "ZAuth", "auth.zone.com", 
+    GetPrivateProfileString(c_szCfgApp, "ZAuth", "azforum.cloudapp.net", 
                                   szStr, sizeof(szStr), szConfig);
     strZAuth = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ClubLobby", "", 
+    GetPrivateProfileString(c_szCfgApp, "ClubLobby", "allegiancezone.cloudapp.net", 
                                    szStr, sizeof(szStr), szConfig);
     strClubLobby = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "PublicLobby", "", 
+    GetPrivateProfileString(c_szCfgApp, "PublicLobby", "allegiancezone.cloudapp.net", 
                                    szStr, sizeof(szStr), szConfig);
     strPublicLobby = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "Club", "", 
+    GetPrivateProfileString(c_szCfgApp, "Club", "allegiancezone.cloudapp.net", 
                                    szStr, sizeof(szStr), szConfig);
     strClub = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ClubMessageURL", "http://fdl.msn.com/zone/allegiance/messageoftheday.mdl", // http://a-markcu1/test/messageoftheday.mdl
+    GetPrivateProfileString(c_szCfgApp, "ClubMessageURL", "http://autoupdate.allegiancezone.com/config/club/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
                                    szStr, sizeof(szStr), szConfig);
     strClubMessageURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "PublicMessageURL", "http://fdl.msn.com/zone/allegiance/messageoftheday.mdl", // http://a-markcu1/test/messageoftheday.mdl
+    GetPrivateProfileString(c_szCfgApp, "PublicMessageURL", "http://autoupdate.allegiancezone.com/config/beta/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
                                    szStr, sizeof(szStr), szConfig);
     strPublicMessageURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "", szStr, sizeof(szStr), szConfig);
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "http://allegiancezone.com", szStr, sizeof(szStr), szConfig);
     strZoneEventsURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ZoneEventDetailsURL", "http://fdl.msn.com/zone/allegiance/zoneevents.mdl", 
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventDetailsURL", "http://autoupdate.allegiancezone.com/config/event/motd.mdl", 
                                    szStr, sizeof(szStr), szConfig);
     strZoneEventDetailsURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "TrainingURL", "http://www.zone.com/allegiance/downloads.asp", 
+    GetPrivateProfileString(c_szCfgApp, "TrainingURL", "http://allegiancezone.com/#/Training", 
                                    szStr, sizeof(szStr), szConfig);
     strTrainingURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "PassportUpdateURL", "http://www.zone.com/allegiance/passportupdate.html", 
+    GetPrivateProfileString(c_szCfgApp, "PassportUpdateURL", "http://azforum.cloudapp.net/passport.cgi", 
                                    szStr, sizeof(szStr), szConfig);
     strPassportUpdateURL = szStr;
 

@@ -1101,7 +1101,7 @@ public:
 
         // Load the members from MDL
 
-        m_pns = pmodeler->GetNameSpace(IsZoneLobby() ? "zonegamescreen" : "gamescreen");
+        m_pns = pmodeler->GetNameSpace(IsZoneLobby() ? "gamescreen" : "gamescreen"); //Imago 9/14
 
         CastTo(m_ppane,                 m_pns->FindMember("screen"           ));
         CastTo(m_pbuttonBack,           m_pns->FindMember("backButtonPane"   ));

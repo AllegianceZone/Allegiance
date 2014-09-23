@@ -143,16 +143,7 @@ public:
     // connect to either Zone Lobby server or Zone Club (wrapper to provide appropriate prompt)
     void ConnectToZone(bool bConnectLobby, ScreenID screenid)
     {
-        ZString strPrompt;
-
-#ifdef USEAUTH
-        if (trekClient.GetCfgInfo().bUsePassport)
-            strPrompt = "Sign in to Microsoft Passport";
-        else
-            strPrompt = "Sign in to the Microsoft Gaming Zone";
-#else
-        strPrompt = "Enter a call sign (player name) to use for this game.";
-#endif
+        ZString strPrompt = "Sign in to the Allegiance Zone";  //Imago 9/14
         ConnectToZone(bConnectLobby, screenid, strPrompt);
     }
 
@@ -770,10 +761,10 @@ public:
         lstrcpy(m_szName, strName);
         lstrcpy(m_szPW, strPassword);
         m_fRememberPW = fRememberPW;
-//#ifdef USEAUTH
-//#else
-        trekClient.SaveCharacterName(strName);
-//#endif
+#ifdef USEAUTH
+#else
+        //trekClient.SaveCharacterName(strName);  //Imago 9/14
+#endif
         GetWindow()->SetWaitCursor();
         TRef<IMessageBox> pmsgBox = CreateMessageBox("Connecting...", NULL, false);
         Point point(c_PopupX, c_PopupY);
