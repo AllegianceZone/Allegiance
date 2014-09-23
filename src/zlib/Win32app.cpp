@@ -722,6 +722,9 @@ __declspec(dllexport) int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevI
     char* pzSpacer = new char[4 * (int)random(21, 256)];
     pzSpacer[0] = *(char*)_alloca(4 * (int)random(1, 256));
 
+	//Imago 6/10
+	SetUnhandledExceptionFilter(Win32App::ExceptionHandler); 
+	g_papp->EnforceFilter( true );
 
     __try { 
         do {
