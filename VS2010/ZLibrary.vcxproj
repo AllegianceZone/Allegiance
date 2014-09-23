@@ -461,13 +461,42 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\zlib\7zAlloc.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\zlib\7zFile.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\zlib\7zStream.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\src\zlib\base.cpp" />
     <ClCompile Include="..\src\zlib\color.cpp" />
     <ClCompile Include="..\src\zlib\event.cpp" />
     <ClCompile Include="..\src\zlib\FTPSession.cpp" />
     <ClCompile Include="..\src\zlib\input.cpp" />
+    <ClCompile Include="..\src\zlib\LzFind.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\zlib\LzFindMt.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\zlib\LzmaDec.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\zlib\LzmaEnc.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\src\zlib\matrix.cpp" />
     <ClCompile Include="..\src\zlib\matrix2.cpp" />
+    <ClCompile Include="..\src\zlib\minidump.cpp" />
     <ClCompile Include="..\src\zlib\orientation.cpp" />
     <ClCompile Include="..\src\zlib\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">Create</PrecompiledHeader>
@@ -484,6 +513,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail-Instrumented|X64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\zlib\quaternion.cpp" />
+    <ClCompile Include="..\src\zlib\Threads.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZDebug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\src\zlib\tlist.cpp" />
     <ClCompile Include="..\src\zlib\token.cpp" />
     <ClCompile Include="..\src\zlib\vector.cpp" />
@@ -495,6 +528,9 @@
     <ClCompile Include="..\src\zlib\ztime.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\zlib\7zAlloc.h" />
+    <ClInclude Include="..\src\zlib\7zFile.h" />
+    <ClInclude Include="..\src\zlib\7zTypes.h" />
     <ClInclude Include="..\src\zlib\alloc.h" />
     <ClInclude Include="..\src\zlib\AutoCriticalSection.h" />
     <ClInclude Include="..\src\zlib\base.h" />
@@ -506,9 +542,15 @@
     <ClInclude Include="..\src\zlib\FTPSession.h" />
     <ClInclude Include="..\src\zlib\genericlist.h" />
     <ClInclude Include="..\src\zlib\input.h" />
+    <ClInclude Include="..\src\zlib\LzFind.h" />
+    <ClInclude Include="..\src\zlib\LzFindMt.h" />
+    <ClInclude Include="..\src\zlib\LzHash.h" />
+    <ClInclude Include="..\src\zlib\LzmaDec.h" />
+    <ClInclude Include="..\src\zlib\LzmaEnc.h" />
     <ClInclude Include="..\src\zlib\main.h" />
     <ClInclude Include="..\src\zlib\mask.h" />
     <ClInclude Include="..\src\zlib\matrix.h" />
+    <ClInclude Include="..\src\zlib\minidump.h" />
     <ClInclude Include="..\src\zlib\olddxdefns.h" />
     <ClInclude Include="..\src\zlib\orientation.h" />
     <ClInclude Include="..\src\zlib\pch.h" />
@@ -516,6 +558,7 @@
     <ClInclude Include="..\src\zlib\quaternion.h" />
     <ClInclude Include="..\src\zlib\rect.h" />
     <ClInclude Include="..\src\zlib\tcompare.h" />
+    <ClInclude Include="..\src\zlib\Threads.h" />
     <ClInclude Include="..\src\zlib\tlist.h" />
     <ClInclude Include="..\src\zlib\TlsValue.h" />
     <ClInclude Include="..\src\zlib\tmap.h" />

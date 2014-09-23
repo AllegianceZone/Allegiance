@@ -108,4 +108,6 @@
 
 #include "token.h"
 
+#include "minidump.h" //Imago 7/10 9/14
+
 #endif
