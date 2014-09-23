@@ -13279,15 +13279,18 @@ IshipIGC*   PickNewLeader(const ShipListIGC*    pships,
     }
 
     void FedSrvApp::OnAssertBreak()
-    {
+	{
         if (m_hFile)
         {
             CloseHandle(m_hFile);
             m_hFile = NULL;
         }
 
-        *(DWORD*)0 = 0;
-        //DebugBreak();
+		// Imago integrated with mini dump on 6/10
+		__try {
+			(*(DWORD*)0) = 0;
+		}
+		__except(GenerateDump(GetExceptionInformation())) {}
     }
 
     // Global Initialization
