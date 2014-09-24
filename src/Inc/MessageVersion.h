@@ -18,7 +18,7 @@
    one server, and many clients, the server is always up to date by definition.
    ***Also gets incremented for changes to parts.h***
 */
-const int MSGVER = 219; // KGJV updated for R5 - 203 Imago R5Contrib 7/11/09 (missionparam.bAllowAllied*) - 204 Imago FAZR6 (wing behavior), + #2 6/10
+const int MSGVER = 220; // KGJV updated for R5 - 203 Imago R5Contrib 7/11/09 (missionparam.bAllowAllied*) - 204 Imago FAZR6 (wing behavior), + #2 6/10
 						// 206 Imago, #62 (remote version) 7/10
 						// 207 roid info (#100)  //208 #132 more He3 updates //#121 viz
 						// 210 Xynth #163 Optimize msg  //211 Xynth #156 miner ore
@@ -26,5 +26,6 @@ const int MSGVER = 219; // KGJV updated for R5 - 203 Imago R5Contrib 7/11/09 (mi
 						// 213 //Imago #192 //214 Xynth #208 //215 Xynth #170 
 						// 216 pkk - Keep out outdated clients //217 Spunky #300
 						// 218 Turkey #307 //219 Turkey #317
+						// 220 AZ Imago 9/14
 
 #endif

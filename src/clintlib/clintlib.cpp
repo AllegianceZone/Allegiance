@@ -1322,17 +1322,13 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
         SetMessageType(c_mtGuaranteed);
         BEGIN_PFM_CREATE(m_fm, pfmLogon, C, LOGONREQ)
             FM_VAR_PARM(ci.szName, CB_ZTS)
-            //FM_VAR_PARM(ci.pZoneTicket, ci.cbZoneTicket)
-
-			// BT - 9/11/2010 - Sending the token to the server so that the server will also enforce authentication. 
             FM_VAR_PARM(szCdKey, CB_ZTS)
-
             FM_VAR_PARM(szPassword, CB_ZTS)
         END_PFM_CREATE
         pfmLogon->fedsrvVer = MSGVER;
         pfmLogon->dwCookie = dwCookie;
-        //pfmLogon->zgs = m_fm.GetEncryptedZoneTicket();
-        pfmLogon->time = Time::Now ();
+		//pfmLogon->CharacterID = //TODO NYI Imago
+        pfmLogon->time = Time::Now ();  //TODO salt CDKey with this NYI Imago
         debugf("Logging on to game server \"%s\"...\n",
           ci.strServer.IsEmpty() ? "" : (LPCSTR)ci.strServer);
         SendMessages();

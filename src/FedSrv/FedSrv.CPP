@@ -5482,7 +5482,8 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           && NULL != memchr(FM_VAR_REF(pfmLogon, CharacterName), 0, c_cbName));
       TrapHackBootNoPlayer(NULL == FM_VAR_REF(pfmLogon, MissionPassword)
           || NULL != memchr(FM_VAR_REF(pfmLogon, MissionPassword), 0, c_cbGamePassword));
-      TrapHackBootNoPlayer(NULL != FM_VAR_REF(pfmLogon, CDKey)
+      
+	  TrapHackBootNoPlayer(NULL != FM_VAR_REF(pfmLogon, CDKey)
           && NULL != memchr(FM_VAR_REF(pfmLogon, CDKey), 0, c_cbCDKey));
 
       if (pfmLogon->fedsrvVer == MSGVER)
@@ -5490,7 +5491,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
         // Now we need to look them up to make sure they logged in
 
         bool fValid = false; // whether we have a valid character
-        LPBYTE pZoneTicket = (LPBYTE) FM_VAR_REF(pfmLogon, ZoneTicket);
+       // LPBYTE pZoneTicket = (LPBYTE) FM_VAR_REF(pfmLogon, ZoneTicket);
         //#if !defined(ALLSRV_STANDALONE)
 		#ifdef USEAUTH
           if (pZoneTicket) // it's all in the Zone Ticket
@@ -5546,7 +5547,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           {
             fValid = true;
             lstrcpy(pqd->szCharacterName, FM_VAR_REF(pfmLogon, CharacterName));
-            pqd->characterID = GetStateID(pqd->szCharacterName); //Imago 6/10
+            pqd->characterID = GetStateID(pqd->szCharacterName); //Imago 6/10 //9/16 TODO NYI
             pqd->fCanCheat = false;
           }
           else
