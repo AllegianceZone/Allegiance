@@ -56,8 +56,9 @@ public:
         AddEventTarget(&LogonPopup::OnButtonAbort, m_pbuttonAbort->GetEventSource());
         CastTo(m_pbuttonSignUp,       pns->FindMember("signUpButtonPane"));
         AddEventTarget(&LogonPopup::OnButtonSignUp, m_pbuttonSignUp->GetEventSource());
-        CastTo(m_pbuttonCDKey,        pns->FindMember("cdKeyButtonPane"));
-        AddEventTarget(&LogonPopup::OnButtonCDKey, m_pbuttonCDKey->GetEventSource());
+		//imago 9/16
+        //CastTo(m_pbuttonCDKey,        pns->FindMember("cdKeyButtonPane"));
+        //AddEventTarget(&LogonPopup::OnButtonCDKey, m_pbuttonCDKey->GetEventSource());
         CastTo(m_peditName,     (Pane*)pns->FindMember("nameEditPane"    ));
         AddEventTarget(&LogonPopup::OnNameClick,     m_peditName->GetClickEvent());
 
