@@ -179,8 +179,8 @@ public:
                 m_bJustEnabled = false;
             } else {
 
-                float dx = (pointMouse.X() - 800) * m_sensitivity;
-                float dy = (pointMouse.Y() - 600) * m_sensitivity;
+                float dx = (pointMouse.X() - 1024) * m_sensitivity;
+                float dy = (pointMouse.Y() - 768) * m_sensitivity;
 
                 Point 
                     point(
@@ -198,7 +198,7 @@ public:
                 m_ppnumber[1]->SetValue(point.Y());
             }
 
-            pprovider->SetCursorPos(Point(800, 600));
+            pprovider->SetCursorPos(Point(1024, 768));
         }
     }
 

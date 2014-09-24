@@ -207,6 +207,23 @@ void GotLogonInfo(CQLobbyLogon * pquery)
 
 const int c_cMaxPlayers = GetRegDWORD("MaxPlayersPerServer", 350);
 
+DWORD WINAPI LogonThread( LPVOID param ) {
+	CSQLQuery * pQuery = (CSQLQuery *)param;  //use the AZ legacy data & callback
+	CQLobbyLogon * pls = (CQLobbyLogon *)param;
+	CQLobbyLogonData * pqd = pls->GetData();
+	char szReason [256];
+	EnterCriticalSection(g_pLobbyApp->GetLogonCS()); 
+	bool fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason);
+	(fValid) ? debugf("authed!\n") : debugf("not authed!\n");
+	pqd->fValid = fValid;
+	pqd->fRetry = false;
+	pqd->szReason = new char[lstrlen(szReason) + 1];
+	Strcpy(pqd->szReason,szReason);
+	LeaveCriticalSection(g_pLobbyApp->GetLogonCS()); 
+	PostThreadMessage(_Module.dwThreadID, wm_sql_querydone, (WPARAM) NULL, (LPARAM) pQuery);
+	return 0;
+}
+
 HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm)
 {
   CFLClient * pClient = CFLClient::FromConnection(cnxnFrom);
@@ -288,18 +305,24 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	    //  MprThread* threadp = new MprThread(doAuthentication, MPR_NORMAL_PRIORITY, (void*) pquery, mprthname); 
 	      //threadp->start(); //this could fail if a player is trying to login /w the same cnxn at the same time? (NYI TrapHack) - Imago 7/22/08
      // } else {
-
+	  
+	  //debugf("!!! Login from %s pw %s\n",pqd->szCharacterName,szPW);
 
 	  char * szPW = (char*)_alloca(c_cbCDKey + 1);
 	  ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
       ZUnscramble(szPW, szPWz, zInfo);
-	  debugf("!!! Login from %s pw %s\n",pqd->szCharacterName,szPW);
-	  //fValid = IsRFC2898Valid(pqd->szCharacterName,szPW) ? debugf("authed!\n") : debugf("not authed!\n");
-      BEGIN_PFM_CREATE(*pthis, pfmLogonAck, L, LOGON_ACK)
-      END_PFM_CREATE
-      pfmLogonAck->dwTimeOffset = pfmLogon->dwTime - Time::Now().clock();
-      QueueMissions(pthis);
-      g_pLobbyApp->GetFMClients().SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
+	  Strcpy(pqd->szPW,szPW);
+
+	  debugf("Creating logon thread.\n");
+	  DWORD dum;
+	  CreateThread(NULL, 0, LogonThread, (void*) pquery, 0, &dum);
+
+	  //AZ removed this:
+      //BEGIN_PFM_CREATE(*pthis, pfmLogonAck, L, LOGON_ACK)
+      //END_PFM_CREATE
+      //pfmLogonAck->dwTimeOffset = pfmLogon->dwTime - Time::Now().clock();
+      //QueueMissions(pthis);
+      //g_pLobbyApp->GetFMClients().SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
 
       //}
     }

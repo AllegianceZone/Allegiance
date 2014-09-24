@@ -1,1 +1,4 @@
-/* MIDL: this ALWAYS GENERATED file contains the definitions for the interfaces */
+#ifndef _LOBBY_H_ 
+#define _LOBBY_H_ 
+
+#endif

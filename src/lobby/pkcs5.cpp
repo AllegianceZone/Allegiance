@@ -441,17 +441,37 @@ void PKCS5_PBKDF2_HMAC(unsigned char *password, size_t plen,
 	}
 }
 
-bool IsRFC2898Valid(char * szUser, char * szPass)
+bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason)
 {
-	//todo fetch the szUser salt
-	char * szSalt = "abcdef1234567890abcdef1234567890";
-
-	//todo ask if it matches
-	char * szHash = "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
+	char szHdrs[512];
+	sprintf(szHdrs,"USER: %s\r\n",szUser);
+	ZString Response = UTL::DoHTTP(szHdrs,"azforum.cloudapp.net","GET","/lobbylogon.cgi","",0,false);
+	char * szToken;
+	char * szRes = (char*)_alloca(512);
+	Strcpy(szRes,(PCC)Response);
+	const char * szDelimit = "\t"; 
+	szToken = strtok(szRes, szDelimit);
+	if (strcmp(szToken, "OK") != 0) {
+		Strcpy(szReason,"Allegiance Zone logon service error! (1) Please visit forum.allegiancezone.com for status updates!");
+		return false;
+	}
+	char * szID = strtok(NULL, szDelimit); 
+	char * szName = strtok(NULL, szDelimit); 
+	if (strcmp (szName,szUser) != 0) {
+		Strcpy(szReason,"Allegiance Zone logon service error! (2) Please visit forum.allegiancezone.com for status updates!");
+		return false;
+	}
+	char * szHash = strtok(NULL, szDelimit); 
+	char * szSalt = strtok(NULL, szDelimit); 
+	char * szActive = strtok(NULL, szDelimit); //allow players w/o registering email ..for now
+	char * szDate = strtok(NULL, szDelimit);
+	if (strlen(szDate) > 1) {
+		sprintf(szReason,"You are suspended until %s!  Please visit allegiancezone.com for details.",szDate);
+		return false;
+	}
 
 	unsigned long length = 32;
 	unsigned char key[32];
-
 	PKCS5_PBKDF2_HMAC((unsigned char*)szPass,strlen(szPass),(unsigned char*)szSalt,32,64000,length,key);
 	char hexstr[65];
 	int i;
@@ -459,5 +479,6 @@ bool IsRFC2898Valid(char * szUser, char * szPass)
 		sprintf(hexstr+i*2, "%02x", key[i]);
 	}
 	hexstr[64] = 0;
+	Strcpy(szReason,"Incorrect Zone I.D. / Password.  Both are case sensitive.");
 	return (strcmp (hexstr,szHash) == 0) ? true : false;
 }

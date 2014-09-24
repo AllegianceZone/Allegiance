@@ -21,7 +21,7 @@ TMap<DWORD,ZString> UTL::m_ServerVersionMap;
 
 //Imago 9/14
 ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength, bool bSecure) {
-	HINTERNET hSession = InternetOpen( "HttpSendRequestEx", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
+	HINTERNET hSession = InternetOpen( "Allegiance", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
 	if(hSession) {
 
 		HINTERNET hConnect = InternetConnect(hSession,szHost,(bSecure) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);

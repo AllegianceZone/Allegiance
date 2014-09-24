@@ -23,6 +23,7 @@ class ILobbyAppSite;
 
 const int c_cReportServersMax = 20;
 
+
 class LobbyClientSite : public IFedMessagingSite
 {
 public:
@@ -123,6 +124,11 @@ public:
   char * GetToken()
   {
     return m_szToken;
+  }
+
+  CRITICAL_SECTION *GetLogonCS()
+  {
+    return m_logonCS;
   }
 
   bool EnforceCDKey()
@@ -266,6 +272,7 @@ private:
 
   //imago 9/16
   HANDLE			m_threadPost;
+  CRITICAL_SECTION  *m_logonCS;
 
 #ifdef USECLUB
   // SQL Stuff

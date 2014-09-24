@@ -14,8 +14,9 @@
 #include "client.h"
 
 ALLOC_MSG_LIST;
-CRITICAL_SECTION HttpCriticalSection;
 CLobbyApp * g_pLobbyApp = NULL;
+
+CRITICAL_SECTION HttpCriticalSection;
 
 #ifdef USECLUB
 void CLobbyApp::OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError)
@@ -128,7 +129,7 @@ typedef struct {
 	char verb[16];
 	char data[BUFFSIZE];
 } pHTTP;
-	DWORD WINAPI PostThread( LPVOID param ) {
+DWORD WINAPI PostThread( LPVOID param ) {
 	pHTTP* settings = (pHTTP*) param;
 	EnterCriticalSection(&HttpCriticalSection); 
 	ZString Response = UTL::DoHTTP(settings->hdrs,settings->host,settings->verb,settings->uri,settings->data,settings->size);
@@ -174,8 +175,6 @@ void CLobbyApp::SendGameInfo()
 			 Strcpy(settings.verb,"POST");
 			 Strcpy(settings.uri,"/lobbyinfo.ashx");
 			 Strcpy(settings.host,"allegiancezone.com");
-			 //Strcpy(settings.uri,"/lobbyinfo.cgi");
-			 //Strcpy(settings.host,"azforum.cloudapp.net");
 			 ZeroMemory(settings.data,BUFFSIZE);
 			 memcpy(settings.data,PostData,offset);
 			 settings.size = offset;
@@ -210,7 +209,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 {
   assert(m_plas);
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_Creating);
-
+  m_logonCS = new CRITICAL_SECTION;
 #ifdef USECLUB
   m_strSQLConfig.Empty();
 #endif
@@ -440,6 +439,7 @@ int CLobbyApp::Run()
   DWORD dwSleep = c_dwUpdateInterval;
   DWORD dwWait = WAIT_TIMEOUT;
   InitializeCriticalSectionAndSpinCount(&HttpCriticalSection, 0x00000400);
+  InitializeCriticalSectionAndSpinCount(GetLogonCS(), 0x00000400);
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_Running);
   _putts("---------Press Q to exit---------");
    printf("Ready for clients/servers.\n");
@@ -516,6 +516,7 @@ int CLobbyApp::Run()
     }
     Sleep(1);
   }
+  DeleteCriticalSection(GetLogonCS());
   DeleteCriticalSection(&HttpCriticalSection);
   return 0;
 }
