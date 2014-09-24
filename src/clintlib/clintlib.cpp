@@ -4179,10 +4179,10 @@ void CfgInfo::Load(const char * szConfig)
                                    szStr, sizeof(szStr), szConfig);
     strPublicMessageURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "http://allegiancezone.com", szStr, sizeof(szStr), szConfig);
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "http://autoupdate.allegiancezone.com/config/event/motd.mdl", szStr, sizeof(szStr), szConfig);
     strZoneEventsURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ZoneEventDetailsURL", "http://autoupdate.allegiancezone.com/config/event/motd.mdl", 
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventDetailsURL", "http://autoupdate.allegiancezone.com/config/event/details.mdl", 
                                    szStr, sizeof(szStr), szConfig);
     strZoneEventDetailsURL = szStr;
 
@@ -4190,7 +4190,7 @@ void CfgInfo::Load(const char * szConfig)
                                    szStr, sizeof(szStr), szConfig);
     strTrainingURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "PassportUpdateURL", "http://azforum.cloudapp.net/passport.cgi", 
+    GetPrivateProfileString(c_szCfgApp, "PassportUpdateURL", "http://allegiancezone.com", 
                                    szStr, sizeof(szStr), szConfig);
     strPassportUpdateURL = szStr;
 
