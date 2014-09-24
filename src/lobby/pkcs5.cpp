@@ -441,7 +441,7 @@ void PKCS5_PBKDF2_HMAC(unsigned char *password, size_t plen,
 	}
 }
 
-bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason)
+bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason, int & iID)
 {
 	char szHdrs[512];
 	sprintf(szHdrs,"USER: %s\r\n",szUser);
@@ -452,21 +452,30 @@ bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason)
 	const char * szDelimit = "\t"; 
 	szToken = strtok(szRes, szDelimit);
 	if (strcmp(szToken, "OK") != 0) {
-		Strcpy(szReason,"Allegiance Zone logon service error! (1) Please visit forum.allegiancezone.com for status updates!");
+		Strcpy(szReason,"Allegiance Zone logon service error! (1) Please visit allegiancezone.com for status updates!");
 		return false;
 	}
 	char * szID = strtok(NULL, szDelimit); 
+	iID = atoi(szID);
+	if (iID <= 0) {
+		Strcpy(szReason,"Allegiance Zone logon service error! (2) Please visit allegiancezone.com for status updates!");
+		return false;
+	}
 	char * szName = strtok(NULL, szDelimit); 
 	if (strcmp (szName,szUser) != 0) {
-		Strcpy(szReason,"Allegiance Zone logon service error! (2) Please visit forum.allegiancezone.com for status updates!");
+		Strcpy(szReason,"Allegiance Zone logon service error! (3) Please visit allegiancezone.com for status updates!");
 		return false;
 	}
 	char * szHash = strtok(NULL, szDelimit); 
 	char * szSalt = strtok(NULL, szDelimit); 
-	char * szActive = strtok(NULL, szDelimit); //allow players w/o registering email ..for now
+	char * szActive = strtok(NULL, szDelimit);
+	if (strcmp (szActive,"1") != 0) {
+		Strcpy(szReason,"Your account is not active.  Please make sure you verify your email address when signing up.  Visit allegiancezone.com for details.");
+		return false;
+	}
 	char * szDate = strtok(NULL, szDelimit);
 	if (strlen(szDate) > 1) {
-		sprintf(szReason,"You are suspended until %s!  Please visit allegiancezone.com for details.",szDate);
+		sprintf(szReason,"Your account is suspended until %s!  Please visit allegiancezone.com for details.",szDate);
 		return false;
 	}
 

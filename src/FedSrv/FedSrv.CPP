@@ -5547,7 +5547,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           {
             fValid = true;
             lstrcpy(pqd->szCharacterName, FM_VAR_REF(pfmLogon, CharacterName));
-            pqd->characterID = GetStateID(pqd->szCharacterName); //Imago 6/10 //9/16 TODO NYI
+            pqd->characterID = pfmLogon->CharacterID; //GetStateID(pqd->szCharacterName); //Imago 6/10 //9/16 TODO NYI
             pqd->fCanCheat = false;
           }
           else

@@ -3815,7 +3815,8 @@ void CFSMission::QueueLobbyMissionInfo()
   }
 #endif
 
-  char szAddr[16]= "XXX-YYY-ZZZ-TTT"; // KGJV #114 IMAGO REVIEW IPv6!!!!
+  char szAddr[16];
+  ZeroMemory(szAddr, sizeof(szAddr));
   ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetFileVersionString(); //Imago 7/10 #62
   // KGJV: added sending m_misdef.misparms.szIGCStaticFile to lobby
   BEGIN_PFM_CREATE(g.fmLobby, pfmLobbyMissionInfo, LS, LOBBYMISSIONINFO)

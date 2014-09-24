@@ -1327,7 +1327,7 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
         END_PFM_CREATE
         pfmLogon->fedsrvVer = MSGVER;
         pfmLogon->dwCookie = dwCookie;
-		//pfmLogon->CharacterID = //TODO NYI Imago
+		pfmLogon->CharacterID = GetZoneClubID(); //Imago 9/14
         pfmLogon->time = Time::Now ();  //TODO salt CDKey with this NYI Imago
         debugf("Logging on to game server \"%s\"...\n",
           ci.strServer.IsEmpty() ? "" : (LPCSTR)ci.strServer);

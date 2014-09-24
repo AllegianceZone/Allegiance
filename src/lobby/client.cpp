@@ -160,6 +160,9 @@ void GotLogonInfo(CQLobbyLogon * pquery)
     BEGIN_PFM_CREATE(fm, pfmLogonAck, L, LOGON_ACK)
     END_PFM_CREATE
     pfmLogonAck->dwTimeOffset = pqd->dTime;
+	
+	//Imago 9/14
+	pfmLogonAck->iID = pqd->characterID;
 
     // tell them which squads they are on
 	/*
@@ -212,12 +215,14 @@ DWORD WINAPI LogonThread( LPVOID param ) {
 	CQLobbyLogon * pls = (CQLobbyLogon *)param;
 	CQLobbyLogonData * pqd = pls->GetData();
 	char szReason [256];
+	int iID = 0;
 	EnterCriticalSection(g_pLobbyApp->GetLogonCS()); 
-	bool fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason);
+	bool fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason,iID);
 	(fValid) ? debugf("authed!\n") : debugf("not authed!\n");
 	pqd->fValid = fValid;
 	pqd->fRetry = false;
 	pqd->szReason = new char[lstrlen(szReason) + 1];
+	pqd->characterID = iID;
 	Strcpy(pqd->szReason,szReason);
 	LeaveCriticalSection(g_pLobbyApp->GetLogonCS()); 
 	PostThreadMessage(_Module.dwThreadID, wm_sql_querydone, (WPARAM) NULL, (LPARAM) pQuery);
@@ -242,7 +247,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       CQLobbyLogonData * pqd = pquery->GetData();
     
       Strcpy(pqd->szCharacterName, cnxnFrom.GetName());
-      pqd->characterID = 0; // Imago get Pook to have ASGS give us these? 
+      pqd->characterID = 0;
 	  pqd->dwConnectionID = cnxnFrom.GetID();
 
       CASTPFM(pfmLogon, C, LOGON_LOBBY, pfm);

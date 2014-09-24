@@ -6,6 +6,6 @@
 // PBKDF2-HMAC-SHA256 - Imago 9/14
 //
 //////////////////////////////////////////////////////////////////////////////
-bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason);
+bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason, int & iID);
 
 #endif

@@ -3535,6 +3535,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             CASTPFM(pfmLogonAck, L, LOGON_ACK, pfm);
             m_fLoggedOnToLobby = true;
             m_lobbyServerOffset = pfmLogonAck->dwTimeOffset;
+			SetZoneClubID(pfmLogonAck->iID);
             OnLogonLobbyAck(true, false, NULL);
         }
         break;

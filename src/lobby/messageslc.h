@@ -80,6 +80,7 @@ END_FEDMSG
 
 DEFINE_FEDMSG(L, LOGON_ACK, 261) 
   DWORD dwTimeOffset;
+  int iID;
 END_FEDMSG
 
 DEFINE_FEDMSG(L, LOGON_NACK, 262)  // tells client that theyt can't join the lobby.
