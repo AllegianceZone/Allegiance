@@ -721,7 +721,7 @@ public: //todo: make protected
       FILETIME  ftLastArtUpdate;
       ZString   strServer;
       char      szName  [c_cbName];
-	  char		szPW [c_cbName];
+	  char		szPW [c_cbCDKey];
 	  DWORD     dwPort;				// mdvalley: The port number to connect to
       GUID      guidSession;
     };

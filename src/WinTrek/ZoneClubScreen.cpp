@@ -46,8 +46,8 @@ private:
     TRef<ButtonPane>   m_pbuttonWeb;
     TRef<MDLFileImage> m_pMDLFileImage;
     char               m_szName[c_cbPassportName];
-    char               m_szPW[c_cbName];
-    char               m_szPWOrig[c_cbName];
+    char               m_szPW[c_cbCDKey];
+    char               m_szPWOrig[c_cbCDKey];
     char               m_szConfig[MAX_PATH];
     BOOL               m_fRememberPW;
 
@@ -832,6 +832,7 @@ public:
             else
 #endif
             lstrcpy(ci.szName, m_szName);
+			lstrcpy(ci.szPW, m_szPW);
 
             ZeroMemory(&ci.ftLastArtUpdate, sizeof(ci.ftLastArtUpdate));
 

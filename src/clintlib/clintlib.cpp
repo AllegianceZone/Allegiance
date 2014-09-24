@@ -1312,7 +1312,7 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
     if (m_strCDKey.IsEmpty())
         m_strCDKey = ZString(ci.szName).ToUpper();
 
-	char szCdKey[2064];
+	char szCdKey[c_cbCDKey];
 	strcpy(szCdKey, (PCC)m_strCDKey);
 
     if (m_fm.IsConnected())
@@ -1406,13 +1406,13 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
         pfmLogon->crcFileList = crcFileList;
         pfmLogon->dwTime = dwTime;
         lstrcpy(pfmLogon->szName, m_ci.szName);
-		lstrcpy(pfmLogon->szPW, m_ci.szPW);
-
+		ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+		lstrcpy(pfmLogon->szPW, (PCC)ZString(m_ci.szPW).Scramble(zInfo));
         // do art update--see ConnectToServer
-        debugf("Logging on to lobby \"%s\"...\n",
-          m_ci.strServer.IsEmpty() ? "" : (LPCSTR)m_ci.strServer);
+        debugf("Logging on to lobby \"%s\"...pw: %s\n",m_ci.strServer.IsEmpty() ? "" : (LPCSTR)m_ci.strServer,pfmLogon->szPW);
         lstrcpy(m_szLobbyCharName, m_ci.szName);
         SendLobbyMessages();
+		lstrcpy(m_ci.szPW, "");
     }
     retailf("$$MSRGuard:Set:UserName=%s\n", m_szLobbyCharName);
     m_cUnansweredPings = 0;

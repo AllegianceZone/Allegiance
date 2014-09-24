@@ -377,30 +377,6 @@ HRESULT CLobbyApp::Init()
 
     RegCloseKey(hk);
 
-    //Imago 8/6/09 We can't use any of these other handy registry functions
-    // because we have to be different and read from Allsrv's registry key ;-/
-    HKEY  hk;
-    if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllLobby, 0, "", 
-      REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
-    {
-		//Orion ACSS : 2009
-        _Module.ReadFromRegistry(hk, false, "AUTH_ON", &m_dwAuthentication, 0, true);
-    }
-    RegCloseKey(hk);
-
-	/*
-    //Orion ACSS : 2009 - Retrieve url of auth server from registry
-	if (m_dwAuthentication)
-	{
-		HKEY  hk;
-		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllLobby, 0, "", 
-		  REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
-		{
-			_Module.ReadFromRegistry(hk, true, "AUTH_ADDRESS", m_szAuthenticationLocation, NULL);
-		}
-		RegCloseKey(hk);
-	}
-	*/
   }
 
   return hr;

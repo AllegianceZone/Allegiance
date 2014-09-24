@@ -237,6 +237,8 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	  pqd->dTime = pfmLogon->dwTime - Time::Now().clock();
 	  const char * strCDKey = (const char*) FM_VAR_REF(pfmLogon, CdKey);
 	  Strcpy(pqd->szCDKey,strCDKey);
+	  char szPWz[c_cbCDKey];
+	  Strcpy(szPWz,pfmLogon->szPW);
 	  pqd->fValid = fValid;
 	  pqd->fRetry = fRetry;
 
@@ -288,17 +290,17 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
      // } else {
 
 
-	  	//char * szPass = "12345";
-		//IsRFC2898Valid("Imago",szPass) ? printf("authed!\n") : printf("not authed!\n");
-		//return 0;
+	  char * szPW = (char*)_alloca(c_cbCDKey + 1);
+	  ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+      ZUnscramble(szPW, szPWz, zInfo);
+	  debugf("!!! Login from %s pw %s\n",pqd->szCharacterName,szPW);
+	  //fValid = IsRFC2898Valid(pqd->szCharacterName,szPW) ? debugf("authed!\n") : debugf("not authed!\n");
+      BEGIN_PFM_CREATE(*pthis, pfmLogonAck, L, LOGON_ACK)
+      END_PFM_CREATE
+      pfmLogonAck->dwTimeOffset = pfmLogon->dwTime - Time::Now().clock();
+      QueueMissions(pthis);
+      g_pLobbyApp->GetFMClients().SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
 
-
-
-          BEGIN_PFM_CREATE(*pthis, pfmLogonAck, L, LOGON_ACK)
-          END_PFM_CREATE
-          pfmLogonAck->dwTimeOffset = pfmLogon->dwTime - Time::Now().clock();
-          QueueMissions(pthis);
-          g_pLobbyApp->GetFMClients().SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
       //}
     }
     break;

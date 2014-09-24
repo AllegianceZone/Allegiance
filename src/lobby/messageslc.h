@@ -108,7 +108,7 @@ DEFINE_FEDMSG(C, LOGON_LOBBY, 265) // if the lobby is in club mode, everyone has
   int   crcFileList; 
   DWORD dwTime;
   char  szName[c_cbName];
-  char  szPW[c_cbName];
+  char  szPW[c_cbCDKey];
 END_FEDMSG
 
 // KGJV #114
