@@ -261,10 +261,10 @@ public:
 #else
             lstrcpy(m_szName, trekClient.GetSavedCharacterName());
 #endif
-		  // wlp - don't ask for callsign if it was on the command line
-          if (!g_bAskForCallSign)
+		  // wlp - don't ask for callsign if it was on the command line //imago include m_szPWOrig 9/14
+          if (!g_bAskForCallSign && strlen(m_szPWOrig) > 0) 
 		  {
-		  this->OnLogon(trekClient.GetSavedCharacterName(), "", false);
+		  this->OnLogon(trekClient.GetSavedCharacterName(), m_szPWOrig, false); 
 	      } // wlp - end of dont ask for callsign
 		  else
 		  {
@@ -836,7 +836,7 @@ public:
             lstrcpy(ci.szName, m_szName);
 
             ZeroMemory(&ci.ftLastArtUpdate, sizeof(ci.ftLastArtUpdate));
-
+			//Imago - Stick our password in here NYI todo
             if (m_bConnectLobby)
                 trekClient.ConnectToLobby(&ci);
             else
