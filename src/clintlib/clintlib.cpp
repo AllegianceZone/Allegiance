@@ -1145,8 +1145,8 @@ BaseClient::~BaseClient(void)
     if (m_pMissionInfo)
         delete m_pMissionInfo;
 
-    if (m_ci.pZoneTicket)
-        HeapFree(GetProcessHeap(), 0, m_ci.pZoneTicket);
+//    if (m_ci.pZoneTicket)
+  //      HeapFree(GetProcessHeap(), 0, m_ci.pZoneTicket);
 
 
     m_fm.Shutdown();
@@ -1266,7 +1266,7 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
     // we need to treat this as a reconnect and dump first connection...
     // we should see about reusing the connection
 
-    assert(IFF(ci.cbZoneTicket > 0, ci.pZoneTicket));
+    //assert(IFF(ci.cbZoneTicket > 0, ci.pZoneTicket));
 
     Reinitialize(now);
     
@@ -1322,7 +1322,7 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
         SetMessageType(c_mtGuaranteed);
         BEGIN_PFM_CREATE(m_fm, pfmLogon, C, LOGONREQ)
             FM_VAR_PARM(ci.szName, CB_ZTS)
-            FM_VAR_PARM(ci.pZoneTicket, ci.cbZoneTicket)
+            //FM_VAR_PARM(ci.pZoneTicket, ci.cbZoneTicket)
 
 			// BT - 9/11/2010 - Sending the token to the server so that the server will also enforce authentication. 
             FM_VAR_PARM(szCdKey, CB_ZTS)
@@ -1354,8 +1354,8 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
 
     if (pci)
     {
-        if (m_ci.pZoneTicket)
-          HeapFree(GetProcessHeap(), 0, m_ci.pZoneTicket);
+        //if (m_ci.pZoneTicket)
+          //HeapFree(GetProcessHeap(), 0, m_ci.pZoneTicket);
 
         m_ci = *pci;
     }
@@ -1363,12 +1363,8 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
     // but we always use config-specified lobby server. Is this too restrictive to derived clients?
     m_ci.strServer = GetIsZoneClub() ? GetCfgInfo().strClubLobby : GetCfgInfo().strPublicLobby;
 
-    assert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
+    //assert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
     
-    // TODO: Remove this when we are ready to enforce CD Keys
-    if (m_strCDKey.IsEmpty())
-        m_strCDKey = ZString(m_ci.szName).ToUpper();
-
     if (m_fmLobby.IsConnected())
         return S_OK;
 
@@ -1403,13 +1399,14 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
 
         // Let's formally announce ourselves to the server
         BEGIN_PFM_CREATE(m_fmLobby, pfmLogon, C, LOGON_LOBBY)
-            FM_VAR_PARM(m_ci.pZoneTicket, m_ci.cbZoneTicket)
+            //FM_VAR_PARM(m_ci.pZoneTicket, m_ci.cbZoneTicket)
             FM_VAR_PARM(PCC(m_strCDKey), CB_ZTS)                   // Wlp 2006 - This is the ASGS Ticket now
         END_PFM_CREATE
         pfmLogon->verLobby = LOBBYVER;
         pfmLogon->crcFileList = crcFileList;
         pfmLogon->dwTime = dwTime;
         lstrcpy(pfmLogon->szName, m_ci.szName);
+		lstrcpy(pfmLogon->szPW, m_ci.szPW);
 
         // do art update--see ConnectToServer
         debugf("Logging on to lobby \"%s\"...\n",
@@ -1437,12 +1434,12 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
 
     if (pci)
     {
-        if (m_ci.pZoneTicket)
-          HeapFree(GetProcessHeap(), 0, m_ci.pZoneTicket);
+      //  if (m_ci.pZoneTicket)
+      //    HeapFree(GetProcessHeap(), 0, m_ci.pZoneTicket);
 
         m_ci = *pci;
     }
-    assert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
+    //assert(IFF(m_ci.cbZoneTicket > 0, m_ci.pZoneTicket));
     
     if (m_fmClub.IsConnected())
         return S_OK;
@@ -1456,7 +1453,7 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
         // Let's formally announce ourselves to the server
         BEGIN_PFM_CREATE(m_fmClub, pfmLogon, C, LOGON_CLUB)
             FM_VAR_PARM(pci->szName, CB_ZTS)
-            FM_VAR_PARM(m_ci.pZoneTicket, m_ci.cbZoneTicket)
+           // FM_VAR_PARM(m_ci.pZoneTicket, m_ci.cbZoneTicket)
         END_PFM_CREATE
         pfmLogon->verClub = ALLCLUBVER;
 

@@ -1025,8 +1025,3 @@ DEFINE_FEDMSG(CS, HIGHLIGHT_CLUSTER, 199)  //Xynth #208 Notify clients of sector
 END_FEDMSG
 
 #endif // _MESSAGES_ 
-
-
-
-
-

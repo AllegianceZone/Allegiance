@@ -103,12 +103,12 @@ END_FEDMSG
 #define CL_LOGON_KEY ("%x:%s: Corrupt artwork file ") // just to confuse a hacker
 
 DEFINE_FEDMSG(C, LOGON_LOBBY, 265) // if the lobby is in club mode, everyone has to have a valid ticket, otherwise the ticket is ignored
-  FM_VAR_ITEM(ZoneTicket);    // Encrypted
-  FM_VAR_ITEM(ASGS_Ticket);         // wlp 2006 - used to be CdKey
+  FM_VAR_ITEM(CdKey);
   short verLobby;    
   int   crcFileList; 
   DWORD dwTime;
   char  szName[c_cbName];
+  char  szPW[c_cbName];
 END_FEDMSG
 
 // KGJV #114

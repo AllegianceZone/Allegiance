@@ -712,19 +712,17 @@ public: //todo: make protected
     struct ConnectInfo // everything we need to connect and log on to the server
     {
     public:
-      ConnectInfo() :
-        pZoneTicket(NULL),
-        cbZoneTicket(0)
+      ConnectInfo() 
       {
         ZeroMemory(&ftLastArtUpdate, sizeof(ftLastArtUpdate));
         ZeroMemory(szName, sizeof(szName));
+		ZeroMemory(szPW, sizeof(szName));
       }
       FILETIME  ftLastArtUpdate;
       ZString   strServer;
       char      szName  [c_cbName];
+	  char		szPW [c_cbName];
 	  DWORD     dwPort;				// mdvalley: The port number to connect to
-      LPBYTE    pZoneTicket;
-      CB        cbZoneTicket;
       GUID      guidSession;
     };
     

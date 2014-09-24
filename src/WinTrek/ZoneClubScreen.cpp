@@ -819,10 +819,8 @@ public:
 #endif
         {
             s_bWasAuthenticated = true;
-
             BaseClient::ConnectInfo ci;
             DWORD cbZoneTicket = 0;
-            ci.pZoneTicket = NULL;
             DWORD cbName = sizeof(ci.szName);
 #ifdef USEAUTH
             if (g_fZoneAuth)
@@ -836,8 +834,8 @@ public:
             lstrcpy(ci.szName, m_szName);
 
             ZeroMemory(&ci.ftLastArtUpdate, sizeof(ci.ftLastArtUpdate));
-			//Imago - Stick our password in here NYI todo
-            if (m_bConnectLobby)
+
+			if (m_bConnectLobby)
                 trekClient.ConnectToLobby(&ci);
             else
                 trekClient.ConnectToClub(&ci);
