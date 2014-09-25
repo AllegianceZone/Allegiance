@@ -260,9 +260,10 @@ public:
             pzac->GetDefaultLogonInfo(m_szName, m_szPWOrig, &m_fRememberPW);
 #else
             lstrcpy(m_szName, trekClient.GetSavedCharacterName());
+			lstrcpy(m_szPWOrig, trekClient.GetSavedPassword());
 #endif
 		  // wlp - don't ask for callsign if it was on the command line //imago include m_szPWOrig 9/14
-          if (!g_bAskForCallSign && strlen(m_szPWOrig) > 0) 
+          if (!g_bAskForCallSign && strlen(m_szPWOrig) > 1) 
 		  {
 		  this->OnLogon(trekClient.GetSavedCharacterName(), m_szPWOrig, false); 
 	      } // wlp - end of dont ask for callsign
@@ -851,6 +852,11 @@ public:
 
     void OnLogonLobby()
     {
+		//imago 9/14
+		if (m_fRememberPW) 
+			trekClient.SavePassword(m_szPW,m_fRememberPW);
+		else
+			trekClient.SavePassword("",m_fRememberPW);
         GetWindow()->screen(m_screenPostConnect);
     }
 

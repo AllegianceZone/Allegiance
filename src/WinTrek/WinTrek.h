@@ -297,6 +297,10 @@ class  WinTrekClient :
         int               GetGrooveLevel();
         ZString           GetSavedCharacterName();
         void              SaveCharacterName(ZString strName);
+        //imago 9/14
+		ZString           GetSavedPassword();
+		int               GetSavePassword();
+        void              SavePassword(ZString strName, DWORD dSave);
 
 		int GetSavedWingAssignment(); // kolie 6/10
 		void SaveWingAssignment(int wing); // kolie 6/10

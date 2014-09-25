@@ -2981,6 +2981,48 @@ void WinTrekClient::EjectPlayer(ImodelIGC*  pcredit)
     GetWindow()->TriggerMusic(deathMusicSound);
 }
 
+int WinTrekClient::GetSavePassword(){ // imago 9/14
+	HKEY hKey;
+	DWORD dwType = REG_DWORD;
+    DWORD dSave = -1;
+    DWORD dwSize = sizeof(DWORD);
+    if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
+    {
+        RegQueryValueEx(hKey, "SavePW", NULL, &dwType, (PBYTE)&dSave, &dwSize);
+        RegCloseKey(hKey);
+    }
+
+    return (int)dSave;
+}
+
+//Imago 9/14
+ZString WinTrekClient::GetSavedPassword()
+{
+    HKEY hKey;
+    DWORD dwType;
+    DWORD cbName = c_cbCDKey;
+    char szPW[c_cbCDKey];
+    szPW[0] = '\0';
+    
+    if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
+    {
+        RegQueryValueEx(hKey, "PW", NULL, &dwType, (unsigned char*)&szPW, &cbName);
+        RegCloseKey(hKey);
+    }
+
+    return szPW;
+}
+
+void WinTrekClient::SavePassword(ZString strPW, DWORD dSave)
+{
+    HKEY hKey;  
+    if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
+    {
+        RegSetValueEx(hKey, "PW", NULL, REG_SZ, (const BYTE*)(const char*)strPW, strPW.GetLength() + 1);
+		RegSetValueEx(hKey, "SavePW", NULL, REG_DWORD, (const BYTE *)dSave, sizeof(DWORD) );
+        RegCloseKey(hKey);
+    }
+}
 ZString WinTrekClient::GetSavedCharacterName()
 {
     HKEY hKey;
@@ -3001,10 +3043,6 @@ ZString WinTrekClient::GetSavedCharacterName()
 void WinTrekClient::SaveCharacterName(ZString strName)
 {
     HKEY hKey;
-    DWORD cbName = c_cbName;
-    char szName[c_cbName];
-    szName[0] = '\0';
-    
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
     {
         RegSetValueEx(hKey, "CharacterName", NULL, REG_SZ, 
