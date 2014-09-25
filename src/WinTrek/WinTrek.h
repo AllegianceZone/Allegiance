@@ -300,7 +300,7 @@ class  WinTrekClient :
         //imago 9/14
 		ZString           GetSavedPassword();
 		int               GetSavePassword();
-        void              SavePassword(ZString strName, DWORD dSave);
+        void              SavePassword(ZString strName, BOOL fSave);
 
 		int GetSavedWingAssignment(); // kolie 6/10
 		void SaveWingAssignment(int wing); // kolie 6/10

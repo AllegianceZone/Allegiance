@@ -261,6 +261,7 @@ public:
 #else
             lstrcpy(m_szName, trekClient.GetSavedCharacterName());
 			lstrcpy(m_szPWOrig, trekClient.GetSavedPassword());
+			m_fRememberPW = trekClient.GetSavePassword();
 #endif
 		  // wlp - don't ask for callsign if it was on the command line //imago include m_szPWOrig 9/14
           if (!g_bAskForCallSign && strlen(m_szPWOrig) > 1) 

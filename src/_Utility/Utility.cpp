@@ -23,7 +23,6 @@ TMap<DWORD,ZString> UTL::m_ServerVersionMap;
 ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength, bool bSecure) {
 	HINTERNET hSession = InternetOpen( "Allegiance", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
 	if(hSession) {
-
 		HINTERNET hConnect = InternetConnect(hSession,szHost,(bSecure) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
 		if (!hConnect)
 			debugf( "Failed to connect to %s\n", szHost);
@@ -35,6 +34,11 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 				debugf( "Failed to open request handle\n" );
 			else
 			{
+				DWORD dwFlags;
+				DWORD dwBuffLen = sizeof(dwFlags);
+				InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlags, &dwBuffLen);
+				dwFlags |= SECURITY_FLAG_IGNORE_UNKNOWN_CA;
+				InternetSetOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,&dwFlags,sizeof(dwFlags));
 				if(HttpSendRequest(hRequest,szHdrs,strlen(szHdrs),PostData,PostLength))
 				{	
 					char pcBuffer[4096];
@@ -63,7 +67,9 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 		}
 		if( InternetCloseHandle( hSession ) == FALSE )
 			debugf( "Failed to close Session handle\n" );
-		debugf( "\nFinished.\n" );
+
+		DWORD dwError = GetLastError();
+		debugf( "\nFinished: %d.\n",dwError);
 		return "Finished\n";
 	} else {
 		debugf("Failed to open WinInet session\n");

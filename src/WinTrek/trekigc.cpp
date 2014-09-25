@@ -2984,7 +2984,7 @@ void WinTrekClient::EjectPlayer(ImodelIGC*  pcredit)
 int WinTrekClient::GetSavePassword(){ // imago 9/14
 	HKEY hKey;
 	DWORD dwType = REG_DWORD;
-    DWORD dSave = -1;
+    DWORD dSave = 1;
     DWORD dwSize = sizeof(DWORD);
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
     {
@@ -3001,25 +3001,37 @@ ZString WinTrekClient::GetSavedPassword()
     HKEY hKey;
     DWORD dwType;
     DWORD cbName = c_cbCDKey;
-    char szPW[c_cbCDKey];
-    szPW[0] = '\0';
+    char szPWz[c_cbCDKey];
+    szPWz[0] = '\0';
     
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
     {
-        RegQueryValueEx(hKey, "PW", NULL, &dwType, (unsigned char*)&szPW, &cbName);
+        RegQueryValueEx(hKey, "PW", NULL, &dwType, (unsigned char*)&szPWz, &cbName);
         RegCloseKey(hKey);
     }
-
-    return szPW;
+	ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+	ZString szPWt = ZString(szPWz);
+	ZString szPWu = szPWt.Unscramble(zInfo);
+	char * szRes = (char*)_alloca(c_cbCDKey);
+	Strcpy(szRes,(PCC)szPWu);
+	char * szToken;
+	szToken = strtok(szRes,"\t");
+	szToken = strtok(NULL,"\t");
+    return szToken;
 }
 
-void WinTrekClient::SavePassword(ZString strPW, DWORD dSave)
+void WinTrekClient::SavePassword(ZString strPW, BOOL fSave)
 {
+	DWORD dSave = (DWORD)fSave;
     HKEY hKey;  
+	DWORD dwSize = sizeof(DWORD);
+	ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+	strPW = zInfo + "\t" + strPW;
+	ZString strPWz = strPW.Scramble(zInfo);
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
     {
-        RegSetValueEx(hKey, "PW", NULL, REG_SZ, (const BYTE*)(const char*)strPW, strPW.GetLength() + 1);
-		RegSetValueEx(hKey, "SavePW", NULL, REG_DWORD, (const BYTE *)dSave, sizeof(DWORD) );
+        RegSetValueEx(hKey, "PW", NULL, REG_SZ, (const BYTE*)(const char*)strPWz, strPWz.GetLength() + 1);
+		RegSetValueEx(hKey, "SavePW", NULL, REG_DWORD, (PBYTE)&dSave, dwSize);
         RegCloseKey(hKey);
     }
 }
@@ -3039,6 +3051,7 @@ ZString WinTrekClient::GetSavedCharacterName()
 
     return szName;
 }
+//
 
 void WinTrekClient::SaveCharacterName(ZString strName)
 {
