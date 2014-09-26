@@ -1692,11 +1692,12 @@ public:
        	 	GetWindow()->RestoreCursor();
 			//Imago 9/14
 			if (g_autoJoin.GetLength() > 1) {
-				DWORD cookie = strtoul(g_autoJoin, NULL, 16);
+				DWORD cookie = atoi(g_autoJoin);
 				for  (int i = 0; i < count; i++) {
 					MissionInfo* game = (MissionInfo*)plist->GetItem(i);
 					if (cookie == game->GetCookie()) {
 						 JoinMission(game);
+						 break;
 					}
 				}
 			} else {
