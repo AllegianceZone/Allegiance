@@ -13,9 +13,9 @@ public:
 	CDX9EngineSettings()
 	{
 		mbUseTexturePackFiles = false;
-		m_bVSync = false; //Spunky #265 backing out //Imago 7/10
+		m_bVSync = true; //Imago 7/10  9/14
 		m_dwAA = 0;
-		m_iMaxTextureSize = 0;
+		m_iMaxTextureSize = 3; //imago 9/14
 		m_bAutoGenMipmaps = false;
 		m_bDither = false;
 		m_refreshrate = 60;
