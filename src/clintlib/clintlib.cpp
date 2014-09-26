@@ -4172,7 +4172,7 @@ void CfgInfo::Load(const char * szConfig)
                                    szStr, sizeof(szStr), szConfig);
     strPublicMessageURL = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "http://autoupdate.allegiancezone.com/config/event/motd.mdl", szStr, sizeof(szStr), szConfig);
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "http://autoupdate.allegiancezone.com/config/event/events.mdl", szStr, sizeof(szStr), szConfig);
     strZoneEventsURL = szStr;
 
     GetPrivateProfileString(c_szCfgApp, "ZoneEventDetailsURL", "http://autoupdate.allegiancezone.com/config/event/details.mdl", 
