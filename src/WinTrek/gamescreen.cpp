@@ -1690,26 +1690,36 @@ public:
        		if (GetWindow()->GetPopupContainer() && !GetWindow()->GetPopupContainer()->IsEmpty())
             	GetWindow()->GetPopupContainer()->ClosePopup(NULL);
        	 	GetWindow()->RestoreCursor();
+			//Imago 9/14
+			if (g_autoJoin.GetLength() > 1) {
+				DWORD cookie = strtoul(g_autoJoin, NULL, 16);
+				for  (int i = 0; i < count; i++) {
+					MissionInfo* game = (MissionInfo*)plist->GetItem(i);
+					if (cookie == game->GetCookie()) {
+						 JoinMission(game);
+					}
+				}
+			} else {
+				//imago 7/5/09
+				//if there are players in the lobby join the most populated server...
+				//OutputDebugString("GetCountInLobby(plist) returned "+ ZString(cPlayers) +"\n");
+				if (cPlayers) {
+					 plist = SortingList(plist, NumPlayerCompare, true);
+					 MissionInfo* game = (MissionInfo*)plist->GetItem(0);
+					 //.. it's not a newb server and not our own game we're actually trying to insta create
+					 ZString szPlayerName = ZString(trekClient.GetNameLogonZoneServer());
+					 int leftParen = szPlayerName.ReverseFind('(',0);
+					 if (leftParen > 1)
+						szPlayerName = szPlayerName.Left(leftParen);
+	        		 szPlayerName += ZString("'s game"); //reuse exact matches via. kgjv's adaptation
+					 if ( (ZString(game->Name()).Find("newbie") == -1) && 
+						  (ZString(game->Name()).Find(szPlayerName) == -1) ) {
+						 ZDebugOutput("Insta join: "+ ZString(game->Name()) + "\n");					 
+						 g_bQuickstart = false; //we're done with all that!
+						 JoinMission(game);
+					 }
 
-			//imago 7/5/09
-			//if there are players in the lobby join the most populated server...
-			//OutputDebugString("GetCountInLobby(plist) returned "+ ZString(cPlayers) +"\n");
-			if (cPlayers) {
-				 plist = SortingList(plist, NumPlayerCompare, true);
-				 MissionInfo* game = (MissionInfo*)plist->GetItem(0);
-				 //.. it's not a newb server and not our own game we're actually trying to insta create
-				 ZString szPlayerName = ZString(trekClient.GetNameLogonZoneServer());
-				 int leftParen = szPlayerName.ReverseFind('(',0);
-				 if (leftParen > 1)
-					szPlayerName = szPlayerName.Left(leftParen);
-	        	 szPlayerName += ZString("'s game"); //reuse exact matches via. kgjv's adaptation
-				 if ( (ZString(game->Name()).Find("newbie") == -1) && 
-					  (ZString(game->Name()).Find(szPlayerName) == -1) ) {
-					 ZDebugOutput("Insta join: "+ ZString(game->Name()) + "\n");					 
-					 g_bQuickstart = false; //we're done with all that!
-					 JoinMission(game);
-				 }
-
+				}
 			}
 			//no other players? ;(  ...if you build it they will come!
 			//trekClient.ServerListReq(); //quickstart keeps following into the new callback...
