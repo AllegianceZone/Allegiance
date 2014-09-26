@@ -1402,8 +1402,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
         pfmLogon->crcFileList = crcFileList;
         pfmLogon->dwTime = dwTime;
         lstrcpy(pfmLogon->szName, m_ci.szName);
-		ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
-		lstrcpy(pfmLogon->szPW, (PCC)ZString(m_ci.szPW).Scramble(zInfo));
+		lstrcpy(pfmLogon->szPW, (PCC)ZString(m_ci.szPW).Scramble("Imago2014"));
         // do art update--see ConnectToServer
         debugf("Logging on to lobby \"%s\"...pw: %s\n",m_ci.strServer.IsEmpty() ? "" : (LPCSTR)m_ci.strServer,pfmLogon->szPW);
         lstrcpy(m_szLobbyCharName, m_ci.szName);

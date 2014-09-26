@@ -314,8 +314,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	  //debugf("!!! Login from %s pw %s\n",pqd->szCharacterName,szPW);
 
 	  char * szPW = (char*)_alloca(c_cbCDKey + 1);
-	  ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
-      ZUnscramble(szPW, szPWz, zInfo);
+      ZUnscramble(szPW, szPWz, "Imago2014");
 	  Strcpy(pqd->szPW,szPW);
 
 	  debugf("Creating logon thread.\n");
