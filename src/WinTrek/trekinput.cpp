@@ -28,6 +28,7 @@ const int ModifierShift   = 1;
 const int ModifierControl = 2;
 const int ModifierAlt     = 4;
 const int ModifierAny     = 8;
+TMap<TrekKey,ZString>		m_KeyStringMap;
 
 class TrekInputImpl : public TrekInput {
 public:
@@ -1974,18 +1975,25 @@ protected:
 	TArray<Axis, countAxis>     m_paxis;
 
 public:
-	//Spunky #241
-	ZString ReturnKeyString(TrekKey tk)
-	{
+	//Spunky #241  //Imago 9/14
+	ZString ReturnKeyString(TrekKey tk) { 
+		ZString strValue;
+		strValue.SetEmpty();
+
+		if (m_KeyStringMap.Find(tk,strValue)) {
+			if (strcmp((PCC)strValue,(PCC)m_pcommandMap[tk].GetString(m_pinputEngine, IsInternationalKeyboard())) != 0) {
+				return strValue;
+			}
+		}
 		
 		if (!LoadMap(INPUTMAP_FILE) || tk == TK_NoKeyMapping)
 			return "Undefined";
 
-        return m_pcommandMap[tk].GetString(m_pinputEngine, IsInternationalKeyboard());
+		strValue = m_pcommandMap[tk].GetString(m_pinputEngine, IsInternationalKeyboard()); 
+		m_KeyStringMap.Set(tk,strValue);
+		return strValue;
 	}
-
 	
-
     bool IsInternationalKeyboard()
     {
         HKL hkl = ::GetKeyboardLayout(0);
