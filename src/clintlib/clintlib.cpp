@@ -1407,7 +1407,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
         debugf("Logging on to lobby \"%s\"...pw: %s\n",m_ci.strServer.IsEmpty() ? "" : (LPCSTR)m_ci.strServer,pfmLogon->szPW);
         lstrcpy(m_szLobbyCharName, m_ci.szName);
         SendLobbyMessages();
-		lstrcpy(m_ci.szPW, "");
+		//lstrcpy(m_ci.szPW, "");
     }
     retailf("$$MSRGuard:Set:UserName=%s\n", m_szLobbyCharName);
     m_cUnansweredPings = 0;

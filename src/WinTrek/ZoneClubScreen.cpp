@@ -854,10 +854,14 @@ public:
     void OnLogonLobby()
     {
 		//imago 9/14
-		if (m_fRememberPW) 
+		if (m_fRememberPW) {
 			trekClient.SavePassword(m_szPW,m_fRememberPW);
-		else
+			trekClient.SaveCharacterName(m_szName);
+		}
+		else {
+			trekClient.SaveCharacterName(m_szName);
 			trekClient.SavePassword("",m_fRememberPW);
+		}
         GetWindow()->screen(m_screenPostConnect);
     }
 

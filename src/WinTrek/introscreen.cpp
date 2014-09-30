@@ -946,7 +946,7 @@ public:
         // remember the character name for next time
         trekClient.SaveCharacterName(strName);
         m_strCharacterName = strName;
-        m_strPassword = "";
+        //m_strPassword = "";
 
         // pop up the Connecting... dialog.   
         GetWindow()->SetWaitCursor();
