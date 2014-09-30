@@ -506,7 +506,15 @@ bool CVRAMManager::ReleaseHandle( TEXHANDLE texHandle )
 			ULONG refCount;
 
 			// Release the texture. Clear out the data when the reference count is zero.
-			refCount = m_sVRAM.ppBankArray[ dwBankIndex ]->pTexArray[ dwTexIndex ].pTexture->Release(); //Imago 6/10 TODO REVIEW DEBUG CRASH HERE
+			//refCount = m_sVRAM.ppBankArray[ dwBankIndex ]->pTexArray[ dwTexIndex ].pTexture->Release(); 			//Imago 6/10 TODO REVIEW DEBUG CRASH HERE
+			//Imago fleshed this out 9/14
+			SBank* myBank = m_sVRAM.ppBankArray[ dwBankIndex ];
+			if (myBank) {
+				LPDIRECT3DTEXTURE9 myTexture = myBank->pTexArray[ dwTexIndex ].pTexture;
+				if (myTexture) {
+					refCount = myTexture->Release();
+				}
+			}
 			if( refCount == 0 )
 			{
 				// Reduce the counts.
