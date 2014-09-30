@@ -3117,9 +3117,9 @@ public:
 
         m_pgroupImage3D->AddImage(m_pwrapImageHudGroup   );
         m_pgroupImage3D->AddImage(m_pmuzzleFlareImage    );
-		//m_pgroupImage3D->AddImage(m_pwrapImageLensFlare  ); // Your_Persona: this line was moved down one line to move it up in the draw order.
+		m_pgroupImage3D->AddImage(m_pwrapImageLensFlare  ); // Your_Persona: this line was moved down one line to move it up in the draw order.
         m_pgroupImage3D->AddImage(m_pwrapImageScene      );
-		m_pgroupImage3D->AddImage(m_pwrapImageLensFlare  );// moved to here
+		//m_pgroupImage3D->AddImage(m_pwrapImageLensFlare  );// moved to here //Imago un-did YP's change 9/14
         m_pgroupImage3D->AddImage(m_pwrapImagePosters    );
         m_pgroupImage3D->AddImage(m_pwrapImageStars      );
 
