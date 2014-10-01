@@ -637,8 +637,10 @@ public:
 					if (trekClient.GetSavedCharacterName().GetLength()) {
                     	g_bQuickstart = true;
 						ZString cookie;
-						if (token.IsString(cookie)) 
-							g_autoJoin = cookie;
+						if (token.IsString(cookie)) {
+							g_autoJoin = cookie.RightOf("//");
+							g_autoJoin.RemoveAll('/');
+						}
 					}
                 } else if (str == "nocfgdl")  {
                     g_bDownloadNewConfig = false;
