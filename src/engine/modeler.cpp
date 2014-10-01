@@ -2744,25 +2744,31 @@ public:
 			return;
 		}*/
 
+		// Imago 9/14 guarded for crash
         TRef<ZFile> pfile = GetFile(str, "mdl", bError);
         if (pfile != NULL) 
 		{
-			bool bOriginalValue = SetSystemMemoryHint( bSystemMem );
-            if (*(DWORD*)pfile->GetPointer(false, false) == MDLMagic) {
-                if (g_bMDLLog) {
-                    ZDebugOutput("Reading Binary MDL file '" + str + "'\n");
-                }
-                pns = CreateBinaryNameSpace(str, this, pfile);
-            } else {
-                if (g_bMDLLog) {
-                    ZDebugOutput("Reading Text MDL file '" + str + "'\n");
-                }
-                pns = ::CreateNameSpace(str, this, pfile);
-            }
+			if (pfile->IsValid()) {
+				bool bOriginalValue = SetSystemMemoryHint( bSystemMem );
+				BYTE* fp = pfile->GetPointer(false,false);
+				if (fp) {
+					if (*(DWORD*)fp == MDLMagic) {
+						if (g_bMDLLog) {
+							ZDebugOutput("Reading Binary MDL file '" + str + "'\n");
+						}
+						pns = CreateBinaryNameSpace(str, this, pfile);
+					} else {
+						if (g_bMDLLog) {
+							ZDebugOutput("Reading Text MDL file '" + str + "'\n");
+						}
+						pns = ::CreateNameSpace(str, this, pfile);
+					}
 
-			SetSystemMemoryHint( bOriginalValue );
-            m_mapNameSpace.Set(str, pns);
-            return pns;
+					SetSystemMemoryHint( bOriginalValue );
+					m_mapNameSpace.Set(str, pns);
+					return pns;
+				}
+			}
         }
 
         return NULL;

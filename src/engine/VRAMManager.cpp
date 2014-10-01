@@ -174,6 +174,7 @@ void CVRAMManager::EvictDefaultPoolResources( )
 				}
 			}
 		}
+		CD3DDevice9::Get()->Device()->EvictManagedResources(); //imago 9/14
 	}
 }
 
@@ -306,7 +307,8 @@ HRESULT CVRAMManager::CreateTexture(	TEXHANDLE	texHandle,
 			uiNumLevels = NUM_MIPMAP_LEVELS;
 			dwUsageFlags |= D3DUSAGE_AUTOGENMIPMAP;
 		}
-
+		//UINT mem = CD3DDevice9::Get()->Device()->GetAvailableTextureMem();
+		//debugf("Creating texture %s - memory before: %u\n",szTextureName,mem);
 		// imago 6/26/09
 		hr = CD3DDevice9::Get()->Device()->CreateTexture(	pTexture->dwOriginalWidth,
 															pTexture->dwOriginalHeight,
@@ -317,22 +319,22 @@ HRESULT CVRAMManager::CreateTexture(	TEXHANDLE	texHandle,
 															&pTexture->pTexture,
 															NULL );  //Fix memory leak -Imago 8/2/09
 
-		D3DSURFACE_DESC surfDesc;
-		pTexture->pTexture->GetLevelDesc( 0, &surfDesc );
-		pTexture->dwActualWidth		= GetPower2( surfDesc.Width );
-		pTexture->dwActualHeight	= GetPower2( surfDesc.Height );
-
-		// If it created ok, update the texture details.
+		// If it created ok, update the texture details.  Imago fixed on 9/14
 		if( hr == D3D_OK )
 		{
+			D3DSURFACE_DESC surfDesc;
+			pTexture->pTexture->GetLevelDesc( 0, &surfDesc );
+			pTexture->dwActualWidth		= GetPower2( surfDesc.Width );
+			pTexture->dwActualHeight	= GetPower2( surfDesc.Height );
 			pTexture->texFormat		= texFormat;
 			pTexture->bValid		= true;
-		}
-
-		if( m_sVRAM.bMipMapGenerationEnabled == true )
-		{
-			pTexture->pTexture->SetAutoGenFilterType( CD3DDevice9::Get()->GetMipFilter() );
-			pTexture->bMipMappedTexture = true;
+			if( m_sVRAM.bMipMapGenerationEnabled == true )
+			{
+				pTexture->pTexture->SetAutoGenFilterType( CD3DDevice9::Get()->GetMipFilter() );
+				pTexture->bMipMappedTexture = true;
+			}
+		} else {
+			debugf("Failed to create texture!\n"); //OUTOFMEMORY imago 9/14
 		}
 	}
 

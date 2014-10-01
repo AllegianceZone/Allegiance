@@ -2341,6 +2341,9 @@ public:
                     break;
 
                 case ScreenIDGameOverScreen:
+					//imago eviction 9/14
+					CVRAMManager::Get()->EvictDefaultPoolResources();
+					CVBIBManager::Get()->EvictDefaultPoolResources();
                     SetScreen(CreateGameOverScreen(GetModeler()));
                     break;
 
@@ -2406,6 +2409,9 @@ public:
 
 
                 case ScreenIDTrainScreen:
+					//imago eviction 9/14
+					CVRAMManager::Get()->EvictDefaultPoolResources();
+					CVBIBManager::Get()->EvictDefaultPoolResources();
                     SetScreen(CreateTrainingScreen(GetModeler()));
                     break;
 
@@ -2466,6 +2472,9 @@ public:
 						"", //TheBored 06-JUL-07: Mish #7, blank because its never used
 						"tm_8_nanite_post", //TheBored 06-JUL-07: Mish #8 postgame panels
                     };
+					//imago eviction 9/14
+					CVRAMManager::Get()->EvictDefaultPoolResources();
+					CVBIBManager::Get()->EvictDefaultPoolResources();
                     SetScreen (CreatePostTrainingSlideshow (GetModeler (), strNamespace[iMission]));
                     break;
                 }
