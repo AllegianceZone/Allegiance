@@ -12,6 +12,12 @@ copy %2objs10\FZRetail\AGC\AGC.dll %1 /Y
 copy %2objs10\FZRetail\AGC\AGC.PDB %1 /Y
 copy %2objs10\FZRetail\Pigs\PigsLib\PigsLib.dll %1 /Y
 copy %2objs10\FZRetail\Pigs\PigsLib\PigsLib.pdb %1 /Y
+copy %2objs10\FZRetail\Pigs\PigAccts\PigAccts.exe %1 /Y
+copy %2objs10\FZRetail\Pigs\PigAccts\PigAccts.pdb %1 /Y
+copy %2objs10\FZRetail\Pigs\PigSrv\PigSrv.exe %1 /Y
+copy %2objs10\FZRetail\Pigs\PigSrv\PigSrv.pdb %1 /Y
+copy %2objs10\FZRetail\Pigs\PigConfig\PigConfig.exe %1 /Y
+copy %2objs10\FZRetail\Pigs\PigConfig\PigConfig.pdb %1 /Y
 copy %2objs10\FZRetail\AutoUpdate\AutoUpdate.exe %1 /Y
 copy %2objs10\FZRetail\AutoUpdate\AutoUpdate.pdb %1 /Y
 copy %2objs10\FZRetail\Reloader\Reloader.exe %1 /Y

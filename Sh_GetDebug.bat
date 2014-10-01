@@ -5,3 +5,6 @@ copy %2objs10\FZDebug\Lobby\AllClub.exe %1 /Y
 copy %2objs10\FZDebug\WinTrek\Allegiance.exe %1 /Y
 copy %2objs10\FZDebug\AGC\AGC.dll %1 /Y
 copy %2objs10\FZDebug\Pigs\PigsLib\PigsLib.dll %1 /Y
+copy %2objs10\FZDebug\Pigs\PigAccts\PigAccts.exe %1 /Y
+copy %2objs10\FZDebug\Pigs\PigSrv\PigSrv.exe %1 /Y
+copy %2objs10\FZDebug\Pigs\PigConfig\PigConfig.exe %1 /Y
