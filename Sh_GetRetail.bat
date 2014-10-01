@@ -4,10 +4,14 @@ copy %2objs10\FZRetail\AllSrvUI\AllSrvUI.exe %1 /Y
 copy %2objs10\FZRetail\AllSrvUI\AllSrvUI.PDB %1 /Y
 copy %2objs10\FZRetail\Lobby\AllLobby.exe %1 /Y
 copy %2objs10\FZRetail\Lobby\AllLobby.PDB %1 /Y
+copy %2objs10\FZRetail\Lobby\AllClub.exe %1 /Y
+copy %2objs10\FZRetail\Lobby\AllClub.PDB %1 /Y
 copy %2objs10\FZRetail\WinTrek\Allegiance.exe %1 /Y
 copy %2objs10\FZRetail\WinTrek\Allegiance.PDB %1 /Y
 copy %2objs10\FZRetail\AGC\AGC.dll %1 /Y
 copy %2objs10\FZRetail\AGC\AGC.PDB %1 /Y
+copy %2objs10\FZRetail\Pigs\PigsLib\PigsLib.dll %1 /Y
+copy %2objs10\FZRetail\Pigs\PigsLib\PigsLib.pdb %1 /Y
 copy %2objs10\FZRetail\AutoUpdate\AutoUpdate.exe %1 /Y
 copy %2objs10\FZRetail\AutoUpdate\AutoUpdate.pdb %1 /Y
 copy %2objs10\FZRetail\Reloader\Reloader.exe %1 /Y
