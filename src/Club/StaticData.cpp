@@ -10,7 +10,7 @@
 
 #include "pch.h"
 
-IStaticData * g_pStaticData = NULL;
+//IStaticData * g_pStaticData = NULL; Imago 9/14
 
 
 

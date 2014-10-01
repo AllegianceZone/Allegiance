@@ -58,7 +58,7 @@
 
 #include "ClubApp.h"
 #include "ClubClient.h"
-#include "StaticData.h" //- obsolete
+//#include "StaticData.h" //- obsolete
 
 
 /////////////////////////////////////////////////////////////////////////////

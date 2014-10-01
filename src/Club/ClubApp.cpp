@@ -42,7 +42,7 @@ CClubApp::CClubApp(IClubSite * plas) :
   // ,m_sql(this)
 {
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, "Creating AllClub");
-  //g_pStaticData = CreateStaticData(); KGJV - obsolete
+ // g_pStaticData = CreateStaticData(); //Imago 9/14
   assert(m_plas);
   g_pClubApp = this;
 

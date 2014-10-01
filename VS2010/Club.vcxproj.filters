@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\Club\AllClub.cpp" />
+    <ClCompile Include="..\src\Club\ClubApp.cpp" />
+    <ClCompile Include="..\src\Club\ClubClient.cpp" />
+    <ClCompile Include="..\src\Club\clubqguids.cpp" />
+    <ClCompile Include="..\src\Club\pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Club\AllClub.h" />
+    <ClInclude Include="..\src\Club\AllClubModule.h" />
+    <ClInclude Include="..\src\Club\ClubApp.h" />
+    <ClInclude Include="..\src\Club\ClubClient.h" />
+    <ClInclude Include="..\src\Club\ClubCounters.h" />
+    <ClInclude Include="..\src\Club\ClubMessages.h" />
+    <ClInclude Include="..\src\Club\ClubQueries.h" />
+    <ClInclude Include="..\src\Club\clubqueries2.h" />
+    <ClInclude Include="..\src\Club\ClubSite.h" />
+    <ClInclude Include="..\src\Club\pch.h" />
+    <ClInclude Include="..\src\Club\resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\Club\AllClub.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="..\src\Club\AllClubMsg.msg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="..\src\Club\AllClub.rc2">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="..\src\Club\AllClub.rgs">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{0f2cbffe-f3c0-4c1d-9a3c-462e8f79e2aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\src\Club\AllClub.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
