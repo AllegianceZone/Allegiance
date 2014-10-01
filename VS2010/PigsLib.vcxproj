@@ -94,7 +94,7 @@
       <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\Guids\guids.lib;$(OutDir)..\..\ZLib\ZLib.lib;$(OutDir)..\..\Engine\Engine.lib;$(OutDir)..\..\_utility\Utility.lib;$(OutDir)..\..\igc\igc.lib;$(OutDir)..\..\clintlib\clintlib.lib;..\src\Lib\DirectPlay\dxguid.lib;lz32.lib;wininet.lib;version.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\Guids\guids.lib;$(OutDir)..\..\ZLib\ZLib.lib;$(OutDir)..\..\Engine\Engine.lib;$(OutDir)..\..\_utility\Utility.lib;$(OutDir)..\..\igc\igc.lib;$(OutDir)..\..\clintlib\clintlib.lib;..\src\Lib\DirectPlay\dxguid.lib;wininet.lib;version.lib;Winmm.lib;dbghelp.lib;lz32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -121,7 +121,7 @@
       <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\Guids\guids.lib;$(OutDir)..\..\ZLib\ZLib.lib;$(OutDir)..\..\Engine\Engine.lib;$(OutDir)..\..\_utility\Utility.lib;$(OutDir)..\..\igc\igc.lib;$(OutDir)..\..\clintlib\clintlib.lib;..\src\Lib\DirectPlay\dxguid.lib;lz32.lib;wininet.lib;version.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\Guids\guids.lib;$(OutDir)..\..\ZLib\ZLib.lib;$(OutDir)..\..\Engine\Engine.lib;$(OutDir)..\..\_utility\Utility.lib;$(OutDir)..\..\igc\igc.lib;$(OutDir)..\..\clintlib\clintlib.lib;..\src\Lib\DirectPlay\dxguid.lib;lz32.lib;wininet.lib;version.lib;Winmm.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <ModuleDefinitionFile>..\src\Pigs\PigsLib\PigsLib.def</ModuleDefinitionFile>
       <TargetMachine>MachineX86</TargetMachine>
@@ -181,7 +181,9 @@
     <None Include="..\src\Pigs\PigsLib\PigsLib.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\src\Inc\PigsIDL.idl" />
+    <Midl Include="..\src\Inc\PigsIDL.idl">
+      <OutputDirectory Condition="'$(Configuration)|$(Platform)'=='FZRetail|Win32'">$(TargetDir)\</OutputDirectory>
+    </Midl>
     <Midl Include="..\src\Pigs\PigsLib\PigsLib.idl" />
     <Midl Include="..\src\Inc\ScrRun.idl" />
   </ItemGroup>
