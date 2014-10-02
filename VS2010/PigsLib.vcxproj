@@ -125,6 +125,7 @@
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <ModuleDefinitionFile>..\src\Pigs\PigsLib\PigsLib.def</ModuleDefinitionFile>
       <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
