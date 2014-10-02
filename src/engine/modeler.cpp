@@ -2589,6 +2589,60 @@ public:
         return NULL;
     }
 
+	//imago 9/14
+	TRef<Image> LoadImageDX(const ZString& str)
+    {
+        ZAssert(str.ToLower() == str);
+
+		TRef<ZFile> zf = GetFile(str,"",true);
+		ZFile * pFile = (ZFile*) zf;
+
+		if (pFile)
+			if (!pFile->IsValid())
+				return NULL;
+
+		D3DXIMAGE_INFO fileInfo;
+		if( D3DXGetImageInfoFromFileInMemory(	pFile->GetPointer(),
+												pFile->GetLength(),
+												&fileInfo ) == D3D_OK )
+		{
+			_ASSERT( fileInfo.ResourceType == D3DRTYPE_TEXTURE );
+			
+			// We can resize non-UI textures.
+			WinPoint targetSize( fileInfo.Width, fileInfo.Height );
+			bool bColourKey = GetColorKeyHint();
+
+			if( GetUIImageUsageHint() == false )
+			{
+				DWORD dwMaxTextureSize = CD3DDevice9::Get()->GetMaxTextureSize();
+				_ASSERT( dwMaxTextureSize >= 256 );
+				while(	( targetSize.x > (LONG)dwMaxTextureSize ) ||
+						( targetSize.y > (LONG)dwMaxTextureSize ) )
+				{
+					targetSize.x = targetSize.x >> 1;
+					targetSize.y = targetSize.y >> 1;
+				}
+			}
+			// For D3D9, we only allow black colour keys.
+			TRef<Surface> psurface =
+				m_pengine->CreateSurfaceD3DX(
+					&fileInfo,
+					&targetSize,
+					zf,
+					bColourKey,
+					Color( 0, 0, 0 ),
+					str );
+			
+			TRef<Image> pimage = new ConstantImage(psurface, ZString());
+			return pimage;
+		}
+		else
+		{
+			debugf("Failed to LoadImageDX(%s)",(PCC)str);
+			return NULL;
+		}
+	}
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	// LoadImage()

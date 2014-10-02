@@ -559,8 +559,7 @@ public:
             if (!ParseSymbol(pcc, pccEnd, '>', str)) {
                 return false;
             }
-
-            TRef<Image> pimage = m_pmodeler->LoadImage(str + "bmp", true, false);
+			TRef<Image> pimage = (str.ReverseFind(".png") == -1) ? m_pmodeler->LoadImage(str + "bmp", true, false) : m_pmodeler->LoadImageDX(str); //imago 9/14
             if (pimage) {
                 InsertAtBottom(new ImagePane(pimage));
                 return true;
@@ -905,6 +904,26 @@ public:
     void Paint(Surface* psurface)
     {
     }
+
+	//imago 9/14
+    MouseResult Button(
+        IInputProvider* pprovider,
+        const Point& point,
+        int button,
+        bool bCaptured,
+        bool bInside,
+        bool bDown
+    ) {
+        if(button == 8 && bDown) { //Imago 8/14/09 mouse wheel
+            m_pscroll->LineDown(); //pagedown is too much and just one line doesn't seem enough
+            m_pscroll->LineDown();
+        } else if (button == 9 && bDown) { 
+            m_pscroll->LineUp(); //intentional duplication
+            m_pscroll->LineUp();
+        }
+        return Pane::Button(pprovider, point, button, bCaptured, bInside, bDown);
+    }
+
 };
 
 //////////////////////////////////////////////////////////////////////////////
