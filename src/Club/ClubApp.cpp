@@ -46,22 +46,25 @@ CClubApp::CClubApp(IClubSite * plas) :
   assert(m_plas);
   g_pClubApp = this;
 
+  	  //imago 10/14
+  /*
   HKEY  hk;
   if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllClub, 0, "", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
   {
-    _Module.ReadFromRegistry(hk, true,  "AuthServer",       m_szAuthServer,     (DWORD) "pointweb01");
-    _Module.ReadFromRegistry(hk, true,  "Token",            m_szToken,          (DWORD) "OBLI_PBILL");
-/*
+
+    //_Module.ReadFromRegistry(hk, true,  "AuthServer",       m_szAuthServer,     (DWORD) "pointweb01");
+    //_Module.ReadFromRegistry(hk, true,  "Token",            m_szToken,          (DWORD) "OBLI_PBILL");
+
     _Module.ReadFromRegistry(hk, false, "SQLThreadsNotify", &m_dwThreadsNotify, (DWORD) 5);
     _Module.ReadFromRegistry(hk, false, "SQLThreadsSilent", &m_dwThreadsSilent, (DWORD) 1);
     if (FAILED(LoadRegString(hk, "SQLConfig", m_bstrSQLConfig)))
       m_bstrSQLConfig.Empty(); // default for all developers
-*/
   }
   else
   {
     assert(0); // if we can't access the registry, we got real problems
   }
+  */
 //  m_pzas = CreateZoneAuthServer(); Imago 9/14
   
 }

@@ -250,8 +250,8 @@ int InitSql(char * szRegKey, ISQLSite * pSQLSite)
   char szUser[64];
   char szPW[64];
   char szDatabase[64];
-  strcpy (szUser, ParseCommandLine (szRegKey, "SQLUser"));
-  strcpy (szPW, ParseCommandLine (szRegKey, "SQLPW"));
+  strcpy (szUser, ParseCommandLine (szRegKey, "SQLUser","club"));
+  strcpy (szPW, ParseCommandLine (szRegKey, "SQLPW","AllegFed@2014!NotSecret"));
   strcpy (szDatabase, ParseCommandLine (szRegKey, "SQLSrc", "Federation"));
   printf ("  Connecting to DSN (%s) as user (%s) with password (%s)...\n", szDatabase, szUser, szPW);
   sqlret = SQLConnect(hSqlDbc, (SQLCHAR*) szDatabase, SQL_NTS, (SQLCHAR*) szUser, SQL_NTS, (SQLCHAR*) szPW, SQL_NTS);

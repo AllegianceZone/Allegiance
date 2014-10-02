@@ -98,22 +98,26 @@ public:
     return m_cRankInfo;
   }
 
+    /* removed Imago 9/14
+
   char * GetAuthServer()
   {
     return m_szAuthServer;
   }
 
-  /* removed Imago 9/14
+
   TRef<IZoneAuthServer> GetZoneAuthServer()
   {
     return m_pzas;
   }
-  */
+
 
   char * GetToken()
   {
     return m_szToken;
   }
+
+    */
 
 //$ ASYNCCLUB
 /*
@@ -143,8 +147,8 @@ private:
   //TRef<IZoneAuthServer> m_pzas; //Imago 9/14
   RankInfo*         m_vRankInfo;
   short             m_cRankInfo;
-  char              m_szAuthServer[64];
-  char              m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
+  //char              m_szAuthServer[64];
+  //char              m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
 
 /*
   //$ ASYNCCLUB

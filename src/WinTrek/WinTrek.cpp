@@ -4471,7 +4471,7 @@ public:
     void ToggleEnvironment()
     {
 		if (m_pwrapImageEnvironment->GetImage() == m_pimageEnvironment) {
-            m_pwrapImageEnvironment->SetImage(new GeoImage(Geo::GetEmpty(), m_pviewportPosters, false)); //imago 10/1
+            m_pwrapImageEnvironment->SetImage(new GeoImage(Geo::GetEmpty(), m_pviewportPosters, false)); //imago 10/14
             SavePreference("Environment", FALSE);
         } else {
 			m_pwrapImageEnvironment->SetImage(m_pimageEnvironment);
