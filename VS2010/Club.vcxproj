@@ -5,9 +5,17 @@
       <Configuration>AZDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="AZDebug|x64">
+      <Configuration>AZDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail|Win32">
       <Configuration>AZRetail</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="AZRetail|x64">
+      <Configuration>AZRetail</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
@@ -50,7 +58,17 @@
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>Dynamic</UseOfAtl>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>Dynamic</UseOfAtl>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>Dynamic</UseOfAtl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>Dynamic</UseOfAtl>
@@ -62,7 +80,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
@@ -70,12 +96,19 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs10\$(Configuration)\Club\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">..\objs10\$(Configuration)\Club\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs10\$(Configuration)\Club\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">..\objs10\$(Configuration)\Club\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs10\$(Configuration)\Club\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">..\objs10\$(Configuration)\Club\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs10\$(Configuration)\Club\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">..\objs10\$(Configuration)\Club\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">AllClub</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">AllClub</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">AllClub</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">AllClub</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <ClCompile>
@@ -101,7 +134,52 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\src\Guids;..\src\Zone;..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Test\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ALLCLUB;_ATL_STATIC_REGISTRY;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(OutDir)..\_Utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\Guids\AGCGuid.lib;$(OutDir)..\Guids\guids.lib;..\src\Lib\DirectPlay\dxguid.lib;winmm.lib;version.lib;urlmon.lib;amstrmid.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">
+    <ClCompile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..\src\Guids;..\src\Zone;..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Test\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ALLCLUB;_ATL_STATIC_REGISTRY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(OutDir)..\_Utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\Guids\AGCGuid.lib;$(OutDir)..\Guids\guids.lib;..\src\Lib\DirectPlay\dxguid.lib;winmm.lib;version.lib;urlmon.lib;amstrmid.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">
     <ClCompile>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>..\src\Guids;..\src\Zone;..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Test\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

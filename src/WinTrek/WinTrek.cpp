@@ -2915,11 +2915,12 @@ public:
             hr = CreateDummySoundEngine(m_pSoundEngine);
             ZAssert(SUCCEEDED(hr));
         }
+		//imago 9/14
         m_soundquality = (ISoundEngine::Quality)LoadPreference("SoundQuality",
-            ISoundEngine::midQuality);
+            ISoundEngine::maxQuality);
         ZSucceeded(m_pSoundEngine->SetQuality(m_soundquality));
 
-        m_bEnableSoundHardware = LoadPreference("SoundHardwareAcceleration", false) != FALSE;
+        m_bEnableSoundHardware = LoadPreference("SoundHardwareAcceleration", true) != FALSE;
         ZSucceeded(m_pSoundEngine->EnableHardware(m_bEnableSoundHardware));
 
         ZSucceeded(m_pSoundEngine->SetListener(new CameraListener(m_cameraControl)));
@@ -7592,7 +7593,7 @@ public:
             if(GetWindow()->GetFullscreen())
                 trekClient.HandleAutoDownload(50); // give smaller time slice to allow for mouse to update
             else
-                trekClient.HandleAutoDownload(500); // since the mouse is hardware in not full screen, the graphics engine doesn't need much CPU
+                trekClient.HandleAutoDownload(150); // since the mouse is hardware in not full screen, the graphics engine doesn't need much CPU //Imago reduced 9/14
         }
 
 

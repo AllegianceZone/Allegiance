@@ -143,7 +143,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;../src/Inc/OggVorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -199,7 +199,7 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;../src/Inc/OggVorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;SRVLOG;_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -214,6 +214,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
@@ -373,6 +374,17 @@
     <ClInclude Include="..\src\soundengine\soundengine.h" />
     <ClInclude Include="..\src\soundengine\soundtemplates.h" />
     <ClInclude Include="..\src\soundengine\soundutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libogg.vcxproj">
+      <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libvorbis.vcxproj">
+      <Project>{3a214e06-b95e-4d61-a291-1f8df2ec10fd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libvorbisfile.vcxproj">
+      <Project>{cebde98b-a6aa-46e6-bc79-faaf823db9ec}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

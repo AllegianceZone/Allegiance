@@ -329,7 +329,7 @@ HRESULT DS3DSoundEngine::Init(HWND hwnd, bool bUseDSound8)
     DumpCaps();
 
     // Set the quality-related settings
-    hr = SetQuality(midQuality);
+    hr = SetQuality(m_quality); //Imago 9/14
     if (ZFailed(hr)) return hr;
 
     // start the primary buffer playing continuously

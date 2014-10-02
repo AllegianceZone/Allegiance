@@ -207,6 +207,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>

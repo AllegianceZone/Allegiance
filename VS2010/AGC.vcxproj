@@ -318,6 +318,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>.\$(OutDir);.\$(OutDir)..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

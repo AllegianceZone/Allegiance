@@ -46,8 +46,8 @@
 // mdvalley: additional includes for the vorbis codec
 #include <stdlib.h>
 #include <math.h>
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
+#include <codec.h>
+#include <vorbisfile.h>
 // include for timing information
 #include <sys/types.h>
 #include <sys/timeb.h>

@@ -5,9 +5,17 @@
       <Configuration>AZDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="AZDebug|x64">
+      <Configuration>AZDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail|Win32">
       <Configuration>AZRetail</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="AZRetail|x64">
+      <Configuration>AZRetail</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -19,7 +27,15 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
@@ -30,7 +46,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
@@ -38,17 +62,39 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">.\..\objs10\$(Configuration)\Pigs\PigAccts\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\src\Inc;..\src\Test\Inc;..\src\zlib;..\src\Guids;..\src\AGC;$(OutDir)..\PigsLib;$(OutDir)..\..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\PigGUID\PigGUID.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\ZLib\ZLib.lib;wininet.lib;netapi32.lib;winmm.lib;version.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\src\Inc;..\src\Test\Inc;..\src\zlib;..\src\Guids;..\src\AGC;$(OutDir)..\PigsLib;$(OutDir)..\..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -75,10 +121,28 @@
       <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\PigGUID\PigGUID.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\ZLib\ZLib.lib;wininet.lib;netapi32.lib;winmm.lib;dbghelp.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\src\Inc;..\src\Test\Inc;..\src\zlib;..\src\Guids;..\src\AGC;$(OutDir)..\PigsLib;$(OutDir)..\..\Guids;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ATL_STATIC_REGISTRY;_DEBUG;DEBUG;STRICT;_WINDOWS;WIN32;_AFXDLL;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(OutDir)..\..\Test\TCLib\TCLib.lib;$(OutDir)..\PigGUID\PigGUID.lib;$(OutDir)..\..\Guids\AGCGuid.lib;$(OutDir)..\..\ZLib\ZLib.lib;wininet.lib;netapi32.lib;winmm.lib;dbghelp.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Pigs\PigAccts\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\Pigs\PigAccts\PigAccount.cpp" />
     <ClCompile Include="..\src\Pigs\PigAccts\PigAccountDispenser.cpp" />
