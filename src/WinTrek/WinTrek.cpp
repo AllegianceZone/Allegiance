@@ -9308,6 +9308,7 @@ public:
 						!(m_pconsoleImage && m_pconsoleImage->IsComposing()))// turkey 8/13
 					{
 						m_bEnableVirtualJoystick = !m_bEnableVirtualJoystick;
+						SavePreference("VirtualJoystick", m_bEnableVirtualJoystick); //Imago 10/14
 						if(m_bEnableVirtualJoystick) m_ptrekInput->ClearButtonStates();//#56
 						return true;
 					}
@@ -9437,6 +9438,7 @@ public:
             case TK_ToggleMouse:
             {
                 m_bEnableVirtualJoystick = !m_bEnableVirtualJoystick;
+				SavePreference("VirtualJoystick", m_bEnableVirtualJoystick); //Imago 10/14
             }
             break;
 
