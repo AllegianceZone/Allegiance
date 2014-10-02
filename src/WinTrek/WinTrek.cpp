@@ -3192,7 +3192,7 @@ public:
             ToggleFilterUnknownChats(); //TheBored 30-JUL-07: Filter Unknown Chat patch
         if (!LoadPreference("LinearControlResponse", TRUE))
             ToggleLinearControls();
-        if (!LoadPreference("Environment", TRUE) || IsWine())  //imago 9/19/09 force env in wine 8/16/09
+        if (!LoadPreference("Environment", TRUE))
             ToggleEnvironment();
         if (!LoadPreference("Posters", TRUE))
             TogglePosters();
@@ -4470,8 +4470,8 @@ public:
 
     void ToggleEnvironment()
     {
-		if (m_pwrapImageEnvironment->GetImage() == m_pimageEnvironment || IsWine()) { //Imago 8/17/09
-            m_pwrapImageEnvironment->SetImage(Image::GetEmpty());
+		if (m_pwrapImageEnvironment->GetImage() == m_pimageEnvironment) {
+            m_pwrapImageEnvironment->SetImage(new GeoImage(Geo::GetEmpty(), m_pviewportPosters, false)); //imago 10/1
             SavePreference("Environment", FALSE);
         } else {
 			m_pwrapImageEnvironment->SetImage(m_pimageEnvironment);
