@@ -2360,7 +2360,7 @@ public:
 						//Imago 6/29/09 7/28/09 dont allow intro vid on nonprimary
 						HMODULE hVidTest = ::LoadLibraryA("WMVDECOD.dll");
 						HMODULE hAudTest = ::LoadLibraryA("wmadmod.dll");
-						bool bWMP = (hVidTest && hAudTest) ? true : false;
+						bool bWMP = (hVidTest && hAudTest);
 						::FreeLibrary(hVidTest); ::FreeLibrary(hAudTest); 
 						if (!CD3DDevice9::Get()->GetDeviceSetupParams()->iAdapterID && bWMP) {					
 							//dont' check for intro.avi, 
@@ -2705,7 +2705,7 @@ public:
 			//Imago only check for these if we have to 8/16/09
 			HMODULE hVidTest = ::LoadLibraryA("WMVDECOD.dll");
 			HMODULE hAudTest = ::LoadLibraryA("wmadmod.dll");
-			bool bWMP = (hVidTest && hAudTest) ? true : false;
+			bool bWMP = (hVidTest && hAudTest);
 			::FreeLibrary(hVidTest); ::FreeLibrary(hAudTest); 
 			if (bWMP) {
 				if (!CD3DDevice9::Get()->IsWindowed()) {

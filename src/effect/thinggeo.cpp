@@ -1547,6 +1547,11 @@ public:
 			pcontext->SetColorKey(false,true);
 		}
 
+		if (m_bShadeAlways) {
+			pcontext->SetShadeMode(ShadeModeGlobalColor);
+			pcontext->SetBlendMode(BlendModeAdd);
+		}
+
         // draw transparent stuff
         pcontext->DrawCallbackGeo(new Callback(this), false);
 

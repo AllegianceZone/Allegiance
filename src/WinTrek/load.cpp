@@ -1957,7 +1957,7 @@ public:
             if (pns) {
                 TRef<ThingGeo> pthing = ThingGeo::Create(m_pmodeler, m_ptime);
                 pthing->LoadMDL(0, pns, NULL);
-                pthing->SetShadeAlways(true);
+                //pthing->SetShadeAlways(true);
 
                 SetGeo(pthing->GetGeo());
             

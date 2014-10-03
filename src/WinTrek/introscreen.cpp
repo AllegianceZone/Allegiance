@@ -708,21 +708,55 @@ public:
 		// KGJV test
 		{
 			m_pwrapImage->SetImage((Image*)(Value *)pns->FindMember("bkImage"));
-			m_ppaneGeo = CreateGeoPane(
-				pns->FindPoint("geoSize"),
-				pns->FindPoint("geoPosition")
+			m_ppaneGeo = CreateGeoPane(Point(800, 528),Point(0, 0)
+				//pns->FindPoint("geoSize"),
+				//pns->FindPoint("geoPosition")
 			);
-			m_ppaneGeo->SetOffset(pns->FindWinPoint("geoPosition"));
+			m_ppaneGeo->SetOffset(WinPoint(0, 0)
+				//pns->FindWinPoint("geoPosition")
+			);
 			m_ppane->InsertAtTop(m_ppaneGeo);
 
 			TRef<StringValue> pstring; CastTo(pstring, pns->FindMember("geoModel"));
-			TRef<INameSpace> pnsgeo = m_pmodeler->GetNameSpace(pstring->GetValue());
-	
+			char *models[] = {		
+				"alleglogo",
+				"fig03", 
+				"faohbssy", 
+				"fig20", 
+				"quizfig", 
+				"fig30",
+				"ss01",
+				"ss101",
+				"ss27",
+				"utl95",
+				"bgrnd57",
+				"bsg_colrap2"
+			};
+			Orientation ors[] = {
+				Orientation (Vector (0.0f, -1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
+				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f))
+			};
+			int sel = randomInt(0, 11);
+			TRef<INameSpace> pnsgeo = m_pmodeler->GetNameSpace(models[sel]
+				//pstring->GetValue()
+			);
 			if (pnsgeo) {
 				m_pthing = ThingGeo::Create(m_pmodeler, m_ptime);
 				m_pthing->LoadMDL(0, pnsgeo, NULL);
-				m_pthing->SetShadeAlways(true);
+				if (sel != 0)
+					m_pthing->SetShadeAlways(true);
 				//m_pthing->SetTransparentObjects(true);
+				m_pthing->SetOrientation(ors[sel]);
 				//m_pthing->SetShowBounds(true);
 		
 				SetGeo(m_pthing->GetGeo());
@@ -777,7 +811,7 @@ public:
     {
         m_pcamera = new Camera();
         m_pcamera->SetZClip(1, 10000);
-        m_pcamera->SetFOV(RadiansFromDegrees(50));
+        m_pcamera->SetFOV(RadiansFromDegrees(55));
 
         Rect rect(Point(0, 0), size);
         TRef<RectValue> prect = new RectValue(rect);
@@ -794,7 +828,7 @@ public:
                             m_pwrapGeo,
                             new AnimateRotateTransform(
                                 new VectorValue(Vector(0, 1, 0)),
-                                Multiply(m_ptime, new Number(1.0))
+                                Multiply(m_ptime, new Number(1.6))
                             )
                         ),
                         new RotateTransform(Vector(1, 0, 0), pi/8)
@@ -810,8 +844,7 @@ public:
                     m_pwrapImage,
                     Point(-offset.X(), -(600 - size.Y() - offset.Y()))    
                 )
-				);
-
+			);
         //
         // Give this guy a zbuffer
         //
