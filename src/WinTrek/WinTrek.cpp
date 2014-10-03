@@ -2309,7 +2309,7 @@ public:
                     }
                     m_pwrapImageConsole->SetImage(m_pconsoleImage);
 
-                    ResetOverlayMask();
+					ResetOverlayMask();
 
                     SetViewMode(trekClient.GetShip()->GetStation()
                         ? (trekClient.GetShip()->IsGhost() ? vmCommand : vmHangar)
@@ -3341,6 +3341,19 @@ public:
         }
     }
 
+	//Imago 10/14
+    void SavePreference(const ZString& szName, BYTE * lpData, DWORD cbData)
+    {
+        HKEY hKey;
+
+        if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT,
+                0, "", REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))
+        {
+            ::RegSetValueEx(hKey, szName, NULL, REG_BINARY, (const BYTE*)&lpData, cbData);
+            ::RegCloseKey(hKey);
+        }
+    }
+
     DWORD LoadPreference(const ZString& szName, DWORD dwDefault)
     {
         HKEY hKey;
@@ -3363,6 +3376,27 @@ public:
         }
 
         return dwResult;
+    }
+
+
+	//Imago 10/14
+    bool LoadPreference(const ZString& szName, BYTE * dwResult, DWORD dwSize)
+    {
+        HKEY hKey;
+
+		if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT,
+                0, KEY_READ, &hKey))
+        {
+            DWORD dwType = REG_BINARY;
+
+            ::RegQueryValueEx(hKey, szName, NULL, &dwType, (BYTE*)&dwResult, &dwSize);
+            ::RegCloseKey(hKey);
+
+            if (dwType != REG_BINARY)
+               return false;
+        }
+
+        return true;
     }
 
     void SavePreference(const ZString& szName, const ZString& strValue)
@@ -6758,17 +6792,24 @@ public:
     void ToggleOverlayFlags(OverlayMask om)
     {
         SetOverlayFlags(m_voverlaymask[m_viewmode] ^ om);
+		if (!Training::IsTraining () && m_viewmode == vmCombat) //imago 10/14
+			SavePreference("OverlayCombatFlags",(DWORD)m_voverlaymask[m_viewmode]);
     }
 
 	// #294 turkey changed sector map to be on everywhere by default, and inventory on during combat
 	// was inventory never and sector map in combat and command only
     void ResetOverlayMask()
     {
-        for (int i = 0; i < c_cViewModes; i++)
-        {
-            m_voverlaymask[i] = ofSectorPane;
-        }
-        m_voverlaymask[vmCombat] |= ofInventory;
+		for (int i = 0; i < c_cViewModes; i++)
+		{
+			m_voverlaymask[i] = ofSectorPane;
+		}
+		//Imago 10/14 made combat om persist
+		OverlayMask om = (OverlayMask)LoadPreference("OverlayCombatFlags",0);
+		if (om != 0)
+			m_voverlaymask[vmCombat] = om;
+		else
+			m_voverlaymask[vmCombat] |= ofInventory;
     }
 
     void CopyOverlayFlags(OverlayMask om, bool bSet)
