@@ -1100,6 +1100,11 @@ private:
 // Imago 6/24/09  7/1/09 enhanced to use vector and include Refresh Rate Hz
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	//Imago 10/14
+	TVector<Vector> GetModes() {
+		return m_modes;
+	}
+
     Vector NextMode(const WinPoint& size)
     {
         int count = m_modes.GetCount();

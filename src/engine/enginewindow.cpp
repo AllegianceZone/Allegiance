@@ -11,6 +11,7 @@ void EngineWindow::MenuCommandSink::OnMenuCommand(IMenuItem* pitem)
     m_pwindow->OnEngineWindowMenuCommand(pitem);
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Static members
@@ -198,7 +199,7 @@ EngineWindow::EngineWindow(	EngineApp *			papp,
 
     // menu
     m_pmenuCommandSink  = new MenuCommandSink(this);
-	
+	m_psubmenuEventSink = new MenuCommandSink(this); //Imago 10/14
 
     // Start the callback
     EnableIdleFunction();
@@ -728,11 +729,13 @@ void EngineWindow::SetSizeable(bool bSizeable)
 {
     if (m_bSizeable != bSizeable) {
         m_bSizeable = bSizeable;
-
+//Imago 10/14
+/*
         if (m_pitemHigherResolution) {
             m_pitemHigherResolution->SetEnabled(m_bSizeable);
             m_pitemLowerResolution->SetEnabled(m_bSizeable);
         }
+*/
 
         Invalidate();
     }
@@ -837,41 +840,60 @@ void EngineWindow::SetImage(Image* pimage)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#define idmHigherResolution    1
-#define idmLowerResolution     2
-#define idmAllow3DAcceleration 3
-#define idmAllowSecondary      4
-#define idmBrightnessUp        5
-#define idmBrightnessDown      6
+//imago 10/14
+#define idmBrightnessUp       -2
+#define idmBrightnessDown     -1
+#define idmSelectResolution	   0
 
 TRef<IPopup> EngineWindow::GetEngineMenu(IEngineFont* pfont)
 {
-    TRef<IMenu> pmenu =
+	m_menuFont = pfont; //Imago 10/14
+	TRef<IMenu> pmenu =
         CreateMenu(
             GetModeler(),
             pfont,
             m_pmenuCommandSink
         );
-
-                                 pmenu->AddMenuItem(idmBrightnessUp       , "Brightness Up"                                   , 'U');
-                                 pmenu->AddMenuItem(idmBrightnessDown     , "Brightness Down"                                 , 'D');
+	m_pmenu = pmenu; //Imago 10/14
                                  pmenu->AddMenuItem(0                     , "------------------------------------------------"     );
                                  pmenu->AddMenuItem(0                     , "Options are only valid when flying in fullscreen"     );
                                  pmenu->AddMenuItem(0                     , "------------------------------------------------"     );
-    m_pitemHigherResolution    = pmenu->AddMenuItem(idmHigherResolution   , "Higher Resolution"                               , 'H');
-    m_pitemLowerResolution     = pmenu->AddMenuItem(idmLowerResolution    , "Lower Resolution"                                , 'L');
+                                 pmenu->AddMenuItem(idmBrightnessDown     , "Brightness Down"                                 , 'D');
+                                 pmenu->AddMenuItem(idmBrightnessUp       , "Brightness Up"                                   , 'U');
+								 pmenu->AddMenuItem(idmSelectResolution   , "Change Resolution"                               , 'R', m_psubmenuEventSink); //Imago 10/14
 								 pmenu->AddMenuItem(0                     , "------------------------------------------------"     );
-                                 pmenu->AddMenuItem(0                     , "Current device state                            ", 'C');
+                                 pmenu->AddMenuItem(0                     , "Current device state                            "	   );
                                  pmenu->AddMenuItem(0	                  , "------------------------------------------------"     );
     m_pitemDevice              = pmenu->AddMenuItem(0                     , GetDeviceString()                                      );
 //    m_pitemRenderer            = pmenu->AddMenuItem(0                     , GetRendererString()                                    );
     m_pitemResolution          = pmenu->AddMenuItem(0                     , GetResolutionString()                                  );
     m_pitemRendering           = pmenu->AddMenuItem(0                     , GetRenderingString()                                   );
     m_pitemBPP                 = pmenu->AddMenuItem(0                     , GetPixelFormatString()                                 ); // KGJV 32B
-
     return pmenu;
 }
 
+//Imago 10/14
+TRef<IPopup>  EngineWindow::GetSubMenu(IMenuItem* pitem)
+{
+    TRef<IMenu> pmenu =
+        CreateMenu(
+            GetModeler(),
+            m_menuFont,
+            m_pmenuCommandSink
+        );
+		if (m_pengine->IsFullscreen() && m_bSizeable) {
+			TVector<Vector> modes = GetEngine()->GetModes();
+			Point size = GetScreenRectValue()->GetValue().Size();
+			for(int index = 0; index < modes.GetCount(); index++) {
+				if (size.X() != modes[index].X() && size.Y() != modes[index].Y()) {
+					ZString str = ZString("") + modes[index].X() + "x" + modes[index].Y() + " @ " + modes[index].Z() + "Hz";
+					pmenu->AddMenuItem(index + 1,str);
+				}
+			}
+		}
+
+		return pmenu;
+}
 
 ZString EngineWindow::GetResolutionString()
 {
@@ -944,39 +966,26 @@ void EngineWindow::OnEngineWindowMenuCommand(IMenuItem* pitem)
     switch (pitem->GetID()) 
 	{
 
-/*       case idmAllowSecondary:
-            GetEngine()->SetAllowSecondary(
-                !GetEngine()->GetAllowSecondary()
-            );
-            break;
-
-        case idmAllow3DAcceleration:
-            GetEngine()->SetAllow3DAcceleration(
-                !GetEngine()->GetAllow3DAcceleration()
-            );
-            break;
-*/
-		// DISABLE THE higher/lower resolution option - to be reinstated at some point.
-		//Imago reinstated 6/26/09
-		case idmHigherResolution:
-            ChangeFullscreenSize(true);
-            break;
-
-        case idmLowerResolution:
-            ChangeFullscreenSize(false);
-            break;
+			//Imago 10/14 revisited
+		case idmSelectResolution:
+			m_popup = GetSubMenu(pitem);
+			break;
 
         case idmBrightnessUp:
-            GetEngine()->SetGammaLevel(
-                GetEngine()->GetGammaLevel() * 1.01f
-            );
+			if (m_pengine->IsFullscreen()) //Imago 10/14
+				GetEngine()->SetGammaLevel(GetEngine()->GetGammaLevel() * 1.01f);
 			break;
 
         case idmBrightnessDown:
-            GetEngine()->SetGammaLevel(
-                GetEngine()->GetGammaLevel() / 1.01f
-            );
+			if (m_pengine->IsFullscreen()) //Imago 10/14
+				GetEngine()->SetGammaLevel(GetEngine()->GetGammaLevel() / 1.01f);
             break;
+		default: //Imago 10/14
+			TVector<Vector> modes = GetEngine()->GetModes();
+			Vector mode = modes[pitem->GetID() - 1];
+			GetEngine()->SetFullscreenChanged(true);
+			GetEngine()->SetFullscreenSize(mode);
+			m_pmenu->ClosePopup(m_popup);
     }
 }
 

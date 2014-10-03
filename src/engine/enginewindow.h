@@ -38,7 +38,7 @@ protected:
         }
     };
 
-    class MenuCommandSink : public IMenuCommandSink {
+    class MenuCommandSink : public IMenuCommandSink,  public ISubmenuEventSink {  //Imago 10/14
     private:
         EngineWindow* m_pwindow;
 
@@ -47,10 +47,14 @@ protected:
             m_pwindow(pwindow)
         {
         }
-
         void OnMenuCommand(IMenuItem* pitem);
+		//Imago 10/14
+		void OnSubMenuCommand(IMenuItem* pitem);
+        TRef<IPopup> GetSubMenu(IMenuItem* pitem)
+        {
+            return m_pwindow->GetSubMenu(pitem);
+        }
     };
-
     friend class MenuCommandSink;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -137,15 +141,12 @@ protected:
     //
 
     TRef<IMenuCommandSink>     m_pmenuCommandSink;
+	TRef<ISubmenuEventSink>    m_psubmenuEventSink; //Imago 10/14
     TRef<IMenuItem>            m_pitemDevice;
 //    TRef<IMenuItem>            m_pitemRenderer;
     TRef<IMenuItem>            m_pitemResolution;
     TRef<IMenuItem>            m_pitemRendering;
     TRef<IMenuItem>            m_pitemBPP; // KGJV 32B
-  //  TRef<IMenuItem>            m_pitemAllowSecondary;
-//    TRef<IMenuItem>            m_pitemAllow3DAcceleration;
-    TRef<IMenuItem>            m_pitemHigherResolution;
-    TRef<IMenuItem>            m_pitemLowerResolution;
 
     //
     // Performance
@@ -159,6 +160,10 @@ protected:
     ZString                    m_strPerformance1;
     ZString                    m_strPerformance2;
     TRef<IEngineFont>          m_pfontFPS;
+	//Imago 10/14
+	TRef<IEngineFont>		   m_menuFont;
+	TRef<IMenu>				   m_pmenu;
+	TRef<IPopup>			   m_popup;
 
     double                     m_triangles;
     double                     m_tpf;
@@ -252,6 +257,7 @@ public:
     bool             GetActive()         { return m_bActive;                 }
 
     TRef<IPopup> GetEngineMenu(IEngineFont* pfont);
+	TRef<IPopup> GetSubMenu(IMenuItem* pitem);
 
     RectValue* GetScreenRectValue();
     RectValue* GetRenderRectValue();
