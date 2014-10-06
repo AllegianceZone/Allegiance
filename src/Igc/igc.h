@@ -1307,10 +1307,10 @@ struct MissionParams
         nInitialMinersPerTeam           = 1;
         nMaxDronesPerTeam               = 4;
 
-        nMinPlayersPerTeam              = 1;   // KGJV #114 changed
-        nMaxPlayersPerTeam              = 100; // KGJV #114 changed
+        nMinPlayersPerTeam              = 1;   
+        nMaxPlayersPerTeam              = 4; 
 
-        nTotalMaxPlayersPerGame         = 0x7FFF;
+        nTotalMaxPlayersPerGame         = 90; // 6 teams * 15 players per team
     }
 
     const char* Invalid(bool bFromClient = false) const
