@@ -6,3 +6,5 @@
 #define IDR_Club 100
 
 #define ICO_CLUB 101
+
+#define FLAVOR "AZ"

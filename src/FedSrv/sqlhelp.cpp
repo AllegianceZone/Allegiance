@@ -81,8 +81,8 @@ void SQLWhatsWrong(SQLSMALLINT ssiHandleType, SQLHANDLE sh)
   }
   // if we can't access the database, we're screwed, so give up.
   // TODO: Make the exit more graceful
-  assert(0); // let's at least break in debug build
-  exit(EXIT_FAILURE);
+  //assert(0); // let's at least break in debug build
+  //exit(EXIT_FAILURE);
 }
 
 
