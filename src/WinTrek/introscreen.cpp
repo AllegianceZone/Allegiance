@@ -746,6 +746,7 @@ public:
 				Orientation (Vector (0.0f, 1.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f)),
 				Orientation (Vector (0.0f, 0.0f, 0.0f), Vector (0.0f, 0.0f, 1.0f))
 			};
+			srand(GetTickCount() + (int)time(NULL)); //imago 10/14, apparently this call in ZLib is out of scope.
 			int sel = randomInt(0, 11);
 			TRef<INameSpace> pnsgeo = m_pmodeler->GetNameSpace(models[sel]
 				//pstring->GetValue()
