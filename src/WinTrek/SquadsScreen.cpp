@@ -61,6 +61,7 @@ private:
     TRef<ButtonPane>    m_pbuttonApply; // apply edit changes
     TRef<ButtonPane>    m_pbuttonURL;
     TRef<ButtonPane>    m_pbuttonFindSquad;
+	TRef<ButtonPane>    m_pbuttonWeb; //imago 10/14
 
     //
     // Icons
@@ -482,6 +483,9 @@ public:
         CastTo(m_pbuttonFindSquad, pns->FindMember("squadFindButtonPane"));
         AddEventTarget(&SquadsScreen::OnButtonFindSquad, m_pbuttonFindSquad->GetEventSource());
 
+		//Imago 10/14
+		CastTo(m_pbuttonWeb, pns->FindMember("webButtonPane")); //imago 10/14
+		AddEventTarget(&SquadsScreen::OnButtonZoneWeb, m_pbuttonWeb->GetEventSource());
         //
         // Combo panes
         //
@@ -3213,6 +3217,13 @@ public:
 //        RefreshSquadsListBox();
         RefreshPlayersListBox();
         RefreshSquadDetailsArea();
+    }
+	//Imago 10/14
+    bool OnButtonZoneWeb()
+    {
+        // note: users can also access web page from the introscreen
+        GetWindow()->ShowWebPage();
+        return true;
     }
 
     /*-------------------------------------------------------------------------
