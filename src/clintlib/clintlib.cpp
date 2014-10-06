@@ -1441,7 +1441,7 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
 
     assert(m_fLoggedOnToClub == false);
     
-    hr = m_fmClub.JoinSession(FEDCLUB_GUID, m_ci.strServer, m_ci.szName);
+    hr = m_fmClub.JoinSession(FEDCLUB_GUID, m_ci.strServer, m_ci.szName, GetCfgInfo().dwClubPort);
     assert(IFF(m_fmClub.IsConnected(), SUCCEEDED(hr)));
     if (m_fmClub.IsConnected())
     {
@@ -4238,6 +4238,10 @@ void CfgInfo::Load(const char * szConfig)
     GetPrivateProfileString(c_szCfgApp, "LobbyClientPort", "2302",
                                    szStr, sizeof(szStr), szConfig);
 	dwLobbyPort = atoi(szStr);
+    // Imago 9/14
+    GetPrivateProfileString(c_szCfgApp, "ClubClientPort", "2304",
+                                   szStr, sizeof(szStr), szConfig);
+	dwClubPort = atoi(szStr);
 }
 
 void _debugf(const char* format, ...)

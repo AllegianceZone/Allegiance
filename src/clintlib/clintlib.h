@@ -615,6 +615,7 @@ public:
   // KGJV - pigs - added ctor to init some values in case Load is never called
   CfgInfo() :
 	dwLobbyPort(2302),
+	dwClubPort(2304),
 	m_szConfigFile("") // KGJV: fix init value for LAN mode
   {
   }
@@ -639,6 +640,7 @@ public:
   int     crcPublicMessageFile;
   bool    bUsePassport;
   DWORD   dwLobbyPort;				// mdvalley: Port number to connect to lobby with
+  DWORD   dwClubPort;				// Imago 10/14
 };
 
 struct LANServerInfo : public IObject
