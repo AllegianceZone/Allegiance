@@ -49,7 +49,11 @@ public:
 	//Imago #215 8/10
 	virtual void SetSensitivity(const float sens)	 = 0;
 	virtual void SetAccel(const int accel)			 = 0;
-	//
+	//Imago 10/14
+	virtual int GetEPP()							 = 0;
+	virtual int GetThreshold1()						 = 0;
+	virtual int GetThreshold2()						 = 0;
+
     virtual void SetWheelPosition(float pos)         = 0;
     virtual void SetEnabled(bool bEnabled)           = 0;
 

@@ -219,6 +219,7 @@ private:
     int                                 m_threshold1;
     int                                 m_threshold2;
     int                                 m_acceleration;
+	int                                 m_epp; //^-- same (static) Imago 10/14
     float                               m_sensitivity;
 	HWND								m_hwnd;
 	CLogFile *							m_pLogFile; //Imago 8/12/09
@@ -288,7 +289,10 @@ public:
         m_threshold1   = pvalue[0];
         m_threshold2   = pvalue[1];
         m_acceleration = pvalue[2];
-        
+		
+		//imago 10/14
+		m_epp = m_acceleration;
+
 		//Imago #215 8/10
         HKEY hKey;
         DWORD dwType;
@@ -597,7 +601,11 @@ public:
 	//Imago #215 8/10
 	void SetSensitivity(const float sens) { m_sensitivity = sens; } 
 	void SetAccel(const int accel) { m_acceleration = accel; } 
-	//
+	//imago 10/14
+	int GetEPP() { return m_epp; } 
+	int GetThreshold1() { return m_threshold1; } 
+	int GetThreshold2() { return m_threshold2; } 
+
 
     void SetClipRect(const Rect& rect)
     {
@@ -633,8 +641,24 @@ public:
 
             if (m_bEnabled) {
                 DDCall(m_pdid->SetCooperativeLevel(m_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND));
+				//imago 10/14
+				if (m_epp) {
+					int pvalue[3];
+					pvalue[0] = m_threshold1;
+					pvalue[1] = m_threshold2;
+					pvalue[2] = 0;
+					ZVerify(SystemParametersInfo (SPI_SETMOUSE, 0, pvalue, 0));
+				}
             } else {
-//                DDCall(m_pdid->SetCooperativeLevel(m_hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
+				//imago 10/14
+				if (m_epp) {
+					int pvalue[3];
+					pvalue[0] = m_threshold1;
+					pvalue[1] = m_threshold2;
+					pvalue[2] = m_epp;
+					ZVerify(SystemParametersInfo (SPI_SETMOUSE, 0, pvalue, 0));
+				}
+              //DDCall(m_pdid->SetCooperativeLevel(m_hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND));
                 DDCall(m_pdid->Unacquire());
             }
         }

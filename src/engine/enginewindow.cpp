@@ -284,6 +284,16 @@ bool EngineWindow::IsValid()
 
 void EngineWindow::OnClose()
 {
+	//Imago 10/14
+	int epp = m_pmouse->GetEPP();
+	if (epp) {
+		int pvalue[3];
+		pvalue[0] = m_pmouse->GetThreshold1();
+		pvalue[1] = m_pmouse->GetThreshold2();
+		pvalue[2] = epp;
+		ZVerify(SystemParametersInfo (SPI_SETMOUSE, 0, pvalue, 0));
+	}
+
     RemoveKeyboardInputFilter(m_pkeyboardInput);
 
     m_pgroupImage           = NULL;
