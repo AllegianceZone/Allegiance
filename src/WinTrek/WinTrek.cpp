@@ -2964,13 +2964,13 @@ public:
 
        m_sizeCombatFullscreen =
            WinPoint(
-                int(LoadPreference("CombatFullscreenXSize", 800)),
-                int(LoadPreference("CombatFullscreenYSize", 600))
+                int(LoadPreference("CombatFullscreenXSize", 1024)),
+                int(LoadPreference("CombatFullscreenYSize", 768))
             );
 
 	   //Imago 7/27/09 Win7
 	   if (m_sizeCombatFullscreen ==  WinPoint(0,0))
-		   m_sizeCombatFullscreen = WinPoint(800,600);
+		   m_sizeCombatFullscreen = WinPoint(1024,768);
 
 // BUILD_DX9
 
