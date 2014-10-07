@@ -53,6 +53,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
 
             if (m_data.amount == NA)
             {
+				srand(GetTickCount() + (int)time(NULL)); //imago 10/14, apparently this call in ZLib is out of scope.
                 switch (pt->GetEquipmentType())
                 {
                     case ET_Dispenser:

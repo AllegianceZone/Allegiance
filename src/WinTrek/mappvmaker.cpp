@@ -430,7 +430,7 @@ VOID CmapPVMaker::GenerateMission(const MissionParams * pmp,
                                     ImissionPV * pMission)
 {
     CMapPVData MapData;
-
+	srand(GetTickCount() + (int)time(NULL)); //imago 10/14, apparently this call in ZLib is out of scope.
     assert(NULL == IsValid(pmp));
 
 

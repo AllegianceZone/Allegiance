@@ -2720,7 +2720,7 @@ void    CreateAsteroid(ImissionIGC*         pmission,
         da.up = CrossProduct(da.forward, zAxis);
     assert(da.up.LengthSquared() > 0.1f);
     da.up.SetNormalize();
-
+	srand(GetTickCount() + (int)time(NULL)); //imago 10/14, apparently this call in ZLib is out of scope.
     da.asteroidDef.radius = (short) randomInt(da.asteroidDef.radius, 2*da.asteroidDef.radius);
     da.signature = ((float) da.asteroidDef.radius) / 100.0f;
 
