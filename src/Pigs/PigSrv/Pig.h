@@ -281,7 +281,7 @@ public:
   STDMETHODIMP get_Me(IAGCShip** ppShip);
   STDMETHODIMP get_ChatTarget(AGCChatTarget* peChatTarget);
   STDMETHODIMP get_Host(IPigBehaviorHost** ppHost);
-  STDMETHODIMP StartGame();
+  STDMETHODIMP StartGame(IPigMissionParams* pMissionParams);
   STDMETHODIMP put_ShipAngleThreshold1(float rRadians);
   STDMETHODIMP get_ShipAngleThreshold1(float* prRadians);
   STDMETHODIMP put_ShipAngleThreshold2(float rRadians);

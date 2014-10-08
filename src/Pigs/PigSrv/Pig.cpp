@@ -2373,20 +2373,7 @@ STDMETHODIMP CPig::CreateMission(BSTR bstrServer, BSTR bstrAddr, IPigMissionPara
   // Disconnect from the lobby
   BaseClient::DisconnectLobby();
 
-  // Change the mission parameters to those specified, if any
-  if (pMissionParams)
-  {
-    // Create and queue the message to the server
-    BaseClient::SetMessageType(c_mtGuaranteed);
-    BEGIN_PFM_CREATE(*BaseClient::GetNetwork(), pfmParams, CS, MISSIONPARAMS)
-    END_PFM_CREATE
-    CopyMemory(&pfmParams->missionparams, &mp, sizeof(mp));
-
-    // Send the message
-    BaseClient::SendMessages();
-  }
-
-  // Set the state (NOTE: creating a mission automatically joins a team)
+    // Set the state (NOTE: creating a mission automatically joins a team)
   SetCurrentState(PigState_WaitingForMission);
 
   // Indicate success
@@ -2622,6 +2609,10 @@ STDMETHODIMP CPig::QuitGame()
 
 STDMETHODIMP CPig::Launch()
 {
+	//Imago 10/14
+	if (BaseClient::MyMission()->GetStage() != STAGE_STARTED)
+		Sleep(20000);
+
   // Validate the current state
   if (PigState_Docked != GetCurrentState())
     return Error(IDS_E_LAUNCH_DOCKED, IID_IPig);
@@ -2716,7 +2707,7 @@ STDMETHODIMP CPig::get_Host(IPigBehaviorHost** ppHost)
   return S_OK;
 }
 
-STDMETHODIMP CPig::StartGame()
+STDMETHODIMP CPig::StartGame(IPigMissionParams* pMissionParams)
 {
   // Validate the current state
   if (PigState_WaitingForMission != GetCurrentState())
@@ -2727,6 +2718,54 @@ STDMETHODIMP CPig::StartGame()
     if (BaseClient::MyMission()->SideNumPlayers(i)
       < BaseClient::MyMission()->MinPlayersPerTeam())
         return Error(IDS_E_STARTGAME_MINPLAYERS, IID_IPig);
+
+
+  // Validate the specified mission parameters
+  if (pMissionParams)
+  {
+    RETURN_FAILED(pMissionParams->Validate());
+  }
+
+  // Get the stream of the specified mission parameters data
+  IPigMissionParamsPrivatePtr spPrivate(pMissionParams);
+  if (NULL == spPrivate)
+    return E_UNEXPECTED;
+  IStreamPtr spstm;
+  RETURN_FAILED(spPrivate->GetData(&spstm));
+
+  // Seek to the start of the stream
+  LARGE_INTEGER li = {0, 0};
+  RETURN_FAILED(spstm->Seek(li, STREAM_SEEK_SET, NULL));
+
+  // Read the byte count
+  UINT cb = 0;
+  RETURN_FAILED(spstm->Read(&cb, sizeof(cb), NULL));
+  if (sizeof(MissionParams) != cb)
+    return E_UNEXPECTED;
+
+  // Read the MissionParams structure from the stream
+  MissionParams mp;
+  RETURN_FAILED(spstm->Read(&mp, sizeof(mp), NULL));
+
+  // Close the stream and private interface
+  spstm = NULL;
+  spPrivate = NULL;
+
+  if (pMissionParams)
+  {
+	  //imago 10/14
+	  mp.nGoalTeamKills = 50;
+	  mp.bAutoRestart = true;
+
+	// Create and queue the message to the server
+	BaseClient::SetMessageType(c_mtGuaranteed);
+    BEGIN_PFM_CREATE(*BaseClient::GetNetwork(), pfmParams, CS, MISSIONPARAMS)
+    END_PFM_CREATE
+    CopyMemory(&pfmParams->missionparams, &mp, sizeof(mp));
+
+    // Send the message
+    BaseClient::SendMessages();
+  }
 
   // Create and queue the message to the server
   BaseClient::SetMessageType(c_mtGuaranteed);

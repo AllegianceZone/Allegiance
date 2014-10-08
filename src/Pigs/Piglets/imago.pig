@@ -1,6 +1,6 @@
 <pigbehavior language="JScript">
 
-<script src="include\AutoStartGame.js"/>
+<script src="include\AutoStartCustomGame.js"/>
 
 <script>
 <![CDATA[
@@ -26,7 +26,7 @@ function OnStateNonExistant(eStatePrevious)
     catch (e)
     {
       // Logon failed, so shutdown the pig
-      Trace("\nLogon failed: " + e.description + "\n");
+      Trace("Logon failed: " + e.description + "\n");
       Shutdown();
     }
   }
@@ -40,34 +40,47 @@ function OnStateMissionList(eStatePrevious)
   // Attempt to join the current pig mission, if any
   try
   {
-    JoinMission("Pig Mission");
+  Trace("Trying to join Pig Mision...\n");
+    JoinMission("Imago's Pig Test");
     return;
   }
   catch (e)
   {
   }
 
-  // Mission didn't exist, join any other current mission, if any
-  try
-  {
-    JoinMission();
-    return;
-  }
-  catch (e)
-  {
-  }
-
+	Trace("No JoinMission Worked so Creating one...\n");
   // No missions exist, create one and join it
   var objParams = new ActiveXObject("Pigs.MissionParams");
   objParams.TeamCount = 2;
-  objParams.MinTeamPlayers = 3;
+  objParams.MinTeamPlayers = 1;
   objParams.MaxTeamPlayers = 10;
-  CreateMission(objParams);
+  objParams.GameName = "Imago's Pig Test";
+  objParams.CoreName = "Pcore006";
+  objParams.MapType = PigMapType_Brawl;
+  //CreateMission("Imago-PC","192.168.2.2",objParams);
+  CreateMission("azbuildslave","191.239.1.217",objParams);
 
   // Automatically start game when the minimum players per team have joined
-  AutoStartGame(objParams.MinTeamPlayers);
+  AutoStartGame(objParams);
 }
 
+
+function OnStateWaitingForMission(eStatePrevious)
+{
+	Trace("OnStateWaitingForMission, previous "+eStatePrevious+"...\n");
+ 	if (PigState_CreatingMission == eStatePrevious)
+ 	 {
+		CreateTimer(10, "OnJoinTimer()", -1, "JoinTimer");
+	 }
+}
+
+function OnJoinTimer()
+{
+	Trace("in OnJoinTimer()\n");
+     	Properties("JoinTimer").Kill();
+     	Trace("killed timer, Attempting to JoinTeam\n");
+      	JoinTeam();	
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Joins a random team.
@@ -76,17 +89,19 @@ function OnStateTeamList(eStatePrevious)
   // Avoid repeated attempts to join a team
   if (PigState_JoiningTeam == eStatePrevious)
   {
+    Trace("PigState_JoiningTeam so QuitGame()\n");
     QuitGame();
   }
   else
   {
     try
     {
+     Trace("Attempting to JoinTeam\n");
       JoinTeam();
     }
     catch (e)
     {
-      Trace("\n" + e.description + " - Attempting to QuitGame\n");
+      Trace("Attempting to QuitGame\n");
       QuitGame();
     }
   }
@@ -142,6 +157,7 @@ function SelectBestHull(objHullTypes)
 // Handles state transition. Launches the pig as soon as it becomes docked.
 function OnStateDocked(ePrev)
 {
+	Trace("Docked....\n");
   // Kill the flying timer, if one exists
   if ("object" == typeof(Properties("FlyingTimer")))
     Properties("FlyingTimer").Kill();
@@ -164,6 +180,7 @@ function OnStateDocked(ePrev)
   }
 
   // Launch into space
+  Trace("Launching....\n");
   Launch();
 }
 
@@ -172,6 +189,7 @@ function OnStateDocked(ePrev)
 // Handles state transition. Currently just outputs debug text.
 function OnStateFlying(eStatePrevious)
 {
+	Trace("Flying....\n");
   try
   {
     // Set the ship's throttle to 100%

@@ -1,8 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// AutoStartGame.js : Code needed to automatically start a game once the
-// minimum number of players per team have joined the game.
+// AutoStartCustomGame.js : Code needed to automatically start a game once the
+// minimum number of players per team have joined the game. - Changes mission params first!
 //
 
+var MissionParams;
 
 /////////////////////////////////////////////////////////////////////////////
 // Description: Creates a timer to check for the presence of the minimum
@@ -15,13 +16,13 @@
 //
 // See Also: AutoStartGame_Tick
 //
-function AutoStartGame(cMinTeamPlayers)
+function AutoStartGame(objParams)
 {
   if (PigState_WaitingForMission != PigState)
     throw "Cannot call AutoStartGame unless PigState is PigState_WaitingForMission";
 
-  var strExpression = "AutoStartGame_Tick(" + cMinTeamPlayers + ");";
-	CreateTimer(1.0, strExpression, -1, "AutoStartGameTimer");
+  MissionParams = objParams;
+  CreateTimer(1.0, "AutoStartGame_Tick()", -1, "AutoStartGameTimer");
 }
 
 
@@ -38,17 +39,19 @@ function AutoStartGame(cMinTeamPlayers)
 //
 // See Also: AutoStartGame
 //
-function AutoStartGame_Tick(cMinTeamPlayers)
+function AutoStartGame_Tick()
 {
+	var objParams = MissionParams;
   // Check each team for the minimum number of players
   for (var it = new Enumerator(Game.Teams); !it.atEnd(); it.moveNext())
-    if (it.item().Ships.Count < cMinTeamPlayers)
+    if (it.item().Ships.Count < objParams.MinTeamPlayers)
       return;
 
   // Kill the timer
   Timer.Kill();
 
   // Start the game
-  StartGame();
+  Trace("Trying to start game....\n");
+  StartGame(objParams);
 }
 

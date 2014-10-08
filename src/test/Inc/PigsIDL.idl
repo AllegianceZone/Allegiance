@@ -550,7 +550,7 @@ interface IPig : IDispatch
   HRESULT Host([out, retval] IPigBehaviorHost** ppHost);
 
   [helpstring("Starts the game.")]
-  HRESULT StartGame();
+  HRESULT StartGame([in] IPigMissionParams* pMissionParams);
 
   [propput, helpstring("Contains a threshold value, representing an angle in radians, to which each ship's movement is compared.")]
   HRESULT ShipAngleThreshold1([in] float rRadians);
