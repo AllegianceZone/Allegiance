@@ -271,7 +271,7 @@ public:
   STDMETHODIMP get_Money(AGCMoney* pnMoney);
   STDMETHODIMP Logon();
   STDMETHODIMP Logoff();
-  STDMETHODIMP CreateMission(IPigMissionParams* pMissionParams);
+  STDMETHODIMP CreateMission(BSTR bstrServer, BSTR bstrAddr, IPigMissionParams* pMissionParams); //imago 10/14
   STDMETHODIMP JoinMission(BSTR bstrMissionOrPlayer);
   STDMETHODIMP JoinTeam(BSTR bstrTeamOrPlayer);
   STDMETHODIMP QuitGame();

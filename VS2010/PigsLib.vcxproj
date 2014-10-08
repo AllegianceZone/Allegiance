@@ -205,16 +205,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Pigs\PigsLib\dlldatax.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\src\Pigs\PigsLib\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">Create</PrecompiledHeader>
@@ -226,7 +216,6 @@
     <ClCompile Include="..\src\Pigs\PigsLib\SrcInc.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Pigs\PigsLib\dlldatax.h" />
     <ClInclude Include="..\src\Pigs\PigsLib\pch.h" />
     <ClInclude Include="..\src\Pigs\PigsLib\PigMissionParams.h" />
     <ClInclude Include="..\src\Pigs\PigsLib\resource.h" />
@@ -238,12 +227,9 @@
     <None Include="..\src\Pigs\PigsLib\PigsLib.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\src\Inc\PigsIDL.idl">
-      <OutputDirectory Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">$(TargetDir)\</OutputDirectory>
-      <OutputDirectory Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">$(TargetDir)\</OutputDirectory>
-    </Midl>
     <Midl Include="..\src\Pigs\PigsLib\PigsLib.idl" />
-    <Midl Include="..\src\Inc\ScrRun.idl" />
+    <Midl Include="..\src\test\Inc\PigsIDL.idl" />
+    <Midl Include="..\src\test\Inc\ScrRun.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\Pigs\PigsLib\PigsLib.rc" />

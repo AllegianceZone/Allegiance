@@ -173,6 +173,8 @@ enum dispid_PigsIDL
   dispid_ZoneAuthServer,
   dispid_ZoneAuthTimeout,
   dispid_LobbyMode,
+  dispid_GameName,
+  dispid_CoreName,
 
   dispid_PigsIDL_End = dispid_PigsIDL_Begin + 0x1000
 };
@@ -518,7 +520,7 @@ interface IPig : IDispatch
   HRESULT Logoff();
 
   [helpstring("Creates (and joins) a new mission with the specified parameters.")]
-  HRESULT CreateMission([in] IPigMissionParams* pMissionParams);
+  HRESULT CreateMission([in] BSTR bstrServerName, [in] BSTR bstrServerAddr, [in] IPigMissionParams* pMissionParams); //Imago 10/14
 
   [helpstring("Joins a mission, which may be specified by name, by a buddy player, or not at all.")]
   HRESULT JoinMission([in, defaultvalue("")] BSTR bstrMissionOrPlayer);
@@ -705,8 +707,9 @@ typedef [v1_enum] enum PigMapType
   PigMapType_DiamondRing,
   PigMapType_Snowflake,
   PigMapType_SplitBases,
+  PigMapType_Brawl,
   PigMapType_Count,
-  PigMapType_Default = PigMapType_DoubleRing,
+  PigMapType_Default = PigMapType_Brawl, //imago 10/14
 } PigMapType;
 
 
@@ -740,6 +743,16 @@ interface IPigMissionParams : IDispatch
   HRESULT MapType([in] PigMapType eMapType);
   [propget, id(dispid_MapType)]
   HRESULT MapType([out, retval] PigMapType* peMapType);
+
+  //imago 10/14
+  [propput, helpstring("Gets/sets the game name for the mission.")]
+  HRESULT GameName([in] BSTR bstrGameName);
+  [propget, id(dispid_GameName)]
+  HRESULT GameName([out, retval] BSTR* bstrGameName);
+  [propput, helpstring("Gets/sets the core name for the mission.")]
+  HRESULT CoreName([in] BSTR bstrCoreName);
+  [propget, id(dispid_CoreName)]
+  HRESULT CoreName([out, retval] BSTR* bstrCoreName);
 
 }; // End: interface IPigMissionParams : IDispatch
 

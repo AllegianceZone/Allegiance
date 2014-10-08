@@ -121,6 +121,43 @@ STDMETHODIMP CPigMissionParams::get_MapType(PigMapType* peMapType)
 }
 
 
+//imago 10/14
+STDMETHODIMP CPigMissionParams::put_GameName(BSTR bstrGameName)
+{
+	XLock lock(this);
+	USES_CONVERSION;
+	LPSTR pszGameName = OLE2A(bstrGameName);
+	lstrcpy(m_mp.strGameName,pszGameName);
+	return S_OK;
+}
+
+STDMETHODIMP CPigMissionParams::get_GameName(BSTR* bstrGameName)
+{
+  CLEAROUT(bstrGameName, (BSTR)NULL);
+  XLock lock(this);
+  USES_CONVERSION;
+  *bstrGameName = A2OLE(m_mp.strGameName);
+  return S_OK;
+}
+
+STDMETHODIMP CPigMissionParams::put_CoreName(BSTR bstrCoreName)
+{
+	XLock lock(this);
+	USES_CONVERSION;
+	LPSTR pszCoreName = OLE2A(bstrCoreName);
+	lstrcpy(m_mp.szIGCStaticFile,pszCoreName);
+	return S_OK;
+}
+
+STDMETHODIMP CPigMissionParams::get_CoreName(BSTR* bstrCoreName)
+{
+  CLEAROUT(bstrCoreName, (BSTR)NULL);
+  XLock lock(this);
+  USES_CONVERSION;
+  *bstrCoreName = A2OLE(m_mp.szIGCStaticFile);
+  return S_OK;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // IPigMissionParamsPrivate Interface Methods
 
@@ -161,6 +198,7 @@ STDMETHODIMP CPigMissionParams::InitNew()
 
   // Initialize the Game name
   strcpy(m_mp.strGameName, "Pig Mission");
+  strcpy(m_mp.szIGCStaticFile, "PCore006"); //Imago 10/14
 
   // Perform default processing
   return TCPersistStreamInitImplBase::InitNew();

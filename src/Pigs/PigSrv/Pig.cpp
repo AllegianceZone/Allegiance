@@ -2158,6 +2158,12 @@ STDMETHODIMP CPig::Logon()
 
   // Copy the pig account name and password to the connection parameters
   lstrcpy(ci.szName, OLE2CA(m_bstrName));
+
+	//imago 10/14
+	CComBSTR bstrPW;
+	RETURN_FAILED(m_spAccount->get_Password(&bstrPW));
+	LPSTR pszPW = bstrPW.Length() ? OLE2A(bstrPW) : "";
+	lstrcpy(ci.szPW,pszPW);
   
 #ifdef USEAUTH
   // Authenticate the account on the Zone authentication server, if any
@@ -2300,13 +2306,15 @@ STDMETHODIMP CPig::Logoff()
   return S_OK;
 }
 
-STDMETHODIMP CPig::CreateMission(IPigMissionParams* pMissionParams)
+STDMETHODIMP CPig::CreateMission(BSTR bstrServer, BSTR bstrAddr, IPigMissionParams* pMissionParams)
 {
+	/* Imago 10/14
   // Only allowed when the current lobby mode is Zone
   PigLobbyMode eMode;
   ZSucceeded(GetEngine().get_LobbyMode(&eMode));
   if (PigLobbyMode_Club != eMode)
     return Error(IDS_E_LOBBYMODE_OP_UNSUPPORTED, IID_IPig);
+	*/
 
   // Validate the current state
   if (PigState_MissionList != GetCurrentState())
@@ -2348,8 +2356,8 @@ STDMETHODIMP CPig::CreateMission(IPigMissionParams* pMissionParams)
 
   // Set the state to PigState_CreatingMission
   SetCurrentState(PigState_CreatingMission);
-
-  CreateMissionReq();
+  USES_CONVERSION;
+  CreateMissionReq(OLE2CA(bstrServer),OLE2CA(bstrAddr),mp.szIGCStaticFile,mp.strGameName); //Imago 10/14
 
   // Wait for the acknowledgement event
   if (!WaitInTimerLoop(m_evtCreatingMission))
@@ -2502,9 +2510,10 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 
 STDMETHODIMP CPig::JoinTeam(BSTR bstrTeamOrPlayer)
 {
+	//imago 10/14
   // Validate the current state
-  if (PigState_TeamList != GetCurrentState())
-    return Error(IDS_E_JOINTEAM_TEAMLIST, IID_IPig);
+  //if (PigState_TeamList != GetCurrentState())
+    //return Error(IDS_E_JOINTEAM_TEAMLIST, IID_IPig);
 
   // Find a team using the specified string, if any
   SideID idSide = NA;

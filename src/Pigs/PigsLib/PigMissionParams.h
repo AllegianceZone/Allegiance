@@ -56,6 +56,9 @@ public:
     PROP_ENTRY("MaxTeamPlayers", dispid_MaxTeamPlayers, CLSID_NULL)
     PROP_ENTRY("MinTeamPlayers", dispid_MinTeamPlayers, CLSID_NULL)
     PROP_ENTRY("MapType"       , dispid_MapType       , CLSID_NULL)
+	//Imago 10/14
+	PROP_ENTRY("GameName"       , dispid_GameName     , CLSID_NULL)
+	PROP_ENTRY("CoreName"       , dispid_CoreName     , CLSID_NULL)
   END_PROP_MAP()
 
 // Construction / Destruction
@@ -78,7 +81,11 @@ public:
   STDMETHODIMP get_MinTeamPlayers(short* pnMinTeamPlayers);
   STDMETHODIMP put_MapType(PigMapType eMapType);
   STDMETHODIMP get_MapType(PigMapType* peMapType);
-
+  //imago 10/14
+  STDMETHODIMP put_GameName(BSTR bstrGameName);
+  STDMETHODIMP get_GameName(BSTR* bstrGameName);
+  STDMETHODIMP put_CoreName(BSTR bstrCoreName);
+  STDMETHODIMP get_CoreName(BSTR* bstrCoreName);
 // IPigMissionParamsPrivate Interface Methods
 public:
   STDMETHODIMP GetData(IStream** ppstm);

@@ -49,6 +49,7 @@ function AutoStartGame_Tick(cMinTeamPlayers)
   Timer.Kill();
 
   // Start the game
+  Trace("Trying to start game....\n");
   StartGame();
 }
 
