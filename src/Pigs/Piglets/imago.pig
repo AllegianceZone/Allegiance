@@ -9,6 +9,7 @@
 // Beginning of script
 //
 
+var GameName = "Bot DeathMatch";
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Logs on to the mission server.
@@ -41,7 +42,7 @@ function OnStateMissionList(eStatePrevious)
   try
   {
   Trace("Trying to join Pig Mision...\n");
-    JoinMission("Imago's Pig Test");
+    JoinMission(GameName);
     return;
   }
   catch (e)
@@ -54,7 +55,7 @@ function OnStateMissionList(eStatePrevious)
   objParams.TeamCount = 2;
   objParams.MinTeamPlayers = 1;
   objParams.MaxTeamPlayers = 10;
-  objParams.GameName = "Imago's Pig Test";
+  objParams.GameName = GameName;
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
   //CreateMission("Imago-PC","192.168.2.2",objParams);
