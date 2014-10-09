@@ -7,6 +7,7 @@ copy %2objs10\AZDebug\AGC\AGC.dll %1 /Y
 copy %2objs10\AZDebug\Pigs\PigsLib\PigsLib.dll %1 /Y
 copy %2objs10\AZDebug\Test\TCObj\TCObj.dll %1 /Y
 copy %2objs10\AZDebug\Pigs\PigAccts\PigAccts.exe %1 /Y
+copy %2src\Pigs\PigAccts\PigAccts.ini %1 /Y
 copy %2objs10\AZDebug\Pigs\PigSrv\PigSrv.exe %1 /Y
 copy %2objs10\AZDebug\Pigs\PigConfig\PigConfig.exe %1 /Y
 copy %2objs10\AZDebug\AutoUpdate\AutoUpdate.exe %1 /Y
