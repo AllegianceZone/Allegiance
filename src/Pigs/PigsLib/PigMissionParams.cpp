@@ -122,6 +122,15 @@ STDMETHODIMP CPigMissionParams::get_MapType(PigMapType* peMapType)
 
 
 //imago 10/14
+STDMETHODIMP CPigMissionParams::put_TeamKills(short nGoalTeamKills)
+{
+  return TCComPropertyPut(this, m_mp.nGoalTeamKills, nGoalTeamKills, dispid_TeamKills);
+}
+
+STDMETHODIMP CPigMissionParams::get_TeamKills(short* nGoalTeamKills)
+{
+  return TCComPropertyGet(this, nGoalTeamKills, m_mp.nGoalTeamKills);
+}
 STDMETHODIMP CPigMissionParams::put_GameName(BSTR bstrGameName)
 {
 	XLock lock(this);

@@ -175,6 +175,7 @@ enum dispid_PigsIDL
   dispid_LobbyMode,
   dispid_GameName,
   dispid_CoreName,
+  dispid_TeamKills,
 
   dispid_PigsIDL_End = dispid_PigsIDL_Begin + 0x1000
 };
@@ -745,6 +746,10 @@ interface IPigMissionParams : IDispatch
   HRESULT MapType([out, retval] PigMapType* peMapType);
 
   //imago 10/14
+  [propput, helpstring("Gets/sets the death match goal.")]
+  HRESULT TeamKills([in] short nGoalTeamKills);
+  [propget, id(dispid_TeamKills)]
+  HRESULT TeamKills([out, retval] short* nGoalTeamKills);
   [propput, helpstring("Gets/sets the game name for the mission.")]
   HRESULT GameName([in] BSTR bstrGameName);
   [propget, id(dispid_GameName)]

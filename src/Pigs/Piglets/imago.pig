@@ -15,6 +15,7 @@ var GameName = "Bot DeathMatch";
 // Handles state transition. Logs on to the mission server.
 function OnStateNonExistant(eStatePrevious)
 {
+	DisplayStateTransition(eStatePrevious);
   // If previous state was PigState_Terminated, the pig is being created
   if (PigState_Terminated == eStatePrevious)
   {
@@ -38,6 +39,7 @@ function OnStateNonExistant(eStatePrevious)
 // Handles state transition. Joins or creates a mission.
 function OnStateMissionList(eStatePrevious)
 {
+	DisplayStateTransition(eStatePrevious);
   // Attempt to join the current pig mission, if any
   try
   {
@@ -58,8 +60,9 @@ function OnStateMissionList(eStatePrevious)
   objParams.GameName = GameName;
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
-  //CreateMission("Imago-PC","192.168.2.2",objParams);
-  CreateMission("azbuildslave","191.239.1.217",objParams);
+  objParams.TeamKills = 20;
+  CreateMission("Imago-PC","192.168.2.2",objParams);
+  //CreateMission("azbuildslave","191.239.1.217",objParams);
 
   // Automatically start game when the minimum players per team have joined
   AutoStartGame(objParams);
@@ -68,10 +71,11 @@ function OnStateMissionList(eStatePrevious)
 
 function OnStateWaitingForMission(eStatePrevious)
 {
+	DisplayStateTransition(eStatePrevious);
 	Trace("OnStateWaitingForMission, previous "+eStatePrevious+"...\n");
  	if (PigState_CreatingMission == eStatePrevious)
  	 {
-		CreateTimer(10, "OnJoinTimer()", -1, "JoinTimer");
+		CreateTimer(3, "OnJoinTimer()", -1, "JoinTimer");
 	 }
 }
 
@@ -87,6 +91,7 @@ function OnJoinTimer()
 // Handles state transition. Joins a random team.
 function OnStateTeamList(eStatePrevious)
 {
+	DisplayStateTransition(eStatePrevious);
   // Avoid repeated attempts to join a team
   if (PigState_JoiningTeam == eStatePrevious)
   {
@@ -156,9 +161,9 @@ function SelectBestHull(objHullTypes)
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Launches the pig as soon as it becomes docked.
-function OnStateDocked(ePrev)
+function OnStateDocked(eStatePrevious)
 {
-	Trace("Docked....\n");
+	DisplayStateTransition(eStatePrevious);
   // Kill the flying timer, if one exists
   if ("object" == typeof(Properties("FlyingTimer")))
     Properties("FlyingTimer").Kill();
@@ -190,7 +195,7 @@ function OnStateDocked(ePrev)
 // Handles state transition. Currently just outputs debug text.
 function OnStateFlying(eStatePrevious)
 {
-	Trace("Flying....\n");
+	DisplayStateTransition(eStatePrevious);
   try
   {
     // Set the ship's throttle to 100%
@@ -265,6 +270,108 @@ function ThrustOrbit()
     Trace("Error in ThrustOrbit():\n\t" + e.description);
 	}
 }
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+function OnActivate(objDeactivated)
+{
+  Trace("Piglet Activated, previous was " +
+    (objDeactivated ? objDeactivated.BehaviorType.Name : "(none)") + "\n");
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+function OnDeactivate(objActivated)
+{
+  Trace("Piglet Dectivated, next is " +
+    (objActivated ? objActivated.BehaviorType.Name : "(none)") + "\n");
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Displays state transitions.
+//
+function DisplayStateTransition(eStatePrevious)
+{
+  Trace("State changed from " + StateName(eStatePrevious)     // Host.Trace    Host.StateName
+    + " to " + PigStateName + "\n");                                       // Pig.PigStateName
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateLoggingOn(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateLoggingOff(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateCreatingMission(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateJoiningMission(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateQuittingMission(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateJoiningTeam(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateLaunching(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles state transition. Currently just outputs debug text.
+function OnStateTeminated(eStatePrevious)
+{
+  DisplayStateTransition(eStatePrevious);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Handles the 'mission started' notification.
+function OnMissionStarted()
+{
+  // Output debug text
+  Trace("OnMissionStarted()\n");
+}
+
 
 
 // End of script

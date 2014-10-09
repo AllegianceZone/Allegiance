@@ -2753,10 +2753,6 @@ STDMETHODIMP CPig::StartGame(IPigMissionParams* pMissionParams)
 
   if (pMissionParams)
   {
-	  //imago 10/14
-	  mp.nGoalTeamKills = 50;
-	  mp.bAutoRestart = true;
-
 	// Create and queue the message to the server
 	BaseClient::SetMessageType(c_mtGuaranteed);
     BEGIN_PFM_CREATE(*BaseClient::GetNetwork(), pfmParams, CS, MISSIONPARAMS)

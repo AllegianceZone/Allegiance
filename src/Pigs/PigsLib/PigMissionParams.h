@@ -82,6 +82,8 @@ public:
   STDMETHODIMP put_MapType(PigMapType eMapType);
   STDMETHODIMP get_MapType(PigMapType* peMapType);
   //imago 10/14
+  STDMETHODIMP put_TeamKills(short nGoalTemaKills);
+  STDMETHODIMP get_TeamKills(short* nGoalTemaKills);
   STDMETHODIMP put_GameName(BSTR bstrGameName);
   STDMETHODIMP get_GameName(BSTR* bstrGameName);
   STDMETHODIMP put_CoreName(BSTR bstrCoreName);
