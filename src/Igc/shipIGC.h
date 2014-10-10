@@ -765,7 +765,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
                     case c_cmdAccepted:
                     {
-                        if (m_bAutopilot && (m_pilotType < c_ptPlayer))
+                        if (m_bAutopilot && (m_pilotType <= c_ptCheatPlayer)) //imago 10/14
                         {
                             SetCommand(c_cmdCurrent, target, cid);
                             SetCommand(c_cmdPlan, target, cid);
@@ -1597,9 +1597,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 break;
 
                 case c_ptPlayer:
-                case c_ptCheatPlayer:
                 {
                     bLegal = (cid >= c_cidDefault) && (cid < c_cidHide);
+                }
+				break;
+                case c_ptCheatPlayer:
+                {
+                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidAttack) || (cid == c_cidPickup) || (cid == c_cidDoNothing) || (cid == c_cidRepair) || (cid == c_cidStop) || (cid == c_cidHide);
                 }
             }
 
@@ -1623,7 +1627,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 					break;
 					case c_cidHide:
 					{
-						bLegal = (m_pilotType < c_ptPlayer);
+						bLegal = (m_pilotType <= c_ptCheatPlayer); //imago 10/14
 					}
 					break;
 					case c_cidBuild:
@@ -1638,7 +1642,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 					break;
 					case c_cidGoto:
 					{
-						bLegal = (m_pilotType < c_ptPlayer);
+						bLegal = (m_pilotType <= c_ptCheatPlayer); //imago 10/14
 					}
 					break;
 					default:
@@ -1756,7 +1760,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 
 					case c_cidHide: //#320
 					{
-						bLegal = m_pilotType < c_ptPlayer && 
+						bLegal = m_pilotType <= c_ptCheatPlayer && //imago 10/14
 							(((type == OT_station) && bFriendly) || ((type == OT_buoy) && ((IbuoyIGC*)pmodel)->GetBuoyType() == c_buoyCluster) || (type == OT_warp));
 					}
                 }
