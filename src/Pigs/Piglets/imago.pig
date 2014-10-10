@@ -1,6 +1,7 @@
 <pigbehavior language="JScript">
 
 <script src="include\AutoStartCustomGame.js"/>
+<script src="include\common.js"/>
 
 <script>
 <![CDATA[
@@ -10,6 +11,10 @@
 //
 
 var GameName = "Bot DeathMatch";
+var MyGarrison;
+var MyShip;
+var EnemyGarrison;
+var CurrentTarget;
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Logs on to the mission server.
@@ -22,7 +27,7 @@ function OnStateNonExistant(eStatePrevious)
     // Logon to the mission server
     try
     {
-      UpdatesPerSecond = 20;
+      //UpdatesPerSecond = 5;
       Logon();
     }
     catch (e)
@@ -82,7 +87,7 @@ function OnStateWaitingForMission(eStatePrevious)
 function OnJoinTimer()
 {
 	Trace("in OnJoinTimer()\n");
-     	Properties("JoinTimer").Kill();
+     	Timer.Kill();
      	Trace("killed timer, Attempting to JoinTeam\n");
       	JoinTeam();	
 }
@@ -113,77 +118,14 @@ function OnStateTeamList(eStatePrevious)
   }
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Selects the best hull from a collection of hulls.  Scans the list, noting
-// the index of the Fighter and the Interceptor.  If a Fighter was found, it
-// returns that index.  Otherwise, the index of the Interceptor is returned.
-// If an Interceptor is not found, returns 0, which should be a scout or a
-// recovery ship.
-//
-function SelectBestHull(objHullTypes)
-{
-  var FighterHull = -1, InterceptorHull = 0;
-  var e = new Enumerator(objHullTypes)
-
-  // loop thru collection
-  var strTrace = "Hull types:\n";
-  for (var i = 0; !e.atEnd(); e.moveNext(), ++i)
-  {
-    hull = e.item();
-    strTrace += "  " +  i + ". " + hull.Name + "\n";
-
-    // search for "Interceptor" in the name
-    if (hull.Name.search("Interceptor") != -1)
-      InterceptorHull = i;
-
-    // search for "Fighter" in the name
-    if (hull.Name.search("Fighter") != -1)
-      FighterHull = i;    
-  }
-  strTrace += "Fighter: " + FighterHull + " Interceptor: " + InterceptorHull + "\n";
-
-  // look for valid Fighter index
-  if (FighterHull != -1)
-  {
-    // fighter found, return index
-    Trace(strTrace + "Selecting fighter.\n");
-    return FighterHull;
-  }
-  else
-  {
-    // interceptor found, or default, return index
-    Trace (strTrace + "Selecting interceptor.\n");
-    return InterceptorHull;
-  }
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Launches the pig as soon as it becomes docked.
 function OnStateDocked(eStatePrevious)
 {
-	DisplayStateTransition(eStatePrevious);
-  // Kill the flying timer, if one exists
-  if ("object" == typeof(Properties("FlyingTimer")))
-    Properties("FlyingTimer").Kill();
 
-  try
-  {
-    // Get the list of hull types
     var objHullTypes = HullTypes;
-    var cHullTypes = objHullTypes.Count;
-    Host.Trace("\nOnStateDocked: cHullTypes = " + cHullTypes + "\n");
-
-    // Select and buy the best hull available
-    var iHull = SelectBestHull(objHullTypes);
-    if (cHullTypes)
-      Ship.BuyHull(objHullTypes(iHull));
-  }
-  catch (e)
-  {
-    Trace("\n" + e.description + "\n");
-  }
+    var iHull = SelectBestHull(objHullTypes,"Interceptor","Fighter");
+    Ship.BuyHull(objHullTypes(iHull));
 
   // Launch into space
   Trace("Launching....\n");
@@ -196,83 +138,77 @@ function OnStateDocked(eStatePrevious)
 function OnStateFlying(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
-  try
-  {
-    // Set the ship's throttle to 100%
-    Throttle = 100;
-
-    // Create a timer to reset the throttle
-    var fDuration = 5.0 + (Random() % 5);
-    CreateTimer(fDuration, "OnInitialThrottle()", -1, "FlyingTimer");
-  }
-  catch (e)
-  {
-    Trace("Error in OnStateFlying():\n\t" + e.description);
-  }
+	Defend("Garrison");
+	
+	//determine my ship and garrison
+	var x;
+	var shiplist = Game.Ships;
+	var stationlist = Ship.Sector.Stations;
+	var e = new Enumerator (shiplist);
+	  for(; !e.atEnd(); e.moveNext())
+	  {
+	    x = e.item();
+	    Host.Trace("ship: " + x.Name + "\n");
+	    if (x.Name == Name) {
+	    	Trace("Found myself!\n");
+	      MyShip = x;
+	    } else {
+	    	if (x.Team != MyShip.Team) {
+	    		Trace("Found enemy ship!\n");
+	    		CurrentTarget = x;
+	    	}
+	    }
+	  }
+	var f = new Enumerator (stationlist);
+	  for(; !f.atEnd(); f.moveNext())
+	  {
+	    x = f.item();
+	    Host.Trace("station: " + x.Name + " Team: "+x.Team+"\n");
+	    if (x.Name == "Garrison" && x.Team == MyShip.Team) {
+	      Trace("Found home!\n");
+	      MyGarrison = x;
+	    }
+	    if (x.Name == "Garrison" && x.Team != MyShip.Team) {
+	      Trace("Found enemy garr!\n");
+	      EnemyGarrison = x;
+	    }	    
+	  }
+	  Trace("Attacking "+CurrentTarget.Name+"\n");
+	  Attack(CurrentTarget.Name);
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-function OnInitialThrottle()
+function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2)
 {
-  // Set the ship's throttle to 0%
-  Ship.Throttle = 0;
 
-  // Set the timer's interval to 2 seconds
-  Timer.Interval = 2.0;
-  Timer.ExpirationExpression = "CorrectOrbit()";
-}
+	Trace("OnShipDamaged from type: "+objModel.ObjectType+"\n");
 
-
-/////////////////////////////////////////////////////////////////////////////
-function CorrectOrbit()
-{
-  try
-  {
-    
-    //new stuff 9/10
-    if (HullType.Name.search("Lifepod") != -1)
-	CommitSuicide();
-    if (Position.Subtract(Ship.Sector.Stations(0).Position).Length > 5000)
-	CommitSuicide();
-    //end new stuff
-
-    Ship.Face(Ship.Sector.Stations(0), "ThrustOrbit();");
+  // if it's not me, return
+  if (objShip != Ship)
     return;
+
+  // if the attacker is not a ship, return
+  if (objModel.ObjectType != 0) //AGC_Ship
+    return;
+
+  // send back a chat message
+  if (objModel.Team == Ship.Team) {
+    objModel.SendChat("Hey, stop shooting me!");
   }
-  catch (e)
+  else
   {
-    Trace("Error in CorrectOrbit():\n\t" + e.description);
+    objModel.SendChat("I'm gonna get you!");
   }
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-function ThrustOrbit()
-{
-	try
-	{
-		// Stop the ship
-		AllStop();
-
-		// Thrust to the left
-		Thrust(ThrustLeft, ThrustForward);
-
-		// Toggle the firing of the weapon
-		FireWeapon(true);
+function OnReceiveChat(strText, objShip)
+{   
+	if (objShip == Ship)
+		return;
 		
-		// Check for empty Ammo
-		if (!Ammo || Energy < 200)
-			CommitSuicide();
-	}
-	catch (e)
-	{
-    Trace("Error in ThrustOrbit():\n\t" + e.description);
-	}
+    Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");
+    
+    return false;
 }
-
-
-
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -16,8 +16,8 @@ var objSession = new ActiveXObject("Pigs.Session");
 /////////////////////////////////////////////////////////////////////////////
 // Get the pig
 
-var objPig = objSession.Pigs("jtasler-nt-000");
+var objPig = objSession.Pigs("botpilot1");
 WScript.Echo(objPig + ": State is \"" + objPig.PigStateName + "\"");
 
 // Thrust the pig forward
-objPig.Ship.Thrust(5);
+ objPig.Ship.Attack("botpilot2");

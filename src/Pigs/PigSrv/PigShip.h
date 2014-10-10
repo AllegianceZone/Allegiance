@@ -102,6 +102,7 @@ public:
   STDMETHODIMP Face(VARIANT* pvarObject, BSTR bstrExpirationExpr,
     BSTR bstrInterruptionExpr, VARIANT_BOOL bLevel, BSTR* pbstrResponse);
   STDMETHODIMP Defend(BSTR bstrObject, BSTR* pbstrResponse);
+  STDMETHODIMP Attack(BSTR bstrObject, BSTR* pbstrResponse);
   STDMETHODIMP put_AutoPilot(VARIANT_BOOL bEngage);
   STDMETHODIMP get_AutoPilot(VARIANT_BOOL* pbEngaged);
   STDMETHODIMP get_AutoAction(IPigShipEvent** ppAutoAction);
