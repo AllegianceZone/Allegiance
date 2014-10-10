@@ -743,6 +743,8 @@ STDMETHODIMP CPigShip::Defend(BSTR bstrObject, BSTR* pbstrResponse)
   // Kill any current automatic action, including AutoPilot
   KillAutoAction();
 
+  m_pPig->BaseClient::SetAutoPilot(true); //imago 10/14
+
   // Set the queued command
   GetIGC()->SetCommand(c_cmdQueued, pTarget, c_cidDefend);
 
@@ -759,6 +761,8 @@ STDMETHODIMP CPigShip::Attack(BSTR bstrObject, BSTR* pbstrResponse)
 
   // Kill any current automatic action, including AutoPilot
   KillAutoAction();
+
+  m_pPig->BaseClient::SetAutoPilot(true);
 
   // Set the queued command
   GetIGC()->SetCommand(c_cmdQueued, pTarget, c_cidAttack);

@@ -65,7 +65,7 @@ function OnStateMissionList(eStatePrevious)
   objParams.GameName = GameName;
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
-  objParams.TeamKills = 20;
+  objParams.TeamKills = 5;
   CreateMission("Imago-PC","192.168.2.2",objParams);
   //CreateMission("azbuildslave","191.239.1.217",objParams);
 
@@ -142,7 +142,7 @@ function OnStateFlying(eStatePrevious)
 	
 	//determine my ship and garrison
 	var x;
-	var shiplist = Game.Ships;
+	var shiplist = Ship.Sector.Ships;
 	var stationlist = Ship.Sector.Stations;
 	var e = new Enumerator (shiplist);
 	  for(; !e.atEnd(); e.moveNext())
@@ -180,11 +180,11 @@ function OnStateFlying(eStatePrevious)
 function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2)
 {
 
-	Trace("OnShipDamaged from type: "+objModel.ObjectType+"\n");
-
   // if it's not me, return
   if (objShip != Ship)
     return;
+
+	//Trace("OnShipDamaged from type: "+objModel.ObjectType+" name: "+objModel.Name+"\n");
 
   // if the attacker is not a ship, return
   if (objModel.ObjectType != 0) //AGC_Ship
@@ -205,9 +205,14 @@ function OnReceiveChat(strText, objShip)
 	if (objShip == Ship)
 		return;
 		
-    Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");
+    //Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");
     
     return false;
+}
+
+function OnShipKilled(objModel, fAmount, objV1, objV2)
+{
+	Trace("OnShipKilled: "+fAmount+" dead: "+objModel.Name+"\n");
 }
 
 /////////////////////////////////////////////////////////////////////////////

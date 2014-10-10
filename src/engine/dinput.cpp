@@ -293,7 +293,7 @@ public:
 		//imago 10/14
 		m_epp = m_acceleration;
 
-		//Imago #215 8/10
+		//Imago #215 8/10 - fixed 10/14
         HKEY hKey;
         DWORD dwType;
 		char  szValue[20] = {'\0'};
@@ -303,14 +303,18 @@ public:
 
 		if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
-            ::RegQueryValueEx(hKey, "MouseSensitivity", NULL, &dwType, (unsigned char*)&szValue, &cbValue);
+            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "MouseSensitivity", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
+				m_sensitivity = atof(szValue);
+			else
+				m_sensitivity = 1.0f;
 
-            m_sensitivity = (float)(strlen(szValue) >= 1 && strcmp(szValue,"0") == -1) ?  atof(szValue) : 1.0f;
 
-            ::RegQueryValueEx(hKey, "MouseAcceleration", NULL, &dwType, (unsigned char*)&dwValue, &cwValue);
-            ::RegCloseKey(hKey);
+            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "MouseAcceleration", NULL, &dwType, (unsigned char*)&dwValue, &cwValue))
+				m_acceleration = dwValue;
+			else
+				m_acceleration = 0;
 
-            m_acceleration = (dwValue != -1) ?  dwValue : m_acceleration;
+			::RegCloseKey(hKey);
         }
 		//
 		

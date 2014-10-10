@@ -3645,7 +3645,7 @@ void    CshipIGC::ResetWaypoint(void)
 
                         b->Release();
                         return;     //Return since the recursive call will handle setting the waypoint appropriately
-                    }
+					}
                     else
                         o = ((m_commandIDs[c_cmdPlan] == c_cidGoto) || (m_commandIDs[c_cmdPlan] == c_cidPickup) || (m_commandIDs[c_cmdPlan] == c_cidNone))
                             ? Waypoint::c_oEnter
