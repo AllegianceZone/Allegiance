@@ -383,7 +383,11 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		END_PFM_CREATE
 
 		pfmPlayerRankResponse->characterID = pfmPlayerRankRequest->characterID;
-		pfmPlayerRankResponse->fCanCheat = pfmPlayerRankRequest->fCanCheat;
+		//Imago 10/14 - Allow pig accounts to cheat - TODO: dont allow regular players to login with the botpilot accounts
+		if (pfmPlayerRankRequest->characterID >= 17 && pfmPlayerRankRequest->characterID <= 26)
+			pfmPlayerRankResponse->fCanCheat = true;
+		else 
+			pfmPlayerRankResponse->fCanCheat = false;
 		pfmPlayerRankResponse->fRetry = pfmPlayerRankRequest->fRetry;
 		pfmPlayerRankResponse->dwCookie = pfmPlayerRankRequest->dwCookie;
 		pfmPlayerRankResponse->fValid = pfmPlayerRankRequest->fValid;
