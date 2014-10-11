@@ -52,6 +52,6 @@ function AutoStartGame_Tick()
 
   // Start the game
   Trace("Trying to start game....\n");
-  StartGame(objParams);
+  StartCustomGame(objParams);
 }
 

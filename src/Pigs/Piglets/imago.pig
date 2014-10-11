@@ -66,8 +66,8 @@ function OnStateMissionList(eStatePrevious)
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
   objParams.TeamKills = 5;
-  CreateMission("Imago-PC","192.168.2.2",objParams);
-  //CreateMission("azbuildslave","191.239.1.217",objParams);
+  //CreateMission("Imago-PC","192.168.2.2",objParams);
+  CreateMission("azbuildslave","191.239.1.217",objParams);
 
   // Automatically start game when the minimum players per team have joined
   AutoStartGame(objParams);
@@ -98,23 +98,10 @@ function OnStateTeamList(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
   // Avoid repeated attempts to join a team
-  if (PigState_JoiningTeam == eStatePrevious)
+  if (PigState_JoiningTeam != eStatePrevious)
   {
-    Trace("PigState_JoiningTeam so QuitGame()\n");
-    QuitGame();
-  }
-  else
-  {
-    try
-    {
      Trace("Attempting to JoinTeam\n");
       JoinTeam();
-    }
-    catch (e)
-    {
-      Trace("Attempting to QuitGame\n");
-      QuitGame();
-    }
   }
 }
 
@@ -122,9 +109,9 @@ function OnStateTeamList(eStatePrevious)
 // Handles state transition. Launches the pig as soon as it becomes docked.
 function OnStateDocked(eStatePrevious)
 {
-
+	DisplayStateTransition(eStatePrevious);
     var objHullTypes = HullTypes;
-    var iHull = SelectBestHull(objHullTypes,"Interceptor","Fighter");
+    var iHull = SelectBestHull(objHullTypes,"Hvy Interceptor","Fighter");
     Ship.BuyHull(objHullTypes(iHull));
 
   // Launch into space
@@ -174,6 +161,7 @@ function OnStateFlying(eStatePrevious)
 	    }	    
 	  }
 	  Trace("Attacking "+CurrentTarget.Name+"\n");
+	  Game.SendChat("My initial target is: "+CurrentTarget.Name);
 	  Attack(CurrentTarget.Name);
 }
 

@@ -17,6 +17,10 @@
 #endif
 #define __MODULE__ "PigSrv"                                                //
 
+//imago 10/14
+#undef _ATL_DEBUG_QI
+#undef _ATL_DEBUG_INTERFACES
+
 #pragma warning(disable: 4786)
 
 #include <atlbase.h>

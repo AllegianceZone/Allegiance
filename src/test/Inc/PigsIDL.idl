@@ -550,8 +550,11 @@ interface IPig : IDispatch
   [propget, id(dispid_Host), helpstring("Gets the object used to access the rest of the Pigs object model.")]
   HRESULT Host([out, retval] IPigBehaviorHost** ppHost);
 
+  [helpstring("Sets mission params then starts the game.")]
+  HRESULT StartCustomGame([in] IPigMissionParams* pMissionParams);
+  
   [helpstring("Starts the game.")]
-  HRESULT StartGame([in] IPigMissionParams* pMissionParams);
+  HRESULT StartGame();
 
   [propput, helpstring("Contains a threshold value, representing an angle in radians, to which each ship's movement is compared.")]
   HRESULT ShipAngleThreshold1([in] float rRadians);
