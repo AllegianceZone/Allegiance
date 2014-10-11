@@ -144,10 +144,12 @@ HRESULT DoMain(int argc, TCHAR* argv[], TCHAR* envp[])
   SetConsoleTitle(szTitle);
 
   // Find the console's main window and minimize it
+#ifndef DEBUG
   LPCTSTR pszClass = IsWinNT() ? TEXT("ConsoleWindowClass") : TEXT("tty");
   HWND hwnd = FindWindow(pszClass, szTitle);
   if (hwnd)
     CloseWindow(hwnd);
+#endif
 
   // Change the console title
   SetConsoleTitle(TEXT("Active Pigs"));

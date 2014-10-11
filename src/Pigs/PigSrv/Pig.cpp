@@ -1123,6 +1123,12 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 
 	if (fmid != FM_CS_PING && 
 		fmid != FM_S_LIGHT_SHIPS_UPDATE &&
+		
+		//imago 10/14
+		fmid != FM_S_ASTEROID_MINED &&
+		fmid != FM_S_BUCKET_STATUS &&
+		fmid != FM_S_EXPORT &&
+
 		fmid != FM_S_HEAVY_SHIPS_UPDATE &&
 		fmid != FM_CS_CHATMESSAGE && 
 		fmid != FM_S_STATIONS_UPDATE && 
@@ -1263,9 +1269,15 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 		}
 	}
 
-	//  switch (pfm->fmid)
-	//  {
-	//  }
+	//imago 10/14
+	switch (pfm->fmid)
+	{
+		case FM_S_GAME_OVER:
+		{
+			CASTPFM(pfmGameOver, S, GAME_OVER, pfm);
+			GameOver(pfmGameOver->iSideWinner);
+		}
+	}
 
 	// Indicate success
 	return S_OK;
@@ -1574,7 +1586,8 @@ void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
 	XLock lock(this);
 	assert(PigState_CreatingMission == GetCurrentState()
-		|| PigState_JoiningMission == GetCurrentState());
+		|| PigState_JoiningMission == GetCurrentState()
+		|| PigState_WaitingForMission == GetCurrentState()); //imago 10/14
 	if (!fValidated)
 	{
 		m_bLogonAck = fValidated;
@@ -1943,6 +1956,14 @@ bool CPig::HitTreasureEvent(Time now, IshipIGC* ship, ItreasureIGC* treasure)
 	// Perform default processing
 	return BaseClient::HitTreasureEvent(now, ship, treasure);
 }
+
+//imago 10/14
+void CPig::GameOver(SideID iWinner)
+{
+	 if (GetCurrentState() == PigState_Flying)
+		SetCurrentState(PigState_WaitingForMission);
+}
+
 
 /*
 void CPig::ActivateRipcord(IshipIGC* ship, bool activeF)

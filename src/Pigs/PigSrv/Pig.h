@@ -256,6 +256,7 @@ public:
     ImodelIGC* launcher, float amount, const Vector& p1, const Vector& p2);
   virtual void HitWarpEvent(IshipIGC* ship, IwarpIGC* warp);
   virtual bool HitTreasureEvent(Time now, IshipIGC* ship, ItreasureIGC* treasure);
+  virtual void GameOver(SideID iWinner); //imago 10/14
   //virtual void ActivateRipcord(IshipIGC* ship, bool activeF);
 
 // IPig Interface Methods

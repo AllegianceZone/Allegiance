@@ -51,7 +51,7 @@ function AutoStartGame_Tick()
   Timer.Kill();
 
   // Start the game
-  Trace("Trying to start game....\n");
+  Trace("Trying to start custom game....\n");
   StartCustomGame(objParams);
 }
 

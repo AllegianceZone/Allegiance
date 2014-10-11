@@ -15,6 +15,7 @@ var MyGarrison;
 var MyShip;
 var EnemyGarrison;
 var CurrentTarget;
+var GameController = false;
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Logs on to the mission server.
@@ -68,7 +69,7 @@ function OnStateMissionList(eStatePrevious)
   objParams.TeamKills = 5;
   //CreateMission("Imago-PC","192.168.2.2",objParams);
   CreateMission("azbuildslave","191.239.1.217",objParams);
-
+  GameController = true;
   // Automatically start game when the minimum players per team have joined
   AutoStartGame(objParams);
 }
@@ -77,19 +78,29 @@ function OnStateMissionList(eStatePrevious)
 function OnStateWaitingForMission(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
-	Trace("OnStateWaitingForMission, previous "+eStatePrevious+"...\n");
  	if (PigState_CreatingMission == eStatePrevious)
  	 {
-		CreateTimer(3, "OnJoinTimer()", -1, "JoinTimer");
+ 	 	Trace("Creating JoinTimer()\n");
+		CreateTimer(3, "JoinTimer()", -1, "JoinTimer");
 	 }
+ 	if (PigState_Flying == eStatePrevious && GameController)
+ 	 {
+ 	 	Game.SendChat("Auto-restarting game in 30 seconds...");
+		CreateTimer(30, "StartGameTimer()", -1, "StartGameTimer");
+	 }	 
 }
 
-function OnJoinTimer()
+function JoinTimer()
 {
-	Trace("in OnJoinTimer()\n");
      	Timer.Kill();
      	Trace("killed timer, Attempting to JoinTeam\n");
       	JoinTeam();	
+}
+function StartGameTimer()
+{
+     	Timer.Kill();
+     	Trace("killed timer, Attempting to StartGame\n");
+      	StartGame();
 }
 
 /////////////////////////////////////////////////////////////////////////////
