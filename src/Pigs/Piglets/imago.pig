@@ -78,15 +78,15 @@ function OnStateMissionList(eStatePrevious)
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
   objParams.TeamKills = 5;
-  //NYI
-  //objParams.KillBonus = 0;
-  //objParams.Defections = true;
-  //objParams.Miners = 0;
-  //objParams.Developments = false;
-  //objParams.Conquest = 0;
-  //objParams.Flags = 0;
-  //objParams.Pods = true;
-  //objParams.Experimental = true;
+  objParams.KillBonus = 0;
+  objParams.Defections = true;
+  objParams.Miners = 0;
+  objParams.Developments = false;
+  objParams.Conquest = 0;
+  objParams.Flags = 0;
+  objParams.Artifacts = 0;
+  objParams.Pods = true;
+  objParams.Experimental = true;
   
   CreateMission(ServerName,ServerAddr,objParams);
   GameController = true;
@@ -103,11 +103,15 @@ function OnStateWaitingForMission(eStatePrevious)
  	 	Trace("Creating JoinTimer()\n");
 		CreateTimer(3, "JoinTimer()", -1, "JoinTimer");
 	 }
- 	if (PigState_Flying == eStatePrevious && GameController)
+ 	if (PigState_Flying == eStatePrevious)
  	 {
- 	 	RoundCount++;
- 	 	CreateTimer(3, "ChatStartGameTimer()", -1, "ChatStartGameTimer");
-		CreateTimer(30, "StartGameTimer()", -1, "StartGameTimer");
+ 	 	Trace("Checking IsMissionOwner()\n");
+ 	 	GameController = IsMissionOwner();
+ 	 	if (GameController) {
+ 	 		RoundCount++;
+ 	 		CreateTimer(3, "ChatStartGameTimer()", -1, "ChatStartGameTimer");
+			CreateTimer(30, "StartGameTimer()", -1, "StartGameTimer");
+		}
 	 }	 
 }
 function JoinTimer()

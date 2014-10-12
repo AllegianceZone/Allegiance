@@ -177,6 +177,16 @@ enum dispid_PigsIDL
   dispid_CoreName,
   dispid_TeamKills,
   dispid_Attack,
+  dispid_KillBonus,
+  dispid_Defections,
+  dispid_Miners,
+  dispid_Developments,
+  dispid_Conquest,
+  dispid_Flags,
+  dispid_Artifacts,
+  dispid_Pods,
+  dispid_Experimental,
+
   dispid_PigsIDL_End = dispid_PigsIDL_Begin + 0x1000
 };
 
@@ -538,6 +548,9 @@ interface IPig : IDispatch
   [helpstring("Forces the pig to exit the game.")]
   HRESULT Shutdown();
 
+  [helpstring("Returns true if player has game control")]
+  HRESULT IsMissionOwner([out, retval] BOOL* bOwner);
+
   [propget, helpstring("Gets the AGCGame object that the Pig is a member of, if any.")]
   HRESULT Game([out, retval] IAGCGame** ppGame);
 
@@ -753,14 +766,61 @@ interface IPigMissionParams : IDispatch
   HRESULT TeamKills([in] short nGoalTeamKills);
   [propget, id(dispid_TeamKills)]
   HRESULT TeamKills([out, retval] short* nGoalTeamKills);
+  
   [propput, helpstring("Gets/sets the game name for the mission.")]
   HRESULT GameName([in] BSTR bstrGameName);
   [propget, id(dispid_GameName)]
   HRESULT GameName([out, retval] BSTR* bstrGameName);
-  [propput, helpstring("Gets/sets the core name for the mission.")]
+  
+  [propput, helpstring("Gets/sets the core for the mission.")]
   HRESULT CoreName([in] BSTR bstrCoreName);
   [propget, id(dispid_CoreName)]
   HRESULT CoreName([out, retval] BSTR* bstrCoreName);
+
+  [propput, helpstring("Gets/sets the KB Level.")]
+  HRESULT KillBonus([in] short KBLevel);
+  [propget, id(dispid_KillBonus)]
+  HRESULT KillBonus([out, retval] short* KBLevel);
+
+  [propput, helpstring("Gets/sets Defections allowed.")]
+  HRESULT Defections([in] BOOL Defections);
+  [propget, id(dispid_Defections)]
+  HRESULT Defections([out, retval] BOOL* Defections);
+
+  [propput, helpstring("Gets/sets the number of starting miners.")]
+  HRESULT Miners([in] short Miners);
+  [propget, id(dispid_Miners)]
+  HRESULT Miners([out, retval] short* Miners);
+
+  [propput, helpstring("Gets/sets Developments allowed.")]
+  HRESULT Developments([in] BOOL Developments);
+  [propget, id(dispid_Developments)]
+  HRESULT Developments([out, retval] BOOL* Developments);
+
+  [propput, helpstring("Gets/sets the Conquest goal.")]
+  HRESULT Conquest([in] short Conquest);
+  [propget, id(dispid_Conquest)]
+  HRESULT Conquest([out, retval] short* Conquest);
+
+  [propput, helpstring("Gets/sets the Flags goal.")]
+  HRESULT Flags([in] short Flags);
+  [propget, id(dispid_Flags)]
+  HRESULT Flags([out, retval] short* Flags);
+
+  [propput, helpstring("Gets/sets the Artifacts goal.")]
+  HRESULT Artifacts([in] short Artifacts);
+  [propget, id(dispid_Artifacts)]
+  HRESULT Artifacts([out, retval] short* Artifacts);
+
+  [propput, helpstring("Gets/sets Pods allowed.")]
+  HRESULT Pods([in] BOOL Pods);
+  [propget, id(dispid_Pods)]
+  HRESULT Pods([out, retval] BOOL* Pods);
+
+  [propput, helpstring("Gets/sets Experimental allowed.")]
+  HRESULT Experimental([in] BOOL Experimental);
+  [propget, id(dispid_Experimental)]
+  HRESULT Experimental([out, retval] BOOL* Experimental);
 
 }; // End: interface IPigMissionParams : IDispatch
 

@@ -126,26 +126,24 @@ STDMETHODIMP CPigMissionParams::put_TeamKills(short nGoalTeamKills)
 {
   return TCComPropertyPut(this, m_mp.nGoalTeamKills, nGoalTeamKills, dispid_TeamKills);
 }
-
 STDMETHODIMP CPigMissionParams::get_TeamKills(short* nGoalTeamKills)
 {
   return TCComPropertyGet(this, nGoalTeamKills, m_mp.nGoalTeamKills);
 }
+
 STDMETHODIMP CPigMissionParams::put_GameName(BSTR bstrGameName)
 {
 	XLock lock(this);
 	USES_CONVERSION;
-	LPSTR pszGameName = OLE2A(bstrGameName);
-	lstrcpy(m_mp.strGameName,pszGameName);
+	lstrcpy(m_mp.strGameName,OLE2A(bstrGameName));
 	return S_OK;
 }
-
 STDMETHODIMP CPigMissionParams::get_GameName(BSTR* bstrGameName)
 {
-  CLEAROUT(bstrGameName, (BSTR)NULL);
+  
   XLock lock(this);
   USES_CONVERSION;
-  *bstrGameName = A2OLE(m_mp.strGameName);
+  CLEAROUT(bstrGameName, A2OLE(m_mp.strGameName));
   return S_OK;
 }
 
@@ -153,20 +151,121 @@ STDMETHODIMP CPigMissionParams::put_CoreName(BSTR bstrCoreName)
 {
 	XLock lock(this);
 	USES_CONVERSION;
-	LPSTR pszCoreName = OLE2A(bstrCoreName);
-	lstrcpy(m_mp.szIGCStaticFile,pszCoreName);
+	lstrcpy(m_mp.szIGCStaticFile,OLE2A(bstrCoreName));
 	return S_OK;
 }
-
 STDMETHODIMP CPigMissionParams::get_CoreName(BSTR* bstrCoreName)
 {
-  CLEAROUT(bstrCoreName, (BSTR)NULL);
   XLock lock(this);
   USES_CONVERSION;
-  *bstrCoreName = A2OLE(m_mp.szIGCStaticFile);
+  CLEAROUT(bstrCoreName, A2OLE(m_mp.szIGCStaticFile));
   return S_OK;
 }
 
+STDMETHODIMP CPigMissionParams::put_KillBonus(short KBlevel)
+{
+  return TCComPropertyPut(this, m_mp.KBlevel, KBlevel, dispid_KillBonus);
+}
+STDMETHODIMP CPigMissionParams::get_KillBonus(short* KBlevel)
+{
+  return TCComPropertyGet(this, KBlevel, m_mp.KBlevel);
+}
+
+STDMETHODIMP CPigMissionParams::put_Defections(BOOL Defections)
+{
+	XLock lock(this);
+	USES_CONVERSION;
+	m_mp.bAllowDefections = Defections;
+	return S_OK;
+}
+STDMETHODIMP CPigMissionParams::get_Defections(BOOL* Defections)
+{
+  XLock lock(this);
+  USES_CONVERSION;
+  CLEAROUT(Defections, (BOOL)m_mp.bAllowDefections);
+  return S_OK;
+}
+
+STDMETHODIMP CPigMissionParams::put_Miners(short Miners)
+{
+  return TCComPropertyPut(this, m_mp.nInitialMinersPerTeam, Miners, dispid_Miners);
+}
+STDMETHODIMP CPigMissionParams::get_Miners(short* Miners)
+{
+  return TCComPropertyGet(this, Miners, m_mp.nInitialMinersPerTeam);
+}
+
+STDMETHODIMP CPigMissionParams::put_Developments(BOOL Developments)
+{
+	XLock lock(this);
+	USES_CONVERSION;
+	m_mp.bAllowDevelopments = Developments;
+	return S_OK;
+}
+STDMETHODIMP CPigMissionParams::get_Developments(BOOL* Developments)
+{
+  XLock lock(this);
+  USES_CONVERSION;
+  CLEAROUT(Developments, (BOOL)m_mp.bAllowDevelopments);
+  return S_OK;
+}
+
+STDMETHODIMP CPigMissionParams::put_Conquest(short Conquest)
+{
+  return TCComPropertyPut(this, m_mp.iGoalConquestPercentage, Conquest, dispid_Conquest);
+}
+STDMETHODIMP CPigMissionParams::get_Conquest(short* Conquest)
+{
+  return TCComPropertyGet(this, Conquest, m_mp.iGoalConquestPercentage);
+}
+
+STDMETHODIMP CPigMissionParams::put_Flags(short Flags)
+{
+  return TCComPropertyPut(this, m_mp.nGoalFlagsCount, Flags, dispid_Flags);
+}
+STDMETHODIMP CPigMissionParams::get_Flags(short* Flags)
+{
+  return TCComPropertyGet(this, Flags, m_mp.nGoalFlagsCount);
+}
+
+STDMETHODIMP CPigMissionParams::put_Artifacts(short Artifacts)
+{
+  return TCComPropertyPut(this, m_mp.nGoalArtifactsCount, Artifacts, dispid_Artifacts);
+}
+STDMETHODIMP CPigMissionParams::get_Artifacts(short* Artifacts)
+{
+  return TCComPropertyGet(this, Artifacts, m_mp.nGoalArtifactsCount);
+}
+
+STDMETHODIMP CPigMissionParams::put_Pods(BOOL Pods)
+{
+	XLock lock(this);
+	USES_CONVERSION;
+	m_mp.bEjectPods = Pods;
+	return S_OK;
+}
+STDMETHODIMP CPigMissionParams::get_Pods(BOOL* Pods)
+{
+  XLock lock(this);
+  USES_CONVERSION;
+  CLEAROUT(Pods, (BOOL)m_mp.bEjectPods);
+  return S_OK;
+}
+
+STDMETHODIMP CPigMissionParams::put_Experimental(BOOL Experimental)
+{
+	XLock lock(this);
+	USES_CONVERSION;
+	m_mp.bExperimental = Experimental;
+	return S_OK;
+}
+STDMETHODIMP CPigMissionParams::get_Experimental(BOOL* Experimental)
+{
+  XLock lock(this);
+  USES_CONVERSION;
+  CLEAROUT(Experimental, (BOOL)m_mp.bExperimental);
+  return S_OK;
+}
 /////////////////////////////////////////////////////////////////////////////
 // IPigMissionParamsPrivate Interface Methods
 

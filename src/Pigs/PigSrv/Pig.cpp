@@ -2685,6 +2685,15 @@ STDMETHODIMP CPig::Launch()
 	return S_OK;
 }
 
+//imago 10/14
+STDMETHODIMP CPig::IsMissionOwner(BOOL* bOwner)
+{
+	XLock lock(this);
+	CLEAROUT(bOwner, (BOOL)BaseClient::MyPlayerInfo()->IsMissionOwner());
+	return S_OK;
+}
+
+
 STDMETHODIMP CPig::Shutdown()
 {
 	// Shut down during the next message loop iteration
