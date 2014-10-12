@@ -11,8 +11,12 @@ if ($sess) {
 	my $pig = $sess->CreatePig($behavior);
 	if ($pig) {
 		my $me = $pig->Name;
-		print "Piglet named $me was born!\n";
-		exit 0;
+		if (!$me) {
+			exit 1;
+		} else {
+			print "Piglet named $me was born!\n";
+			exit 0;
+		}
 	} else {
 		my $err = Win32::OLE::LastError();
 		print "Piglet was aborted: $err!\n";

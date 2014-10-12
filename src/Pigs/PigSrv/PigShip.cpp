@@ -95,9 +95,8 @@ bool CPigShip::OnNewChatMessage()
 		return false;
 
 	CommandID idCmd = GetIGC()->GetCommandID(c_cmdQueued);
-	const char* pszVerb = (0 <= idCmd && idCmd < c_cidMax) ?
-		c_cdAllCommands[idCmd].szVerb : "";
-
+	const char* pszVerb = (0 <= idCmd && idCmd < c_cidMax) ? c_cdAllCommands[idCmd].szVerb : "";
+	debugf("...got a <%s> command to %s!!!\n",pszVerb,pModel->GetName());
 	// Accept the queued command if auto accept is enabled
 	return m_bAutoAcceptCommands ? SUCCEEDED(AcceptCommand(NULL)) : true;
 }

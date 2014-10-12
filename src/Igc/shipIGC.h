@@ -1676,7 +1676,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     case c_cidDefault:
                     case c_cidGoto:
                     {
-                        bLegal = (m_pilotType >= c_ptPlayer) || (type != OT_station) || bFriendly;
+                        bLegal = (m_pilotType >= c_ptPlayer) || bFriendly; //|| (type != OT_station) //Removed 10/14 imago
                     }
                     break;
 

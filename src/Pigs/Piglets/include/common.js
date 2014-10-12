@@ -30,13 +30,13 @@ function SelectBestHull (hullCollection, strFirstChoice, strSecondChoice)
 {
   var FirstHull = -1, SecondHull = -1, DefaultHull = -1;
   var e = new Enumerator (hullCollection)
-  Host.Trace("Hull types:\n");
+ // Host.Trace("Hull types:\n");
 
   // loop thru collection
   for (var i=0; !e.atEnd(); e.moveNext(), i++)
   {
     var hull = e.item();
-    Host.Trace("" + i + ". " + hull.Name + "\n");
+    //Host.Trace("" + i + ". " + hull.Name + "\n");
 
     // search for strFirstChoice in the name
     if (hull.Name.search(strFirstChoice) != -1)
@@ -44,31 +44,31 @@ function SelectBestHull (hullCollection, strFirstChoice, strSecondChoice)
 
     // search for strSecondChoice in the name
     if (hull.Name.search(strSecondChoice) != -1)
-      SecondHull = i;		
+      SecondHull = i;
 
     // search for strSecondChoice in the name
     if (hull.Name.search("Scout") != -1)
-      DefaultHull = i;		
+      DefaultHull = i;
   }
-  Host.Trace("First: " + FirstHull + " Second: " + SecondHull + "\n");
+  //Host.Trace("First: " + FirstHull + " Second: " + SecondHull + "\n");
 
   // look for valid first choice index
   if (FirstHull != -1)
   {
     // first choice found, return index
-    Host.Trace ("Selecting first choice.\n");
+    //Host.Trace ("Selecting first choice.\n");
     return FirstHull;
   }
   else if (SecondHull != -1)
   {
     // second choice found, return index
-    Host.Trace ("Selecting second choice.\n");
+    //Host.Trace ("Selecting second choice.\n");
     return SecondHull;
   }
   else
   {
     // default found, return index
-    Host.Trace ("Selecting default choice.\n");
+    //Host.Trace ("Selecting default choice.\n");
     return DefaultHull;
   }
 }

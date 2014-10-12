@@ -106,7 +106,7 @@ function OnStateWaitingForMission(eStatePrevious)
  	if (PigState_Flying == eStatePrevious && GameController)
  	 {
  	 	RoundCount++;
- 	 	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...");
+ 	 	CreateTimer(3, "ChatStartGameTimer()", -1, "ChatStartGameTimer");
 		CreateTimer(30, "StartGameTimer()", -1, "StartGameTimer");
 	 }	 
 }
@@ -124,6 +124,13 @@ function StartGameTimer()
      	Trace("killed timer, Attempting to StartGame\n");
       	StartGame();
 }
+function ChatStartGameTimer()
+{
+     	Timer.Kill();
+     	Trace("killed timer, Attempting to SendChat\n");
+      	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...");
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Joins a random team from NOAT.
@@ -146,7 +153,7 @@ function OnStateDocked(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
     var objHullTypes = HullTypes;
-    var iHull = SelectBestHull(objHullTypes,ShipSelection,"Scout");
+    var iHull = SelectBestHull(objHullTypes,ShipSelection,"Fighter");
     Ship.BuyHull(objHullTypes(iHull));
 
   Trace("Launching into space...\n");
