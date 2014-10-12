@@ -11,7 +11,6 @@ if ($sess) {
 	my $pig = $sess->Pigs($pigname);
 	if ($pig) {
 		print "$pigname is currently ".$pig->PigStateName."\n";
-		
 		#############################
 		# Put your command(s) here! #
 		#############################
@@ -19,8 +18,7 @@ if ($sess) {
 		#$pig->JoinTeam("Iron Coalition");
 		#$pig->Ship->Attack("botpilot2");
 		
-		#############################
-		
+		#############################		
 		my $err = Win32::OLE::LastError();
 		if ($err == 0) {
 			print "Ok!\n";
@@ -29,7 +27,6 @@ if ($sess) {
 			print "Pig $pigname: $err!\n";
 			exit 1;
 		}
-
 	} else {
 		my $err = Win32::OLE::LastError();
 		($err == 0) ? print "Pig $pigname does not exist!\n" : print "Pig $pigname: $err!\n";
