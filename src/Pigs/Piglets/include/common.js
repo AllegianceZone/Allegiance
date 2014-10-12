@@ -81,12 +81,14 @@ function Range2Ship(agcShip)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Returns ship from list of AGCShips or PigShips with the lowest distance
+// Returns ship from list, AGCShips or PigShips, closest to ship
 function FindNearestEnemy(agcShips)
 {
-    return agcShips.reduce(function (s1, s2) {
-        return Range2Ship(s1) <= Range2Ship(s2) ? s1 : s2;
-    })
+  return agcShips.filter(function (ship2) {
+        return MyShip.Team != ship2.Team;
+    }).reduce(function(ship1, ship2) {
+        return Range2Ship(ship1) <= Range2Ship(ship2) ? ship1 : ship2;
+    });
 }
 
 /////////////////////////////////////////////////////////////////////////////
