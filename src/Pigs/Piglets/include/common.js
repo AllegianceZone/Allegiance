@@ -81,6 +81,15 @@ function Range2Ship(agcShip)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// Returns ship from list of AGCShips or PigShips with the lowest distance
+function FindNearestEnemy(agcShips)
+{
+    return agcShips.reduce(function (s1, s2) {
+        return Range2Ship(s1) <= Range2Ship(s2) ? s1 : s2;
+    })
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // This function starts a ripcord operation.
 function DoRipCord()
 {
@@ -106,5 +115,4 @@ function EndRipCord()
   // kill ripcord timer
   Timer.Kill();
 }
-
 
