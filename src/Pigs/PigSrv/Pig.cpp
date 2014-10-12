@@ -1121,6 +1121,7 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 	// Handle messages before default processing
 	const FEDMSGID fmid = pfm->fmid;
 
+	/*
 	if (fmid != FM_CS_PING && 
 		fmid != FM_S_LIGHT_SHIPS_UPDATE &&
 		
@@ -1134,6 +1135,7 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 		fmid != FM_S_STATIONS_UPDATE && 
 		fmid != FM_S_PROBES_UPDATE)
 		debugf("Received %s at time %u\n", g_rgszMsgNames[fmid], Time::Now().clock());
+	*/
 
 #ifdef _DEBUG
 	switch (pfm->fmid)
@@ -1684,6 +1686,10 @@ void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
 {
 	// If we sent this message, then ignore it
 	if (BaseClient::GetShip() == pshipSender)
+		return;
+
+	 //imago ignore attack commands in a lifepod 10/14
+	if (cid == c_cidAttack && BaseClient::GetShip()->GetHullType()->HasCapability(c_habmLifepod))
 		return;
 
 	// Perform default processing

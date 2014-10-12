@@ -1,5 +1,5 @@
 <pigbehavior language="JScript">
-
+//imagotrigger@gmail.com 10/14 originally from manuel.pig and mark.pig Microsoft
 <script src="include\AutoStartCustomGame.js"/>
 <script src="include\common.js"/>
 
@@ -7,15 +7,25 @@
 <![CDATA[
 
 /////////////////////////////////////////////////////////////////////////////
-// Beginning of script
+// Settings
 //
 
 var GameName = "Bot DeathMatch";
+var ServerName = "azbuildslave";
+var ServerAddr = "191.239.1.217";
+var CivsSelection = "Iron Coalition";  //blank for Random
+var ShipSelection = "Hvy Interceptor";
+var ShootSkill = "0.25";
+var TurnSkill = "0.25";
+
+//globals
+
 var MyGarrison;
 var MyShip;
 var EnemyGarrison;
 var CurrentTarget;
 var GameController = false;
+var RoundCount = 0;
 
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Logs on to the mission server.
@@ -49,15 +59,16 @@ function OnStateMissionList(eStatePrevious)
   // Attempt to join the current pig mission, if any
   try
   {
-  Trace("Trying to join Pig Mision...\n");
+  	Trace("Trying to join "+GameName+"...\n");
     JoinMission(GameName);
     return;
   }
   catch (e)
   {
+  	Trace("JoinMission("+GameName+") failed: " + e.description + "\n");
   }
 
-	Trace("No JoinMission Worked so Creating one...\n");
+	Trace("No JoinMission worked, so CreateMission("+ServerName+","+ServerAddr+");...\n");
   // No missions exist, create one and join it
   var objParams = new ActiveXObject("Pigs.MissionParams");
   objParams.TeamCount = 2;
@@ -66,15 +77,24 @@ function OnStateMissionList(eStatePrevious)
   objParams.GameName = GameName;
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
-  objParams.TeamKills = 25;
-  //CreateMission("Imago-PC","192.168.2.2",objParams);
-  CreateMission("azbuildslave","191.239.1.217",objParams);
+  objParams.TeamKills = 5;
+  //NYI
+  //objParams.KillBonus = 0;
+  //objParams.Defections = true;
+  //objParams.Miners = 0;
+  //objParams.Developments = false;
+  //objParams.Conquest = 0;
+  //objParams.Flags = 0;
+  //objParams.Pods = true;
+  //objParams.Experimental = true;
+  
+  CreateMission(ServerName,ServerAddr,objParams);
   GameController = true;
-  // Automatically start game when the minimum players per team have joined
   AutoStartGame(objParams);
+  RoundCount++;
 }
 
-
+//joins a team after creating a mission or restarts it
 function OnStateWaitingForMission(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
@@ -85,16 +105,18 @@ function OnStateWaitingForMission(eStatePrevious)
 	 }
  	if (PigState_Flying == eStatePrevious && GameController)
  	 {
- 	 	Game.SendChat("Auto-restarting game in 30 seconds...");
+ 	 	RoundCount++;
+ 	 	CreateTimer(3, "ChatStartGameTimer()", -1, "ChatStartGameTimer");
 		CreateTimer(30, "StartGameTimer()", -1, "StartGameTimer");
 	 }	 
 }
-
 function JoinTimer()
 {
      	Timer.Kill();
      	Trace("killed timer, Attempting to JoinTeam\n");
       	JoinTeam();	
+      	//NYI
+      	//JoinTeam(CivSelection);
 }
 function StartGameTimer()
 {
@@ -102,9 +124,16 @@ function StartGameTimer()
      	Trace("killed timer, Attempting to StartGame\n");
       	StartGame();
 }
+function ChatStartGameTimer()
+{
+     	Timer.Kill();
+     	Trace("killed timer, Attempting to SendChat\n");
+      	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...");
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
-// Handles state transition. Joins a random team.
+// Handles state transition. Joins a random team from NOAT.
 function OnStateTeamList(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
@@ -112,6 +141,8 @@ function OnStateTeamList(eStatePrevious)
   if (PigState_JoiningTeam != eStatePrevious)
   {
      Trace("Attempting to JoinTeam\n");
+      	//NYI
+      	//JoinTeam(CivSelection);     
       JoinTeam();
   }
 }
@@ -122,21 +153,21 @@ function OnStateDocked(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
     var objHullTypes = HullTypes;
-    var iHull = SelectBestHull(objHullTypes,"Hvy Interceptor","Fighter");
+    var iHull = SelectBestHull(objHullTypes,ShipSelection,"Fighter");
     Ship.BuyHull(objHullTypes(iHull));
 
-  // Launch into space
-  Trace("Launching....\n");
+  Trace("Launching into space...\n");
   Launch();
+  //NYI
+  //Launch(ShootSkill,TurnSkill);
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Handles state transition. Currently just outputs debug text.
+// Handles state transition. Do the moves!
 function OnStateFlying(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
-	Defend("Garrison");
 	
 	//determine my ship and garrison
 	var x;
@@ -146,13 +177,13 @@ function OnStateFlying(eStatePrevious)
 	  for(; !e.atEnd(); e.moveNext())
 	  {
 	    x = e.item();
-	    Host.Trace("ship: " + x.Name + "\n");
+	    //Host.Trace("ship: " + x.Name + "\n");
 	    if (x.Name == Name) {
-	    	Trace("Found myself!\n");
-	      MyShip = x;
+	    	//Trace("Found myself!\n");
+	      MyShip = x; //this should equal Ship
 	    } else {
 	    	if (x.Team != MyShip.Team) {
-	    		Trace("Found enemy ship!\n");
+	    		//Trace("Found enemy ship!\n");
 	    		CurrentTarget = x;
 	    	}
 	    }
@@ -161,19 +192,26 @@ function OnStateFlying(eStatePrevious)
 	  for(; !f.atEnd(); f.moveNext())
 	  {
 	    x = f.item();
-	    Host.Trace("station: " + x.Name + " Team: "+x.Team+"\n");
+	    //Host.Trace("station: " + x.Name + " Team: "+x.Team+"\n");
 	    if (x.Name == "Garrison" && x.Team == MyShip.Team) {
-	      Trace("Found home!\n");
+	      //Trace("Found home!\n");
 	      MyGarrison = x;
 	    }
 	    if (x.Name == "Garrison" && x.Team != MyShip.Team) {
-	      Trace("Found enemy garr!\n");
+	      //Trace("Found enemy garr!\n");
 	      EnemyGarrison = x;
 	    }	    
 	  }
-	  Trace("Attacking "+CurrentTarget.Name+"\n");
-	  Game.SendChat("My initial target is: "+CurrentTarget.Name);
-	  Attack(CurrentTarget.Name);
+	  
+	Trace("Attacking "+CurrentTarget.Name+"\n");
+	Game.SendChat("My initial target is: "+CurrentTarget.Name);
+	Attack(CurrentTarget.Name);
+	
+	//NYI
+	//Start the EnemyScanner() loop to update CurrentTarget
+	//Boost
+	//Shoot Missiles
+	//Drop Mines / ECM
 }
 
 function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2)
@@ -183,19 +221,21 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2)
   if (objShip != Ship)
     return;
 
-	//Trace("OnShipDamaged from type: "+objModel.ObjectType+" name: "+objModel.Name+"\n");
-
   // if the attacker is not a ship, return
   if (objModel.ObjectType != 0) //AGC_Ship
     return;
 
   // send back a chat message
   if (objModel.Team == Ship.Team) {
-    objModel.SendChat("Hey, stop shooting me!");
+    objModel.SendChat("Hey, stop hurting me!");
   }
   else
   {
-    objModel.SendChat("I'm gonna get you!");
+    //attempt to update CurrentTarget
+    //NYI
+    
+    
+    //objModel.SendChat("I'm gonna get you!");
   }
 }
 
@@ -205,13 +245,12 @@ function OnReceiveChat(strText, objShip)
 		return;
 		
     //Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");
-    
-    return false;
 }
 
+//fires for the piglet that got blown up
 function OnShipKilled(objModel, fAmount, objV1, objV2)
 {
-	Trace("OnShipKilled: "+fAmount+" dead: "+objModel.Name+"\n");
+	Trace("OnShipKilled: "+fAmount+" killer: "+objModel.Name+"\n");
 }
 
 /////////////////////////////////////////////////////////////////////////////
