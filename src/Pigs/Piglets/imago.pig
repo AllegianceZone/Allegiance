@@ -66,7 +66,7 @@ function OnStateMissionList(eStatePrevious)
   objParams.GameName = GameName;
   objParams.CoreName = "Pcore006";
   objParams.MapType = PigMapType_Brawl;
-  objParams.TeamKills = 5;
+  objParams.TeamKills = 25;
   //CreateMission("Imago-PC","192.168.2.2",objParams);
   CreateMission("azbuildslave","191.239.1.217",objParams);
   GameController = true;
