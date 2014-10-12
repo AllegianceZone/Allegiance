@@ -2,7 +2,6 @@
 
 use strict;
 use Win32::OLE;
-use Data::Dumper;
 
 print "Creating Pigs session\n";
 my $sess  = Win32::OLE->new("Pigs.Session");
