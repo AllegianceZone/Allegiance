@@ -15,7 +15,6 @@
     <None Include="..\src\Lobby\lobby.rgs">
       <Filter>Resources</Filter>
     </None>
-    <None Include="..\src\lobby\lobbyService\lobbyService.thrift" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Lobby\AutoUpdate.cpp" />
@@ -29,6 +28,7 @@
     <ClCompile Include="..\src\Lobby\pch.cpp" />
     <ClCompile Include="..\src\Lobby\server.cpp" />
     <ClCompile Include="..\src\Lobby\zgameinfo.cpp" />
+    <ClCompile Include="..\src\lobby\pkcs5.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\Lobby\alllobby.rc">
@@ -56,6 +56,7 @@
     </ClInclude>
     <ClInclude Include="..\src\Lobby\server.h" />
     <ClInclude Include="..\src\Lobby\zgameinfo.h" />
+    <ClInclude Include="..\src\lobby\pkcs5.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\Lobby\lobbymsg.msg">
