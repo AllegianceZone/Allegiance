@@ -537,7 +537,7 @@ interface IPig : IDispatch
   HRESULT JoinMission([in, defaultvalue("")] BSTR bstrMissionOrPlayer);
 
   [helpstring("Requests a position on a team, which may be specified by name, by a buddy player, or not at all.")]
-  HRESULT JoinTeam([in, defaultvalue("")] BSTR bstrTeamOrPlayer);
+  HRESULT JoinTeam([in, defaultvalue("")] BSTR bstrCivName, [in, defaultvalue("")] BSTR bstrTeamOrPlayer);
 
   [helpstring("Quits the current game.")]
   HRESULT QuitGame();

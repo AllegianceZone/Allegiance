@@ -274,7 +274,7 @@ public:
   STDMETHODIMP Logoff();
   STDMETHODIMP CreateMission(BSTR bstrServer, BSTR bstrAddr, IPigMissionParams* pMissionParams); //imago 10/14
   STDMETHODIMP JoinMission(BSTR bstrMissionOrPlayer);
-  STDMETHODIMP JoinTeam(BSTR bstrTeamOrPlayer);
+  STDMETHODIMP JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer);
   STDMETHODIMP QuitGame();
   STDMETHODIMP Launch();
   STDMETHODIMP Shutdown();

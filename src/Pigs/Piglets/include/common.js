@@ -85,7 +85,7 @@ function Range2Ship(agcShip)
 function FindNearestEnemy(agcShips)
 {
   return agcShips.filter(function (ship2) {
-        return MyShip.Team != ship2.Team;
+        return Ship.Team != ship2.Team;
     }).reduce(function(ship1, ship2) {
         return Range2Ship(ship1) <= Range2Ship(ship2) ? ship1 : ship2;
     });

@@ -2522,28 +2522,21 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 	return S_OK;
 }
 
-STDMETHODIMP CPig::JoinTeam(BSTR bstrTeamOrPlayer)
+STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 {
 	//imago 10/14
 	// Validate the current state
 	//if (PigState_TeamList != GetCurrentState())
 	//return Error(IDS_E_JOINTEAM_TEAMLIST, IID_IPig);
-
+	USES_CONVERSION;
 	// Find a team using the specified string, if any
 	SideID idSide = NA;
 	if (BSTRLen(bstrTeamOrPlayer))
 	{
-		// Convert the specified string to ANSI
-		USES_CONVERSION;
-		LPCSTR pszTeamOrPlayer = OLE2CA(bstrTeamOrPlayer);
-
-		// Define an iterator type for (BaseClient) ship list
-		typedef ShipList::Iterator ShipIt;
-
 		// Find a team with the specified name, if any
 		for (SideID i = 0; i < BaseClient::MyMission()->NumSides(); ++i)
 		{
-			if (!_stricmp(pszTeamOrPlayer, BaseClient::MyMission()->SideName(i)))
+			if (!_stricmp(OLE2CA(bstrTeamOrPlayer), BaseClient::MyMission()->SideName(i)))
 			{
 				if (0 < BaseClient::MyMission()->SideAvailablePositions(i))
 				{
@@ -2594,10 +2587,39 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrTeamOrPlayer)
 	// Set the state
 	if (m_bTeamAccepted)
 	{
-		PigState eStateNew =
-			(WAIT_TIMEOUT != WaitForSingleObject(m_evtDocked, 0)) ?
-PigState_Docked : PigState_WaitingForMission;
+		PigState eStateNew = (WAIT_TIMEOUT != WaitForSingleObject(m_evtDocked, 0)) ? PigState_Docked : PigState_WaitingForMission;
 		SetCurrentState(eStateNew);
+		//imago 10/14
+		if (eStateNew == PigState_WaitingForMission && BSTRLen(bstrCivName) && BaseClient::MyPlayerInfo()->IsTeamLeader()) {
+			char * civNames[c_cSidesMax] = {'\0'};
+			CivID civSelection = NA;
+			SideID civSide = BaseClient::GetSideID();
+			char * token;
+			int i = 0;
+			token = strtok((char *)OLE2CA(bstrCivName), ",");
+			while(token)
+			{
+				civNames[i] = token;
+				token = strtok(NULL, ",");
+				i++;
+			}
+			for (CivilizationLinkIGC* linkCiv = BaseClient::GetCore()->GetCivilizations()->first();  linkCiv != NULL; linkCiv = linkCiv->next())
+            {
+				if(!_stricmp(linkCiv->data()->GetName(),civNames[civSide])) {
+					civSelection = linkCiv->data()->GetObjectID();
+					break;
+				}
+			}
+			if (civSelection != NA) {
+				BaseClient::SetMessageType(c_mtGuaranteed);
+				BEGIN_PFM_CREATE(*BaseClient::GetNetwork(), pfmChangeCiv, CS, CHANGE_TEAM_CIV)
+				END_PFM_CREATE
+				pfmChangeCiv->iSide = civSide; 
+				pfmChangeCiv->civID = civSelection;
+				pfmChangeCiv->random = false;
+				BaseClient::SendMessages();
+			}
+		}
 	}
 	else
 	{
