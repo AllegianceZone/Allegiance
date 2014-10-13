@@ -39,22 +39,22 @@ class   CstaticIGC
         }
         void            Terminate(void)
         {
-			//Imago reordered for debugging purposes 8/17/09
+			//Imago reordered for debugging purposes 8/17/09 - fixed 10/14
             {
                 TreasureSetLinkIGC*  l;
-				debugf("Nuking %d treasureset(s):\n",m_treasureSets.n());
+				//debugf("Nuking %d treasureset(s):\n",m_treasureSets.n());
                 while ((l = m_treasureSets.first()) != NULL)
                 {
-					debugf("\t%s (%i)\n",l->data()->GetName(), l->data()->GetObjectID());
+					//debugf("\t%s (%i)\n",l->data()->GetName(), l->data()->GetObjectID());
                     l->data()->Terminate();
                 }
             }
             {
                 DroneTypeLinkIGC*  l;
-				debugf("Nuking %d drone types:\n",m_droneTypes.n());
+				//debugf("Nuking %d drone types:\n",m_droneTypes.n());
                 while ((l = m_droneTypes.first()) != NULL)
                 {
-					debugf("\t%s (%i)\n",l->data()->GetName(), l->data()->GetObjectID());
+					//debugf("\t%s (%i)\n",l->data()->GetName(), l->data()->GetObjectID());
                     l->data()->Terminate();
                 }
             }
@@ -321,7 +321,8 @@ class   CstaticIGC
         }
         virtual void                            DeleteTreasureSet(ItreasureSetIGC*                pt)
         {
-            DeleteIbaseIGC((BaseListIGC*)&m_treasureSets, pt);
+			if (pt) //imago 10/14
+				DeleteIbaseIGC((BaseListIGC*)&m_treasureSets, pt);
         }
         virtual ItreasureSetIGC*                GetTreasureSet(TreasureSetID                      id) const
         {
@@ -577,7 +578,8 @@ class   CmissionIGC : public ImissionIGC
         }
         virtual void                            DeleteTreasureSet(ItreasureSetIGC*                pt)
         {
-            m_pStatic->DeleteTreasureSet(pt);
+			if (m_pStatic && pt) //imago 10/14
+				m_pStatic->DeleteTreasureSet(pt);
         }
         virtual ItreasureSetIGC*                GetTreasureSet(TreasureSetID                      id) const
         {

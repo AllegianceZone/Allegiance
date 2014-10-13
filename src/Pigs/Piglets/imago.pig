@@ -253,6 +253,13 @@ function OnShipKilled(objModel, fAmount, objV1, objV2)
 	Trace("OnShipKilled: "+fAmount+" killer: "+objModel.Name+"\n");
 }
 
+//kill it!
+function OnStateLoggingOff(eStatePrevious)
+{
+	DisplayStateTransition(eStatePrevious);
+	Shutdown();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 function OnActivate(objDeactivated)
@@ -285,14 +292,6 @@ function DisplayStateTransition(eStatePrevious)
 /////////////////////////////////////////////////////////////////////////////
 // Handles state transition. Currently just outputs debug text.
 function OnStateLoggingOn(eStatePrevious)
-{
-	DisplayStateTransition(eStatePrevious);
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Handles state transition. Currently just outputs debug text.
-function OnStateLoggingOff(eStatePrevious)
 {
 	DisplayStateTransition(eStatePrevious);
 }

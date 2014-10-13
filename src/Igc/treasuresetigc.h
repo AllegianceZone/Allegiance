@@ -36,7 +36,8 @@ class CtreasureSetIGC : public ItreasureSetIGC
         virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
         virtual void            Terminate(void)
         {
-            m_pMission->DeleteTreasureSet(this);
+			if (m_pMission) //imago 10/13
+				m_pMission->DeleteTreasureSet(this);
         }
 
         virtual int             Export(void* data) const;
