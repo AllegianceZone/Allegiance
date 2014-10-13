@@ -15,8 +15,9 @@ var ServerName = "Imago-PC";
 var ServerAddr = "192.168.2.2";
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
-var ShootSkill = "0.25";
-var TurnSkill = "0.25";
+var ShootSkill = 0.25;
+var TurnSkill = 0.25;
+var GotoSkill = 0.25;
 
 //globals
 
@@ -157,9 +158,8 @@ function OnStateDocked(eStatePrevious)
 	Ship.BuyHull(objHullTypes(iHull));
 
 	Trace("Launching into space...\n");
+	SetSkills(ShootSkill,TurnSkill,GotoSkill);
 	Launch();
-	//NYI
-	//Launch(ShootSkill,TurnSkill);
 }
 
 
@@ -251,6 +251,9 @@ function OnReceiveChat(strText, objShip)
 function OnShipKilled(objModel, fAmount, objV1, objV2)
 {
 	Trace("OnShipKilled: "+fAmount+" killer: "+objModel.Name+"\n");
+	ShootSkill += 0.1;
+	TurnSkill += 0.1;
+	GotoSkill += 0.1;
 }
 
 //kill it!

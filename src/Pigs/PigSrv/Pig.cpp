@@ -1685,7 +1685,7 @@ void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
 	ImodelIGC* pmodelTarget, bool bObjectModel)
 {
 	// If we sent this message, then ignore it
-	if (BaseClient::GetShip() == pshipSender)
+	if (BaseClient::GetShip()->GetObjectID() == pshipSender->GetObjectID()) //imago 10/14 was BaseClient::GetShip() == pshipSender
 		return;
 
 	 //imago ignore attack commands in a lifepod 10/14
@@ -1788,7 +1788,7 @@ void CPig::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
 			assert (pht);
 
 			//If no weapon is selected, try to select a weapon
-			if (pshipSource == BaseClient::GetShip())
+			if (pshipSource->GetObjectID() == BaseClient::GetShip()->GetObjectID()) //imago 10/14
 			{
 				if (BaseClient::m_selectedWeapon >= pht->GetMaxFixedWeapons()
 					|| !BaseClient::GetWeapon())
@@ -1816,7 +1816,7 @@ void CPig::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
 void CPig::ChangeCluster(IshipIGC*  pship, IclusterIGC* pclusterOld,
 	IclusterIGC* pclusterNew)
 {
-	if (pship == BaseClient::GetShip())
+	if (pship->GetObjectID() == BaseClient::GetShip()->GetObjectID())
 	{
 		// Only notify the active behavior if both clusters are non-null
 		if (pclusterOld && pclusterNew)
@@ -1898,7 +1898,7 @@ void CPig::KillShipEvent(Time timeCollision, IshipIGC* ship,
 	ImodelIGC* launcher, float amount, const Vector& p1, const Vector& p2)
 {
 	// Only notify the behavior if the ship killed was us
-	if (BaseClient::GetShip() == ship)
+	if (BaseClient::GetShip()->GetObjectID() == ship->GetObjectID()) //imago 10/14 was BaseClient::GetShip() == ship
 	{
 		// Determine if there is an active behavior
 		CPigBehaviorScript* pBehavior = GetActiveBehavior();
@@ -1937,7 +1937,7 @@ void CPig::HitWarpEvent(IshipIGC* ship, IwarpIGC* warp)
 	_TRACE_END
 
 		// Only notify the behavior if the ship was us
-		if (BaseClient::GetShip() == ship)
+		if (BaseClient::GetShip()->GetObjectID() == ship->GetObjectID())
 		{
 			// Determine if there is an active behavior
 			CPigBehaviorScript* pBehavior = GetActiveBehavior();
