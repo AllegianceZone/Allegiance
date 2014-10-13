@@ -1601,10 +1601,12 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     bLegal = (cid >= c_cidDefault) && (cid < c_cidHide);
                 }
 				break;
-                case c_ptCheatPlayer:
+				 //imago 10/14
+				case c_ptCheatPlayer:
                 {
-                    bLegal = (cid == c_cidDefault) || (cid == c_cidGoto) || (cid == c_cidAttack) || (cid == c_cidPickup) || (cid == c_cidDoNothing) || (cid == c_cidRepair) || (cid == c_cidStop) || (cid == c_cidHide);
+                    bLegal = (cid >= c_cidDoNothing) && (cid <= c_cidBuild); //all commands are legal
                 }
+				break;
             }
 
             return bLegal;
@@ -1676,7 +1678,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                     case c_cidDefault:
                     case c_cidGoto:
                     {
-                        bLegal = (m_pilotType >= c_ptPlayer) || bFriendly; //|| (type != OT_station) //Removed 10/14 imago
+                        bLegal = (m_pilotType >= c_ptPlayer) || (type != OT_station) || bFriendly;
                     }
                     break;
 

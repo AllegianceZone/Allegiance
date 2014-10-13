@@ -186,6 +186,7 @@ enum dispid_PigsIDL
   dispid_Artifacts,
   dispid_Pods,
   dispid_Experimental,
+  dispid_Goto,
 
   dispid_PigsIDL_End = dispid_PigsIDL_Begin + 0x1000
 };
@@ -1187,6 +1188,10 @@ interface IPigShip : IAGCShip
 
   [id(dispid_Attack), helpstring("Attacks the specified target.")]
   HRESULT Attack([in] BSTR bstrObject,
+    [out, retval] BSTR* pbstrResponse);
+
+  [id(dispid_Goto), helpstring("Goto the specified target.")]
+  HRESULT Goto([in] BSTR bstrObject,
     [out, retval] BSTR* pbstrResponse);
 
   [propput, helpstring("Gets/sets the AutoPilot state.")]

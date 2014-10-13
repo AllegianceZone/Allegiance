@@ -1692,6 +1692,10 @@ void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
 	if (cid == c_cidAttack && BaseClient::GetShip()->GetHullType()->HasCapability(c_habmLifepod))
 		return;
 
+	//imago ignore commands to other stuff 10/14
+	if (BaseClient::GetShip()->GetObjectID() != oidRecipient && cid > 0)
+		return;
+
 	// Perform default processing
 	BaseClient::ReceiveChat(pshipSender, ctRecipient, oidRecipient,voiceOver,
 		szText, cid, otTarget, oidTarget);

@@ -2378,33 +2378,38 @@ public:
 	//Turkey 5/11 #59
 	//Triggered whenever a non-character key is pressed while the chat
 	//box is open. Plays a sound and adjusts cursor position.
+	//imago 10/14 - dont play the chat key sound twice
 	bool OnKey(const KeyState& ks)
 	{
 		if (m_csComposeState > c_csComposeMouseCommand)
         {
 			if (!m_strTypedText.IsEmpty()) {
-				trekClient.PlaySoundEffect(chatKeySound);
 				switch (ks.vk) {
 				case VK_HOME:
 					m_cursorPosition = 0;
+					trekClient.PlaySoundEffect(chatKeySound);
 					UpdateComposedChat();
 					break;
 				case VK_END:
 					m_cursorPosition = m_strTypedText.GetLength();
+					trekClient.PlaySoundEffect(chatKeySound);
 					UpdateComposedChat();
 					break;
 				case VK_RIGHT:
 					if (m_cursorPosition != m_strTypedText.GetLength()) m_cursorPosition++;
+					trekClient.PlaySoundEffect(chatKeySound);
 					UpdateComposedChat();
 					break;
 				case VK_LEFT:
 					if (m_cursorPosition != 0) m_cursorPosition--;
+					trekClient.PlaySoundEffect(chatKeySound);
 					UpdateComposedChat();
 					break;
 				case VK_DELETE:
 					if (m_cursorPosition < m_strTypedText.GetLength())
 					{
 						m_cursorPosition++;
+						trekClient.PlaySoundEffect(chatKeySound);
 						OnBackspace();
 					}
 					break;

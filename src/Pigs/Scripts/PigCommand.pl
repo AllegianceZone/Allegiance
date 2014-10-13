@@ -16,7 +16,7 @@ if ($sess) {
 		#############################
 		
 		#$pig->JoinTeam("Iron Coalition");
-		#$pig->Ship->Attack("botpilot2");
+		$pig->Ship->Goto("Garrison");
 		
 		#############################		
 		my $err = Win32::OLE::LastError();

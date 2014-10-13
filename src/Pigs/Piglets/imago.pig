@@ -10,9 +10,9 @@
 // Settings
 //
 
-var GameName = "Bot DeathMatch";
-var ServerName = "azbuildslave";
-var ServerAddr = "191.239.1.217";
+var GameName = "Bot Testing";
+var ServerName = "Imago-PC";
+var ServerAddr = "192.168.2.2";
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
 var ShootSkill = "0.25";
@@ -80,9 +80,9 @@ function OnStateMissionList(eStatePrevious)
 	objParams.TeamKills = 5;
 	objParams.KillBonus = 0;
 	objParams.Defections = true;
-	objParams.Miners = 0;
-	objParams.Developments = false;
-	objParams.Conquest = 0;
+	objParams.Miners = 2;
+	objParams.Developments = true;
+	objParams.Conquest = 100;
 	objParams.Flags = 0;
 	objParams.Artifacts = 0;
 	objParams.Pods = true;
