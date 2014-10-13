@@ -144,7 +144,7 @@ HRESULT DoMain(int argc, TCHAR* argv[], TCHAR* envp[])
   SetConsoleTitle(szTitle);
 
   // Find the console's main window and minimize it
-#ifndef DEBUG
+#ifndef _DEBUG
   LPCTSTR pszClass = IsWinNT() ? TEXT("ConsoleWindowClass") : TEXT("tty");
   HWND hwnd = FindWindow(pszClass, szTitle);
   if (hwnd)
