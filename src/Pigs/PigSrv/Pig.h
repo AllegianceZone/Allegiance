@@ -279,6 +279,7 @@ public:
   STDMETHODIMP Launch();
   STDMETHODIMP Shutdown();
   STDMETHODIMP IsMissionOwner(BOOL* bOwner); //imago 10/14
+  STDMETHODIMP SetSkills(float fShoot, float fTurn, float fGoto); //imago 10/14
   STDMETHODIMP get_Game(IAGCGame** ppGame);
   STDMETHODIMP get_Me(IAGCShip** ppShip);
   STDMETHODIMP get_ChatTarget(AGCChatTarget* peChatTarget);

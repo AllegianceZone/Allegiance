@@ -2719,6 +2719,13 @@ STDMETHODIMP CPig::IsMissionOwner(BOOL* bOwner)
 	return S_OK;
 }
 
+//imago 10/14
+STDMETHODIMP CPig::SetSkills(float fShoot, float fTurn, float fGoto)
+{
+	XLock lock(this);
+	BaseClient::MyPlayerInfo()->GetShip()->SetSkills(fShoot, fTurn, fGoto);
+	return S_OK;
+}
 
 STDMETHODIMP CPig::Shutdown()
 {

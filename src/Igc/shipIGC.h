@@ -2492,6 +2492,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             return false;
         }
 
+		//imago 10/14
+        virtual void SetSkills(float fShoot, float fTurn, float fGoto) {
+			m_fShootSkill = fShoot;
+			m_fTurnSkill = fTurn;
+			m_gotoplan.SetSkill(fGoto);
+		}
+
     private:
         bool    bShouldUseRipcord(IclusterIGC*  pcluster);
 
@@ -2614,6 +2621,9 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 		IclusterIGC*		m_miningCluster; //Spunky #268
 		bool				m_newMiningCluster; //Spunky #268
 		bool				m_doNotBuild; //Spunky #304
+		//imago 10/14
+		float				m_fShootSkill;
+		float				m_fTurnSkill;
 };
 
 #endif //__SHIPIGC_H_

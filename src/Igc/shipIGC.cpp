@@ -45,7 +45,9 @@ CshipIGC::CshipIGC(void)
     m_ripcordDebt(0.0f),
 	m_wingID(NA), //Imago 6/10 #91
 	m_lastLaunch(Time::Now()), //Imago 7/10 #7
-	m_lastDock(Time::Now())
+	m_lastDock(Time::Now()),
+	m_fShootSkill(0.75f),
+	m_fTurnSkill(0.75f)
 {
     //Start with a single kill's worth of exp
     SetExperience(1.0f);
@@ -2270,8 +2272,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                 if ( m_commandIDs[c_cmdPlan] == c_cidAttack )
                 {
                     //In the same cluster as the target ... we dodge, turn to face the aim point and fire if close enough
-                    float   fShootSkill = 0.75f;
-                    float   fTurnSkill = 0.75f;
+                    float   fShootSkill = m_fShootSkill; //imago 10/14 made these adjustable
+                    float   fTurnSkill = m_fTurnSkill;
                     int     state = 0;
                     bool    bDodge = Dodge(this, NULL, &state);
 
@@ -2292,7 +2294,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     float lifespan = m_mountedWeapons[0]->GetLifespan();
 
                     // commenting this to get strafe behavior from the drones BSW 10/28/1999
-                    /*
+                   //imago 10/14
                     if ((!bDodge) && (t <= lifespan * 0.25f))
                     {
                         //We are close and not dodging anything so ...
@@ -2310,7 +2312,6 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                                 state |= forwardButtonIGC;
                         }
                     }
-                    */
 
                     SetStateBits(~selectedWeaponMaskIGC,
                                  ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f))

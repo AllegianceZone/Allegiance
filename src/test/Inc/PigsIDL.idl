@@ -552,6 +552,9 @@ interface IPig : IDispatch
   [helpstring("Returns true if player has game control")]
   HRESULT IsMissionOwner([out, retval] BOOL* bOwner);
 
+  [helpstring("Sets the shoot, turn and goto skills")]
+  HRESULT SetSkills([in] float fShoot, [in] float fTurn, [in] float fGoto); //Imago 10/14
+
   [propget, helpstring("Gets the AGCGame object that the Pig is a member of, if any.")]
   HRESULT Game([out, retval] IAGCGame** ppGame);
 
