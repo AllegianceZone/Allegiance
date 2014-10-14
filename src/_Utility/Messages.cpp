@@ -548,7 +548,11 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
   }
   else
   {
-    hr = m_pDirectPlayServer->SendTo( precip->GetID(), &sendBufDesc, 1, dwTimeout, this, &handle, dwFlags );
+	  //imago 10/14
+	if (!precip)
+		hr = DPNERR_GENERIC;
+	else
+		hr = m_pDirectPlayServer->SendTo( precip->GetID(), &sendBufDesc, 1, dwTimeout, this, &handle, dwFlags );
 
   }
 
@@ -561,7 +565,7 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
   if ( ! ( hr == DPNSUCCESS_PENDING || hr == S_OK ) )
   {
     debugf("Return code of Send was 0x%x to player with dpid %8x.\n",
-           hr, precip->GetID());
+           hr, (precip) ? precip->GetID() : -1); //imago 10/14
   }
 #endif // DEBUG
 
