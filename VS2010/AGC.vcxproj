@@ -190,6 +190,10 @@
       <TargetMachine>MachineX86</TargetMachine>
       <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
+    <CustomBuildStep>
+      <Outputs>AGCreg</Outputs>
+      <Command>regsvr32 $(TargetPath) /s</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">
     <Midl>
@@ -341,6 +345,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
+    <CustomBuildStep>
+      <Command>regsvr32 $(TargetPath) /s</Command>
+      <Outputs>AGCreg</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">
     <Midl>

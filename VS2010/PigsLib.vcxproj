@@ -86,6 +86,8 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" />
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Link</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">Link</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <Midl>
@@ -121,6 +123,10 @@
       <GenerateMapFile>true</GenerateMapFile>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <CustomBuildStep>
+      <Command>regsvr32 $(TargetPath) /s</Command>
+      <Outputs>PigsLibreg</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'">
     <Midl>
@@ -180,6 +186,10 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>regsvr32 $(TargetPath) /s</Command>
+      <Outputs>PigsLibreg</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">
     <Midl>

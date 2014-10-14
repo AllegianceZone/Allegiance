@@ -549,11 +549,12 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
   else
   {
 	  //imago 10/14
-	if (!precip->GetName())
-		hr = DPNERR_GENERIC;
-	else
-		hr = m_pDirectPlayServer->SendTo( precip->GetID(), &sendBufDesc, 1, dwTimeout, this, &handle, dwFlags );
-
+	  try {
+		  (!precip->GetName()) ? hr = DPNERR_GENERIC : hr = m_pDirectPlayServer->SendTo( precip->GetID(), &sendBufDesc, 1, dwTimeout, this, &handle, dwFlags );
+	  } catch (...) {
+		  debugf("Sorry Charlie, something bad happened!");
+		  hr = DPNERR_EXCEPTION;
+	  }
   }
 
   tt.Stop("dpidTo=%8x, guaranteed=%d, hr=%x, 1st message (fmid)=%u", precip->GetID(), fGuaranteed, hr,

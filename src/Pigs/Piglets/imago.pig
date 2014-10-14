@@ -24,12 +24,14 @@ var MyGarrison;
 var MyShip;
 var EnemyGarrison;
 var CurrentTarget;
+var IsTargetClose = false;
 var GameController = false;
 var RoundCount = 0;
 var LastKill = (new Date).getTime();
 var LastDeath = (new Date).getTime();
 var LastDamage = (new Date).getTime();
 
+// genesis
 function OnStateNonExistant(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if (PigState_Terminated == eStatePrevious) {
@@ -41,6 +43,7 @@ function OnStateNonExistant(eStatePrevious) {
 	}
 }
 
+// step 2...
 function OnStateMissionList(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	try {
@@ -82,6 +85,7 @@ function OnStateMissionList(eStatePrevious) {
 	RoundCount++;
 }
 
+// step 3...
 function OnStateWaitingForMission(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if (PigState_CreatingMission == eStatePrevious) {
@@ -113,6 +117,7 @@ function ChatStartGameTimer() {
 	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...");
 }
 
+// step 4...
 function OnStateTeamList(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if (PigState_JoiningTeam != eStatePrevious) {
@@ -121,6 +126,7 @@ function OnStateTeamList(eStatePrevious) {
 	}
 }
 
+// step 5...
 function OnStateDocked(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if ("object" == typeof(Properties("UpdateTargetTimer")))
@@ -138,13 +144,13 @@ function OnStateDocked(eStatePrevious) {
 		Launch();
 	}
 }
-
 function OnMissionStarted() {
 	Trace("OnMissionStarted()! launching into space...\n");
 	SetSkills(ShootSkill,TurnSkill,GotoSkill);
 	Launch();
 }
 
+// deep space!
 function OnStateFlying(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 
@@ -228,6 +234,8 @@ function UpdateTargetTimer() {
 				Attack(CurrentTarget.Name);	
 				return;
 			}
+		} else {
+			IsTargetClose = true;
 		}
 	} else {
 		CurrentTarget = null;
@@ -238,17 +246,17 @@ function UpdateTargetTimer() {
 	}
 }
 function RearmTimer() {
-	if (Ammo < 15) {
+	if (Ship.Ammo < 5) {
 		Game.SendChat("Low ammo! heading home ("+MyGarrison.ObjectID+")");
 		Ship.GotoStationID(MyGarrison.ObjectID);
 		Timer.Kill();
 	}
-	if (Ship.Damage.Fraction < 0.25) {
+	if (Ship.Fraction < 0.1) {
 		Game.SendChat("Critical damage! heading home ("+MyGarrison.ObjectID+")");
 		Ship.GotoStationID(MyGarrison.ObjectID);
 		Timer.Kill();
 	}
-	if (!Fuel) {
+	if (Ship.Fuel < 0.01) {
 		Game.SendChat("Bingo fuel! heading home ("+MyGarrison.ObjectID+")");
 		Ship.GotoStationID(MyGarrison.ObjectID);
 		Timer.Kill();
@@ -318,13 +326,15 @@ function OnShipKilled(objShip, objModel, fAmount, objV1, objV2) {
 	}
 }
 
+// the end...
 function OnStateLoggingOff(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	Shutdown();
 }
 
+
 //
-//debugging crap below!
+// nonsense below!
 //
 function OnAlephHit(objAleph) {   
 	Trace("ooh i touched an aleph? wtf is this for\n");
