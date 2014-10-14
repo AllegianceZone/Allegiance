@@ -549,7 +549,7 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
   else
   {
 	  //imago 10/14
-	if (!precip)
+	if (!precip->GetName())
 		hr = DPNERR_GENERIC;
 	else
 		hr = m_pDirectPlayServer->SendTo( precip->GetID(), &sendBufDesc, 1, dwTimeout, this, &handle, dwFlags );
