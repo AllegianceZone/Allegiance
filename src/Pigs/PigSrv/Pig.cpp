@@ -687,8 +687,8 @@ unsigned CALLBACK CPig::ThreadThunk(void* pvParam)
 	// Reinterpret the parameter as an XThreadParams structure
 	XThreadParams* ptp = reinterpret_cast<XThreadParams*>(pvParam);
 
-	// Enter this thread into an STA
-	RETURN_FAILED(ptp->m_hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED));
+	// Enter this thread into an MTA
+	RETURN_FAILED(ptp->m_hr = CoInitializeEx(NULL, COINIT_MULTITHREADED));
 
 	// Create an instance of the pig object
 	HRESULT hr;

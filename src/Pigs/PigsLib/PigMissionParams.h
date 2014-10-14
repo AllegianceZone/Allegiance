@@ -90,22 +90,22 @@ public:
   STDMETHODIMP get_CoreName(BSTR* bstrCoreName);
   STDMETHODIMP put_KillBonus(short KBlevel);
   STDMETHODIMP get_KillBonus(short* KBlevel);
-  STDMETHODIMP put_Defections(BOOL Defections);
-  STDMETHODIMP get_Defections(BOOL* Defections);
+  STDMETHODIMP put_Defections(VARIANT_BOOL Defections);
+  STDMETHODIMP get_Defections(VARIANT_BOOL* Defections);
   STDMETHODIMP put_Miners(short Miners);
   STDMETHODIMP get_Miners(short* Miners);
-  STDMETHODIMP put_Developments(BOOL Developments);
-  STDMETHODIMP get_Developments(BOOL* Developments);
+  STDMETHODIMP put_Developments(VARIANT_BOOL Developments);
+  STDMETHODIMP get_Developments(VARIANT_BOOL* Developments);
   STDMETHODIMP put_Conquest(short Conquest);
   STDMETHODIMP get_Conquest(short* Conquest);
   STDMETHODIMP put_Flags(short Flags);
   STDMETHODIMP get_Flags(short* Flags);
   STDMETHODIMP put_Artifacts(short Artifacts);
   STDMETHODIMP get_Artifacts(short* Artifacts);
-  STDMETHODIMP put_Pods(BOOL Pods);
-  STDMETHODIMP get_Pods(BOOL* Pods);
-  STDMETHODIMP put_Experimental(BOOL Experimental);
-  STDMETHODIMP get_Experimental(BOOL* Experimental);
+  STDMETHODIMP put_Pods(VARIANT_BOOL Pods);
+  STDMETHODIMP get_Pods(VARIANT_BOOL* Pods);
+  STDMETHODIMP put_Experimental(VARIANT_BOOL Experimental);
+  STDMETHODIMP get_Experimental(VARIANT_BOOL* Experimental);
 // IPigMissionParamsPrivate Interface Methods
 public:
   STDMETHODIMP GetData(IStream** ppstm);

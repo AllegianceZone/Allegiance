@@ -171,18 +171,18 @@ STDMETHODIMP CPigMissionParams::get_KillBonus(short* KBlevel)
   return TCComPropertyGet(this, KBlevel, m_mp.KBlevel);
 }
 
-STDMETHODIMP CPigMissionParams::put_Defections(BOOL Defections)
+STDMETHODIMP CPigMissionParams::put_Defections(VARIANT_BOOL Defections)
 {
 	XLock lock(this);
 	USES_CONVERSION;
 	m_mp.bAllowDefections = Defections;
 	return S_OK;
 }
-STDMETHODIMP CPigMissionParams::get_Defections(BOOL* Defections)
+STDMETHODIMP CPigMissionParams::get_Defections(VARIANT_BOOL* Defections)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Defections, (BOOL)m_mp.bAllowDefections);
+  CLEAROUT(Defections, (VARIANT_BOOL)m_mp.bAllowDefections);
   return S_OK;
 }
 
@@ -195,18 +195,18 @@ STDMETHODIMP CPigMissionParams::get_Miners(short* Miners)
   return TCComPropertyGet(this, Miners, m_mp.nInitialMinersPerTeam);
 }
 
-STDMETHODIMP CPigMissionParams::put_Developments(BOOL Developments)
+STDMETHODIMP CPigMissionParams::put_Developments(VARIANT_BOOL Developments)
 {
 	XLock lock(this);
 	USES_CONVERSION;
 	m_mp.bAllowDevelopments = Developments;
 	return S_OK;
 }
-STDMETHODIMP CPigMissionParams::get_Developments(BOOL* Developments)
+STDMETHODIMP CPigMissionParams::get_Developments(VARIANT_BOOL* Developments)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Developments, (BOOL)m_mp.bAllowDevelopments);
+  CLEAROUT(Developments, (VARIANT_BOOL)m_mp.bAllowDevelopments);
   return S_OK;
 }
 
@@ -237,33 +237,33 @@ STDMETHODIMP CPigMissionParams::get_Artifacts(short* Artifacts)
   return TCComPropertyGet(this, Artifacts, m_mp.nGoalArtifactsCount);
 }
 
-STDMETHODIMP CPigMissionParams::put_Pods(BOOL Pods)
+STDMETHODIMP CPigMissionParams::put_Pods(VARIANT_BOOL Pods)
 {
 	XLock lock(this);
 	USES_CONVERSION;
 	m_mp.bEjectPods = Pods;
 	return S_OK;
 }
-STDMETHODIMP CPigMissionParams::get_Pods(BOOL* Pods)
+STDMETHODIMP CPigMissionParams::get_Pods(VARIANT_BOOL* Pods)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Pods, (BOOL)m_mp.bEjectPods);
+  CLEAROUT(Pods, (VARIANT_BOOL)m_mp.bEjectPods);
   return S_OK;
 }
 
-STDMETHODIMP CPigMissionParams::put_Experimental(BOOL Experimental)
+STDMETHODIMP CPigMissionParams::put_Experimental(VARIANT_BOOL Experimental)
 {
 	XLock lock(this);
 	USES_CONVERSION;
 	m_mp.bExperimental = Experimental;
 	return S_OK;
 }
-STDMETHODIMP CPigMissionParams::get_Experimental(BOOL* Experimental)
+STDMETHODIMP CPigMissionParams::get_Experimental(VARIANT_BOOL* Experimental)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Experimental, (BOOL)m_mp.bExperimental);
+  CLEAROUT(Experimental, (VARIANT_BOOL)m_mp.bExperimental);
   return S_OK;
 }
 /////////////////////////////////////////////////////////////////////////////

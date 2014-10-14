@@ -421,7 +421,7 @@ public:
         }
 
 
-        HRESULT hr = CoInitialize(NULL);
+        HRESULT hr = CoInitializeEx(NULL,COINIT_MULTITHREADED);
 
         if (FAILED(hr))
             return hr;

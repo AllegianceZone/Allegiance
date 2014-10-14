@@ -17,7 +17,7 @@ class TCCoInit
 // Construction / Destruction
 public:
   #if _WIN32_WINNT >= 0x0400 || defined(_WIN32_DCOM)
-    TCCoInit(COINIT coInit = COINIT_APARTMENTTHREADED) :
+    TCCoInit(COINIT coInit = COINIT_MULTITHREADED) :
       m_hr(CoInitializeEx(NULL, coInit))  {}
   #else
     TCCoInit() : m_hr(CoInitialize(NULL)) {}

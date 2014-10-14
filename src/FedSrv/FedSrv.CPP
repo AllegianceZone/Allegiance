@@ -9929,7 +9929,7 @@ HRESULT pascal FedSrv_Init()
   //ZAssert(fSWMRGInit);
 
   // Initialize COM library
-  // ZSucceeded(CoInitialize(NULL));
+  ZSucceeded(CoInitializeEx(NULL,COINIT_MULTITHREADED));
 
   ZVerify(g.perfshare.Initialize());
   //

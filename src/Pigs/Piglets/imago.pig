@@ -48,7 +48,7 @@ function OnStateMissionList(eStatePrevious) {
 		return;
 	}
 	catch (e) {
-		if (e.description != "No missions exist on the server.") {
+		if (e.description != "No missions exist on the server." || e.description != "Specified game not found or has no positions available") {
 			Trace("JoinMission failed: " + e.description + "\n");
 			Shutdown();
 		}
@@ -123,10 +123,16 @@ function OnStateTeamList(eStatePrevious) {
 
 function OnStateDocked(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
+	if ("object" == typeof(Properties("UpdateTargetTimer")))
+		Properties("UpdateTargetTimer").Kill();
+	if ("object" == typeof(Properties("FindTargetTimer")))
+		Properties("FindTargetTimer").Kill();
+	if ("object" == typeof(Properties("RearmTimer")))
+		Properties("RearmTimer").Kill();	
 	var objHullTypes = HullTypes;
 	var iHull = SelectBestHull(objHullTypes,ShipSelection,"Fighter");
 	Ship.BuyHull(objHullTypes(iHull));
-	if (eStatePrevious != PigState_WaitingForMission || Game.GameStage == 2) { //AGCGameStage_Started
+	if (eStatePrevious != PigState_WaitingForMission || Game.GameStage == AGCGameStage_Started) {
 		Trace("Launching into space...\n");
 		SetSkills(ShootSkill,TurnSkill,GotoSkill);
 		Launch();
@@ -170,15 +176,19 @@ function OnStateFlying(eStatePrevious) {
 	if (CurrentTarget) {
 		Game.SendChat("My initial target is: "+CurrentTarget.Name);
 		Attack(CurrentTarget.Name);
+		CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
 	} else {
 		CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
 	}
+	
+	CreateTimer(3, "RearmTimer()", -1, "RearmTimer");
+	
 	//TODO Boost
-	//TODO Shoot Missiles
-	//TODO Drop Mines / ECM
+	//TODO Shoot missiles
+	//TODO Drop mines / ECM
+	//TODO Camp red doors };-)
 }
 function FindTargetTimer() {
-	Trace("Attempting to FindNearestEnemy\n");
 	var objShips = Ship.Sector.Ships;
 	var iShip = FindNearestEnemy(objShips);
 	if (iShip != -1) CurrentTarget = objShips(iShip);
@@ -186,17 +196,63 @@ function FindTargetTimer() {
 		Game.SendChat("My new initial target is: "+CurrentTarget.Name);
 		Attack(CurrentTarget.Name);
 		Timer.Kill();
+		CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
 	}	
 }
-//NYI loop to update CurrentTarget
 function UpdateTargetTimer() {
-	//current target check
+	var objShips = Ship.Sector.Ships;
+	var newtarget;
+	var iShip = FindNearestEnemy(objShips);
+	if (iShip != -1) {
+		newtarget = objShips(iShip);
+		if (CurrentTarget && CurrentTarget.BaseHullType.HasCapability(4)) { //c_habmLifepod
+			if (newtarget != CurrentTarget) {
+				CurrentTarget = newtarget;
+				Game.SendChat("My updated target (not a pod) is: "+CurrentTarget.Name);
+				Attack(CurrentTarget.Name);
+				return;
+			}
+		}
+		if (CurrentTarget && !IsTargetValid(objShips,CurrentTarget)) {
+			if (newtarget != CurrentTarget) {
+				CurrentTarget = newtarget;
+				Game.SendChat("My updated target (valid) is: "+CurrentTarget.Name);
+				Attack(CurrentTarget.Name);
+				return;
+			}
+		}
+		if (CurrentTarget && Range2Ship(CurrentTarget) > 640000) {
+			if (newtarget != CurrentTarget) {
+				CurrentTarget = newtarget;
+				Game.SendChat("My updated target (distance) is: "+CurrentTarget.Name);
+				Attack(CurrentTarget.Name);	
+				return;
+			}
+		}
+	} else {
+		CurrentTarget = null;
+		Game.SendChat("No targets, camping a red door ("+EnemyGarrison.ObjectID+")");
+		Ship.GotoStationID(EnemyGarrison.ObjectID);
+		Timer.Kill();
+		CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
+	}
 }
-//NYI loop to dock when needed
 function RearmTimer() {
-	//ammo check
-	//fuel check
-	//damage check
+	if (Ammo < 15) {
+		Game.SendChat("Low ammo! heading home ("+MyGarrison.ObjectID+")");
+		Ship.GotoStationID(MyGarrison.ObjectID);
+		Timer.Kill();
+	}
+	if (Ship.Damage.Fraction < 0.25) {
+		Game.SendChat("Critical damage! heading home ("+MyGarrison.ObjectID+")");
+		Ship.GotoStationID(MyGarrison.ObjectID);
+		Timer.Kill();
+	}
+	if (!Fuel) {
+		Game.SendChat("Bingo fuel! heading home ("+MyGarrison.ObjectID+")");
+		Ship.GotoStationID(MyGarrison.ObjectID);
+		Timer.Kill();
+	}
 }
 
 function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
@@ -204,7 +260,7 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
 		return;
 	if (objShip.ObjectID != Ship.ObjectID)
 		return;
-	if (objModel.ObjectType != 0) //AGC_Ship
+	if (objModel.ObjectType != AGC_Ship)
 		return;
 
 	if (objModel.Team != Ship.Team) {
@@ -225,9 +281,20 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
 	}
 }
 
+//TODO: find out why this isnt getting hit all the time!
 function OnShipKilled(objShip, objModel, fAmount, objV1, objV2) {
-	if (!objShip || !Ship || !objModel)
+	if (!objShip) {
+		Trace("OnShipKilled - NO OBJSHIP!!!!!!!!!!!\n");
 		return;
+	}
+	if (!Ship) {
+		Trace("OnShipKilled - NO Ship!!!!!!!!!!!\n");
+		return;
+	}
+	if (!objModel) {
+		Trace("OnShipKilled - NO MODEL!!!!!!!!!!!\n");
+		return;
+	}
 			
 	if (objModel.ObjectID == Ship.ObjectID) {
 		var tnow = (new Date).getTime();

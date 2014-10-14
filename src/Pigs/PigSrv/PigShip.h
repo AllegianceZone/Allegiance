@@ -100,10 +100,11 @@ public:
   STDMETHODIMP AcceptCommand(BSTR* pbstrResponse);
   STDMETHODIMP ClearCommand(BSTR* pbstrResponse);
   STDMETHODIMP Face(VARIANT* pvarObject, BSTR bstrExpirationExpr,
-    BSTR bstrInterruptionExpr, VARIANT_BOOL bLevel, BSTR* pbstrResponse);
+  BSTR bstrInterruptionExpr, VARIANT_BOOL bLevel, BSTR* pbstrResponse);
   STDMETHODIMP Defend(BSTR bstrObject, BSTR* pbstrResponse);
   STDMETHODIMP Attack(BSTR bstrObject, BSTR* pbstrResponse);
-  STDMETHODIMP Goto(BSTR bstrObject, BSTR* pbstrResponse);
+  STDMETHODIMP Goto(BSTR bstrObject, VARIANT_BOOL bFriendly, BSTR* pbstrResponse);
+  STDMETHODIMP GotoStationID(ObjectID oid, BSTR* pbstrResponse);
   STDMETHODIMP put_AutoPilot(VARIANT_BOOL bEngage);
   STDMETHODIMP get_AutoPilot(VARIANT_BOOL* pbEngaged);
   STDMETHODIMP get_AutoAction(IPigShipEvent** ppAutoAction);

@@ -210,6 +210,7 @@ void GotLogonInfo(CQLobbyLogon * pquery)
 
 const int c_cMaxPlayers = GetRegDWORD("MaxPlayersPerServer", 350);
 
+//imago 9/14
 DWORD WINAPI LogonThread( LPVOID param ) {
 	CSQLQuery * pQuery = (CSQLQuery *)param;  //use the AZ legacy data & callback
 	CQLobbyLogon * pls = (CQLobbyLogon *)param;
@@ -217,7 +218,11 @@ DWORD WINAPI LogonThread( LPVOID param ) {
 	char szReason [256];
 	int iID = 0;
 	EnterCriticalSection(g_pLobbyApp->GetLogonCS()); 
+#ifdef NOAUTH //imago 1/14
+	bool fValid = true;
+#else
 	bool fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason,iID);
+#endif
 	(fValid) ? debugf("authed!\n") : debugf("not authed!\n");
 	pqd->fValid = fValid;
 	pqd->fRetry = false;

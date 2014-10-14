@@ -187,6 +187,7 @@ enum dispid_PigsIDL
   dispid_Pods,
   dispid_Experimental,
   dispid_Goto,
+  dispid_GotoStationID,
 
   dispid_PigsIDL_End = dispid_PigsIDL_Begin + 0x1000
 };
@@ -787,9 +788,9 @@ interface IPigMissionParams : IDispatch
   HRESULT KillBonus([out, retval] short* KBLevel);
 
   [propput, helpstring("Gets/sets Defections allowed.")]
-  HRESULT Defections([in] BOOL Defections);
+  HRESULT Defections([in] VARIANT_BOOL Defections);
   [propget, id(dispid_Defections)]
-  HRESULT Defections([out, retval] BOOL* Defections);
+  HRESULT Defections([out, retval] VARIANT_BOOL* Defections);
 
   [propput, helpstring("Gets/sets the number of starting miners.")]
   HRESULT Miners([in] short Miners);
@@ -797,9 +798,9 @@ interface IPigMissionParams : IDispatch
   HRESULT Miners([out, retval] short* Miners);
 
   [propput, helpstring("Gets/sets Developments allowed.")]
-  HRESULT Developments([in] BOOL Developments);
+  HRESULT Developments([in] VARIANT_BOOL Developments);
   [propget, id(dispid_Developments)]
-  HRESULT Developments([out, retval] BOOL* Developments);
+  HRESULT Developments([out, retval] VARIANT_BOOL* Developments);
 
   [propput, helpstring("Gets/sets the Conquest goal.")]
   HRESULT Conquest([in] short Conquest);
@@ -817,14 +818,14 @@ interface IPigMissionParams : IDispatch
   HRESULT Artifacts([out, retval] short* Artifacts);
 
   [propput, helpstring("Gets/sets Pods allowed.")]
-  HRESULT Pods([in] BOOL Pods);
+  HRESULT Pods([in] VARIANT_BOOL Pods);
   [propget, id(dispid_Pods)]
-  HRESULT Pods([out, retval] BOOL* Pods);
+  HRESULT Pods([out, retval] VARIANT_BOOL* Pods);
 
   [propput, helpstring("Gets/sets Experimental allowed.")]
-  HRESULT Experimental([in] BOOL Experimental);
+  HRESULT Experimental([in] VARIANT_BOOL Experimental);
   [propget, id(dispid_Experimental)]
-  HRESULT Experimental([out, retval] BOOL* Experimental);
+  HRESULT Experimental([out, retval] VARIANT_BOOL* Experimental);
 
 }; // End: interface IPigMissionParams : IDispatch
 
@@ -1194,7 +1195,11 @@ interface IPigShip : IAGCShip
     [out, retval] BSTR* pbstrResponse);
 
   [id(dispid_Goto), helpstring("Goto the specified target.")]
-  HRESULT Goto([in] BSTR bstrObject,
+  HRESULT Goto([in] BSTR bstrObject, [in] VARIANT_BOOL bFriendly,
+    [out, retval] BSTR* pbstrResponse);
+
+  [id(dispid_GotoStationID), helpstring("Goto the specified station ID.")]
+  HRESULT GotoStationID([in] short oid,
     [out, retval] BSTR* pbstrResponse);
 
   [propput, helpstring("Gets/sets the AutoPilot state.")]

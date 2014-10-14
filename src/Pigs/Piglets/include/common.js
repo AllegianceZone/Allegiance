@@ -62,7 +62,7 @@ function FindNearestEnemy(shipCollection) {
 	var e = new Enumerator (shipCollection);
 	for (var i=0; !e.atEnd(); e.moveNext(), i++) {
 		var ship = e.item();
-		if (ship.Team != Ship.Team) {
+		if (ship.Team != Ship.Team && !ship.BaseHullType.HasCapability(4)) { //c_habmLifepod
 			var range = Range2Ship(ship);
 			if (range < Dist) {
 				Dist = range;
@@ -71,6 +71,17 @@ function FindNearestEnemy(shipCollection) {
 		}
 	}
 	return Nearest;
+}
+
+function IsTargetValid(shipCollection,objTarget) {
+	var e = new Enumerator (shipCollection);
+	for (; !e.atEnd(); e.moveNext()) {
+		var ship = e.item();
+		if (ship.Team != Ship.Team && !ship.BaseHullType.HasCapability(4) && ship.ObjectID == objTarget.ObjectID) { //c_habmLifepod
+			return true;
+		}
+	}
+	return false;
 }
 
 function DoRipCord() {

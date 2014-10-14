@@ -1115,7 +1115,7 @@ BaseClient::BaseClient(void)
 	m_sidBoardAfterDisembark(NA),
 	m_sidTeleportAfterDisembark(NA)
 {
-    CoInitialize(NULL);
+    CoInitializeEx(NULL,COINIT_MULTITHREADED);
     m_timeLastPing = m_lastSend;
     m_plistMissions = new ListDelegate(&m_mapMissions);
     m_pClientEventSource = new ClientEventSource();

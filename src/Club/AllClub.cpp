@@ -470,11 +470,11 @@ void CServiceModule::Run()
 {
     _Module.dwThreadID = GetCurrentThreadId();
 
-    HRESULT hr = CoInitialize(NULL);
+    //HRESULT hr = CoInitialize(NULL);
 //  If you are running on NT 4.0 or higher you can use the following call
 //  instead to make the EXE free threaded.
 //  This means that calls come in on a random RPC thread
-//  HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
     _ASSERTE(SUCCEEDED(hr));
 

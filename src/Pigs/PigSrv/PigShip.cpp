@@ -776,12 +776,33 @@ STDMETHODIMP CPigShip::Attack(BSTR bstrObject, BSTR* pbstrResponse)
 	return AcceptCommand(pbstrResponse);
 }
 
-STDMETHODIMP CPigShip::Goto(BSTR bstrObject, BSTR* pbstrResponse)
+//imago 10/14
+STDMETHODIMP CPigShip::Goto(BSTR bstrObject, VARIANT_BOOL bFriendly, BSTR* pbstrResponse)
 {
 	// Resolve the specified target name
-	ImodelIGC* pTarget = CPigShipEvent::FindTargetName(m_pPig, bstrObject, true);
+	ImodelIGC* pTarget = CPigShipEvent::FindTargetName(m_pPig, bstrObject, bFriendly);
 	if (!pTarget)
 		return FormattedError(IDS_E_FMT_OBJNAME, bstrObject ? bstrObject : L"");
+
+	// Kill any current automatic action, including AutoPilot
+	KillAutoAction();
+
+	m_pPig->BaseClient::SetAutoPilot(true);
+
+	// Set the queued command
+	GetIGC()->SetCommand(c_cmdQueued, pTarget, c_cidGoto);
+
+	// Accept the queued command
+	return AcceptCommand(pbstrResponse);
+}
+
+//imago 10/14
+STDMETHODIMP CPigShip::GotoStationID(ObjectID oid, BSTR* pbstrResponse)
+{
+	// Resolve the specified object ID
+	ImodelIGC* pTarget = GetIGC()->GetMission()->GetStation(oid);
+	if (!pTarget)
+		return FormattedError(IDS_E_FMT_STATIONOBJID, oid ? oid : -1);
 
 	// Kill any current automatic action, including AutoPilot
 	KillAutoAction();
