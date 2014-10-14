@@ -1861,7 +1861,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             //Spunky #300
 			float maxBonus = 0.5f;
 			float halfExperience = 4.0f;
-			if (GetPilotType() == c_ptPlayer) //otherwise training will crash
+			if (GetPilotType() >= c_ptPlayer) //otherwise training will crash //imago 10/14 was ==
 			{
 				KB kb = GetMyMission()->GetMissionParams()->KBlevel;	
 				switch (kb)

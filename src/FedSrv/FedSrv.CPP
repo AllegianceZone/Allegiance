@@ -8869,7 +8869,7 @@ void LoadSettings()
 		if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "nUpdatesPerSecond", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
             g.nUpdatesPerSecond = dwValue;
         else
-            g.nUpdatesPerSecond = 10;
+            g.nUpdatesPerSecond = 30;
 
 
 // mmf log to file on SRVLOG define as well as _DEBUG

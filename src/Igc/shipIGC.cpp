@@ -2295,7 +2295,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 
                     // commenting this to get strafe behavior from the drones BSW 10/28/1999
                    //imago 10/14
-                    if ((!bDodge) && (t <= lifespan * 0.25f))
+                    if ((!bDodge) && (t <= lifespan * 0.25f) && fTurnSkill > 0.75f)
                     {
                         //We are close and not dodging anything so ...
                         //strafe
@@ -2313,8 +2313,18 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                         }
                     }
 
+					//imago dont _try_ to kill low kb pods 10/14
+					IshipIGC* targetship = GetMyMission()->GetShip(m_commandTargets[c_cmdPlan]->GetObjectID());
+					bool bPod = false;
+					KB kb = 0;
+					if (targetship) {
+						bPod = targetship->GetBaseHullType()->HasCapability(c_habmLifepod);
+						kb = targetship->GetExperience();
+					}
+					 
                     SetStateBits(~selectedWeaponMaskIGC,
-                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f))
+                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f) 
+									&& (!bPod || kb > 3))
                                  ? (state | allWeaponsIGC)
                                  : state);
 

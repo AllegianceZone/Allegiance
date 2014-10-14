@@ -40,24 +40,14 @@ class   CstaticIGC
         void            Terminate(void)
         {
 			//Imago reordered for debugging purposes 8/17/09 - fixed 10/14
-            {
-                TreasureSetLinkIGC*  l;
-				//debugf("Nuking %d treasureset(s):\n",m_treasureSets.n());
-                while ((l = m_treasureSets.first()) != NULL)
+            
+                DroneTypeLinkIGC*  dl;
+                while ((dl = m_droneTypes.first()) != NULL)
                 {
-					//debugf("\t%s (%i)\n",l->data()->GetName(), l->data()->GetObjectID());
-                    l->data()->Terminate();
+					IdroneTypeIGC* dt = dl->data();
+                    if (dt) dt->Terminate();
                 }
-            }
-            {
-                DroneTypeLinkIGC*  l;
-				//debugf("Nuking %d drone types:\n",m_droneTypes.n());
-                while ((l = m_droneTypes.first()) != NULL)
-                {
-					//debugf("\t%s (%i)\n",l->data()->GetName(), l->data()->GetObjectID());
-                    l->data()->Terminate();
-                }
-            }
+ 
             {
                 StationTypeLinkIGC*  l;
                 while ((l = m_stationTypes.first()) != NULL)
@@ -103,6 +93,13 @@ class   CstaticIGC
             {
                 CivilizationLinkIGC*  l;
                 while ((l = m_civilizations.first()) != NULL)
+                {
+                    l->data()->Terminate();
+                }
+            }
+            {
+                TreasureSetLinkIGC*  l;
+                while ((l = m_treasureSets.first()) != NULL)
                 {
                     l->data()->Terminate();
                 }

@@ -2665,9 +2665,6 @@ STDMETHODIMP CPig::QuitGame()
 
 STDMETHODIMP CPig::Launch()
 {
-	//Imago 10/14
-	if (BaseClient::MyMission()->GetStage() != STAGE_STARTED)
-		Sleep(20000);
 
 	// Validate the current state
 	if (PigState_Docked != GetCurrentState())
