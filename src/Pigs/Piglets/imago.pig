@@ -1,5 +1,5 @@
 <pigbehavior language="JScript">
-//imagotrigger@gmail.com 10/14 originally from manuel.pig and mark.pig Microsoft
+//imagotrigger@gmail.com 10/14 imago.pig originally from manuel.pig and mark.pig Microsoft
 
 <script src="include\AutoStartCustomGame.js"/>
 <script src="include\common.js"/>
@@ -13,8 +13,10 @@
 var GameName = "Bot Testing";
 var ServerName = "Imago-PC";
 var ServerAddr = "192.168.2.2";
+
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
+
 var ShootSkill = 0.25;
 var TurnSkill = 0.25;
 var GotoSkill = 0.25;
@@ -36,7 +38,7 @@ function OnStateNonExistant(eStatePrevious)
 	// If previous state was PigState_Terminated, the pig is being created
 	if (PigState_Terminated == eStatePrevious)
 	{
-		// Logon to the mission server
+		// Logon to the lobby server
 		try
 		{
 			//UpdatesPerSecond = 5;
@@ -74,22 +76,25 @@ function OnStateMissionList(eStatePrevious)
 	var objParams = new ActiveXObject("Pigs.MissionParams");
 	objParams.TeamCount = 2;
 	objParams.MinTeamPlayers = 1;
-	objParams.MaxTeamPlayers = 10;
+	objParams.MaxTeamPlayers = 100;
 	objParams.GameName = GameName;
 	objParams.CoreName = "Pcore006";
 	objParams.MapType = PigMapType_Brawl;
-	objParams.TeamKills = 5;
+	objParams.TeamKills = 10;
 	objParams.KillBonus = 0;
 	objParams.Defections = true;
-	objParams.Miners = 2;
-	objParams.Developments = true;
-	objParams.Conquest = 100;
+	objParams.Miners = 0;
+	objParams.Developments = false;
+	objParams.Conquest = 0;
 	objParams.Flags = 0;
 	objParams.Artifacts = 0;
 	objParams.Pods = true;
 	objParams.Experimental = true;
-
-	CreateMission(ServerName,ServerAddr,objParams);
+	try { CreateMission(ServerName,ServerAddr,objParams); } 
+	catch(e) {
+		Trace("JoinMission("+GameName+") failed: " + e.description + "\n");
+		Shutdown();
+	}
 	GameController = true;
 	AutoStartGame(objParams);
 	RoundCount++;
@@ -203,9 +208,13 @@ function OnStateFlying(eStatePrevious)
 		}	    
 	}
 
-	Trace("Attacking "+CurrentTarget.Name+"\n");
-	Game.SendChat("My initial target is: "+CurrentTarget.Name);
-	Attack(CurrentTarget.Name);
+	if (CurrentTarget) {
+		Trace("Attacking "+CurrentTarget.Name+"\n");
+		Game.SendChat("My initial target is: "+CurrentTarget.Name);
+		Attack(CurrentTarget.Name);
+	} else {
+		Trace("NO TARGET!!!!!\n");
+	}
 
 	//NYI
 	//Start the EnemyScanner() loop to update CurrentTarget
@@ -241,16 +250,15 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2)
 
 function OnReceiveChat(strText, objShip)
 {   
-	if (objShip == Ship)
-		return;
-
 	//Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");
 }
 
-//fires for the piglet that got blown up
-function OnShipKilled(objModel, fAmount, objV1, objV2)
+function OnShipKilled(objShip, objModel, fAmount, objV1, objV2)
 {
-	Trace("OnShipKilled: "+fAmount+" killer: "+objModel.Name+"\n");
+	Trace(objShip.Name +" blew up by "+fAmount+" damage from killer "+objModel.Name+"\n");
+	var ht = objShip.HullType;
+	var lifepod = ht.HasCapability(4); //c_habmLifepod
+	Trace("!!! LIFEPOD: "+lifepod+"\n");
 	ShootSkill += 0.1;
 	TurnSkill += 0.1;
 	GotoSkill += 0.1;
@@ -263,6 +271,10 @@ function OnStateLoggingOff(eStatePrevious)
 	Shutdown();
 }
 
+
+
+
+//debugging crap!
 /////////////////////////////////////////////////////////////////////////////
 //
 function OnActivate(objDeactivated)

@@ -71,10 +71,10 @@ STDMETHODIMP CPigMissionParams::Validate()
   XLock lock(this);
   if (2 > m_mp.nTeams || m_mp.nTeams > 6)
     return Error(IDS_E_TEAMCOUNT, IID_IPigMissionParams);
-  if (1 > m_mp.nMaxPlayersPerTeam || m_mp.nMaxPlayersPerTeam > 45)
-    return Error(IDS_E_MINTEAMPLAYERS, IID_IPigMissionParams);
-  if (1 > m_mp.nMinPlayersPerTeam || m_mp.nMinPlayersPerTeam > 30)
+  if (1 > m_mp.nMaxPlayersPerTeam || m_mp.nMaxPlayersPerTeam > 100) //imago 10/14 max and min were switched around!
     return Error(IDS_E_MAXTEAMPLAYERS, IID_IPigMissionParams);
+  if (1 > m_mp.nMinPlayersPerTeam || m_mp.nMinPlayersPerTeam > 50)
+    return Error(IDS_E_MINTEAMPLAYERS, IID_IPigMissionParams);
   if (m_mp.nMinPlayersPerTeam > m_mp.nMaxPlayersPerTeam)
     return Error(IDS_E_MINMAXREVERSED, IID_IPigMissionParams);
   return S_OK;

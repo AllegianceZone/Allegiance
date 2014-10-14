@@ -108,6 +108,7 @@ struct CPig::XShipKilled
 {
 	IPigBehaviorPtr m_spBehavior;
 	float           m_amount;
+	IAGCShipPtr     m_spShip;
 	IAGCModelPtr    m_spModel;
 	IAGCVectorPtr   m_spVector1;
 	IAGCVectorPtr   m_spVector2;
@@ -1096,8 +1097,8 @@ strMessage : chat.m_strText.RightOf(strCompare.GetLength());
 			std::auto_ptr<XShipKilled> apParams(pParams);
 
 			// Notify the active behavior
-			HRESULT hr = pParams->m_spBehavior->OnShipKilled(pParams->m_spModel,
-				pParams->m_amount, pParams->m_spVector1, pParams->m_spVector2);
+			HRESULT hr = pParams->m_spBehavior->OnShipKilled(pParams->m_spShip, 
+				pParams->m_spModel, pParams->m_amount, pParams->m_spVector1, pParams->m_spVector2);
 			VerifyScriptMethod(hr, "OnShipKilled");
 			break;
 		}
@@ -1685,7 +1686,7 @@ void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
 	ImodelIGC* pmodelTarget, bool bObjectModel)
 {
 	// If we sent this message, then ignore it
-	if (BaseClient::GetShip()->GetObjectID() == pshipSender->GetObjectID()) //imago 10/14 was BaseClient::GetShip() == pshipSender
+	if (pshipSender && BaseClient::GetShip()->GetObjectID() == pshipSender->GetObjectID()) //imago 10/14 was BaseClient::GetShip() == pshipSender
 		return;
 
 	 //imago ignore attack commands in a lifepod 10/14
@@ -1788,7 +1789,7 @@ void CPig::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
 			assert (pht);
 
 			//If no weapon is selected, try to select a weapon
-			if (pshipSource->GetObjectID() == BaseClient::GetShip()->GetObjectID()) //imago 10/14
+			if (pshipSource && pshipSource->GetObjectID() == BaseClient::GetShip()->GetObjectID()) //imago 10/14
 			{
 				if (BaseClient::m_selectedWeapon >= pht->GetMaxFixedWeapons()
 					|| !BaseClient::GetWeapon())
@@ -1816,7 +1817,7 @@ void CPig::ChangeStation(IshipIGC* pship, IstationIGC* pstationOld,
 void CPig::ChangeCluster(IshipIGC*  pship, IclusterIGC* pclusterOld,
 	IclusterIGC* pclusterNew)
 {
-	if (pship->GetObjectID() == BaseClient::GetShip()->GetObjectID())
+	if (pship && pship->GetObjectID() == BaseClient::GetShip()->GetObjectID())
 	{
 		// Only notify the active behavior if both clusters are non-null
 		if (pclusterOld && pclusterNew)
@@ -1894,33 +1895,35 @@ void CPig::DamageShipEvent(Time now, IshipIGC* ship, ImodelIGC* launcher,
 	BaseClient::DamageShipEvent(now, ship, launcher, type, amount, leakage, p1, p2);
 }
 
+//imago changed to fire for any ship 10/14
 void CPig::KillShipEvent(Time timeCollision, IshipIGC* ship,
 	ImodelIGC* launcher, float amount, const Vector& p1, const Vector& p2)
 {
-	// Only notify the behavior if the ship killed was us
-	if (BaseClient::GetShip()->GetObjectID() == ship->GetObjectID()) //imago 10/14 was BaseClient::GetShip() == ship
+
+	// Determine if there is an active behavior
+	CPigBehaviorScript* pBehavior = GetActiveBehavior();
+	if (pBehavior)
 	{
-		// Determine if there is an active behavior
-		CPigBehaviorScript* pBehavior = GetActiveBehavior();
-		if (pBehavior)
-		{
-			// Create the parameter structure
-			XShipKilled* pParams = new XShipKilled;
-			pParams->m_spBehavior = pBehavior;
-			pParams->m_amount     = amount;
+		// Create the parameter structure
+		XShipKilled* pParams = new XShipKilled;
+		pParams->m_spBehavior = pBehavior;
+		pParams->m_amount     = amount;
 
-			// Get the AGCModel object that damaged the ship
-			if (launcher)
-				GetAGCGlobal()->GetAGCObject(launcher, IID_IAGCModel,
-				(void**)&pParams->m_spModel);
 
-			// Create AGCVectors
-			_SVERIFYE(GetAGCGlobal()->MakeAGCVector(&p1, &pParams->m_spVector1));
-			_SVERIFYE(GetAGCGlobal()->MakeAGCVector(&p2, &pParams->m_spVector2));
+		// Get the AGCShip object that was damaged
+		if (ship)
+			GetAGCGlobal()->GetAGCObject(ship, IID_IAGCShip, (void**)&pParams->m_spShip);
 
-			// Notify the active behavior
-			m_pth->PostThreadMessage(wm_OnShipKilled, (WPARAM)pParams);
-		}
+		// Get the AGCModel object that damaged the ship
+		if (launcher)
+			GetAGCGlobal()->GetAGCObject(launcher, IID_IAGCModel, (void**)&pParams->m_spModel);
+
+		// Create AGCVectors
+		_SVERIFYE(GetAGCGlobal()->MakeAGCVector(&p1, &pParams->m_spVector1));
+		_SVERIFYE(GetAGCGlobal()->MakeAGCVector(&p2, &pParams->m_spVector2));
+
+		// Notify the active behavior
+		m_pth->PostThreadMessage(wm_OnShipKilled, (WPARAM)pParams);
 	}
 
 	// Perform default processing
@@ -1937,7 +1940,7 @@ void CPig::HitWarpEvent(IshipIGC* ship, IwarpIGC* warp)
 	_TRACE_END
 
 		// Only notify the behavior if the ship was us
-		if (BaseClient::GetShip()->GetObjectID() == ship->GetObjectID())
+		if (ship && BaseClient::GetShip()->GetObjectID() == ship->GetObjectID())
 		{
 			// Determine if there is an active behavior
 			CPigBehaviorScript* pBehavior = GetActiveBehavior();

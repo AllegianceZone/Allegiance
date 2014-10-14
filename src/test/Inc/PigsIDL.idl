@@ -438,8 +438,8 @@ interface IPigBehavior : IDispatch
     [in] float fAmount, [in] float fLeakage,
     [in] IAGCVector* pVector1, [in] IAGCVector* pVector2);
 
-  [helpstring("Called when the Pig ship is killed.")]
-  HRESULT OnShipKilled([in] IAGCModel* pModelLauncher, [in] float fAmount,
+  [helpstring("Called when any ship is killed.")]
+  HRESULT OnShipKilled([in] IAGCShip* pShip, [in] IAGCModel* pModelLauncher, [in] float fAmount,
     [in] IAGCVector* pVector1, [in] IAGCVector* pVector2);
 
   [helpstring("Called when the Pig ship is transported to a new Sector.")]

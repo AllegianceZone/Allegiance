@@ -186,6 +186,7 @@
     <None Include="..\src\Pigs\Piglets\FaceOutpost.pig" />
     <None Include="..\src\Pigs\Piglets\framerate-dummy.pig" />
     <None Include="..\src\Pigs\Piglets\framerate.pig" />
+    <None Include="..\src\Pigs\Piglets\include\AutoStartCustomGame.js" />
     <None Include="..\src\Pigs\Piglets\it.pig" />
     <None Include="..\src\Pigs\Piglets\mark2.pig" />
     <None Include="..\src\Pigs\Piglets\mark2s.pig" />
@@ -200,7 +201,6 @@
     <None Include="..\src\Pigs\Piglets\include\chatcommand.js" />
     <None Include="..\src\Pigs\Piglets\include\common.js" />
     <None Include="..\src\Pigs\Piglets\include\dijkstra.js" />
-    <None Include="..\src\Pigs\Piglets\include\eliza.js" />
     <None Include="..\src\Pigs\Piglets\include\GetIntoTeam.js" />
     <None Include="..\src\Pigs\Piglets\moldy\Mark0.pig" />
     <None Include="..\src\Pigs\Piglets\moldy\Mark1.pig" />
@@ -211,7 +211,9 @@
     <None Include="..\src\Pigs\Scripts\create demo game.vbs" />
     <None Include="..\src\Pigs\Scripts\create scout test game.vbs" />
     <None Include="..\src\Pigs\Scripts\CreatePig.js" />
+    <None Include="..\src\Pigs\Scripts\CreatePig.pl" />
     <None Include="..\src\Pigs\Scripts\CreatePigs.js" />
+    <None Include="..\src\Pigs\Scripts\CreatePigs.pl" />
     <None Include="..\src\Pigs\Scripts\debugger.js" />
     <None Include="..\src\Pigs\Scripts\debugger.vbs" />
     <None Include="..\src\Pigs\Scripts\DeployPigs.js" />
@@ -223,6 +225,7 @@
     <None Include="..\src\Pigs\Scripts\listpigs2.js" />
     <None Include="..\src\Pigs\Scripts\LobbyServer.js" />
     <None Include="..\src\Pigs\Scripts\MaxPigs.js" />
+    <None Include="..\src\Pigs\Scripts\PigCommand.pl" />
     <None Include="..\src\Pigs\Scripts\RemAccountServer.js" />
     <None Include="..\src\Pigs\Scripts\RemCreatePig.js" />
     <None Include="..\src\Pigs\Scripts\RemCreatePigs.js" />
