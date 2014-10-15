@@ -49,8 +49,7 @@ function OnStateMissionList(eStatePrevious) {
 	try {
 		JoinMission(GameName);
 		return;
-	}
-	catch (e) {
+	} catch (e) {
 		if (e.description != "No missions exist on the server." || e.description != "Specified game not found or has no positions available") {
 			Trace("JoinMission failed: " + e.description + "\n");
 			Shutdown();
