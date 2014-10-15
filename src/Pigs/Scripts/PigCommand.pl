@@ -25,6 +25,9 @@ if ($sess) {
 		#$pig->Game->SendChat("goooo!",1296); #voEveryoneReadySound
 		#$pig->Ship->AllStop();
 		#$pig->Ship->Boost(-1);
+		#$pig->Ship->Team->SendChat("blah");
+		sleep 3;
+		$pig->Ship->Team->SendChat("blah",-1,1219);
 		
 		#############################		
 		my $err = Win32::OLE::LastError();

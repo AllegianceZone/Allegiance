@@ -5,13 +5,20 @@ function DisplayStateTransition(eStatePrevious) {
 }
 
 function NeedPickup() {
+	if (HailedForRescue)
+		return;
 	var nearestFriend;
 	var objShips = Ship.Sector.Ships;
 	var iShip = FindNearestFriend(objShips);
 	if (iShip != -1) nearestFriend = objShips(iShip);
-	if (nearestFriend && Range2Ship(nearestFriend) < Range2Ship(MyGarrison)) {
-		Ship.Team.SendChat("I need a pickup!",1219); //voNeedPickupSound
-		HailedForRescue = true;
+	if (nearestFriend) {
+		var range = Range2Ship(nearestFriend);
+		var range2 = Range2Ship(MyGarrison);
+		Trace("In NeedPickup()...ship "+range+" vs station "+range2+"\n");
+		if (range < range2) {
+			Ship.Team.SendChat("I need a pickup!",-1,1219); //voNeedPickupSound
+			HailedForRescue = true;
+		}
 	}
 }
 

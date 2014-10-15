@@ -134,8 +134,9 @@ TCAutoCriticalSection CPig::s_csCreate, CPig::s_csUpdate, CPig::s_csLogon;
 // Table of special chat commands
 TCLookupTable_BEGIN(CPig, ChatCommands)    
 	CPig_ChatCommand_ENTRY("ruapig?",  true, 6, &OnChat_AreYouAPig)
-	CPig_ChatCommand_ENTRY("eval"   ,  true, 2, &OnChat_Evaluate)
-	CPig_ChatCommand_ENTRY("? "     , false, 1, &OnChat_Evaluate)
+	//imago 10/14
+	//CPig_ChatCommand_ENTRY("eval"   ,  true, 2, &OnChat_Evaluate)
+	//CPig_ChatCommand_ENTRY("? "     , false, 1, &OnChat_Evaluate)
 	TCLookupTable_END()                      
 
 
@@ -1021,6 +1022,7 @@ strMessage : chat.m_strText.RightOf(strCompare.GetLength());
 			}
 
 			// Attempt to interpret the chat message as a behavior/piglet invoke command
+			/* imago 10/14
 			CComBSTR bstrType(strVerb);
 			CPigBehaviorScriptType* pType = GetEngine().GetBehaviorType(bstrType);
 			if (pType)
@@ -1052,6 +1054,7 @@ strMessage : chat.m_strText.RightOf(strCompare.GetLength());
 					return false;
 				}
 			}
+			*/
 
 #if 0
 			// Attempt to evaluate the chat message as script text
