@@ -3,7 +3,7 @@
 use strict;
 use Win32::OLE;
 
-my $behavior = $ARGV[0] || "imago";
+my $behavior = $ARGV[0] || "dm";
 my $seconds = $ARGV[1] || 5;
 my $total = $ARGV[2] || 10;
 my $cmd = "perl CreatePig.pl $behavior";

@@ -6,7 +6,7 @@ use Win32::OLE;
 print "Creating Pigs session\n";
 my $sess  = Win32::OLE->new("Pigs.Session");
 if ($sess) {
-	my $behavior = ($ARGV[0]) ? $ARGV[0] : "Default";
+	my $behavior = ($ARGV[0]) ? $ARGV[0] : "dm";
 	print "Creating a Pig with '$behavior' behavior\n";
 	my $pig = $sess->CreatePig($behavior);
 	if ($pig) {
