@@ -2498,6 +2498,8 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 			m_fTurnSkill = fTurn;
 			m_gotoplan.SetSkill(fGoto);
 		}
+		virtual void SetWantBoost(bool bOn) { m_bBoost = bOn; }
+		virtual bool GetWantBoost() { return m_bBoost; }
 
     private:
         bool    bShouldUseRipcord(IclusterIGC*  pcluster);
@@ -2624,6 +2626,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
 		//imago 10/14
 		float				m_fShootSkill;
 		float				m_fTurnSkill;
+		bool				m_bBoost;
 };
 
 #endif //__SHIPIGC_H_

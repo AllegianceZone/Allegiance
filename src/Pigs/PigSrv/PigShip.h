@@ -91,6 +91,7 @@ public:
   STDMETHODIMP AllStop(BSTR* pbstrResponse);
   STDMETHODIMP Thrust(PigThrust e1, PigThrust e2, PigThrust e3, PigThrust e4,
     PigThrust e5, PigThrust e6, PigThrust e7, BSTR* pbstrResponse);
+  STDMETHODIMP Boost(VARIANT_BOOL bOn, BSTR* pbstrResponse);
   STDMETHODIMP FireWeapon(VARIANT_BOOL bBegin, BSTR* pbstrResponse);
   STDMETHODIMP FireMissile(VARIANT_BOOL bBegin, BSTR* pbstrResponse);
   STDMETHODIMP DropMine(VARIANT_BOOL bBegin, BSTR* pbstrResponse);

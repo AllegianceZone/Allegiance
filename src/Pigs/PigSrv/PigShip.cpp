@@ -467,6 +467,24 @@ STDMETHODIMP CPigShip::Thrust(PigThrust e1, PigThrust e2, PigThrust e3,
 	return S_OK;
 }
 
+//imago 10/14
+STDMETHODIMP CPigShip::Boost(VARIANT_BOOL bOn, BSTR* pbstrResponse)
+{
+	// Initialize the [out] parameters
+	CLEAROUT_ALLOW_NULL(pbstrResponse, (BSTR)NULL);
+
+	GetIGC()->SetWantBoost(bOn);
+
+	// Set the ship's control state bits
+	GetIGC()->SetStateBits(buttonsMaskIGC, (bOn) ? GetIGC()->GetStateM() | afterburnerButtonIGC : GetIGC()->GetStateM() & ~afterburnerButtonIGC);
+
+	// Load the ship's method response string
+	LoadShipResponse(pbstrResponse);
+
+	// Indicate success
+	return S_OK;
+}
+
 
 STDMETHODIMP CPigShip::FireWeapon(VARIANT_BOOL bBegin, BSTR* pbstrResponse)
 {

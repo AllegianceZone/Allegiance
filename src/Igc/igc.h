@@ -3399,7 +3399,10 @@ class IshipIGC : public IscannerIGC
         virtual float               GetOre(void) const = 0;
 		virtual void				SetOre(float ore) = 0;//Spunky #344
 
-		virtual void                SetSkills(float fShoot, float fTurn, float fGoto) = 0;//imago 10/14
+		//imago 10/14
+		virtual void                SetSkills(float fShoot, float fTurn, float fGoto) = 0;
+		virtual void				SetWantBoost(bool bOn) = 0;
+		virtual bool 				GetWantBoost() = 0;
 };
 
 class IbuoyIGC : public ImodelIGC
@@ -5208,7 +5211,6 @@ class   Waypoint
                                             Vector*             pvectorGoto,
                                             ImodelIGC**         ppmodelSkip,
                                             Vector*             pvectorFacing);
-
         ImodelIGC*  m_pmodelTarget;
 
         Objective   m_objective;

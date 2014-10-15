@@ -30,6 +30,7 @@ var RoundCount = 0;
 var LastKill = (new Date).getTime();
 var LastDeath = (new Date).getTime();
 var LastDamage = (new Date).getTime();
+var AboutToDie = false;
 
 // genesis
 function OnStateNonExistant(eStatePrevious) {
@@ -113,12 +114,13 @@ function StartGameTimer() {
 function ChatStartGameTimer() {
 	Timer.Kill();
 	Trace("killed timer, Attempting to SendChat\n");
-	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...");
+	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...",1301); //voRematchSound
 }
 
 // step 4...
 function OnStateTeamList(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
+	Ship.WindID = 9; //Echo
 	if (PigState_JoiningTeam != eStatePrevious) {
 		Trace("Attempting to JoinTeam\n");
 		JoinTeam(CivSelection);
@@ -128,13 +130,9 @@ function OnStateTeamList(eStatePrevious) {
 // step 5...
 function OnStateDocked(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
-	if ("object" == typeof(Properties("UpdateTargetTimer")))
-		Properties("UpdateTargetTimer").Kill();
-	if ("object" == typeof(Properties("FindTargetTimer")))
-		Properties("FindTargetTimer").Kill();
-	if ("object" == typeof(Properties("RearmTimer")))
-		Properties("RearmTimer").Kill();
+	KillTimers();
 	IsTargetClose = false;
+	AboutToDie = false;
 	var objHullTypes = HullTypes;
 	var iHull = SelectBestHull(objHullTypes,ShipSelection,"Fighter");
 	Ship.BuyHull(objHullTypes(iHull));
@@ -153,7 +151,7 @@ function OnMissionStarted() {
 // deep space!
 function OnStateFlying(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
-
+	KillTimers();
 	var x;
 	var shiplist = Ship.Sector.Ships;
 	var stationlist = Ship.Sector.Stations;
@@ -178,7 +176,6 @@ function OnStateFlying(eStatePrevious) {
 			EnemyGarrison = x;
 		}	    
 	}
-
 	if (CurrentTarget) {
 		Game.SendChat("My initial target is: "+CurrentTarget.Name);
 		Attack(CurrentTarget.Name);
@@ -186,18 +183,19 @@ function OnStateFlying(eStatePrevious) {
 	} else {
 		CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
 	}
-	
 	CreateTimer(3, "RearmTimer()", -1, "RearmTimer");
 	
-	//TODO Boost
 	//TODO Shoot missiles
+		//Ship.FireMissile(true);
 	//TODO Drop mines / ECM
+		//Ship.DropMine(true);
+		//NYI OnIncomingMissile()
 	//TODO Camp red doors };-)
 }
 function FindTargetTimer() {
 	if (Ship.BaseHullType.HasCapability(4)) {
 		//TODO Find a teammate to pick me up!
-		Timer.Kill();
+		KillTimers();
 		return;
 	} 
 	var objShips = Ship.Sector.Ships;
@@ -206,13 +204,15 @@ function FindTargetTimer() {
 	if (CurrentTarget) {
 		Game.SendChat("My new initial target is: "+CurrentTarget.Name);
 		Attack(CurrentTarget.Name);
+		Ship.Boost(true);
 		Timer.Kill();
 		CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
 	}	
 }
 function UpdateTargetTimer() {
 	if (Ship.BaseHullType.HasCapability(4)) {
-		Timer.Kill();
+		//TODO Find a teammate to pick me up!
+		KillTimers();
 		return;
 	}
 	var objShips = Ship.Sector.Ships;
@@ -236,56 +236,85 @@ function UpdateTargetTimer() {
 				return;
 			}
 		}
-		if (CurrentTarget && Range2Ship(CurrentTarget) > 640000) {
+		if (CurrentTarget && Range2Ship(CurrentTarget) > 2250000) { //1500m ... 562500 = 750m  //TODO skillz
 			if (newtarget != CurrentTarget) {
 				CurrentTarget = newtarget;
 				Game.SendChat("My updated target (distance) is: "+CurrentTarget.Name);
 				Attack(CurrentTarget.Name);	
 				return;
 			}
+			Ship.Boost(true);
+			IsTargetClose = false;
 		} else {
+			Ship.Boost(false);
 			IsTargetClose = true;
 		}
 	} else {
 		CurrentTarget = null;
 		IsTargetClose = false;
-		Game.SendChat("No targets, camping a red door ("+EnemyGarrison.ObjectID+")");
-		Ship.GotoStationID(EnemyGarrison.ObjectID);
-		Timer.Kill();
-		CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
+		if (Ship.Fraction < 0.75) {
+			KillTimers();
+			Game.SendChat("No targets, repairing");	
+			Ship.GotoStationID(MyGarrison.ObjectID);								
+			Ship.Boost(true);
+		} else {
+			KillTimers();
+			Game.SendChat("No targets, camping");	
+			Ship.GotoStationID(EnemyGarrison.ObjectID);			
+			Ship.Boost(true);
+			CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
+		}
 	}
 }
 function RearmTimer() {
 	if (Ship.BaseHullType.HasCapability(4)) {
-		Timer.Kill();
+		//TODO Find a teammate to pick me up!
+		KillTimers();	
 		return;
 	}
-	if (Ship.Ammo < 5) {
-		Game.SendChat("Low ammo! heading home ("+MyGarrison.ObjectID+")");
+	if (!IsTargetClose && Ship.Ammo < Ship.HullType.MaxAmmo * 0.10) {
+		Game.SendChat("Low ammo! heading home");
+		KillTimers();		
 		Ship.GotoStationID(MyGarrison.ObjectID);
-		Timer.Kill();
+		Ship.Boost(true);	
 		return;
 	}
-	if (Damage.Fraction < 0.1) {
-		Game.SendChat("Critical damage! heading home ("+MyGarrison.ObjectID+")");
+	if (!IsTargetClose && Ship.Fraction < 0.15) {
+		AboutToDie = true;
+		Game.SendChat("Critical damage! heading home");
+		KillTimers();			
 		Ship.GotoStationID(MyGarrison.ObjectID);
-		Timer.Kill();
+		Ship.Boost(true);	
 		return;
 	}
-	if (Ship.Fuel < 0.01) {
-		Game.SendChat("Bingo fuel! heading home ("+MyGarrison.ObjectID+")");
+	if (!IsTargetClose && Ship.Fuel < Ship.HullType.MaxFuel * 0.10) {	
+		Game.SendChat("Bingo fuel! heading home");	
+		KillTimers();
 		Ship.GotoStationID(MyGarrison.ObjectID);
-		Timer.Kill();
+		Ship.Boost(true);	
 		return;
+	}
+	if (!Ship.Ammo) {
+		Game.SendChat("No ammo! heading home NOW");
+		KillTimers();		
+		Ship.GotoStationID(MyGarrison.ObjectID);		
+		Ship.Boost(true);	
+		return;		
 	}
 }
 
 function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
-	if (!objShip || !Ship || !objModel)
+	if (!objShip)
 		return;
-	if (objShip.ObjectID != Ship.ObjectID)
+	if (!objModel)
+		return;
+	if (objShip != Ship)
 		return;
 	if (objModel.ObjectType != 0) //AGC_Ship
+		return;	
+	if (AboutToDie)
+		return;
+	if (!Ship.Ammo)
 		return;
 
 	if (objModel.Team != Ship.Team) {
@@ -297,10 +326,12 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
 			var objShips = Ship.Sector.Ships;
 			var iShip = FindNearestEnemy(objShips);
 			if (iShip != -1) newtarget = objShips(iShip);
-			if (newtarget && newtarget.ObjectID == objModel.ObjectID && newtarget.ObjectID != CurrentTarget.ObjectID) {
+			if ((!CurrentTarget) || (newtarget && newtarget.ObjectID == objModel.ObjectID && newtarget.ObjectID != CurrentTarget.ObjectID)) {
 				CurrentTarget = newtarget;
 				Game.SendChat("My new pesky target is: "+CurrentTarget.Name);
-				Attack(CurrentTarget.Name);		
+				KillTimers();
+				CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
+				CreateTimer(3, "RearmTimer()", -1, "RearmTimer");
 			}
 		}
 	}

@@ -182,7 +182,7 @@ STDMETHODIMP CPigMissionParams::get_Defections(VARIANT_BOOL* Defections)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Defections, (VARIANT_BOOL)m_mp.bAllowDefections);
+  CLEAROUT(Defections, VARBOOL(m_mp.bAllowDefections));
   return S_OK;
 }
 
@@ -206,7 +206,7 @@ STDMETHODIMP CPigMissionParams::get_Developments(VARIANT_BOOL* Developments)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Developments, (VARIANT_BOOL)m_mp.bAllowDevelopments);
+  CLEAROUT(Developments, VARBOOL(m_mp.bAllowDevelopments));
   return S_OK;
 }
 
@@ -263,7 +263,7 @@ STDMETHODIMP CPigMissionParams::get_Experimental(VARIANT_BOOL* Experimental)
 {
   XLock lock(this);
   USES_CONVERSION;
-  CLEAROUT(Experimental, (VARIANT_BOOL)m_mp.bExperimental);
+  CLEAROUT(Experimental, VARBOOL(m_mp.bExperimental));
   return S_OK;
 }
 /////////////////////////////////////////////////////////////////////////////

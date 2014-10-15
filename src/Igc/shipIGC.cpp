@@ -47,7 +47,8 @@ CshipIGC::CshipIGC(void)
 	m_lastLaunch(Time::Now()), //Imago 7/10 #7
 	m_lastDock(Time::Now()),
 	m_fShootSkill(0.75f),
-	m_fTurnSkill(0.75f)
+	m_fTurnSkill(0.75f),
+	m_bBoost(false)
 {
     //Start with a single kill's worth of exp
     SetExperience(1.0f);
@@ -2261,7 +2262,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                          allWeaponsIGC, state);
 
             m_controls.Reset();
-        }
+		}
         else
         {
             m_dtTimeBetweenComplaints = c_dtTimeBetweenComplaints;
@@ -2269,7 +2270,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
             if (((m_pilotType == c_ptWingman) || (m_pilotType == c_ptCheatPlayer)) &&
                 (m_commandTargets[c_cmdPlan]->GetCluster() == GetCluster()))
             {
-                if ( m_commandIDs[c_cmdPlan] == c_cidAttack )
+                if ( m_commandIDs[c_cmdPlan] == c_cidAttack && GetHullType()->GetMaxFixedWeapons() > 0 && m_mountedWeapons[0]) //imago 10/14
                 {
                     //In the same cluster as the target ... we dodge, turn to face the aim point and fire if close enough
                     float   fShootSkill = m_fShootSkill; //imago 10/14 made these adjustable
@@ -2290,7 +2291,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     // angled to their target
                     m_controls.jsValues[c_axisThrottle] = 0.5f + ((pi - da) / (2.0f * pi));
 
-                    const float c_fMaxOffAngle = 0.10f;
+                    const float c_fMaxOffAngle = 0.10f; //TODO skillz
                     float lifespan = m_mountedWeapons[0]->GetLifespan();
 
                     // commenting this to get strafe behavior from the drones BSW 10/28/1999
@@ -2313,7 +2314,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                         }
                     }
 
-					//imago dont _try_ to kill low kb pods 10/14
+					//imago dont _try_ to kill low kb pods & keep boost on 10/14
 					IshipIGC* targetship = GetMyMission()->GetShip(m_commandTargets[c_cmdPlan]->GetObjectID());
 					bool bPod = false;
 					KB kb = 0;
@@ -2321,7 +2322,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 						bPod = targetship->GetBaseHullType()->HasCapability(c_habmLifepod);
 						kb = targetship->GetExperience();
 					}
-					 
+					if (m_bBoost && da <= c_fMaxOffAngle && !bDodge) state |= afterburnerButtonIGC; //TODO skillz
+
                     SetStateBits(~selectedWeaponMaskIGC,
                                  ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f) 
 									&& (!bPod || kb > 3))
@@ -2331,7 +2333,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     return;
                 }
 				//AEM 7.9.07 allow wingman to repair if they are equipped with a nan
-                else if ( m_commandIDs[c_cmdPlan] == c_cidRepair && m_mountedWeapons[0]->GetProjectileType()->GetPower()<0.0 )
+                else if ( m_commandIDs[c_cmdPlan] == c_cidRepair && GetHullType()->GetMaxFixedWeapons() > 0 && m_mountedWeapons[0] && m_mountedWeapons[0]->GetProjectileType()->GetPower()<0.0 )
                 {
                     //In the same cluster as the target ... we dodge, turn to face the aim point and fire if close enough
                     float   fShootSkill = 1.00f;

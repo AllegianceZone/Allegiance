@@ -4,6 +4,15 @@ function DisplayStateTransition(eStatePrevious) {
 	Trace("State changed from " + StateName(eStatePrevious) + " to " + PigStateName + "\n");
 }
 
+function KillTimers() {
+	if ("object" == typeof(Properties("UpdateTargetTimer")))
+		Properties("UpdateTargetTimer").Kill();
+	if ("object" == typeof(Properties("FindTargetTimer")))
+		Properties("FindTargetTimer").Kill();
+	if ("object" == typeof(Properties("RearmTimer")))
+		Properties("RearmTimer").Kill();
+}
+
 function dump(arr,level) {
 	var dumped_text = "";
 	if(!level) level = 0;

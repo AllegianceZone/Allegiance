@@ -40,21 +40,11 @@ class   CstaticIGC
         void            Terminate(void)
         {
 			//Imago reordered for debugging purposes 8/17/09 - fixed 10/14
-            
-                DroneTypeLinkIGC*  dl;
-                while ((dl = m_droneTypes.first()) != NULL)
+                StationTypeLinkIGC*  sl;
+                while ((sl = m_stationTypes.first()) != NULL)
                 {
-					IdroneTypeIGC* dt = dl->data();
-                    if (dt) dt->Terminate();
+                    sl->data()->Terminate();
                 }
- 
-            {
-                StationTypeLinkIGC*  l;
-                while ((l = m_stationTypes.first()) != NULL)
-                {
-                    l->data()->Terminate();
-                }
-            }
             {
                 HullTypeLinkIGC*  l;
                 while ((l = m_hullTypes.first()) != NULL)
@@ -104,7 +94,12 @@ class   CstaticIGC
                     l->data()->Terminate();
                 }
             }
-
+                DroneTypeLinkIGC*  dl;
+                while ((dl = m_droneTypes.first()) != NULL)
+                {
+					IdroneTypeIGC* dt = dl->data();
+                    if (dt) dt->Terminate();
+                }
             assert (m_stationTypes.n() == 0);
             assert (m_hullTypes.n() == 0);
             assert (m_partTypes.n() == 0);

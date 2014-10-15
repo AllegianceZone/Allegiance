@@ -2,6 +2,7 @@
 
 use strict;
 use Win32::OLE;
+use Data::Dumper;
 
 my $pigname = $ARGV[0] || 'botpilot1';
 
@@ -16,7 +17,14 @@ if ($sess) {
 		#############################
 		
 		#$pig->JoinTeam("Iron Coalition");
-		$pig->Ship->Goto("Garrison");
+		#$pig->Ship->Goto("Garrison");
+		#$pig->Ship->Attack("botpilot2");
+		#print Dumper($pig->Ship->Fraction);
+		#print Dumper($pig->Ship->HullType->MaxAmmo);
+		#print Dumper($pig->Ship->Fuel);
+		#$pig->Game->SendChat("goooo!",1296); #voEveryoneReadySound
+		#$pig->Ship->AllStop();
+		#$pig->Ship->Boost(-1);
 		
 		#############################		
 		my $err = Win32::OLE::LastError();
