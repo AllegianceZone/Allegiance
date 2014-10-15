@@ -944,7 +944,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
 			// Parse the message parameters
 			IPigBehavior* pBehavior = reinterpret_cast<IPigBehavior*>(pMsg->wParam);
 			assert(pBehavior);
-			_SVERIFYE(pBehavior->OnMissionStarted());
+			pBehavior->OnMissionStarted(); //imago 10/14
 			pBehavior->Release();
 			break;
 		}
@@ -2510,7 +2510,7 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 	BaseClient::DisconnectLobby();
 
 	// Wait for the acknowledgement event FOR A MAXIMUM OF 15 SECONDS
-	if (!WaitInTimerLoop(m_evtJoiningMission2, 15000))
+	if (!WaitInTimerLoop(m_evtJoiningMission2, 5000)) //imago 10/14
 		return S_FALSE;
 
 	// If the acknowledgement event did not get set, we are on the team lobby

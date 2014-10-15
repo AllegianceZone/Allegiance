@@ -2222,7 +2222,7 @@ bool        LineOfSightExist(const IclusterIGC* pcluster,
     for (ModelLinkIGC* pml = ((ModelListIGC*)(pcluster->GetAsteroids()))->first(); (pml != NULL); pml = pml->next())
     {
         ImodelIGC*  pmodel = pml->data();
-		if (pmodel2 != pmodel && !(pmodel->GetObjectType() == OT_asteroid && ((IasteroidIGC*)pmodel)->IsDead(pmodel1->GetSide()->GetObjectID()))) //#307 don't consider an asteroid if we know it's dead
+		if (pmodel2 != pmodel && !((IasteroidIGC*)pmodel)->IsDead(pmodel1->GetSide()->GetObjectID())) //#307 don't consider an asteroid if we know it's dead //imago 10/14 !
         {
             // P3 is the center of the object that might obscure our view of P2
             const Vector&   P3 = pmodel->GetPosition();
@@ -2277,6 +2277,53 @@ bool        LineOfSightExist(const IclusterIGC* pcluster,
     return true;
 }
 
+//imago 10/14, ripped from above
+bool LineOfSightExist2(const IclusterIGC* pcluster, const ImodelIGC*   pmodel1, const ImodelIGC*   pmodel2)
+{
+    assert (pcluster);
+    assert (pmodel1);
+    assert (pmodel1->GetObjectType() != OT_station);
+    assert (pmodel2);
+    assert (pmodel1->GetCluster() == pcluster);
+    assert (pmodel2->GetCluster() == pcluster);
+    const Vector&   P1 = pmodel1->GetPosition();
+    const Vector&   P2 = pmodel2->GetPosition();
+    Vector V12 = P2 - P1;
+    float fLengthSquaredV12 = V12.LengthSquared (), fOverLengthV12 = 1.0f / sqrtf (fLengthSquaredV12);
+    V12 *= fOverLengthV12;
+    float fVisibleAngle = asinf (pmodel2->GetRadius() * fOverLengthV12);
+
+    for (ModelLinkIGC* pml = ((ModelListIGC*)(pcluster->GetStations()))->first(); (pml != NULL); pml = pml->next())
+    {
+        ImodelIGC*  pmodel = pml->data();
+		if (pmodel2 != pmodel)
+        {
+            const Vector&   P3 = pmodel->GetPosition();
+            Vector          V13 = P3 - P1;
+            float           fLengthSquaredV13 = V13.LengthSquared ();
+            if (fLengthSquaredV13 < fLengthSquaredV12)
+            {
+                float   dot = (V12 * V13);
+                if (dot > 0.0f)
+                {
+                    float   fOverLengthV13 = 1.0f / sqrtf (fLengthSquaredV13);
+                    float   fCosineSeparationAngle = dot * fOverLengthV13;
+                    {
+
+                        float   fRadius3 = pmodel->GetRadius () * 0.5f;
+                        float   fCoveredAngle = asinf (fRadius3 * fOverLengthV13);
+                        float   fSeparationAngle = acosf (fCosineSeparationAngle);
+                        float   fMaximumSeparationAngle = fSeparationAngle + fVisibleAngle;
+                        if (fMaximumSeparationAngle < fCoveredAngle)
+                            return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
 
 IshipIGC*   CreateDrone(ImissionIGC*     pmission,
                         ShipID           shipID,

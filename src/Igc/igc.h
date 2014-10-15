@@ -4524,6 +4524,10 @@ const char* GetModelName(ImodelIGC* pmodel);
 bool        LineOfSightExist(const IclusterIGC* pcluster,
                              const ImodelIGC*   pmodel1,
                              const ImodelIGC*   pmodel2);
+//imago 10/14
+bool        LineOfSightExist2(const IclusterIGC* pcluster,
+                             const ImodelIGC*   pmodel1,
+                             const ImodelIGC*   pmodel2);
 
 //Note ... the following enum defines bits in a mask
 enum TargetType

@@ -480,7 +480,8 @@ class   CmissionIGC : public ImissionIGC
         }
         virtual void                            DeleteStationType(IstationTypeIGC*          st)
         {
-            m_pStatic->DeleteStationType(st);
+			if (m_pStatic && st) 
+				m_pStatic->DeleteStationType(st);
         }
         virtual IstationTypeIGC*                GetStationType(StationTypeID                id) const
         {

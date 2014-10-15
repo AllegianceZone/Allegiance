@@ -7,14 +7,11 @@
 <![CDATA[
 
 // Settings
-var GameName = "Bot Testing";
-var ServerName = "Imago-PC";
-var ServerAddr = "192.168.2.2";
-/*
 var GameName = "Perpetual Brawl DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
-*/
+var KillGoal = 30;
+
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
 var ShootSkill = 0.05;
@@ -27,12 +24,15 @@ var MyGarrison;
 var MyShip;
 var EnemyGarrison;
 var CurrentTarget;
+var IsTargetClose = false;
 var GameController = false;
 var RoundCount = 0;
 var LastKill = (new Date).getTime();
 var LastDeath = (new Date).getTime();
 var LastDamage = (new Date).getTime();
+var AboutToDie = false;
 
+// genesis
 function OnStateNonExistant(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if (PigState_Terminated == eStatePrevious) {
@@ -44,14 +44,14 @@ function OnStateNonExistant(eStatePrevious) {
 	}
 }
 
+// step 2...
 function OnStateMissionList(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	try {
 		JoinMission(GameName);
 		return;
-	}
-	catch (e) {
-		if (e.description != "No missions exist on the server.") {
+	} catch (e) {
+		if (e.description != "No missions exist on the server." && e.description != "Specified game not found or has no positions available") {
 			Trace("JoinMission failed: " + e.description + "\n");
 			Shutdown();
 		}
@@ -65,8 +65,8 @@ function OnStateMissionList(eStatePrevious) {
 	objParams.GameName = GameName;
 	objParams.CoreName = "Pcore006";
 	objParams.MapType = PigMapType_Brawl;
-	objParams.TeamKills = 30;
-	objParams.KillBonus = 2; //c_stdKB 1= low 0= none
+	objParams.TeamKills = KillGoal;
+	objParams.KillBonus = 2; //c_stdKB
 	objParams.Defections = true;
 	objParams.Miners = 0;
 	objParams.Developments = false;
@@ -85,6 +85,7 @@ function OnStateMissionList(eStatePrevious) {
 	RoundCount++;
 }
 
+// step 3...
 function OnStateWaitingForMission(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if (PigState_CreatingMission == eStatePrevious) {
@@ -113,9 +114,10 @@ function StartGameTimer() {
 function ChatStartGameTimer() {
 	Timer.Kill();
 	Trace("killed timer, Attempting to SendChat\n");
-	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...");
+	Game.SendChat("Auto-restarting round #"+RoundCount+" in 30 seconds...",1308); //voRematchSound
 }
 
+// step 4...
 function OnStateTeamList(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	if (PigState_JoiningTeam != eStatePrevious) {
@@ -124,8 +126,12 @@ function OnStateTeamList(eStatePrevious) {
 	}
 }
 
+// step 5...
 function OnStateDocked(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
+	KillTimers();
+	IsTargetClose = false;
+	AboutToDie = false;
 	var objHullTypes = HullTypes;
 	var iHull = SelectBestHull(objHullTypes,ShipSelection,"Fighter");
 	Ship.BuyHull(objHullTypes(iHull));
@@ -135,16 +141,16 @@ function OnStateDocked(eStatePrevious) {
 		Launch();
 	}
 }
-
 function OnMissionStarted() {
 	Trace("OnMissionStarted()! launching into space...\n");
 	SetSkills(ShootSkill,TurnSkill,GotoSkill);
 	Launch();
 }
 
+// deep space!
 function OnStateFlying(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
-
+	KillTimers();
 	var x;
 	var shiplist = Ship.Sector.Ships;
 	var stationlist = Ship.Sector.Stations;
@@ -169,45 +175,149 @@ function OnStateFlying(eStatePrevious) {
 			EnemyGarrison = x;
 		}	    
 	}
-
 	if (CurrentTarget) {
 		Game.SendChat("My initial target is: "+CurrentTarget.Name);
 		Attack(CurrentTarget.Name);
+		CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
 	} else {
 		CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
 	}
-	//TODO Boost
-	//TODO Shoot Missiles
-	//TODO Drop Mines / ECM
+	CreateTimer(3, "RearmTimer()", -1, "RearmTimer");
+	
+	//TODO Shoot missiles
+		//Ship.FireMissile(true);
+			//this function sucks, it was obviously just for testing (just sets statebits)
+			//NYI  FireMissile(true, objShip.Name, 
+		
+	//TODO Boost if target is getting away
+	//TODO Drop mines / ECM
+		//Ship.DropMine(true);
+		//NYI OnIncomingMissile()
+	//TODO Camp red doors };-)
 }
 function FindTargetTimer() {
-	Trace("Attempting to FindNearestEnemy\n");
+	if (Ship.BaseHullType.HasCapability(4)) {
+		//TODO Find a teammate to pick me up!
+		KillTimers();
+		return;
+	} 
 	var objShips = Ship.Sector.Ships;
 	var iShip = FindNearestEnemy(objShips);
 	if (iShip != -1) CurrentTarget = objShips(iShip);
 	if (CurrentTarget) {
 		Game.SendChat("My new initial target is: "+CurrentTarget.Name);
 		Attack(CurrentTarget.Name);
+		Ship.Boost(true);
 		Timer.Kill();
+		CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
 	}	
 }
-//NYI loop to update CurrentTarget
 function UpdateTargetTimer() {
-	//current target check
+	if (Ship.BaseHullType.HasCapability(4)) {
+		//TODO Find a teammate to pick me up!
+		KillTimers();
+		return;
+	}
+	var objShips = Ship.Sector.Ships;
+	var newtarget;
+	var iShip = FindNearestEnemy(objShips);
+	if (iShip != -1) {
+		newtarget = objShips(iShip);
+		if (CurrentTarget && CurrentTarget.BaseHullType.HasCapability(4)) { //c_habmLifepod
+			if (newtarget != CurrentTarget) {
+				CurrentTarget = newtarget;
+				Game.SendChat("My updated target (not a pod) is: "+CurrentTarget.Name);
+				Attack(CurrentTarget.Name);
+				return;
+			}
+		}
+		if (CurrentTarget && !IsTargetValid(objShips,CurrentTarget)) {
+			if (newtarget != CurrentTarget) {
+				CurrentTarget = newtarget;
+				Game.SendChat("My updated target (valid) is: "+CurrentTarget.Name);
+				Attack(CurrentTarget.Name);
+				return;
+			}
+		}
+		if (CurrentTarget && Range2Ship(CurrentTarget) > 2250000) { //1500m ... 562500 = 750m  //TODO skillz
+			if (newtarget != CurrentTarget) {
+				CurrentTarget = newtarget;
+				Game.SendChat("My updated target (distance) is: "+CurrentTarget.Name);
+				Attack(CurrentTarget.Name);	
+				return;
+			}
+			Ship.Boost(true);
+			IsTargetClose = false;
+		} else {
+			Ship.Boost(false);
+			IsTargetClose = true;
+		}
+	} else {
+		CurrentTarget = null;
+		IsTargetClose = false;
+		if (Ship.Fraction < 0.75) {
+			KillTimers();
+			Game.SendChat("No targets, repairing");	
+			Ship.GotoStationID(MyGarrison.ObjectID);								
+			Ship.Boost(true);
+		} else {
+			KillTimers();
+			Game.SendChat("No targets, camping");	
+			Ship.GotoStationID(EnemyGarrison.ObjectID);			
+			Ship.Boost(true);
+			CreateTimer(3, "FindTargetTimer()", -1, "FindTargetTimer");
+		}
+	}
 }
-//NYI loop to dock when needed
 function RearmTimer() {
-	//ammo check
-	//fuel check
-	//damage check
+	if (Ship.BaseHullType.HasCapability(4)) {
+		//TODO Find a teammate to pick me up!
+		KillTimers();	
+		return;
+	}
+	if (!IsTargetClose && Ship.Ammo < Ship.HullType.MaxAmmo * 0.10) {
+		Game.SendChat("Low ammo! heading home");
+		KillTimers();		
+		Ship.GotoStationID(MyGarrison.ObjectID);
+		Ship.Boost(true);	
+		return;
+	}
+	if (!IsTargetClose && Ship.Fraction < 0.15) {
+		AboutToDie = true;
+		Game.SendChat("Critical damage! heading home");
+		KillTimers();			
+		Ship.GotoStationID(MyGarrison.ObjectID);
+		Ship.Boost(true);	
+		return;
+	}
+	if (!IsTargetClose && Ship.Fuel < Ship.HullType.MaxFuel * 0.10) {	
+		Game.SendChat("Bingo fuel! heading home");	
+		KillTimers();
+		Ship.GotoStationID(MyGarrison.ObjectID);
+		Ship.Boost(true);	
+		return;
+	}
+	if (!Ship.Ammo) {
+		Game.SendChat("No ammo! heading home NOW");
+		KillTimers();		
+		Ship.GotoStationID(MyGarrison.ObjectID);		
+		Ship.Boost(true);	
+		return;		
+	}
 }
 
 function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
-	if (!objShip || !Ship || !objModel)
+	if (!objShip)
 		return;
-	if (objShip.ObjectID != Ship.ObjectID)
+	if (!objModel)
+		return;
+	if (objShip != Ship)
 		return;
 	if (objModel.ObjectType != 0) //AGC_Ship
+		return;	
+	if (AboutToDie)
+		return;
+	if (!Ship.Ammo)
 		return;
 
 	if (objModel.Team != Ship.Team) {
@@ -219,18 +329,31 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
 			var objShips = Ship.Sector.Ships;
 			var iShip = FindNearestEnemy(objShips);
 			if (iShip != -1) newtarget = objShips(iShip);
-			if (newtarget && newtarget.ObjectID == objModel.ObjectID && newtarget.ObjectID != CurrentTarget.ObjectID) {
+			if ((!CurrentTarget) || (newtarget && newtarget.ObjectID == objModel.ObjectID && newtarget.ObjectID != CurrentTarget.ObjectID)) {
 				CurrentTarget = newtarget;
 				Game.SendChat("My new pesky target is: "+CurrentTarget.Name);
-				Attack(CurrentTarget.Name);		
+				KillTimers();
+				CreateTimer(1, "UpdateTargetTimer()", -1, "UpdateTargetTimer");
+				CreateTimer(3, "RearmTimer()", -1, "RearmTimer");
 			}
 		}
 	}
 }
 
+//TODO find out why this isnt getting hit all the time!
 function OnShipKilled(objShip, objModel, fAmount, objV1, objV2) {
-	if (!objShip || !Ship || !objModel)
+	if (!objShip) {
+		Trace("OnShipKilled - NO OBJSHIP!!!!!!!!!!!\n");
 		return;
+	}
+	if (!Ship) {
+		Trace("OnShipKilled - NO Ship!!!!!!!!!!!\n");
+		return;
+	}
+	if (!objModel) {
+		Trace("OnShipKilled - NO MODEL!!!!!!!!!!!\n");
+		return;
+	}
 			
 	if (objModel.ObjectID == Ship.ObjectID) {
 		var tnow = (new Date).getTime();
@@ -254,13 +377,31 @@ function OnShipKilled(objShip, objModel, fAmount, objV1, objV2) {
 	}
 }
 
+function OnReceiveChat(strText, objShip) {
+	//Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");	
+
+	//TODO Find a teammate to pick me up!
+	
+		//bot pod -> "I need a pickup!"
+			//set hailed state and wait for a (first) responder
+				//if responder is closer than the current waypoint target (GotoPlan::Execute)
+					//Ship.Pickup(objShip.Name); NYI
+					
+		//bot rescue <- "I got you, hold still!"
+			//determine if i am the closest ship and not engaged /w an enemy
+				//if the pod is closer to me than any friendly station
+					//Ship.Pickup(objShip.Name)... will Ship.Goto(objShip.Name,true) work?
+}
+
+// the end...
 function OnStateLoggingOff(eStatePrevious) {
 	DisplayStateTransition(eStatePrevious);
 	Shutdown();
 }
 
+
 //
-//debugging crap below!
+// nonsense below!
 //
 function OnAlephHit(objAleph) {   
 	Trace("ooh i touched an aleph? wtf is this for\n");
@@ -268,10 +409,6 @@ function OnAlephHit(objAleph) {
 
 function OnSectorChange(objSectorOld, objSectorNew) {   
 	Trace("ooh i changed sectors\n");
-}
-
-function OnReceiveChat(strText, objShip) {   
-	//Trace("OnReceiveChat: "+strText+" from: "+objShip.Name+"\n");
 }
 
 function OnActivate(objDeactivated) {

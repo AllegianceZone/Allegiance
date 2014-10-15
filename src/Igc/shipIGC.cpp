@@ -2300,7 +2300,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     {
                         //We are close and not dodging anything so ...
                         //strafe
-                        state = leftButtonIGC;
+                        state = leftButtonIGC; //todo skillz - add randomness
                         if (da < pi * 0.5f)
                         {
                             if (da > c_fMaxOffAngle)
@@ -2314,7 +2314,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                         }
                     }
 
-					//imago dont _try_ to kill low kb pods & keep boost on 10/14
+					//imago dont _try_ to kill low kb pods & keep boost on/off automagically 10/14
 					IshipIGC* targetship = GetMyMission()->GetShip(m_commandTargets[c_cmdPlan]->GetObjectID());
 					bool bPod = false;
 					KB kb = 0;
@@ -2322,7 +2322,8 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 						bPod = targetship->GetBaseHullType()->HasCapability(c_habmLifepod);
 						kb = targetship->GetExperience();
 					}
-					if (m_bBoost && da <= c_fMaxOffAngle && !bDodge) state |= afterburnerButtonIGC; //TODO skillz
+					bool bLOS = LineOfSightExist2(GetCluster(), this, m_commandTargets[c_cmdPlan]);
+					if (m_bBoost && da <= c_fMaxOffAngle && !bDodge && bLOS) state |= afterburnerButtonIGC; //TODO skillz
 
                     SetStateBits(~selectedWeaponMaskIGC,
                                  ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f) 

@@ -4,6 +4,17 @@ function DisplayStateTransition(eStatePrevious) {
 	Trace("State changed from " + StateName(eStatePrevious) + " to " + PigStateName + "\n");
 }
 
+function NeedPickup() {
+	var nearestFriend;
+	var objShips = Ship.Sector.Ships;
+	var iShip = FindNearestFriend(objShips);
+	if (iShip != -1) nearestFriend = objShips(iShip);
+	if (nearestFriend && Range2Ship(nearestFriend) < Range2Ship(MyGarrison)) {
+		Ship.Team.SendChat("I need a pickup!",1219); //voNeedPickupSound
+		HailedForRescue = true;
+	}
+}
+
 function KillTimers() {
 	if ("object" == typeof(Properties("UpdateTargetTimer")))
 		Properties("UpdateTargetTimer").Kill();
@@ -72,6 +83,22 @@ function FindNearestEnemy(shipCollection) {
 	for (var i=0; !e.atEnd(); e.moveNext(), i++) {
 		var ship = e.item();
 		if (ship && ship.Team != Ship.Team && !ship.BaseHullType.HasCapability(4)) { //c_habmLifepod
+			var range = Range2Ship(ship);
+			if (range < Dist) {
+				Dist = range;
+				Nearest = i;
+			}
+		}
+	}
+	return Nearest;
+}
+
+function FindNearestFriend(shipCollection) {
+	var Nearest = -1, Dist = Number.MAX_VALUE;
+	var e = new Enumerator (shipCollection);
+	for (var i=0; !e.atEnd(); e.moveNext(), i++) {
+		var ship = e.item();
+		if (ship && ship.Team == Ship.Team && !ship.BaseHullType.HasCapability(4)) { //c_habmLifepod
 			var range = Range2Ship(ship);
 			if (range < Dist) {
 				Dist = range;

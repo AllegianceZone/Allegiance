@@ -337,6 +337,8 @@ HRESULT CPigEngine::EnsureScriptsAreLoaded()
   ProcessScriptDirChanges();
 
   // Create a directory change notification object
+  //imago 10/14
+  /*
   const DWORD dwFilter = FILE_NOTIFY_CHANGE_FILE_NAME |
     FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_LAST_WRITE;
   m_hDirChange = FindFirstChangeNotification(pszScriptDir, false, dwFilter);
@@ -349,6 +351,7 @@ HRESULT CPigEngine::EnsureScriptsAreLoaded()
   if (!m_pth)
     return E_FAIL;
   m_pth->ResumeThread();
+  */
 
   // TODO: Create the thread that monitors the CLSID registry key
 
