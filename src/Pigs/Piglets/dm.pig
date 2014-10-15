@@ -7,10 +7,14 @@
 <![CDATA[
 
 // Settings
+var GameName = "Bot Testing";
+var ServerName = "Imago-PC";
+var ServerAddr = "192.168.2.2";
+/*
 var GameName = "Perpetual Brawl DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
-
+*/
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
 var ShootSkill = 0.05;
@@ -61,7 +65,7 @@ function OnStateMissionList(eStatePrevious) {
 	objParams.GameName = GameName;
 	objParams.CoreName = "Pcore006";
 	objParams.MapType = PigMapType_Brawl;
-	objParams.TeamKills = KillGoal;
+	objParams.TeamKills = 30;
 	objParams.KillBonus = 2; //c_stdKB 1= low 0= none
 	objParams.Defections = true;
 	objParams.Miners = 0;

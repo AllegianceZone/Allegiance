@@ -50,7 +50,7 @@ function OnStateMissionList(eStatePrevious) {
 		JoinMission(GameName);
 		return;
 	} catch (e) {
-		if (e.description != "No missions exist on the server." || e.description != "Specified game not found or has no positions available") {
+		if (e.description != "No missions exist on the server." && e.description != "Specified game not found or has no positions available") {
 			Trace("JoinMission failed: " + e.description + "\n");
 			Shutdown();
 		}
@@ -65,7 +65,7 @@ function OnStateMissionList(eStatePrevious) {
 	objParams.CoreName = "Pcore006";
 	objParams.MapType = PigMapType_Brawl;
 	objParams.TeamKills = KillGoal;
-	objParams.KillBonus = 2; //c_stdKB 1= low 0= none
+	objParams.KillBonus = 2; //c_stdKB
 	objParams.Defections = true;
 	objParams.Miners = 0;
 	objParams.Developments = false;
@@ -133,11 +133,12 @@ function OnStateDocked(eStatePrevious) {
 	if ("object" == typeof(Properties("FindTargetTimer")))
 		Properties("FindTargetTimer").Kill();
 	if ("object" == typeof(Properties("RearmTimer")))
-		Properties("RearmTimer").Kill();	
+		Properties("RearmTimer").Kill();
+	IsTargetClose = false;
 	var objHullTypes = HullTypes;
 	var iHull = SelectBestHull(objHullTypes,ShipSelection,"Fighter");
 	Ship.BuyHull(objHullTypes(iHull));
-	if (eStatePrevious != PigState_WaitingForMission || Game.GameStage == AGCGameStage_Started) {
+	if (eStatePrevious != PigState_WaitingForMission || Game.GameStage == 2) { //AGCGameStage_Started
 		Trace("Launching into space...\n");
 		SetSkills(ShootSkill,TurnSkill,GotoSkill);
 		Launch();
@@ -194,6 +195,11 @@ function OnStateFlying(eStatePrevious) {
 	//TODO Camp red doors };-)
 }
 function FindTargetTimer() {
+	if (Ship.BaseHullType.HasCapability(4)) {
+		//TODO Find a teammate to pick me up!
+		Timer.Kill();
+		return;
+	} 
 	var objShips = Ship.Sector.Ships;
 	var iShip = FindNearestEnemy(objShips);
 	if (iShip != -1) CurrentTarget = objShips(iShip);
@@ -205,6 +211,10 @@ function FindTargetTimer() {
 	}	
 }
 function UpdateTargetTimer() {
+	if (Ship.BaseHullType.HasCapability(4)) {
+		Timer.Kill();
+		return;
+	}
 	var objShips = Ship.Sector.Ships;
 	var newtarget;
 	var iShip = FindNearestEnemy(objShips);
@@ -238,6 +248,7 @@ function UpdateTargetTimer() {
 		}
 	} else {
 		CurrentTarget = null;
+		IsTargetClose = false;
 		Game.SendChat("No targets, camping a red door ("+EnemyGarrison.ObjectID+")");
 		Ship.GotoStationID(EnemyGarrison.ObjectID);
 		Timer.Kill();
@@ -245,20 +256,27 @@ function UpdateTargetTimer() {
 	}
 }
 function RearmTimer() {
+	if (Ship.BaseHullType.HasCapability(4)) {
+		Timer.Kill();
+		return;
+	}
 	if (Ship.Ammo < 5) {
 		Game.SendChat("Low ammo! heading home ("+MyGarrison.ObjectID+")");
 		Ship.GotoStationID(MyGarrison.ObjectID);
 		Timer.Kill();
+		return;
 	}
-	if (Ship.Fraction < 0.1) {
+	if (Damage.Fraction < 0.1) {
 		Game.SendChat("Critical damage! heading home ("+MyGarrison.ObjectID+")");
 		Ship.GotoStationID(MyGarrison.ObjectID);
 		Timer.Kill();
+		return;
 	}
 	if (Ship.Fuel < 0.01) {
 		Game.SendChat("Bingo fuel! heading home ("+MyGarrison.ObjectID+")");
 		Ship.GotoStationID(MyGarrison.ObjectID);
 		Timer.Kill();
+		return;
 	}
 }
 
@@ -267,7 +285,7 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
 		return;
 	if (objShip.ObjectID != Ship.ObjectID)
 		return;
-	if (objModel.ObjectType != AGC_Ship)
+	if (objModel.ObjectType != 0) //AGC_Ship
 		return;
 
 	if (objModel.Team != Ship.Team) {
@@ -288,7 +306,7 @@ function OnShipDamaged(objShip, objModel, fAmount, fLeakage, objV1, objV2) {
 	}
 }
 
-//TODO: find out why this isnt getting hit all the time!
+//TODO find out why this isnt getting hit all the time!
 function OnShipKilled(objShip, objModel, fAmount, objV1, objV2) {
 	if (!objShip) {
 		Trace("OnShipKilled - NO OBJSHIP!!!!!!!!!!!\n");

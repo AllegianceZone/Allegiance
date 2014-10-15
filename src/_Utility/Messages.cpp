@@ -550,9 +550,10 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
 		//imago 10/14
 		DWORD rid = -1;
 		try {
-			rid = precip->GetID();
+			if (precip)
+				rid = precip->GetID();
 		} catch (...) {
-			debugf("Sorry Charlie, something really bad happened!");
+			debugf("Sorry Charlie. Something \"weird\" happened.");
 			hr = DPNERR_EXCEPTION;
 		}
 		if (rid != -1) 

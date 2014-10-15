@@ -14,7 +14,7 @@ function AutoStartGame_Tick() {
 	if (it.item().Ships.Count < MissionParams.MinTeamPlayers)
 	  return;
 	Timer.Kill();
-	Trace("AutoStartGameDelay....\n");
+	Game.SendChat("Good luck and have fun.");
 	CreateTimer(3.0, "AutoStartGameDelay()", -1, "AutoStartGameDelay");
 }
 
