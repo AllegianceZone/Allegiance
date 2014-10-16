@@ -182,7 +182,9 @@
     <None Include="..\src\Pigs\Piglets\Default.pig" />
     <None Include="..\src\Pigs\Piglets\demo.pig" />
     <None Include="..\src\Pigs\Piglets\dev.pig" />
-    <None Include="..\src\Pigs\Piglets\dm.pig" />
+    <None Include="..\src\Pigs\Piglets\dm.pig">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\src\Pigs\Piglets\docker.pig" />
     <None Include="..\src\Pigs\Piglets\FaceOutpost.pig" />
     <None Include="..\src\Pigs\Piglets\framerate-dummy.pig" />

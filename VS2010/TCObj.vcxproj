@@ -101,6 +101,8 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'">..\objs10\$(Configuration)\Test\TCObj\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs10\$(Configuration)\Test\TCObj\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|x64'">..\objs10\$(Configuration)\Test\TCObj\</IntDir>
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Link</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">Link</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <ClCompile>

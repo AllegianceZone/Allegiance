@@ -135,6 +135,21 @@
     <None Include="..\src\AGC\XMLXForm.js">
       <Filter>Events</Filter>
     </None>
+    <None Include="..\src\AGC\AGCEvents.xml">
+      <Filter>Events</Filter>
+    </None>
+    <None Include="..\src\AGC\AGCEventsCPP.xsl">
+      <Filter>Events</Filter>
+    </None>
+    <None Include="..\src\AGC\AGCEventsMC.xsl">
+      <Filter>Events</Filter>
+    </None>
+    <None Include="..\src\AGC\AGCEventsRC2.xsl">
+      <Filter>Events</Filter>
+    </None>
+    <None Include="..\src\AGC\AGCEventsRCH.xsl">
+      <Filter>Events</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\AGC\AdminSessionHelper.cpp" />
@@ -326,22 +341,5 @@
     <ClInclude Include="..\src\AGC\TCUtility.h">
       <Filter>TCLibs</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\src\AGC\AGCEvents.xml">
-      <Filter>Events</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\AGC\AGCEventsCPP.xsl">
-      <Filter>Events</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\AGC\AGCEventsMC.xsl">
-      <Filter>Events</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\AGC\AGCEventsRC2.xsl">
-      <Filter>Events</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\AGC\AGCEventsRCH.xsl">
-      <Filter>Events</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

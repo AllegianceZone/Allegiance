@@ -221,6 +221,12 @@
     <CustomBuildStep>
       <Outputs>AGCreg</Outputs>
     </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>..\src\AGC\Pre-build.bat $(OutDir)</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Transforming XML</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">
     <Midl>
@@ -384,6 +390,10 @@
     <CustomBuildStep>
       <Outputs>AGCreg</Outputs>
     </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>..\src\AGC\Pre-build.bat $(OutDir)</Command>
+      <Message>Transforming XML</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">
     <Midl>
@@ -694,7 +704,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="..\src\AGC\AGCEvents.xml">
+    <None Include="..\src\AGC\AGCEvents.xml">
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
       </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">
@@ -755,10 +765,10 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">%(Outputs)</Outputs>
-    </CustomBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\src\AGC\AGCEventsCPP.xsl">
+    <None Include="..\src\AGC\AGCEventsCPP.xsl">
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Transforming AGCEvents.xml through AGCEventsCPP.xsl</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">Transforming AGCEvents.xml through AGCEventsCPP.xsl</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">cscript /e:jscript /NoLogo ..\src\AGC\XMLXForm.js ..\src\AGC\AGCEvents.xml ..\src\AGC\AGCEventsCPP.xsl $(OutDir)AGCEventsCPP.h
@@ -809,10 +819,10 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">$(OutDir)AGCEventsCPP.h;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">$(OutDir)AGCEventsCPP.h;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">$(OutDir)AGCEventsCPP.h;%(Outputs)</Outputs>
-    </CustomBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\src\AGC\AGCEventsMC.xsl">
+    <None Include="..\src\AGC\AGCEventsMC.xsl">
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Transforming AGCEvents.xml through AGCEventsMC.xsl</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">Transforming AGCEvents.xml through AGCEventsMC.xsl</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">cscript /e:jscript /NoLogo ..\src\AGC\XMLXForm.js ..\src\AGC\AGCEvents.xml ..\src\AGC\AGCEventsMC.xsl $(OutDir)AGCEventsMC.mc
@@ -873,10 +883,10 @@ mc.exe -r $(OutDir) -h $(OutDir) $(OutDir)AGCEventsMC.mc
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">$(OutDir)AGCEventsMC.mc;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">$(OutDir)AGCEventsMC.mc;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">$(OutDir)AGCEventsMC.mc;%(Outputs)</Outputs>
-    </CustomBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\src\AGC\AGCEventsRC2.xsl">
+    <None Include="..\src\AGC\AGCEventsRC2.xsl">
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Transforming AGCEvents.xml through AGCEventsRC2.xsl</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">Transforming AGCEvents.xml through AGCEventsRC2.xsl</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">cscript /e:jscript /NoLogo ..\src\AGC\XMLXForm.js ..\src\AGC\AGCEvents.xml ..\src\AGC\AGCEventsRC2.xsl $(OutDir)AGCEventsRC2.rc2
@@ -927,10 +937,10 @@ mc.exe -r $(OutDir) -h $(OutDir) $(OutDir)AGCEventsMC.mc
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">$(OutDir)AGCEventsRC2.rc2;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">$(OutDir)AGCEventsRC2.rc2;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">$(OutDir)AGCEventsRC2.rc2;%(Outputs)</Outputs>
-    </CustomBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\src\AGC\AGCEventsRCH.xsl">
+    <None Include="..\src\AGC\AGCEventsRCH.xsl">
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Transforming AGCEvents.xml through AGCEventsRCH.xsl</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">Transforming AGCEvents.xml through AGCEventsRCH.xsl</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">cscript /e:jscript /NoLogo ..\src\AGC\XMLXForm.js ..\src\AGC\AGCEvents.xml ..\src\AGC\AGCEventsRCH.xsl $(OutDir)AGCEventsRCH.h
@@ -981,7 +991,7 @@ mc.exe -r $(OutDir) -h $(OutDir) $(OutDir)AGCEventsMC.mc
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">$(OutDir)AGCEventsRCH.h;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">$(OutDir)AGCEventsRCH.h;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">$(OutDir)AGCEventsRCH.h;%(Outputs)</Outputs>
-    </CustomBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\AGC\AdminSessionHelper.cpp" />
