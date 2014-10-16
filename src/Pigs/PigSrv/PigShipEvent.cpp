@@ -85,16 +85,18 @@ ImodelIGC* CPigShipEvent::FindTargetName(CPig* pPig, BSTR bstrTarget, bool bFrie
 			for (ModelLinkIGC* it = pModels->first(); it; it = it->next())
 			{
 				ImodelIGC* pModel = it->data();
-				if (0 == _stricmp(GetModelName(pModel), pszTarget))
-				{
-					if (bFriendsOnly && pModel->GetSide() != pPig->BaseClient::GetSide()) {
-						//Imago skip! 10/14
-					} else {
-						float fDistance = (pModel->GetPosition() - vPig).LengthSquared();
-						if (!pTarget || fDistance < fNearest)
-						{
-							fNearest = fDistance;
-							pTarget = pModel;
+				if (pModel) { //imago 10/14 (model can disappear here)
+					if (0 == _stricmp(GetModelName(pModel), pszTarget))
+					{
+						if (bFriendsOnly && pModel->GetSide() != pPig->BaseClient::GetSide()) {
+							//Imago skip! 10/14
+						} else {
+							float fDistance = (pModel->GetPosition() - vPig).LengthSquared();
+							if (!pTarget || fDistance < fNearest)
+							{
+								fNearest = fDistance;
+								pTarget = pModel;
+							}
 						}
 					}
 				}
