@@ -15,7 +15,7 @@ function AutoStartGame_Tick() {
 	  return;
 	Timer.Kill();
 	Game.SendChat("Good luck and have fun.",1296); //voEveryoneReadySound
-	CreateTimer(3.0, "AutoStartGameDelay()", -1, "AutoStartGameDelay");
+	CreateTimer(10.0, "AutoStartGameDelay()", -1, "AutoStartGameDelay");
 }
 
 function AutoStartGameDelay() {
