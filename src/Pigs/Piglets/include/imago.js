@@ -49,14 +49,14 @@ function OnStateMissionList(eStatePrevious) {
 	objParams.CoreName = "Pcore006";
 	objParams.MapType = PigMapType_Brawl;
 	objParams.TeamKills = KillGoal;
-	objParams.KillBonus = 2; //c_stdKB
+	objParams.KillBonus = 0; // 0 = no kb    2 = c_stdKB
 	objParams.Defections = true;
 	objParams.Miners = 0;
 	objParams.Developments = false;
 	objParams.Conquest = 0;
 	objParams.Flags = 0;
 	objParams.Artifacts = 0;
-	objParams.Pods = true;
+	objParams.Pods = false;
 	objParams.Experimental = true;
 	try { CreateMission(ServerName,ServerAddr,objParams); }
 	catch(e) {
