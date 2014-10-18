@@ -13,7 +13,7 @@
 
 const DWORD CFLClient::c_dwID = 19680815;
 
-const wchar_t * szNotMemberMessage = L"Your request could not be completed because you are not currently signed up as an Allegiance Zone Member.";
+const char * szNotMemberMessage = "Your request could not be completed because you are not currently signed up as an Allegiance Zone Member.";
 
 namespace 
 {
@@ -29,23 +29,23 @@ namespace
 
 
   // remove trailing whitespaces from a string
-  void RemoveTrailingSpaces(wchar_t* sz)
+  void RemoveTrailingSpaces(char* sz)
   {
-    for (int nIndex = wcslen(sz); nIndex > 0 && sz[nIndex - 1] == ' '; --nIndex)
+    for (int nIndex = strlen(sz); nIndex > 0 && sz[nIndex - 1] == ' '; --nIndex)
     {
       sz[nIndex - 1] = '\0';    
     }
   };
 
   // map character name to character ID (and fix capitialization of character name)
-  int FindCharacterIDAndCapitalization(wchar_t* szName)
+  int FindCharacterIDAndCapitalization(char* szName)
   {
-	  Strncpy((wchar_t*)CharIDAndCapitalization_Name, szName, c_cbName - 1);
+    strncpy((char*)CharIDAndCapitalization_Name, szName, c_cbName - 1);
     CharID_CharacterName[c_cbName - 1] = '\0';
     SQL_GO(CharIDAndCapitalization);
     if (SQL_SUCCEEDED(SQL_GETROW(CharIDAndCapitalization)))
     {
-		Strcpy(szName, (wchar_t*)CharIDAndCapitalization_ProperName);
+      strcpy(szName, (char*)CharIDAndCapitalization_ProperName);
       return CharIDAndCapitalization_CharacterId;
     }
     else
@@ -55,26 +55,26 @@ namespace
   }
 
   // map character ID to character name
-  const wchar_t* FindCharacterName(int id)
+  const char* FindCharacterName(int id)
   {
     CharInfoGeneral_CharacterID = id;
     SQL_GO(CharInfoGeneral);
     if (SQL_SUCCEEDED(SQL_GETROW(CharInfoGeneral)))
     {
-		return (const wchar_t*)CharInfoGeneral_Name;
+      return (const char*)CharInfoGeneral_Name;
     }
     else
     {
-      return L"";
+      return "";
     }
   }
 
   // is there a player in the results list with the given name?
-  bool HasPlayerNamed(const wchar_t* szName, LeaderBoardEntry* vResult, int cResults)
+  bool HasPlayerNamed(const char* szName, LeaderBoardEntry* vResult, int cResults)
   {
     for (int i = 0; i < cResults; i++)
     {
-      if (_wcsnicmp(szName, vResult[i].CharacterName, c_cbName) == 0)
+      if (_strnicmp(szName, vResult[i].CharacterName, c_cbName) == 0)
         return true;
     }
     return false;
@@ -97,17 +97,17 @@ namespace
 
   // create an entry for the given character - you can pass in either name or id, but
   // the other one must be "" or -1 respectively.  
-  void ForgeResultEntry(LeaderBoardEntry& entry, const wchar_t* szName, int id, int nPosition)
+  void ForgeResultEntry(LeaderBoardEntry& entry, const char* szName, int id, int nPosition)
   {
     if (szName[0] != '\0')
     {
       assert(id = -1);
-      Strncpy(entry.CharacterName, szName, c_cbName);
+      strncpy(entry.CharacterName, szName, c_cbName);
       id = FindCharacterIDAndCapitalization(entry.CharacterName);
     }
     else
     {
-      Strncpy(entry.CharacterName, FindCharacterName(id), c_cbName);
+      strncpy(entry.CharacterName, FindCharacterName(id), c_cbName);
     }
     RemoveTrailingSpaces(entry.CharacterName);
     entry.idCharacter = id;
@@ -192,7 +192,7 @@ namespace
   }
   */
 
-  int GetResultsByName(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByName(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Name in this civ
@@ -205,7 +205,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopName_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopName_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopName_CharacterID;
       topPlayer.nPosition = 1;
@@ -226,13 +226,13 @@ namespace
     // get the players near the character in question
     GetNearName_CharacterIDIn = characterId;
     GetNearName_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearName_CharacterNameIn, szName);
+    strcpy((char*)GetNearName_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearName);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearName)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearName_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearName_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearName_CharacterID;
       vResults[cResults].nPosition = GetNearName_FirstOrdinal + cResults;
@@ -256,7 +256,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByRank(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByRank(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Rank in this civ
@@ -269,7 +269,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopRank_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopRank_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopRank_CharacterID;
       topPlayer.nPosition = 1;
@@ -290,13 +290,13 @@ namespace
     // get the players near the character in question
     GetNearRank_CharacterIDIn = characterId;
     GetNearRank_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearRank_CharacterNameIn, szName);
+    strcpy((char*)GetNearRank_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearRank);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearRank)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearRank_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearRank_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearRank_CharacterID;
       vResults[cResults].nPosition = GetNearRank_FirstOrdinal + cResults;
@@ -320,7 +320,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByRating(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByRating(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Rating in this civ
@@ -333,7 +333,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopRating_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopRating_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopRating_CharacterID;
       topPlayer.nPosition = 1;
@@ -354,13 +354,13 @@ namespace
     // get the players near the character in question
     GetNearRating_CharacterIDIn = characterId;
     GetNearRating_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearRating_CharacterNameIn, szName);
+    strcpy((char*)GetNearRating_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearRating);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearRating)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearRating_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearRating_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearRating_CharacterID;
       vResults[cResults].nPosition = GetNearRating_FirstOrdinal + cResults;
@@ -384,7 +384,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByScore(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByScore(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Score in this civ
@@ -397,7 +397,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopScore_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopScore_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopScore_CharacterID;
       topPlayer.nPosition = 1;
@@ -418,13 +418,13 @@ namespace
     // get the players near the character in question
     GetNearScore_CharacterIDIn = characterId;
     GetNearScore_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearScore_CharacterNameIn, szName);
+    strcpy((char*)GetNearScore_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearScore);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearScore)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearScore_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearScore_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearScore_CharacterID;
       vResults[cResults].nPosition = GetNearScore_FirstOrdinal + cResults;
@@ -448,7 +448,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByTimePlayed(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByTimePlayed(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by TimePlayed in this civ
@@ -461,7 +461,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopTimePlayed_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopTimePlayed_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopTimePlayed_CharacterID;
       topPlayer.nPosition = 1;
@@ -482,13 +482,13 @@ namespace
     // get the players near the character in question
     GetNearTimePlayed_CharacterIDIn = characterId;
     GetNearTimePlayed_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearTimePlayed_CharacterNameIn, szName);
+    strcpy((char*)GetNearTimePlayed_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearTimePlayed);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearTimePlayed)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearTimePlayed_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearTimePlayed_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearTimePlayed_CharacterID;
       vResults[cResults].nPosition = GetNearTimePlayed_FirstOrdinal + cResults;
@@ -512,7 +512,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByBaseKills(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByBaseKills(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by BaseKills in this civ
@@ -525,7 +525,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopBaseKills_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopBaseKills_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopBaseKills_CharacterID;
       topPlayer.nPosition = 1;
@@ -546,13 +546,13 @@ namespace
     // get the players near the character in question
     GetNearBaseKills_CharacterIDIn = characterId;
     GetNearBaseKills_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearBaseKills_CharacterNameIn, szName);
+    strcpy((char*)GetNearBaseKills_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearBaseKills);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearBaseKills)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearBaseKills_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearBaseKills_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearBaseKills_CharacterID;
       vResults[cResults].nPosition = GetNearBaseKills_FirstOrdinal + cResults;
@@ -576,7 +576,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByBaseCaptures(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByBaseCaptures(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by BaseCaptures in this civ
@@ -589,7 +589,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopBaseCaptures_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopBaseCaptures_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopBaseCaptures_CharacterID;
       topPlayer.nPosition = 1;
@@ -610,13 +610,13 @@ namespace
     // get the players near the character in question
     GetNearBaseCaptures_CharacterIDIn = characterId;
     GetNearBaseCaptures_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearBaseCaptures_CharacterNameIn, szName);
+    strcpy((char*)GetNearBaseCaptures_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearBaseCaptures);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearBaseCaptures)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearBaseCaptures_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearBaseCaptures_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearBaseCaptures_CharacterID;
       vResults[cResults].nPosition = GetNearBaseCaptures_FirstOrdinal + cResults;
@@ -640,7 +640,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByKills(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByKills(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Kills in this civ
@@ -653,7 +653,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopKills_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopKills_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopKills_CharacterID;
       topPlayer.nPosition = 1;
@@ -674,13 +674,13 @@ namespace
     // get the players near the character in question
     GetNearKills_CharacterIDIn = characterId;
     GetNearKills_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearKills_CharacterNameIn, szName);
+    strcpy((char*)GetNearKills_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearKills);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearKills)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearKills_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearKills_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearKills_CharacterID;
       vResults[cResults].nPosition = GetNearKills_FirstOrdinal + cResults;
@@ -704,7 +704,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByDeaths(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByDeaths(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Deaths in this civ
@@ -717,7 +717,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopDeaths_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopDeaths_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopDeaths_CharacterID;
       topPlayer.nPosition = 1;
@@ -738,13 +738,13 @@ namespace
     // get the players near the character in question
     GetNearDeaths_CharacterIDIn = characterId;
     GetNearDeaths_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearDeaths_CharacterNameIn, szName);
+    strcpy((char*)GetNearDeaths_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearDeaths);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearDeaths)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearDeaths_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearDeaths_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearDeaths_CharacterID;
       vResults[cResults].nPosition = GetNearDeaths_FirstOrdinal + cResults;
@@ -768,7 +768,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByGamesPlayed(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByGamesPlayed(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by GamesPlayed in this civ
@@ -781,7 +781,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopGamesPlayed_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopGamesPlayed_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopGamesPlayed_CharacterID;
       topPlayer.nPosition = 1;
@@ -802,13 +802,13 @@ namespace
     // get the players near the character in question
     GetNearGamesPlayed_CharacterIDIn = characterId;
     GetNearGamesPlayed_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearGamesPlayed_CharacterNameIn, szName);
+    strcpy((char*)GetNearGamesPlayed_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearGamesPlayed);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearGamesPlayed)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearGamesPlayed_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearGamesPlayed_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearGamesPlayed_CharacterID;
       vResults[cResults].nPosition = GetNearGamesPlayed_FirstOrdinal + cResults;
@@ -832,7 +832,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByWins(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByWins(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Wins in this civ
@@ -845,7 +845,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopWins_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopWins_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopWins_CharacterID;
       topPlayer.nPosition = 1;
@@ -866,13 +866,13 @@ namespace
     // get the players near the character in question
     GetNearWins_CharacterIDIn = characterId;
     GetNearWins_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearWins_CharacterNameIn, szName);
+    strcpy((char*)GetNearWins_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearWins);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearWins)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearWins_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearWins_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearWins_CharacterID;
       vResults[cResults].nPosition = GetNearWins_FirstOrdinal + cResults;
@@ -896,7 +896,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByLosses(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByLosses(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by Losses in this civ
@@ -909,7 +909,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopLosses_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopLosses_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopLosses_CharacterID;
       topPlayer.nPosition = 1;
@@ -930,13 +930,13 @@ namespace
     // get the players near the character in question
     GetNearLosses_CharacterIDIn = characterId;
     GetNearLosses_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearLosses_CharacterNameIn, szName);
+    strcpy((char*)GetNearLosses_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearLosses);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearLosses)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearLosses_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearLosses_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearLosses_CharacterID;
       vResults[cResults].nPosition = GetNearLosses_FirstOrdinal + cResults;
@@ -960,7 +960,7 @@ namespace
     return cResults;
   }
 
-  int GetResultsByCommanderWins(const wchar_t* szName, int characterId, CivID civID,
+  int GetResultsByCommanderWins(const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     // get the top player by CommanderWins in this civ
@@ -973,7 +973,7 @@ namespace
     }
     else
     {
-		Strcpy(topPlayer.CharacterName, (wchar_t*)GetTopCommanderWins_CharacterName);
+      strcpy(topPlayer.CharacterName, (char*)GetTopCommanderWins_CharacterName);
       RemoveTrailingSpaces(topPlayer.CharacterName);
       topPlayer.idCharacter = GetTopCommanderWins_CharacterID;
       topPlayer.nPosition = 1;
@@ -994,13 +994,13 @@ namespace
     // get the players near the character in question
     GetNearCommanderWins_CharacterIDIn = characterId;
     GetNearCommanderWins_CivIDIn = civID;
-	Strcpy((wchar_t*)GetNearCommanderWins_CharacterNameIn, szName);
+    strcpy((char*)GetNearCommanderWins_CharacterNameIn, szName);
 
     int cResults = 0;
     SQL_GO(GetNearCommanderWins);
     while (SQL_SUCCEEDED(SQL_GETROW(GetNearCommanderWins)) && cResults < nMaxResults)
     {
-		Strcpy(vResults[cResults].CharacterName, (wchar_t*)GetNearCommanderWins_CharacterName);
+      strcpy(vResults[cResults].CharacterName, (char*)GetNearCommanderWins_CharacterName);
       RemoveTrailingSpaces(vResults[cResults].CharacterName);
       vResults[cResults].idCharacter = GetNearCommanderWins_CharacterID;
       vResults[cResults].nPosition = GetNearCommanderWins_FirstOrdinal + cResults;
@@ -1024,7 +1024,7 @@ namespace
     return cResults;
   }
 
-  int GetResults(LeaderBoardSort sort, const wchar_t* szName, int characterId, CivID civID,
+  int GetResults(LeaderBoardSort sort, const char* szName, int characterId, CivID civID, 
       LeaderBoardEntry& topPlayer, LeaderBoardEntry* vResults, int nMaxResults)
   {
     switch (sort)
@@ -1095,7 +1095,7 @@ namespace
           vRankInfo[i].civ = GetRanks_CivID;
           vRankInfo[i].rank = GetRanks_Rank;
           vRankInfo[i].requiredRanking = GetRanks_Requirement;
-		  Strcpy(vRankInfo[i].RankName, (wchar_t*)GetRanks_Name);
+          strcpy(vRankInfo[i].RankName, (char*)GetRanks_Name);
         }
       }
 
@@ -1201,16 +1201,16 @@ void SendSquadPageDudeX(FedMessaging * pthis, CFMConnection & cnxnFrom, int nCha
 //    szName: partial name to search for
 //
 //////////////////////////////////////////////////////////////////////////////////////////
-void SendSquadPage_FromFind(FedMessaging * pthis, CFMConnection & cnxnFrom, wchar_t * szName)
+void SendSquadPage_FromFind(FedMessaging * pthis, CFMConnection & cnxnFrom, char * szName)
 {
     if (!szName)
       return;
 
-    if (wcslen(szName) > c_cbNameDB) // keep hackers from crashing server
+    if (strlen(szName) > c_cbNameDB) // keep hackers from crashing server
       return;
 
     // setup query
-	lstrcpy((wchar_t*)SquadGetNearFromFind_INPUT_Name, szName);
+    lstrcpy((char*)SquadGetNearFromFind_INPUT_Name, szName);
 
     int i = 0;
 
@@ -1218,7 +1218,7 @@ void SendSquadPage_FromFind(FedMessaging * pthis, CFMConnection & cnxnFrom, wcha
     while(SQL_SUCCEEDED(SQL_GETROW(SquadGetNearFromFind)))
     {
         {
-			RemoveTrailingSpaces((wchar_t*)SquadGetNearFromFind_Name);
+            RemoveTrailingSpaces((char*)SquadGetNearFromFind_Name);
 
             BEGIN_PFM_CREATE(*pthis, pfmInfo, S, SQUAD_INFO)
                     FM_VAR_PARM(SquadGetNearFromFind_Name, CB_ZTS)
@@ -1245,7 +1245,7 @@ void SendSquadPage_FromFind(FedMessaging * pthis, CFMConnection & cnxnFrom, wcha
 //////////////////////////////////////////////////////////////////////////////////////////
 void SendSquadDetails(FedMessaging * pthis, CFMConnection & cnxnFrom, int nSquadID)
 {
-	wchar_t szDate[9];
+  char szDate[9];
   SquadDetails_INPUT_SquadID = nSquadID;
   SquadDetailsPlayers_INPUT_SquadID = nSquadID;
   SquadDetails_CivID = -1;
@@ -1254,7 +1254,7 @@ void SendSquadDetails(FedMessaging * pthis, CFMConnection & cnxnFrom, int nSquad
   if(SQL_SUCCEEDED(SQL_GETROW(SquadDetails)))
   {
     {
-        wsprintf(szDate, L"%2d/%2d/%02d", SquadDetails_InceptionDate.month, 
+        wsprintf(szDate, "%2d/%2d/%02d", SquadDetails_InceptionDate.month, 
                                          SquadDetails_InceptionDate.day, 
                                          SquadDetails_InceptionDate.year%100);
         //int SquadDetails_Rank = 0; // temp
@@ -1276,7 +1276,7 @@ void SendSquadDetails(FedMessaging * pthis, CFMConnection & cnxnFrom, int nSquad
     while(SQL_SUCCEEDED(SQL_GETROW(SquadDetailsPlayers)))
     {
         {
-            wsprintf(szDate, L"%2d/%2d/%02d", SquadDetailsPlayers_Granted.month, 
+            wsprintf(szDate, "%2d/%2d/%02d", SquadDetailsPlayers_Granted.month, 
                                             SquadDetailsPlayers_Granted.day, 
                                             SquadDetailsPlayers_Granted.year%100);
 
@@ -1332,14 +1332,14 @@ void SendSquadDetails(FedMessaging * pthis, CFMConnection & cnxnFrom, int nSquad
 //                         end as a dialog text box.  
 //
 //////////////////////////////////////////////////////////////////////////////////////////
-void SendSquadTextMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, const wchar_t* format, ...)
+void SendSquadTextMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, const char* format, ...)
 {
     const size_t size = 256;
-    wchar_t         bfr[size];
+    char         bfr[size];
 
     va_list vl;
     va_start(vl, format);
-    _vsnwprintf(bfr, size, format, vl);
+    _vsnprintf(bfr, size, format, vl);
     va_end(vl);
 
     BEGIN_PFM_CREATE(*pthis, pfmSquadTextMessage, S, SQUAD_TEXT_MESSAGE)
@@ -1355,7 +1355,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
   assert(pClient);
   char szBuffer[128];
 
-  debugf(L"Client: %s from <%s> at time %u\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now());
+  debugf("Client: %s from <%s> at time %u\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now());
   
   switch (pfm->fmid)
   {
@@ -1429,7 +1429,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 #ifdef 
 		  */
               // let mark run his little squads app on his machine
-	  Strncpy((wchar_t*)CharID_CharacterName, FM_VAR_REF(pfmLogon, CharacterName), sizeof(CharID_CharacterName));
+              strncpy((char*)CharID_CharacterName, FM_VAR_REF(pfmLogon, CharacterName), sizeof(CharID_CharacterName));
               SQL_GO(CharID);
               if(!SQL_SUCCEEDED(SQL_GETROW(CharID)))
               {
@@ -1508,8 +1508,8 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         {
             pthis->SetDefaultRecipient(&cnxnFrom, FM_GUARANTEED);
 
-			RemoveTrailingSpaces((wchar_t*)CharInfoGeneral_Name);
-			RemoveTrailingSpaces((wchar_t*)CharInfoGeneral_Description);
+            RemoveTrailingSpaces((char*) CharInfoGeneral_Name);
+            RemoveTrailingSpaces((char*) CharInfoGeneral_Description);
     
             BEGIN_PFM_CREATE(*pthis, pfmCharInfoGeneral, S, CHARACTER_INFO_GENERAL)
                 FM_VAR_PARM(CharInfoGeneral_Name, CB_ZTS)
@@ -1537,8 +1537,8 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         {
             // utilize query output in the response fedmsg
             {
-				wchar_t szDate[11];
-                wsprintf(szDate, L"%2d/%2d/%4d", CharInfoByCiv_LastPlayed.month, 
+                char szDate[11];
+                wsprintf(szDate, "%2d/%2d/%4d", CharInfoByCiv_LastPlayed.month, 
                                                 CharInfoByCiv_LastPlayed.day, 
                                                 CharInfoByCiv_LastPlayed.year);
                 BEGIN_PFM_CREATE(*pthis, pfmCharInfoByCiv, S, CHARACTER_INFO_BY_CIV)
@@ -1571,10 +1571,10 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         SQL_GO(CharMedal);
         while (SQL_SUCCEEDED(SQL_GETROW(CharMedal)))
         {
-			RemoveTrailingSpaces((wchar_t*)MedalInfo_Name);
-			RemoveTrailingSpaces((wchar_t*)MedalInfo_Description);
-			RemoveTrailingSpaces((wchar_t*)MedalInfo_SpecificInfo);
-			RemoveTrailingSpaces((wchar_t*)MedalInfo_Bitmap);
+            RemoveTrailingSpaces((char*)MedalInfo_Name);
+            RemoveTrailingSpaces((char*)MedalInfo_Description);
+            RemoveTrailingSpaces((char*)MedalInfo_SpecificInfo);
+            RemoveTrailingSpaces((char*)MedalInfo_Bitmap);
 
             {
             BEGIN_PFM_CREATE(*pthis, pfmMedal, S, CHARACTER_INFO_MEDAL)
@@ -1597,11 +1597,11 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     case FM_C_CHARACTER_INFO_EDIT_DESCRIPTION:
     {
       CASTPFM(pfmEdit, C, CHARACTER_INFO_EDIT_DESCRIPTION, pfm);
-	  wchar_t * szDesc = FM_VAR_REF(pfmEdit, szDescription);
+      char * szDesc = FM_VAR_REF(pfmEdit, szDescription);
       if (szDesc)
-		  lstrcpy((wchar_t *)UpdateDescription_Description, szDesc);
+        lstrcpy((char *) UpdateDescription_Description, szDesc);
       else
-		  lstrcpy((wchar_t *)UpdateDescription_Description, L"");
+        lstrcpy((char *) UpdateDescription_Description, "");
 
       UpdateDescription_CharacterId = pClient->GetZoneID();
       SQL_GO(UpdateDescription);
@@ -1612,26 +1612,26 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmCreate, C, SQUAD_CREATE, pfm);
 
-	  wchar_t * szName = FM_VAR_REF(pfmCreate, szName);
-	  wchar_t * szDesc = FM_VAR_REF(pfmCreate, szDescription);
-	  wchar_t * szURL = FM_VAR_REF(pfmCreate, szURL);
+      char * szName  = FM_VAR_REF(pfmCreate, szName); 
+      char * szDesc  = FM_VAR_REF(pfmCreate, szDescription);
+      char * szURL   = FM_VAR_REF(pfmCreate, szURL);
 
       //
       // setup input for query
       //
 
       if(szName)
-		  Strncpy((wchar_t *)CreateSquad_Name, szName, min(sizeof(CreateSquad_Name) - 1, c_cbNameDB));
+        strncpy((char *) CreateSquad_Name, szName, min(sizeof(CreateSquad_Name)-1, c_cbNameDB));
       else
       *((char *)CreateSquad_Name) = 0;
 
       if (szDesc)
-		  Strncpy((wchar_t *)CreateSquad_Description, szDesc, sizeof(CreateSquad_Description) - 1);
+        strncpy((char *) CreateSquad_Description, szDesc, sizeof(CreateSquad_Description)-1);
       else
       *((char *)CreateSquad_Description) = 0;
 
       if(szURL)
-		  Strncpy((wchar_t *)CreateSquad_URL, szURL, sizeof(CreateSquad_URL) - 1);
+        strncpy((char *) CreateSquad_URL, szURL, sizeof(CreateSquad_URL)-1);
       else
       *((char *)CreateSquad_URL) = 0;
 
@@ -1647,8 +1647,8 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         SQL_GO(CreateSquad);
         if (!SQL_SUCCEEDED(SQL_GETROW(CreateSquad)))
         {
-			lstrcpy((wchar_t *)CreateSquad_ErrorMsg, L"Server Error; try again later.");
-          g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, L"Error while trying to create squad.");
+          lstrcpy((char *) CreateSquad_ErrorMsg, "Server Error; try again later.");
+          g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, "Error while trying to create squad.");
         }
 
         if (CreateSquad_ErrorCode != 0)
@@ -1657,11 +1657,11 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
             // Scan the CreateSquad_ErrorMsg string, replace the word "Team" with "Squad";
             // then send the message to the user
             //
-			wchar_t szErrorMsg[c_cbErrorMsg + 20];
+            char szErrorMsg[c_cbErrorMsg + 20];
 
-			UTL::SearchAndReplace(szErrorMsg, (wchar_t*)CreateSquad_ErrorMsg, L"Squad", L"Team");
+            UTL::SearchAndReplace(szErrorMsg, (char*)CreateSquad_ErrorMsg, "Squad", "Team");
 
-            SendSquadTextMessage(pthis, cnxnFrom, L"Cannot create %s Squad.\n%s", szName, szErrorMsg);
+            SendSquadTextMessage(pthis, cnxnFrom, "Cannot create %s Squad.\n%s", szName, szErrorMsg);
         }
       }
       else
@@ -1690,18 +1690,18 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
          break;
       }
 
-	  wchar_t * szDesc = FM_VAR_REF(pfmEdit, szDescription);
-	  wchar_t * szURL = FM_VAR_REF(pfmEdit, szURL);
+      char * szDesc  = FM_VAR_REF(pfmEdit, szDescription);
+      char * szURL   = FM_VAR_REF(pfmEdit, szURL);
 
       if(szDesc)
-		  Strncpy((wchar_t *)EditSquad_Description, szDesc, sizeof(EditSquad_Description) - 1);
+        strncpy((char *) EditSquad_Description, szDesc, sizeof(EditSquad_Description)-1);
       else
           *((char *)EditSquad_Description) = 0;
 
       if(szURL)
-		  Strncpy((wchar_t *)EditSquad_URL, szURL, sizeof(EditSquad_URL) - 1);
+        strncpy((char *) EditSquad_URL, szURL, sizeof(EditSquad_URL)-1);
       else
-		  *((wchar_t *)EditSquad_URL) = 0;
+          *((char *)EditSquad_URL) = 0;
 
       EditSquad_SquadID = pfmEdit->nSquadID;
       EditSquad_CivID = pfmEdit->civid;
@@ -1714,13 +1714,13 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       if (!SQL_SUCCEEDED(SQL_GETROW(EditSquad)))
       {
         EditSquad_ErrorCode = -1;
-		lstrcpy((wchar_t *)EditSquad_ErrorMsg, L"Server Error; try again later.");
-        g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, L"Error while trying to edit squad: id = %d", EditSquad_SquadID);
+        lstrcpy((char *) EditSquad_ErrorMsg, "Server Error; try again later.");
+        g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, "Error while trying to edit squad: id = %d", EditSquad_SquadID);
       }
 
       if (EditSquad_ErrorCode != 0)
       {
-        SendSquadTextMessage(pthis, cnxnFrom, L"Server cannot edit squad (%d);  Reason (%d) %s ", EditSquad_SquadID, EditSquad_ErrorCode, EditSquad_ErrorMsg);
+        SendSquadTextMessage(pthis, cnxnFrom, "Server cannot edit squad (%d);  Reason (%d) %s ", EditSquad_SquadID, EditSquad_ErrorCode, EditSquad_ErrorMsg);
       }
 
       SendSquadDetails(pthis, cnxnFrom, pfmEdit->nSquadID);  // update client with the truth
@@ -1806,7 +1806,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
           if (MakeJoinRequest_ErrorCode != 0)
           {
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
       }
       SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
@@ -1834,7 +1834,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
           if (CancelJoinRequest_ErrorCode != 0)
           {
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
       }
       SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
@@ -1862,7 +1862,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
           if (RejectJoinRequest_ErrorCode != 0)
           {
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
       }
       SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
@@ -1891,7 +1891,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
           if (AcceptJoinRequest_ErrorCode != 0)
           {
               SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
       }
     }
@@ -1919,7 +1919,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
           if (BootMember_ErrorCode != 0)
           {
               SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
           else
           {
@@ -1964,7 +1964,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
           if (QuitSquad_ErrorCode != 0)
           {
               SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
           else
           {
@@ -2004,7 +2004,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
           if (PromoteToASL_ErrorCode != 0)
           {
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
       }
       SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
@@ -2032,7 +2032,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
           if (DemoteToMember_ErrorCode != 0)
           {
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
           else
           pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
@@ -2065,7 +2065,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
           if (TransferControl_ErrorCode != 0)
           {
-              SendSquadTextMessage(pthis, cnxnFrom, L"Your request could not be completed; try again later.");
+              SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
       }
       SendSquadDetails(pthis, cnxnFrom, pfmSquad->nSquadID);  // update client with the truth
@@ -2081,8 +2081,8 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       int nResultCount = 0;
 
       // force the name to be at least somewhat valid
-	  wchar_t szBasis[c_cbName];
-      Strncpy(szBasis, pfmLeaderBoardQuery->szBasis, c_cbName);
+      char szBasis[c_cbName];
+      strncpy(szBasis, pfmLeaderBoardQuery->szBasis, c_cbName);
       szBasis[c_cbName - 1] = '\0';
       RemoveTrailingSpaces(szBasis);
 
@@ -2099,7 +2099,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       if (nResultCount == 0 && pfmLeaderBoardQuery->idBasis == -2)
       {
         szBasis[0] = '\0';
-        nResultCount = GetResults(pfmLeaderBoardQuery->sort, L"", -1, 
+        nResultCount = GetResults(pfmLeaderBoardQuery->sort, "", -1, 
             pfmLeaderBoardQuery->civid, topPlayer, vResults, nMaxResultSize - 1);
       }
 
@@ -2108,7 +2108,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
         BEGIN_PFM_CREATE(*pthis, pfmLeaderBoardQueryFail, S, LEADER_BOARD_QUERY_FAIL)
         END_PFM_CREATE
-        Strncpy(pfmLeaderBoardQueryFail->szBasis, szBasis, c_cbName);
+        strncpy(pfmLeaderBoardQueryFail->szBasis, szBasis, c_cbName);
       }
       else
       {
@@ -2160,14 +2160,14 @@ HRESULT IClubClientSite::OnSysMessage(FedMessaging * pthis)
 
 void IClubClientSite::OnMessageNAK(FedMessaging * pthis, DWORD dwTime, CFMRecipient * prcp) 
 {
-  debugf(L"ACK!! A guaranteed message didn't make it through to recipient %s.\n", prcp->GetName());
+  debugf("ACK!! A guaranteed message didn't make it through to recipient %s.\n", prcp->GetName());
 }
 
 
 HRESULT IClubClientSite::OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) 
 {
   CFLClient * pClient = new CFLClient(&cnxn);
-  debugf(L"Player %s has connected.\n", cnxn.GetName());
+  debugf("Player %s has connected.\n", cnxn.GetName());
   g_pClubApp->GetCounters()->cLogins++;
   return S_OK;
 }
@@ -2175,7 +2175,7 @@ HRESULT IClubClientSite::OnNewConnection(FedMessaging * pthis, CFMConnection & c
 
 HRESULT IClubClientSite::OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) 
 {
-  debugf(L"Player %s has left.\n", cnxn.GetName());
+  debugf("Player %s has left.\n", cnxn.GetName());
   g_pClubApp->GetCounters()->cLogoffs++;
   delete CFLClient::FromConnection(cnxn);
   return S_OK;
@@ -2184,14 +2184,14 @@ HRESULT IClubClientSite::OnDestroyConnection(FedMessaging * pthis, CFMConnection
 
 HRESULT IClubClientSite::OnSessionLost(FedMessaging * pthis) 
 {
-  g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, L"ACK!! Clients session was lost!");
+  g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, "ACK!! Clients session was lost!");
   return S_OK;
 }
 
 
-int IClubClientSite::OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType)
+int IClubClientSite::OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType)
 {
-  debugf(L"IClubClientSite::OnMessageBox: "); 
+  debugf("IClubClientSite::OnMessageBox: "); 
   return g_pClubApp->OnMessageBox(strText, strCaption, nType);
 }
 

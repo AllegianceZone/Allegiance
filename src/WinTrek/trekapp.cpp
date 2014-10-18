@@ -529,13 +529,9 @@ public:
             //         like for convex hull and sounds
             // pathStr = PathString::GetCurrentDirectory() + "artwork";
 
-
-			//imago 10/14 namespace conflict so its // pathStr = PathString::ZGetCurrentDirectory() + "artwork";
-			// pathStr = PathString::GetCurrentDirectory() + "artwork";
-
-            wchar_t    logFileName[MAX_PATH + 16];
+            char    logFileName[MAX_PATH + 16];
             GetModuleFileName(NULL, logFileName, MAX_PATH);
-			wchar_t*   p = wcschr(logFileName, '\\');
+            char*   p = strrchr(logFileName, '\\');
             if (!p)
                 p = logFileName;
             else
@@ -546,8 +542,8 @@ public:
 		
 		//Imago 8/16/09
 		ZVersionInfo vi;
-		debugf(L"Running %s %s\nArtpath: %s\nCommand line: %s\n", (PCC) vi.GetInternalName(), 
-			(PCC) vi.GetStringValue(L"FileVersion"),(PCC) pathStr, (PCC) strCommandLine);
+		debugf("Running %s %s\nArtpath: %s\nCommand line: %s\n", (PCC) vi.GetInternalName(), 
+			(PCC) vi.GetStringValue("FileVersion"),(PCC) pathStr, (PCC) strCommandLine);
 
 // BUILD_DX9
 		// Now set later for D3D build, as modeller isn't valid yet.

@@ -64,21 +64,21 @@ public:
                      IclusterIGC* pclusterOld,
                      IclusterIGC* pclusterNew)
   {
-    LPCWSTR      pszShip       = pship       ?       pship->GetName    () : L"";
+    LPCSTR      pszShip       = pship       ?       pship->GetName    () : "";
     AGCUniqueID shipID        = pship       ?       pship->GetUniqueID() : -1;
     AGCUniqueID newClusterID  = pclusterOld ? pclusterOld->GetUniqueID() : -1;
     AGCUniqueID oldClusterID  = pclusterNew ? pclusterNew->GetUniqueID() : -1;
-    LPCWSTR      pszClusterOld = pclusterOld ? pclusterOld->GetName()     : L"";
-    LPCWSTR      pszClusterNew = pclusterNew ? pclusterNew->GetName()     : L"";
+    LPCSTR      pszClusterOld = pclusterOld ? pclusterOld->GetName()     : "";
+    LPCSTR      pszClusterNew = pclusterNew ? pclusterNew->GetName()     : "";
 
-    LPCWSTR pszContext = pship ? pship->GetMission()->GetContextName() : NULL;
+    LPCSTR pszContext = pship ? pship->GetMission()->GetContextName() : NULL;
 
     _AGCModule.TriggerContextEvent(NULL, EventID_ShipChangesSectors, pszContext,
       pszShip, shipID, newClusterID, oldClusterID, 4,
-      L"New Sector"     , VT_I4   , newClusterID,
-      L"Old Sector"     , VT_I4   , oldClusterID,
-      L"New Sector Name", VT_LPSTR, pszClusterNew,
-      L"Old Sector Name", VT_LPSTR, pszClusterOld);
+      "New Sector"     , VT_I4   , newClusterID,
+      "Old Sector"     , VT_I4   , oldClusterID,
+      "New Sector Name", VT_LPSTR, pszClusterNew,
+      "Old Sector Name", VT_LPSTR, pszClusterOld);
 
     // Allow the server/client site class to invoke event
     T::ChangeCluster(pship, pclusterOld, pclusterNew);
@@ -91,10 +91,10 @@ public:
   void KillShipEvent(Time now, IshipIGC* ship, ImodelIGC* launcher,
     float amount, const Vector& p1, const Vector& p2)
   {
-    LPCWSTR      pszShip     = ship     ?     ship->GetName    () : L"";
+    LPCSTR      pszShip     = ship     ?     ship->GetName    () : "";
     AGCUniqueID shipID      = ship     ?     ship->GetUniqueID() : -1;
     AGCUniqueID launcherID  = launcher ? launcher->GetUniqueID() : -1;
-    LPCWSTR      pszLauncher = launcher ? GetModelName(launcher)  : L"";
+    LPCSTR      pszLauncher = launcher ? GetModelName(launcher)  : "";
 
     HAGCLISTENERS hListeners = GetAGCGlobal()->EventListeners(
       EventID_ShipKilled, shipID, -1, -1);
@@ -113,18 +113,18 @@ public:
 		if (pht->HasCapability(c_habmLifepod)) IsLifepod = 1; 
 	  }
 
-      LPCWSTR pszContext = ship ? ship->GetMission()->GetContextName() : NULL;
+      LPCSTR pszContext = ship ? ship->GetMission()->GetContextName() : NULL;
 
       // Trigger the event - TE add MissionId and zLifepod
 	  _AGCModule.TriggerContextEvent(hListeners, EventID_ShipKilled, pszContext,
         pszShip, shipID, -1, -1, 7,                // TE: Added 2 params
-        L"Launcher"     , VT_I4      , launcherID,
-        L"LauncherName" , VT_LPSTR   , pszLauncher,
-        L"Amount"       , VT_R4      , amount,
-		L"MissionID"    , VT_I4      , ship->GetMission()->GetMissionID(),  // TE: Add the GameID
-        L"Vector1"      , VT_DISPATCH, (IAGCVector*)spVector1,
-        L"Vector2"      , VT_DISPATCH, (IAGCVector*)spVector2,
-		L"zLifepod"     , VT_I4      , IsLifepod);                          // TE: 1 if this ship is a lifepod
+        "Launcher"     , VT_I4      , launcherID,
+        "LauncherName" , VT_LPSTR   , pszLauncher,
+        "Amount"       , VT_R4      , amount,
+		"MissionID"    , VT_I4      , ship->GetMission()->GetMissionID(),  // TE: Add the GameID
+        "Vector1"      , VT_DISPATCH, (IAGCVector*)spVector1,
+        "Vector2"      , VT_DISPATCH, (IAGCVector*)spVector2,
+		"zLifepod"     , VT_I4      , IsLifepod);                          // TE: 1 if this ship is a lifepod
     }
 
     // Allow the server/client site class to invoke event
@@ -137,22 +137,22 @@ public:
    */
   bool UseRipcord(IshipIGC* pship, ImodelIGC* pmodel)
   {
-    LPCWSTR      pszShip     = pship    ? pship->GetName    () : L"";
+    LPCSTR      pszShip     = pship    ? pship->GetName    () : "";
     AGCUniqueID shipID      = pship    ? pship->GetUniqueID() : -1;
     AGCUniqueID modelID     = pmodel   ? pmodel->GetUniqueID() : -1;
-    LPCWSTR      pszModel    = pmodel   ? GetModelName(pmodel)  : L"";
+    LPCSTR      pszModel    = pmodel   ? GetModelName(pmodel)  : "";
 
     HAGCLISTENERS hListeners = GetAGCGlobal()->EventListeners(
       EventID_ShipUsesRipcord, shipID, -1, -1);
     if (hListeners)
     {
-      LPCWSTR pszContext = pship ? pship->GetMission()->GetContextName() : NULL;
+      LPCSTR pszContext = pship ? pship->GetMission()->GetContextName() : NULL;
 
       // Trigger the event
       _AGCModule.TriggerContextEvent(hListeners, EventID_ShipUsesRipcord,
         pszContext, pszShip, shipID, -1, -1, 2,
-        L"Model"     , VT_I4      , modelID,
-        L"ModelName" , VT_LPSTR   , pszModel);
+        "Model"     , VT_I4      , modelID,
+        "ModelName" , VT_LPSTR   , pszModel);
     }
 
     // Allow the server/client site class to invoke event

@@ -74,7 +74,7 @@ public:
 				DWORD dwSize = sizeof(dwResult);
 				DWORD dwType = REG_DWORD;
 
-				::RegQueryValueEx(hKey, L"MonoOff", NULL, &dwType, (BYTE*)&dwResult, &dwSize);
+				::RegQueryValueEx(hKey, "MonoOff", NULL, &dwType, (BYTE*)&dwResult, &dwSize);
 				::RegCloseKey(hKey);
 
 				if (dwType != REG_DWORD)

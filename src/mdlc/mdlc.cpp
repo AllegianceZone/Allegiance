@@ -27,7 +27,7 @@ class ModelerSiteImpl : public ModelerSite {
 public:
     void Error(const ZString& str)
     {
-        wprintf(str);
+        printf(str);
         _exit(0);
     }
 };
@@ -87,7 +87,7 @@ public:
             TRef<LODGeo> plodGeo; CastTo(plodGeo, pgeo);
 
             if (plodGeo) {
-                wprintf(plodGeo->GetInfo());
+                printf(plodGeo->GetInfo());
                 return;
             }
 
@@ -108,7 +108,7 @@ public:
 
     void DoOptimize(const ZString& strInput, const ZString& strOutput)
     {
-        wprintf(ZString(L"Optimizing ") + strInput + L"\n");
+        printf(ZString("Optimizing ") + strInput + "\n");
 
         //
         // Load an mdl file
@@ -152,7 +152,7 @@ public:
 
     void DoConvert(const PathString& strInput, const PathString& strOutput)
     {
-        wprintf(ZString(L"Converting image ") + strInput + L"\n");
+        printf(ZString("Converting image ") + strInput + "\n");
 
         //
         // Get the basenames for the bitmap files
@@ -212,7 +212,7 @@ public:
         const PathString& strInput, 
         const PathString& strOutput
     ) {
-        wprintf(ZString(L"Compressing animation ") + strInput + L"\n");
+        printf(ZString("Compressing animation ") + strInput + "\n");
 
         //
         // Get the basenames for the bitmap files
@@ -264,17 +264,17 @@ public:
 
 		
 		//Imago set the modeler up to work in the CWD
-		PathString pathStr = pathStr.ZGetCurrentDirectory;
-		wprintf(pathStr);
+		PathString pathStr = pathStr.GetCurrentDirectoryA();
+		printf(pathStr);
         
 		// Imago DX9 junk
-		if( PromptUserForVideoSettings(false, false, 0, GetModuleHandle(NULL), pathStr, ALLEGIANCE_REGISTRY_KEY_ROOT L"\\MDLC3DSettings") == false )
+		if( PromptUserForVideoSettings(false, false, 0, GetModuleHandle(NULL), pathStr, ALLEGIANCE_REGISTRY_KEY_ROOT "\\MDLC3DSettings") == false )
 		{
 			return E_FAIL;
 		}
 		CD3DDevice9::Get()->UpdateCurrentMode( );
 
-		CLogFile devLog( L"DeviceCreation.log" );
+		CLogFile devLog( "DeviceCreation.log" );
 		CD3DDevice9::Get()->Initialise( &devLog );
 		CD3DDevice9::Get()->CreateD3D9( &devLog );
 		CD3DDevice9::Get()->CreateDevice( ::GetForegroundWindow(), &devLog );

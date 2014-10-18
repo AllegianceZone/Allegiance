@@ -93,7 +93,7 @@ public:
         ForEachSink( OnAddPlayer(pMissionInfo, sideID, pPlayerInfo) )
     }
 
-	void OnDelPlayer(MissionInfo* pMissionInfo, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam)
+    void OnDelPlayer(MissionInfo* pMissionInfo, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam)
     {
         ForEachSink( OnDelPlayer(pMissionInfo, sideID, pPlayerInfo, reason, szMessageParam) )
     }
@@ -249,7 +249,7 @@ public:
         ForEachSink( OnChatMessageChange() )
     }
 
-	void OnLostConnection(const wchar_t * szReason)
+    void OnLostConnection(const char * szReason)
     {
         ForEachSink( OnLostConnection(szReason) )
     }
@@ -269,7 +269,7 @@ public:
         ForEachSink( OnLogonClub() )
     }
 
-	void OnLogonClubFailed(bool bRetry, const wchar_t * szReason)
+    void OnLogonClubFailed(bool bRetry, const char * szReason) 
     {
         ForEachSink( OnLogonClubFailed(bRetry, szReason) )
     }
@@ -279,7 +279,7 @@ public:
         ForEachSink( OnLogonLobby() )
     }
 
-	void OnLogonLobbyFailed(bool bRetry, const wchar_t * szReason)
+    void OnLogonLobbyFailed(bool bRetry, const char * szReason) 
     {
         ForEachSink( OnLogonLobbyFailed(bRetry, szReason) )
     }
@@ -289,12 +289,12 @@ public:
         ForEachSink( OnLogonGameServer() )
     }
 
-	void OnLogonGameServerFailed(bool bRetry, const wchar_t * szReason)
+    void OnLogonGameServerFailed(bool bRetry, const char * szReason) 
     {
         ForEachSink( OnLogonGameServerFailed(bRetry, szReason) )
     }
 	// KGJV #114
-	void OnServersList(int cCores, wchar_t *Cores, int cServers, wchar_t *Servers)
+	void OnServersList(int cCores, char *Cores, int cServers, char *Servers)
 	{
 		ForEachSink( OnServersList(cCores, Cores, cServers, Servers));
 	}
@@ -363,7 +363,7 @@ public:
         m_psink->OnAddPlayer(pMissionInfo, sideID, pPlayerInfo);
     }
 
-	void OnDelPlayer(MissionInfo* pMissionInfo, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam)
+    void OnDelPlayer(MissionInfo* pMissionInfo, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam)
     {
         m_psink->OnDelPlayer(pMissionInfo, sideID, pPlayerInfo, reason, szMessageParam);
     }
@@ -519,7 +519,7 @@ public:
         m_psink->OnChatMessageChange();
     }
 
-	void OnLostConnection(const wchar_t* szReason)
+    void OnLostConnection(const char* szReason)
     {
         m_psink->OnLostConnection(szReason);
     }
@@ -539,7 +539,7 @@ public:
         m_psink->OnLogonClub();
     }
 
-	void OnLogonClubFailed(bool bRetry, const wchar_t * szReason)
+    void OnLogonClubFailed(bool bRetry, const char * szReason) 
     {
         m_psink->OnLogonClubFailed(bRetry, szReason);
     }
@@ -549,7 +549,7 @@ public:
         m_psink->OnLogonLobby();
     }
 
-	void OnLogonLobbyFailed(bool bRetry, const wchar_t * szReason)
+    void OnLogonLobbyFailed(bool bRetry, const char * szReason) 
     {
         m_psink->OnLogonLobbyFailed(bRetry, szReason);
     }
@@ -559,12 +559,12 @@ public:
         m_psink->OnLogonGameServer();
     }
 
-	void OnLogonGameServerFailed(bool bRetry, const wchar_t * szReason)
+    void OnLogonGameServerFailed(bool bRetry, const char * szReason) 
     {
         m_psink->OnLogonGameServerFailed(bRetry, szReason);
     }
 	// KGJV #114
-	void OnServersList(int cCores, wchar_t *Cores, int cServers, wchar_t *Servers)
+	void OnServersList(int cCores, char *Cores, int cServers, char *Servers)
 	{
 		m_psink->OnServersList(cCores, Cores, cServers, Servers);
 	}
@@ -683,7 +683,7 @@ void MissionInfo::Update(FMD_LS_LOBBYMISSIONINFO* pfmLobbyMissionInfo)
     Strncpy(m_pfmMissionDef->misparms.strGameName, FM_VAR_REF(pfmLobbyMissionInfo, szGameName), c_cbGameName);
     m_pfmMissionDef->misparms.strGameName[c_cbGameName - 1] = '\0';
     m_strGameDetailsFiles = (FM_VAR_REF(pfmLobbyMissionInfo, szGameDetailsFiles) != NULL)
-      ? FM_VAR_REF(pfmLobbyMissionInfo, szGameDetailsFiles) : L"";
+      ? FM_VAR_REF(pfmLobbyMissionInfo, szGameDetailsFiles) : "";
     m_pfmMissionDef->misparms.nTeams = pfmLobbyMissionInfo->nTeams;
     m_pfmMissionDef->misparms.nMinPlayersPerTeam = pfmLobbyMissionInfo->nMinPlayersPerTeam;
     m_pfmMissionDef->misparms.nMaxPlayersPerTeam = pfmLobbyMissionInfo->nMaxPlayersPerTeam;
@@ -705,7 +705,7 @@ void MissionInfo::Update(FMD_LS_LOBBYMISSIONINFO* pfmLobbyMissionInfo)
 	// KGJV #114 - fill in server name & ip
 	Strncpy(m_pfmMissionDef->szServerName, FM_VAR_REF(pfmLobbyMissionInfo,szServerName), c_cbName);
 	Strncpy(m_pfmMissionDef->szServerAddr, FM_VAR_REF(pfmLobbyMissionInfo,szServerAddr), 16);
-	UTL::SetPrivilegedUsers( ((FM_VAR_REF(pfmLobbyMissionInfo, szPrivilegedUsers) != NULL) ?  FM_VAR_REF(pfmLobbyMissionInfo, szPrivilegedUsers) : L""),m_pfmMissionDef->dwCookie); //Imago 6/10 #2
+	UTL::SetPrivilegedUsers( ((FM_VAR_REF(pfmLobbyMissionInfo, szPrivilegedUsers) != NULL) ?  FM_VAR_REF(pfmLobbyMissionInfo, szPrivilegedUsers) : ""),m_pfmMissionDef->dwCookie); //Imago 6/10 #2
 	UTL::SetServerVersion(FM_VAR_REF(pfmLobbyMissionInfo, szServerVersion),m_pfmMissionDef->dwCookie); //Imago 7/10 #62
     m_pfmMissionDef->misparms.nTotalMaxPlayersPerGame = pfmLobbyMissionInfo->nMaxPlayersPerGame;
     m_pfmMissionDef->misparms.bSquadGame = pfmLobbyMissionInfo->fSquadGame;
@@ -1257,7 +1257,7 @@ void BaseClient::FlushGameState()
     m_bInGame = false;
 }
 
-HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, const wchar_t* szPassword, bool bStandalonePrivate)
+HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, const char* szPassword, bool bStandalonePrivate)
 { 
     // connect to a particular *game* on this server
     HRESULT hr = S_OK;
@@ -1287,10 +1287,10 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
 			//imago moved this up first 8/1/09 due to longer timeout
             HKEY hKey;
             DWORD cbValue = c_cbName;
-			wchar_t szServer[c_cbName];
+            char szServer[c_cbName];
             szServer[0] = '\0';
             if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) {
-                ::RegQueryValueEx(hKey,L"ServerAddress", NULL, NULL, (unsigned char*)&szServer, &cbValue);
+                ::RegQueryValueEx(hKey,"ServerAddress", NULL, NULL, (unsigned char*)&szServer, &cbValue);
                 ::RegCloseKey(hKey);
             }
             if (szServer[0] != '\0') {
@@ -1312,8 +1312,8 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
     if (m_strCDKey.IsEmpty())
         m_strCDKey = ZString(ci.szName).ToUpper();
 
-	wchar_t szCdKey[c_cbCDKey];
-	Strcpy(szCdKey, (PCC)m_strCDKey);
+	char szCdKey[c_cbCDKey];
+	strcpy(szCdKey, (PCC)m_strCDKey);
 
     if (m_fm.IsConnected())
     {
@@ -1329,11 +1329,11 @@ HRESULT BaseClient::ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, 
         pfmLogon->dwCookie = dwCookie;
 		pfmLogon->CharacterID = GetZoneClubID(); //Imago 9/14
         pfmLogon->time = Time::Now ();  //TODO salt CDKey with this NYI Imago
-        debugf(L"Logging on to game server \"%s\"...\n",
-          ci.strServer.IsEmpty() ? L"" : (LPCWSTR)ci.strServer);
+        debugf("Logging on to game server \"%s\"...\n",
+          ci.strServer.IsEmpty() ? "" : (LPCSTR)ci.strServer);
         SendMessages();
     }
-    retailf(L"$$MSRGuard:Set:UserName=%s\n", ci.szName);
+    retailf("$$MSRGuard:Set:UserName=%s\n", ci.szName);
     m_cUnansweredPings = 0;
     m_serverOffsetValidF = false;
     return hr;
@@ -1390,7 +1390,7 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
     {
         DWORD dwTime = Time::Now().clock();
         int crcFileList = (g_bCheckFiles ? 0 : FileCRC("FileList.txt", NULL));
-		wchar_t * szEncryptionKey = (wchar_t *)_alloca(wcslen(CL_LOGON_KEY) + 30);
+        char * szEncryptionKey = (char *)_alloca(strlen(CL_LOGON_KEY) + 30);
         wsprintf(szEncryptionKey, CL_LOGON_KEY, dwTime, m_ci.szName);
 
         // Let's formally announce ourselves to the server
@@ -1402,14 +1402,14 @@ HRESULT BaseClient::ConnectToLobby(ConnectInfo * pci) // pci is NULL if reloggin
         pfmLogon->crcFileList = crcFileList;
         pfmLogon->dwTime = dwTime;
         lstrcpy(pfmLogon->szName, m_ci.szName);
-		lstrcpy(pfmLogon->szPW, (PCC)ZString(m_ci.szPW).Scramble(L"Imago2014"));
+		lstrcpy(pfmLogon->szPW, (PCC)ZString(m_ci.szPW).Scramble("Imago2014"));
         // do art update--see ConnectToServer
-        debugf(L"Logging on to lobby \"%s\"...pw: %s\n",m_ci.strServer.IsEmpty() ? L"" : (LPCWSTR)m_ci.strServer,pfmLogon->szPW);
+        debugf("Logging on to lobby \"%s\"...pw: %s\n",m_ci.strServer.IsEmpty() ? "" : (LPCSTR)m_ci.strServer,pfmLogon->szPW);
         lstrcpy(m_szLobbyCharName, m_ci.szName);
         SendLobbyMessages();
 		//lstrcpy(m_ci.szPW, "");
     }
-    retailf(L"$$MSRGuard:Set:UserName=%s\n", m_szLobbyCharName);
+    retailf("$$MSRGuard:Set:UserName=%s\n", m_szLobbyCharName);
     m_cUnansweredPings = 0;
     m_serverOffsetValidF = false;
     return hr;
@@ -1452,7 +1452,7 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
         END_PFM_CREATE
         pfmLogon->verClub = ALLCLUBVER;
 
-        debugf(L"Logging on to Club Server...\n");
+        debugf("Logging on to Club Server...\n");
         lstrcpy(m_szClubCharName, pci->szName);
         SendClubMessages();
     }
@@ -1462,7 +1462,7 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
 }
 
 
-void BaseClient::FindStandaloneServersByName(const wchar_t* szName, TList<TRef<LANServerInfo> >& listResults)
+void BaseClient::FindStandaloneServersByName(const char* szName, TList<TRef<LANServerInfo> >& listResults)
 {
     listResults.SetEmpty();
     m_plistFindServerResults = &listResults;
@@ -1879,7 +1879,7 @@ void BaseClient::SetSelectedWeapon(Mount id)
 }
 
 
-void BaseClient::JoinMission(MissionInfo * pMission, const wchar_t* szMissionPassword)
+void BaseClient::JoinMission(MissionInfo * pMission, const char* szMissionPassword)
 {
     assert (pMission);
     BEGIN_PFM_CREATE(m_fmLobby, pfmJoinGameReq, C, JOIN_GAME_REQ)
@@ -1888,7 +1888,7 @@ void BaseClient::JoinMission(MissionInfo * pMission, const wchar_t* szMissionPas
     SendLobbyMessages();
     m_dwCookieToJoin = pMission->GetCookie();
     assert(strlen(szMissionPassword) < c_cbGamePassword);
-    Strncpy(m_strPasswordToJoin, szMissionPassword, c_cbGamePassword);
+    strncpy(m_strPasswordToJoin, szMissionPassword, c_cbGamePassword);
     m_strPasswordToJoin[c_cbGamePassword - 1] = '\0';
     // waiting for FM_L_JOIN_GAME_ACK. When we get that we can join it
 }
@@ -1911,7 +1911,7 @@ void BaseClient::ServerListReq()
     SendLobbyMessages();
     // now we wait for FM_L_SERVERS_LIST
 }
-void BaseClient::CreateMissionReq(const wchar_t *szServer, const wchar_t *szAddr, const wchar_t *szIGCStaticFile, const wchar_t *szGameName)
+void BaseClient::CreateMissionReq(const char *szServer, const char *szAddr, const char *szIGCStaticFile, const char *szGameName)
 {
     //No need to set message type for non m_fm messages
     BEGIN_PFM_CREATE(m_fmLobby, pfmCreateMission, C, CREATE_MISSION_REQ)
@@ -2020,7 +2020,7 @@ HRESULT BaseClient::CheckLauncher()
 		if(process == NULL || exitCode != STILL_ACTIVE)
 		{
 			// if the launcher is gone, then don't wait around, just die immediatly.
-			debugf(L"No launcher process found for %ld, exiting immeditaly.\n");
+			debugf("No launcher process found for %ld, exiting immeditaly.\n");
 			exit(-987);
 			return(S_FALSE);
 		}
@@ -2033,7 +2033,7 @@ HRESULT BaseClient::CheckLauncher()
 
 HRESULT BaseClient::OnSessionLost(char * szReason, FedMessaging * pthis)
 {
-    debugf(L"OnSessionLost. %s. lastUpdate=%d now=%d Time::Now()=%d\n", 
+    debugf("OnSessionLost. %s. lastUpdate=%d now=%d Time::Now()=%d\n", 
            szReason, m_lastUpdate.clock(), m_now.clock(), Time::Now().clock());
     m_fLoggedOn = false; // we don't want to try and log off, cause the link is dead
 
@@ -2075,7 +2075,7 @@ void BaseClient::ReceiveChat(IshipIGC*   pshipSender,
                              ChatTarget  ctRecipient,
                              ObjectID    oidRecipient,
                              SoundID     voiceOver,
-							 const wchar_t* pszText,
+                             const char* pszText,
                              CommandID   cid,
                              ObjectType  otTarget,
                              ObjectID    oidTarget,
@@ -2188,18 +2188,18 @@ void BaseClient::OfflineCommandToDrone (const ChatData* pcd, const DataBuoyIGC* 
 }
 */
 
-bool    BaseClient::ParseShellCommand(const wchar_t* pszCommand)
+bool    BaseClient::ParseShellCommand(const char* pszCommand)
 {
     bool    bCommand = false;
 
-    if (_wcsnicmp(pszCommand, L"!mute ", 6) == 0)
+    if (_strnicmp(pszCommand, "!mute ", 6) == 0)
     {
         PlayerInfo* ppi = FindPlayer(pszCommand + 6);
         if (ppi)
             ppi->SetMute(true);
         bCommand = true;
     }
-    else if (_wcsnicmp(pszCommand, L"!unmute ", 8) == 0)
+    else if (_strnicmp(pszCommand, "!unmute ", 8) == 0)
     {
         PlayerInfo* ppi = FindPlayer(pszCommand + 8);
         if (ppi)
@@ -2231,7 +2231,7 @@ void    BaseClient::SendChat(IshipIGC*      pshipSender,
                              ChatTarget     ctRecipient,
                              ObjectID       oidRecipient,
                              SoundID        soundID,
-							 const wchar_t*    pszText,
+                             const char*    pszText,
                              CommandID      cid,
                              ObjectType     otTarget,
                              ObjectID       oidTarget,
@@ -2523,13 +2523,13 @@ PlayerInfo* BaseClient::FindPlayer(ShipID shipID)
     return l ? &(l->data()) : NULL;
 }
 
-PlayerInfo* BaseClient::FindPlayer(const wchar_t* szName)
+PlayerInfo* BaseClient::FindPlayer(const char* szName)
 {
     PlayerInfo* p = NULL;
 
     for (PlayerLink* l = m_listPlayers.first(); (l != NULL); l = l->next())
         {
-        if (_wcsicmp(l->data().CharacterName(), szName) == 0)
+        if (_stricmp(l->data().CharacterName(), szName) == 0)
             {
             p = &(l->data());
             break;
@@ -2539,16 +2539,16 @@ PlayerInfo* BaseClient::FindPlayer(const wchar_t* szName)
     return p;
 }
 
-PlayerInfo* BaseClient::FindPlayerByPrefix(const wchar_t* szNamePrefix)
+PlayerInfo* BaseClient::FindPlayerByPrefix(const char* szNamePrefix)
 {
     PlayerInfo* p = NULL;
-    int lenNamePrefix = wcslen(szNamePrefix);
+    int lenNamePrefix = strlen(szNamePrefix);
 
     for (PlayerLink* l = m_listPlayers.first(); (l != NULL); l = l->next())
     {
         PlayerInfo& player = l->data();
 
-        if (_wcsnicmp(player.CharacterName(), szNamePrefix, lenNamePrefix) == 0)
+        if (_strnicmp(player.CharacterName(), szNamePrefix, lenNamePrefix) == 0)
         {
             p = &player;
             break;
@@ -2560,9 +2560,9 @@ PlayerInfo* BaseClient::FindPlayerByPrefix(const wchar_t* szNamePrefix)
 
 namespace {
   // remove trailing whitespaces from a string
-	void RemoveTrailingSpaces(wchar_t* sz)
+  void RemoveTrailingSpaces(char* sz)
   {
-    for (int nIndex = wcslen(sz); nIndex > 0 && sz[nIndex - 1] == ' '; --nIndex)
+    for (int nIndex = strlen(sz); nIndex > 0 && sz[nIndex - 1] == ' '; --nIndex)
     {
       sz[nIndex - 1] = '\0';    
     }
@@ -2573,13 +2573,13 @@ namespace {
 // -Imago: Same ranks for all civs w/o club
 ZString BaseClient::LookupRankName(RankID rank, CivID civ)
 {
-	const wchar_t* szRankNameTemplate = L"Unknown (%d)";
+    const char* szRankNameTemplate = "Unknown (%d)";
     int nClosestRank = -1;
 
     if (m_cRankInfo <= 0) //&& !GetIsZoneClub()) //Imago 9/14 revisit NYI
     {
         assert(!m_fm.IsConnected()) ;//|| !GetIsZoneClub());
-        szRankNameTemplate = L"";
+        szRankNameTemplate = "";
     }
     else
     {
@@ -2599,7 +2599,7 @@ ZString BaseClient::LookupRankName(RankID rank, CivID civ)
         assert(nClosestRank >= 0);
     }
 
-	wchar_t cbTemp[c_cbName + 8];
+    char cbTemp[c_cbName + 8];
     wsprintf(cbTemp, szRankNameTemplate, rank - nClosestRank + 1);
 	RemoveTrailingSpaces(cbTemp);
 
@@ -2629,11 +2629,11 @@ bool BaseClient::MyMissionInProgress()
         return false;
 }
 
-void BaseClient::SaveSquadMemberships(const wchar_t* szCharacterName)
+void BaseClient::SaveSquadMemberships(const char* szCharacterName)
 {
 }
 
-void BaseClient::RestoreSquadMemberships(const wchar_t* szCharacterName)
+void BaseClient::RestoreSquadMemberships(const char* szCharacterName)
 {
 }
 
@@ -3135,12 +3135,12 @@ void BaseClient::FireMissile(IshipIGC* pShip,
         {
             PlayNotificationSound(salReloadingMissilesSound, GetShip());
             PlaySoundEffect(startReloadSound, GetShip());
-            PostText(false, L"Reloading missiles...");
+            PostText(false, "Reloading missiles...");
         }
         else
         {
             PlayNotificationSound(salMissilesDepletedSound, GetShip());
-            PostText(false, L"Missiles depleted.");
+            PostText(false, "Missiles depleted.");
         }
     }
 }
@@ -3283,12 +3283,12 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
             {
             case OT_chaffType:
                 PlayNotificationSound(salReloadingChaffSound, GetShip());
-                PostText(false, L"Reloading chaff...");
+                PostText(false, "Reloading chaff...");
                 break;
 
             default:
                 PlayNotificationSound(salReloadingDispenserSound, GetShip());
-                PostText(false, L"Reloading dispenser...");
+                PostText(false, "Reloading dispenser...");
                 break;
             }
 
@@ -3300,12 +3300,12 @@ void BaseClient::FireExpendable(IshipIGC* pShip,
             {
             case OT_chaffType:
                 PlayNotificationSound(salChaffDepletedSound, GetShip());
-                PostText(false, L"Chaff depleted.");
+                PostText(false, "Chaff depleted.");
                 break;
 
             default:
                 PlayNotificationSound(salDispenserEmptySound, GetShip());
-                PostText(false, L"Dispenser empty.");
+                PostText(false, "Dispenser empty.");
                 break;
             }
         }
@@ -3667,7 +3667,7 @@ void BaseClient::OnJoinSide()
         m_pClientEventSource->OnAddPlayer(m_pMissionInfo, m_pPlayerInfo->SideID(), m_pPlayerInfo);
 };
 
-void BaseClient::OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam)
+void BaseClient::OnQuitMission(QuitSideReason reason, const char* szMessageParam)
 {
     Disconnect();
     // clear chat messages
@@ -3747,7 +3747,7 @@ void BaseClient::DestroyDummyShip()
   // Base class does nothing
 }
 
-void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam)
+void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam)
 {
     if (!pPlayerInfo)
     {
@@ -3791,17 +3791,17 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
                 switch (reason)
                 {
                 case QSR_LeaderBooted:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" was booted from the team by the team leader.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" was booted from the team by the team leader.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
                 case QSR_OwnerBooted:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" was booted from the game by the mission owner.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" was booted from the game by the mission owner.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
                 case QSR_AdminBooted:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" was booted from the team by an admin.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" was booted from the team by an admin.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
@@ -3809,7 +3809,7 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
                     break;
 
                 case QSR_SquadChange:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" was booted because of a squad change.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" was booted because of a squad change.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
@@ -3817,22 +3817,22 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
                     break;
 
                 case QSR_RankLimits:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" was booted because he/she did not meet the new rank limits.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" was booted because he/she did not meet the new rank limits.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
                 case QSR_TeamSizeLimits:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" was booted to reduce the team size within it's new limits.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" was booted to reduce the team size within it's new limits.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
                 case QSR_Quit:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" has quit.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" has quit.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
                 case QSR_SwitchingSides: 
-                    msg = pPlayerInfo->CharacterName() + ZString(L" is switching sides.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" is switching sides.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salChangeSidesSound, msg, c_cidNone, NA, NA);
                     break;
 
@@ -3847,7 +3847,7 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
                     break;
 
                 case QSR_DuplicateRemoteLogon:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" has been booted due to a duplicate logon.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" has been booted due to a duplicate logon.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salQuitSound, msg, c_cidNone, NA, NA);
                     break;
 
@@ -3855,7 +3855,7 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
                     ZAssert(false);
                     // intentional fallthrough
                 case QSR_LinkDead:
-                    msg = pPlayerInfo->CharacterName() + ZString(L" is MIA.");
+                    msg = pPlayerInfo->CharacterName() + ZString(" is MIA.");
                     ReceiveChat(NULL, CHAT_TEAM, NA, salMIASound, msg, c_cidNone, NA, NA);
                     break;
                 };
@@ -3864,8 +3864,8 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
             { //#ALLY: imago made this sound corrected for allies 7/3/09
 				IsideIGC* otherside = m_pCoreIGC->GetSide(pPlayerInfo->SideID());
 				int sfx = (otherside->AlliedSides(otherside,GetSide())) ? salQuitSound : salEnemyLeavesSound;
-                msg = pPlayerInfo->CharacterName() + ZString(L" has left ") 
-                    + GetCore()->GetSide(sideOld)->GetName() + ZString(L".");
+                msg = pPlayerInfo->CharacterName() + ZString(" has left ") 
+                    + GetCore()->GetSide(sideOld)->GetName() + ZString(".");
                 ReceiveChat(NULL, CHAT_TEAM, NA, sfx, msg, c_cidNone, NA, NA);
             }
         }
@@ -3894,7 +3894,7 @@ void BaseClient::RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason re
 }
 
 
-void BaseClient::RemovePlayerFromMission(PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam)
+void BaseClient::RemovePlayerFromMission(PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam)
 {
     if (!pPlayerInfo)
     {
@@ -4040,7 +4040,7 @@ void BaseClient::AddPlayerToSide(PlayerInfo* pPlayerInfo, SideID sideID)
   Side Effects:
       Old data set is nuked (better not have any references to IGC stuff when calling this)
  */
-static void DoDecrypt(int size, wchar_t* pdata)
+static void DoDecrypt(int size, char* pdata)
 {
     DWORD encrypt = 0;
     for (int i = 0; (i < size); i += 4)
@@ -4050,7 +4050,7 @@ static void DoDecrypt(int size, wchar_t* pdata)
         encrypt = *p = *p ^ encrypt;
     }
 }
-bool BaseClient::ResetStaticData(const wchar_t * szIGCStaticFile, ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt)
+bool BaseClient::ResetStaticData(const char * szIGCStaticFile, ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt)
 {
     assert(ppStaticIGC);
     if (&m_pCoreIGC == ppStaticIGC)
@@ -4108,22 +4108,22 @@ void BaseClient::BoardShip(IshipIGC*  pship)
     if (pship)
     {
         assert(GetShip()->GetParentShip() == NULL);
-        StartLockDown(L"Boarding " + ZString(pship->GetName()) + L"'s ship....", lockdownTeleporting);
+        StartLockDown("Boarding " + ZString(pship->GetName()) + "'s ship....", lockdownTeleporting);
     }
     else
     {
         IshipIGC* pshipParent = GetShip()->GetParentShip();
         assert(pshipParent);
-        StartLockDown(L"Disembarking from " + ZString(pshipParent->GetName()) + L"'s ship....", lockdownTeleporting);
+        StartLockDown("Disembarking from " + ZString(pshipParent->GetName()) + "'s ship....", lockdownTeleporting);
     }
 }
 //KGJV #114
 // call GetPrivateProfileString with preset cfgfile. Valid after a Load(...) only.
 DWORD CfgInfo::GetCfgProfileString(
-	const wchar_t *c_szCfgApp,
-	const wchar_t *c_szKeyName,
-	const wchar_t *c_szDefaultValue,
-	wchar_t *szStr,
+	const char *c_szCfgApp,
+	const char *c_szKeyName,
+	const char *c_szDefaultValue,
+	char *szStr,
 	DWORD dwSize)
 {
 
@@ -4136,124 +4136,122 @@ DWORD CfgInfo::GetCfgProfileString(
 		m_szConfigFile);
 }
 //KGJV #114 - set config file name for GetCfgProfileString without loading
-void CfgInfo::SetCfgFile(const wchar_t * szConfig)
+void CfgInfo::SetCfgFile(const char * szConfig)
 {
 	m_szConfigFile = ZString(szConfig);
 }
-void CfgInfo::Load(const wchar_t * szConfig)
+void CfgInfo::Load(const char * szConfig)
 {
 	m_szConfigFile = ZString(szConfig); // KGJV #114 - save config file name for GetCfgProfileString
 
-	const wchar_t * c_szCfgApp = L"Allegiance";
-    wchar_t szStr[128]; // random number;
+    const char * c_szCfgApp = "Allegiance";
+    char szStr[128]; // random number;
     
-	GetPrivateProfileString(c_szCfgApp, L"ZAuth", L"azforum.cloudapp.net",
+    GetPrivateProfileString(c_szCfgApp, "ZAuth", "azforum.cloudapp.net", 
                                   szStr, sizeof(szStr), szConfig);
     strZAuth = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"ClubLobby", L"allegiancezone.cloudapp.net",
+    GetPrivateProfileString(c_szCfgApp, "ClubLobby", "allegiancezone.cloudapp.net", 
                                    szStr, sizeof(szStr), szConfig);
     strClubLobby = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"PublicLobby", L"allegiancezone.cloudapp.net",
+    GetPrivateProfileString(c_szCfgApp, "PublicLobby", "allegiancezone.cloudapp.net", 
                                    szStr, sizeof(szStr), szConfig);
     strPublicLobby = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"Club", L"allegiancezone.cloudapp.net",
+    GetPrivateProfileString(c_szCfgApp, "Club", "allegiancezone.cloudapp.net", 
                                    szStr, sizeof(szStr), szConfig);
     strClub = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"ClubMessageURL", L"http://autoupdate.allegiancezone.com/config/club/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
+    GetPrivateProfileString(c_szCfgApp, "ClubMessageURL", "http://autoupdate.allegiancezone.com/config/club/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
                                    szStr, sizeof(szStr), szConfig);
     strClubMessageURL = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"PublicMessageURL", L"http://autoupdate.allegiancezone.com/config/beta/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
+    GetPrivateProfileString(c_szCfgApp, "PublicMessageURL", "http://autoupdate.allegiancezone.com/config/beta/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
                                    szStr, sizeof(szStr), szConfig);
     strPublicMessageURL = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"ZoneEventsURL", L"http://autoupdate.allegiancezone.com/config/event/events.mdl", szStr, sizeof(szStr), szConfig);
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventsURL", "http://autoupdate.allegiancezone.com/config/event/events.mdl", szStr, sizeof(szStr), szConfig);
     strZoneEventsURL = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"ZoneEventDetailsURL", L"http://autoupdate.allegiancezone.com/config/event/",
+    GetPrivateProfileString(c_szCfgApp, "ZoneEventDetailsURL", "http://autoupdate.allegiancezone.com/config/event/", 
                                    szStr, sizeof(szStr), szConfig);
     strZoneEventDetailsURL = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"TrainingURL", L"http://allegiancezone.com/#/Training",
+    GetPrivateProfileString(c_szCfgApp, "TrainingURL", "http://allegiancezone.com/#/Training", 
                                    szStr, sizeof(szStr), szConfig);
     strTrainingURL = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"PassportUpdateURL", L"http://allegiancezone.com",
+    GetPrivateProfileString(c_szCfgApp, "PassportUpdateURL", "http://allegiancezone.com", 
                                    szStr, sizeof(szStr), szConfig);
     strPassportUpdateURL = szStr;
 
-	GetPrivateProfileString(c_szCfgApp, L"ZoneAuthGUID", L"{00000000-0000-0000-C000-000000000046}",
+    GetPrivateProfileString(c_szCfgApp, "ZoneAuthGUID", "{00000000-0000-0000-C000-000000000046}", 
                                    szStr, sizeof(szStr), szConfig);
-	/* Imago 10/14
-	int cbStr = wcslen(szStr) + 1;
+    int cbStr = strlen(szStr) + 1;
     LPOLESTR wszStr = (LPOLESTR)_alloca(sizeof(OLECHAR) * cbStr);
     MultiByteToWideChar(CP_ACP, 0, PCC(szStr), cbStr, wszStr, cbStr);
     if (cbStr == 1 || !ZSucceeded(IIDFromString(wszStr, &guidZoneAuth)))
     {
         guidZoneAuth = GUID_NULL;
     }
-	*/
 
-    GetPrivateProfileString(c_szCfgApp, L"FilelistCRC", L"0", 
+    GetPrivateProfileString(c_szCfgApp, "FilelistCRC", "0", 
                                    szStr, sizeof(szStr), szConfig);
-    _wcsupr(szStr);
+    _strupr(szStr);
     crcFileList = UTL::hextoi(szStr);
 
     if (crcFileList == 0)
-        debugf(L"FilelistCRC is missing or invalid from %s.\n", szConfig);
+        debugf("FilelistCRC is missing or invalid from %s.\n", szConfig);
 
-    GetPrivateProfileString(c_szCfgApp, L"FilelistSize", L"0", 
+    GetPrivateProfileString(c_szCfgApp, "FilelistSize", "0", 
                                    szStr, sizeof(szStr), szConfig);
 
-    nFilelistSize = _wtoi(szStr);
+    nFilelistSize = atoi(szStr);
 
     if (nFilelistSize == 0)
-        debugf(L"FilelistSize is missing or invalid from %s.\n", szConfig);
+        debugf("FilelistSize is missing or invalid from %s.\n", szConfig);
 
-    GetPrivateProfileString(c_szCfgApp, L"FilelistSite", L"", 
+    GetPrivateProfileString(c_szCfgApp, "FilelistSite", "", 
                                    szStr, sizeof(szStr), szConfig);
     strFilelistSite = szStr;
     
-    GetPrivateProfileString(c_szCfgApp, L"FilelistDirectory", L"", 
+    GetPrivateProfileString(c_szCfgApp, "FilelistDirectory", "", 
                                    szStr, sizeof(szStr), szConfig);
     strFilelistDirectory = szStr;
 
-    GetPrivateProfileString(c_szCfgApp, L"ClubMessageCRC", L"0", 
+    GetPrivateProfileString(c_szCfgApp, "ClubMessageCRC", "0", 
                                     szStr, sizeof(szStr), szConfig);
-    _wcsupr(szStr);
+    _strupr(szStr);
     crcClubMessageFile = UTL::hextoi(szStr);
 
-    GetPrivateProfileString(c_szCfgApp, L"PublicMessageCRC", L"0", 
+    GetPrivateProfileString(c_szCfgApp, "PublicMessageCRC", "0", 
                                     szStr, sizeof(szStr), szConfig);
-    _wcsupr(szStr);
+    _strupr(szStr);
     crcPublicMessageFile = UTL::hextoi(szStr);
 
-    GetPrivateProfileString(c_szCfgApp, L"UsePassport", L"0", 
+    GetPrivateProfileString(c_szCfgApp, "UsePassport", "0", 
                                    szStr, sizeof(szStr), szConfig);
-    bUsePassport = _wtoi(szStr) != 0;
+    bUsePassport = atoi(szStr) != 0;
 
     // mdvalley: get lobby port
-    GetPrivateProfileString(c_szCfgApp, L"LobbyClientPort", L"2302",
+    GetPrivateProfileString(c_szCfgApp, "LobbyClientPort", "2302",
                                    szStr, sizeof(szStr), szConfig);
-	dwLobbyPort = _wtoi(szStr);
+	dwLobbyPort = atoi(szStr);
     // Imago 9/14
-    GetPrivateProfileString(c_szCfgApp, L"ClubClientPort", L"2304",
+    GetPrivateProfileString(c_szCfgApp, "ClubClientPort", "2304",
                                    szStr, sizeof(szStr), szConfig);
-	dwClubPort = _wtoi(szStr);
+	dwClubPort = atoi(szStr);
 }
 
-void _debugf(const wchar_t* format, ...)
+void _debugf(const char* format, ...)
 {
     const size_t size = 512;
-	wchar_t         bfr[size];
+    char         bfr[size];
 
     va_list vl;
     va_start(vl, format);
-    _vsnwprintf(bfr, size, format, vl);
+    _vsnprintf(bfr, size, format, vl);
     va_end(vl);
 
     debugf(bfr);

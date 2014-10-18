@@ -140,27 +140,27 @@ bool    g_bCensor = true;
 //------------------------------------------------------------------------------
 // bad word storage
 //------------------------------------------------------------------------------
-wchar_t**  g_pBadWordList = 0;         // this has a memory leak, but it is only one per app, so it shouldn't be a real problem
+char**  g_pBadWordList = 0;         // this has a memory leak, but it is only one per app, so it shouldn't be a real problem
 int     g_iBadWordListSize = 0;
 int     g_iBadWordListMaxSize = 0;
 
 //------------------------------------------------------------------------------
 // bad word table management
 //------------------------------------------------------------------------------
-void    AddWord(wchar_t* pDirtyWord)
+void    AddWord (char* pDirtyWord)
 {
     // initialize the table if it hasn't already been initialized
     if (g_iBadWordListMaxSize == 0)
     {
         g_iBadWordListMaxSize = 8;
-		g_pBadWordList = new wchar_t*[g_iBadWordListMaxSize];
+        g_pBadWordList = new char*[g_iBadWordListMaxSize];
     }
 
     // grow the table if necessary
     while (g_iBadWordListSize >= g_iBadWordListMaxSize)
     {
         int     iNewSize = g_iBadWordListMaxSize * 2;
-		wchar_t**  pNewBadWordList = new wchar_t*[iNewSize];
+        char**  pNewBadWordList = new char*[iNewSize];
         for (int i = 0; i < g_iBadWordListMaxSize; i++)
             pNewBadWordList[i] = g_pBadWordList[i];
         delete[] g_pBadWordList;
@@ -189,7 +189,7 @@ int sortfunc (const void* a, const void* b)
 //------------------------------------------------------------------------------
 // function to build the automata that will be used to do the filtering
 //------------------------------------------------------------------------------
-void    BuildFilterAutomata(wchar_t* pBuffer)
+void    BuildFilterAutomata (char* pBuffer)
 {
     // skip to the end of the zone header
     while (*pBuffer != ENDWORD)
@@ -202,7 +202,7 @@ void    BuildFilterAutomata(wchar_t* pBuffer)
     while (*pBuffer != ENDWORDLIST)
     {
         // save the pointer to the beginning of the current word
-		wchar_t*   pDirtyWord = pBuffer;
+        char*   pDirtyWord = pBuffer;
 
         // advance the pointer to the end of the word
         while (*pBuffer != ENDWORD)
@@ -220,14 +220,14 @@ void    BuildFilterAutomata(wchar_t* pBuffer)
     }
 
     // now sort the list by length
-	qsort(g_pBadWordList, g_iBadWordListSize, sizeof(wchar_t*), sortfunc);
+    qsort (g_pBadWordList, g_iBadWordListSize, sizeof (char*), sortfunc);
 }
 
 //------------------------------------------------------------------------------
 // table to look up lower case conversions
 //------------------------------------------------------------------------------
 //                            "\0........\t\n..\r.................. !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~................................................................................................................................."
-wchar_t* gszConvertToLowerCase = L"\0........\t\n..\r.................. !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~.................................................................................................................................";
+char* gszConvertToLowerCase = "\0........\t\n..\r.................. !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~.................................................................................................................................";
 
 //------------------------------------------------------------------------------
 // resource id and other defines
@@ -242,8 +242,8 @@ wchar_t* gszConvertToLowerCase = L"\0........\t\n..\r.................. !\"#$%&'
 void    LoadBadWords (void)
 {
    	// yp your_persona march 24 2006 : Remove dependency on allbad.dll which is a lib we dont have the source code for. 
-	wchar_t *pBuffer;
-	pBuffer = (wchar_t*)malloc(sizeof(wchar_t) * 774); //Fix memory leak -Imago 8/2/09
+	char *pBuffer;
+	pBuffer = (char*)malloc(sizeof(char)*774); //Fix memory leak -Imago 8/2/09
 	// orig list 
 	// memcpy(pBuffer, "zone55|fuckyou|fuck_you|fuck_u|fucku|fucka|fuckit|fuckthis|fuckme|fucker|fuckr|fucking|fuckin|fuckn|motherfucker|motherfuck|mutherfucker|fucked|f_u_c|f_ck|f_k|fahq|fck|fkyou|fu_k|fuc|fuck|fuhk|fuk|fuq|schit|sh1t|shit|shlt|shyt|niger|nigr|niggr|nigger|faggot|phaq|phuc|phuk|phuq|phvc|phvk|phvq|f__c|f__k|f__u|fuh_q|   ", 318);
     // new list provided by BlackViper with a few modifications by mmf
@@ -257,19 +257,19 @@ void    LoadBadWords (void)
 //------------------------------------------------------------------------------
 // function to filter the bad words
 //------------------------------------------------------------------------------
-void    FilterBadWords(wchar_t* szString)
+void    FilterBadWords (char* szString)
 {
     // this algorithm absolutely stinks. There's all sorts of holes in it. It
     // just deserves to die horribly, but I have no time to do anything
     // better.
 
     // this is the set of characters we will use to obscure bad words
-	wchar_t*    random = L"*&^%$#@!!@#$%^&*@$^*!#%&&%#!*^$@";
+    char*    random = "*&^%$#@!!@#$%^&*@$^*!#%&&%#!*^$@";
 
     // copy the string and make it totally lowercase
-	wchar_t*   szLowerCopy = new wchar_t[wcslen(szString) + 1];
-    Strcpy (szLowerCopy, szString);
-	wchar_t*   tmp = szLowerCopy;
+    char*   szLowerCopy = new char[strlen (szString) + 1];
+    strcpy (szLowerCopy, szString);
+    char*   tmp = szLowerCopy;
     while (*tmp)
     {
         *tmp = gszConvertToLowerCase[*tmp];
@@ -280,11 +280,11 @@ void    FilterBadWords(wchar_t* szString)
     for (int i = 0; i < g_iBadWordListSize; i++)
     {
         // perform the search on the lower case copy
-		wchar_t*   szFound = wcsstr(szLowerCopy, g_pBadWordList[i]);
+        char*   szFound = strstr (szLowerCopy, g_pBadWordList[i]);
         while (szFound)
         {
             // we found a match, so figure the offset and copy the 
-			wchar_t*   cpy = g_pBadWordList[i];
+            char*   cpy = g_pBadWordList[i];
             tmp = szString + (szFound - szLowerCopy);
             while (*cpy)
             {
@@ -296,7 +296,7 @@ void    FilterBadWords(wchar_t* szString)
             }
 
             // now search again, in case there are more instances of the word
-            szFound = wcsstr (szLowerCopy, g_pBadWordList[i]);
+            szFound = strstr (szLowerCopy, g_pBadWordList[i]);
         }
     }
 
@@ -311,8 +311,8 @@ ZString CensorBadWords (const ZString& string)
 {
     if (g_bCensor)
     {
-		wchar_t*       szBuffer = new wchar_t[string.GetLength() + 1];
-        Strcpy (szBuffer, string);
+        char*       szBuffer = new char[string.GetLength () + 1];
+        strcpy (szBuffer, string);
         FilterBadWords (szBuffer);
         ZString     result (szBuffer);
         delete[] szBuffer;

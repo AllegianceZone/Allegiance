@@ -59,8 +59,8 @@ public:
 public:
   HRESULT FinalConstruct();
   void FinalRelease();
-  HRESULT Init(AGCEventID idEvent, LPCWSTR pszContext,
-    LPCWSTR pszSubject, long idSubject, long cArgTriplets, va_list argptr);
+  HRESULT Init(AGCEventID idEvent, LPCSTR pszContext,
+    LPCOLESTR pszSubject, long idSubject, long cArgTriplets, va_list argptr);
   HRESULT Init(const CAGCEventData& data);
 
 // Operations

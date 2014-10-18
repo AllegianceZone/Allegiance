@@ -2001,7 +2001,7 @@ class ThingSiteImpl : public ThingSitePrivate
                                     ClusterSite*    pcs = pcluster->GetClusterSite();
                                     pcs->SetClusterAssetMask(pcs->GetClusterAssetMask() | am);
 
-                                    trekClient.PostText(true, START_COLOR_STRING L"%s %s" END_COLOR_STRING L" spotted in %s",
+                                    trekClient.PostText(true, START_COLOR_STRING "%s %s" END_COLOR_STRING " spotted in %s",
                                                         (PCC) ConvertColorToString (pside->GetColor ()), pside->GetName(), GetModelName(pmodel), pcluster->GetName());
                                 }
 								else if (ppt->GetRipcordDelay() >= 0.0f)
@@ -2949,7 +2949,7 @@ void WinTrekClient::DestroyTeleportProbe(IprobeIGC* pprobe)
 	}
 }
 
-void WinTrekClient::PostText(bool bCritical, const wchar_t* pszText, ...)
+void WinTrekClient::PostText(bool bCritical, const char* pszText, ...)
 {
     if (GetWindow()->GetConsoleImage())
     {
@@ -3455,10 +3455,10 @@ void WinTrekClient::ServerListReq()
 	//}
 	BaseClient::ServerListReq();
 }
-void WinTrekClient::CreateMissionReq(const wchar_t *szServer, const wchar_t *szAddr, const wchar_t *szIGCStaticFile, const wchar_t *szGameName)
+void WinTrekClient::CreateMissionReq(const char *szServer,const char *szAddr, const char *szIGCStaticFile, const char *szGameName)
 {
     GetWindow()->SetWaitCursor();
-    TRef<IMessageBox> pmsgBox = CreateMessageBox(L"Creating a game...", NULL, false);
+    TRef<IMessageBox> pmsgBox = CreateMessageBox("Creating a game...", NULL, false);
     GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
 	BaseClient::CreateMissionReq(szServer,szAddr,szIGCStaticFile,szGameName);
 }
@@ -3472,7 +3472,7 @@ void WinTrekClient::JoinMission(MissionInfo * pMission, const char* szMissionPas
 }
 
 
-void WinTrekClient::OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
+void WinTrekClient::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
     // close the "logging in" popup
     if (GetWindow()->GetPopupContainer() && !GetWindow()->GetPopupContainer()->IsEmpty())
@@ -3497,7 +3497,7 @@ void WinTrekClient::OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureRe
     }
 }
 
-void WinTrekClient::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
+void WinTrekClient::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
     //
     // We've just logged onto lobby server.
@@ -4228,7 +4228,7 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
                                      ChatTarget  ctRecipient,
                                      ObjectID    oidRecipient,
                                      SoundID     idSonicChat,
-									 const wchar_t* pszText,
+                                     const char* pszText,
                                      CommandID   cid,
                                      ObjectType  otTarget,
                                      ObjectID    oidTarget,
@@ -4917,7 +4917,7 @@ void WinTrekClient::ResetSound()
 }
 
 
-HRESULT WinTrekClient::ConnectToServer(BaseClient::ConnectInfo & ci, DWORD dwCookie, Time now, const wchar_t* szPassword, bool bStandalonePrivate)
+HRESULT WinTrekClient::ConnectToServer(BaseClient::ConnectInfo & ci, DWORD dwCookie, Time now, const char* szPassword, bool bStandalonePrivate)
 {
     // The actual connect happens in BaseClient
     HRESULT hr = BaseClient::ConnectToServer(ci, dwCookie, now, szPassword, bStandalonePrivate);
@@ -4929,14 +4929,14 @@ HRESULT WinTrekClient::ConnectToServer(BaseClient::ConnectInfo & ci, DWORD dwCoo
 
     if (!m_fm.IsConnected()) 
     {
-        TRef<IMessageBox> pmsgBox = CreateMessageBox(L"Failed to connect to the server.");
+        TRef<IMessageBox> pmsgBox = CreateMessageBox("Failed to connect to the server.");
         GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
         g_bQuickstart = false;
     }
     else
     {
         GetWindow()->SetWaitCursor();
-        TRef<IMessageBox> pmsgBox = CreateMessageBox(L"Logging in...", NULL, false);
+        TRef<IMessageBox> pmsgBox = CreateMessageBox("Logging in...", NULL, false);
         GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
         m_bDisconnected = false;
     }
@@ -5032,7 +5032,7 @@ HRESULT WinTrekClient::ConnectToClub(BaseClient::ConnectInfo * pci)
 }
 
 
-void WinTrekClient::OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam)
+void WinTrekClient::OnQuitMission(QuitSideReason reason, const char* szMessageParam)
 {
     m_sideidLastWinner = NA;
     m_bWonLastGame = false;
@@ -5235,7 +5235,7 @@ void  WinTrekClient::SaveSquadMemberships(const char* szCharacterName)
     }
 }
 
-void  WinTrekClient::RestoreSquadMemberships(const wchar_t* szCharacterName)
+void  WinTrekClient::RestoreSquadMemberships(const char* szCharacterName)
 {
     m_squadmemberships.SetEmpty();
 

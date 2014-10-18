@@ -390,7 +390,7 @@ STDMETHODIMP CAdminSession::get_Version(IAGCVersionInfo** ppVersion)
 
 STDMETHODIMP CAdminSession::Stop()
 {
-  OutputDebugString(L"\nSomeone is shutting down the server (possibly remotely) using the Admin Object Model.\n");
+  OutputDebugString("\nSomeone is shutting down the server (possibly remotely) using the Admin Object Model.\n");
 
   _Module.StopAllsrv();
 
@@ -481,7 +481,7 @@ STDMETHODIMP CAdminSession::get_PerfCounters(IAGCEvent** ppPerfCounters)
 STDMETHODIMP CAdminSession::SendAdminChat(BSTR bstrText, long nUserID, DATE dateOriginal)
 {
   // This just triggers an event
-  _AGCModule.TriggerEvent(NULL, EventID_AdminChat, L"", nUserID, -1, -1, 2,
+  _AGCModule.TriggerEvent(NULL, EventID_AdminChat, "", nUserID, -1, -1, 2,
     "Message"      , VT_BSTR , bstrText,
     "OriginalTime" , VT_DATE , dateOriginal);
   

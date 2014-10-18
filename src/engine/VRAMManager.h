@@ -50,7 +50,7 @@ private:
 		DWORD					dwActualWidth;				// Actual width of allocated D3D texture.
 		DWORD					dwActualHeight;				// Actual width of allocated D3D texture.
 
-		wchar_t					szTextureName[32];			// DEBUG, to be removed at some point.
+		char					szTextureName[32];			// DEBUG, to be removed at some point.
 
 		struct
 		{
@@ -130,7 +130,7 @@ public:
 								DWORD		dwWidth,
 								DWORD		dwHeight,
 								bool		bSystemMemory,
-								wchar_t *		szTextureName = NULL,
+								char *		szTextureName = NULL,
 								DWORD		dwUsageFlags = 0,
 								D3DPOOL		texPool = D3DPOOL_MANAGED );
 
@@ -141,7 +141,7 @@ public:
 									IObject *				pobjectMemory, 
 									const bool				bColorKey,
 									const Color &			cColorKey, 
-									wchar_t *					szTextureName = NULL);
+									char *					szTextureName = NULL );
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	HRESULT		CreateRenderTarget(	TEXHANDLE	texHandle,

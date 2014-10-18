@@ -216,8 +216,8 @@ namespace Training
                     hullID = 801;
                     break;
             }
-			wchar_t        name[32];
-            swprintf (name, L"Derelict %02d", i + 1);
+            char        name[32];
+            sprintf (name, "Derelict %02d", i + 1);
             m_derelict_hulls[i] = pCore->GenerateNewShipID ();
             IshipIGC*   pShip = CreateDrone (name, m_derelict_hulls[i], hullID, 1, c_ptPlayer);
             pShip->SetAutopilot (false);

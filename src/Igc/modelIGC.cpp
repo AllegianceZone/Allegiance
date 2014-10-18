@@ -103,8 +103,8 @@ void    CmodelIGC::Update(Time now)
     }
 }
 
-void   CmodelIGC::LoadCVH(const wchar_t*     pszFileName,
-                          const wchar_t*     pszIconName,
+void   CmodelIGC::LoadCVH(const char*     pszFileName,
+                          const char*     pszIconName,
                           ModelAttributes attributes,
                           HitTestShape    htsDefault)
 {
@@ -125,14 +125,14 @@ HRESULT   CmodelIGC::LoadEffect(const Color& color, ModelAttributes attributes)
 
     return m_pThingSite->LoadEffect(color);
 }
-HRESULT CmodelIGC::LoadWarp(const wchar_t* textureName, const wchar_t* iconName, ModelAttributes attributes)
+HRESULT CmodelIGC::LoadWarp(const char* textureName, const char* iconName, ModelAttributes attributes)
 {
     LoadCVH(NULL, iconName, attributes, c_htsCone);
 
     return m_pThingSite->LoadAleph(textureName);
 }
 
-HRESULT CmodelIGC::LoadMine(const wchar_t* textureName, float strength, float radius, const wchar_t* iconName, ModelAttributes attributes)
+HRESULT CmodelIGC::LoadMine(const char* textureName, float strength, float radius, const char* iconName, ModelAttributes attributes)
 {
     LoadCVH(NULL, iconName, attributes, c_htsSphere);
 
@@ -140,9 +140,9 @@ HRESULT CmodelIGC::LoadMine(const wchar_t* textureName, float strength, float ra
 }
 
 HRESULT     CmodelIGC::Load(int                options,
-                            const wchar_t*        model,
-							const wchar_t*        texture,
-							const wchar_t*        icon,
+                            const char*        model,
+                            const char*        texture,
+                            const char*        icon,
                             ModelAttributes    attributes)
 {
     LoadCVH(model, icon, attributes);
@@ -268,7 +268,7 @@ void    CmodelIGC::SetCluster(IclusterIGC* newVal)
     }
 }
 
-HRESULT CmodelIGC::LoadDecal(const wchar_t* pszTextureName, const wchar_t* iconName, const Color& color, bool bDirectional, float width, ModelAttributes attributes,
+HRESULT CmodelIGC::LoadDecal(const char* pszTextureName, const char* iconName, const Color& color, bool bDirectional, float width, ModelAttributes attributes,
                              HitTestShape   htsDefault)
 {
     LoadCVH(NULL, iconName, attributes, htsDefault);

@@ -25,7 +25,7 @@ public:
 // Overrides
 public:
   #ifdef _DEBUG
-	virtual void DebugOutput(wchar_t char* psz)
+    virtual void DebugOutput(const char* psz)
     {
       if (NULL != m_spDebugHook)
         m_spDebugHook->DebugOutput(psz);

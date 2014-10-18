@@ -365,7 +365,8 @@ void CAGCEventLogger::LogEvent(IAGCEvent* pEvent, bool bSynchronous)
             PRIVATE_ASSERTE(IMarshalPtr(pEvent) != NULL);
             CComBSTR bstrTemp;
             PRIVATE_VERIFYE(SUCCEEDED(pEvent->SaveToString(&bstrTemp)));
-			lstrcpyn(m_table.m_szObjRef, OLE2CW(bstrTemp), sizeofArray(m_table.m_szObjRef));
+            WideCharToMultiByte(CP_ACP, 0, bstrTemp, -1,
+              m_table.m_szObjRef, sizeof(m_table.m_szObjRef), 0, 0);
 
             // Insert the row into the table
             hr = m_table.Insert();

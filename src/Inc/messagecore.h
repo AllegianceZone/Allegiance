@@ -77,15 +77,15 @@ class CFMRecipient
 friend CFMConnection;
 friend CFMGroup;
 public:
-	const wchar_t * GetName() { return m_szName; }
+  const char * GetName() {return m_szName;}
   DWORD     GetID() {return GetDPID();}
   virtual int GetCountConnections() = 0;
 
 protected:
-  CFMRecipient(const wchar_t * szName, DPID dpid) :
+  CFMRecipient(const char * szName, DPID dpid) :
     m_dpid(dpid)
   {
-	  m_szName = new wchar_t[lstrlen(szName) + 1];
+    m_szName = new char[lstrlen(szName) + 1];
     lstrcpy(m_szName, szName);
   }
   ~CFMRecipient()
@@ -95,7 +95,7 @@ protected:
   DPID     GetDPID() {return m_dpid;}
 
 private:
-	wchar_t * m_szName;
+  char * m_szName;
 
 protected: // groups set their own dpid since they're not pre-created.
   void      SetDPID(DPID dpid) {m_dpid = dpid;}
@@ -175,7 +175,7 @@ public:
 
 
 private:
-	CFMConnection(FedMessaging * fm, const wchar_t * szName, DPID dpid); // only FedMessaging::CreateConnection can create these things
+  CFMConnection(FedMessaging * fm, const char * szName, DPID dpid); // only FedMessaging::CreateConnection can create these things
   ~CFMConnection() {} // you can't delete these directly. You must use Delete()
 
   void Delete(FedMessaging * pfm); // basically the destructor, but with a parameter
@@ -211,7 +211,7 @@ public:
   virtual int GetCountConnections() {return m_cPlayers;}
 
 private:
-	CFMGroup(FedMessaging * pfm, wchar_t * szName);
+  CFMGroup(FedMessaging * pfm, const char * szName);
   ~CFMGroup() {}
   void PlayerAdded(CFMConnection * pcnxn);
   void PlayerDeleted(CFMConnection * pcnxn);
@@ -259,7 +259,7 @@ public:
   virtual HRESULT OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm) = 0;
   virtual HRESULT OnSysMessage(FedMessaging * pthis) {return S_OK;}
   virtual void    OnMessageNAK(FedMessaging * pthis, DWORD dwTime, CFMRecipient * prcp) {}
-  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType) { return 0; }
+  virtual int     OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType) {return 0;}
   virtual HRESULT OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) {return S_OK;}
   virtual HRESULT OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) {return S_OK;}
   virtual HRESULT OnSessionLost(FedMessaging * pthis) {return S_OK;}
@@ -297,12 +297,12 @@ public:
   static const  MsgClsPrio c_mcpDefault;
   FedMessaging(IFedMessagingSite * pfmSite);
   ~FedMessaging();
-  HRESULT             Connect(const wchar_t * szAddress);
+  HRESULT             Connect(const char * szAddress);
   HRESULT             HostSession(GUID guidApplication, bool fKeepAlive, HANDLE hEventServer, bool fProtocol, DWORD dwPort = 0 );	// mdvalley: added optional dwPort. Set for lobby. Game servers should leave it at 0.
-  HRESULT             JoinSession(GUID guidApplication, const wchar_t * szServer, wchar_t * szName, DWORD dwPort = 6073);			// 6073 is the standard enum port, and should be used when a specfic one is not known/not available
-  HRESULT             JoinSessionInstance(GUID guidInstance,  wchar_t * szName);
+  HRESULT             JoinSession(GUID guidApplication, const char * szServer, const char * szName, DWORD dwPort = 6073);			// 6073 is the standard enum port, and should be used when a specfic one is not known/not available
+  HRESULT             JoinSessionInstance(GUID guidInstance, const char * szName);
 //  HRESULT             JoinSessionInstance( GUID guidApplication, GUID guidInstance, IDirectPlay8Address* addr, const char * szName );
-  HRESULT             JoinSessionInstance(GUID guidApplication, GUID guidInstance, IDirectPlay8Address* addr, IDirectPlay8Address* device, wchar_t * szName);	// mdvalley: added device argument, aquired from enum response
+  HRESULT             JoinSessionInstance(GUID guidApplication, GUID guidInstance, IDirectPlay8Address* addr, IDirectPlay8Address* device, const char * szName );	// mdvalley: added device argument, aquired from enum response
 
 
   GUID                GetHostApplicationGuid()
@@ -419,9 +419,9 @@ public:
     return m_pcnxnServer;
   }
 
-  CFMGroup *      CreateGroup(wchar_t * szName)
+  CFMGroup *      CreateGroup(const char * szName)
   {
-    static CTempTimer tt(L"in CreateGroup", .01f);
+    static CTempTimer tt("in CreateGroup", .01f);
     tt.Start();
     CFMGroup * pgrp = new CFMGroup(this, szName);
     tt.Stop();
@@ -431,7 +431,7 @@ public:
 
   void            DeleteConnection(CFMConnection & cnxn) 
   {
-    static CTempTimer tt(L"in DeleteConnection", .01f);
+    static CTempTimer tt("in DeleteConnection", .01f);
     tt.Start();
     DPID dpnid = cnxn.GetID();
     m_pfmSite->OnDestroyConnection(this, cnxn);
@@ -448,7 +448,7 @@ public:
     if (pgrp)
     {
       m_groupMap.erase( pgrp->GetID() );
-      static CTempTimer tt(L"in DeleteGroup", .01f);
+      static CTempTimer tt("in DeleteGroup", .01f);
       tt.Start();
       pgrp->Delete(this);
       tt.Stop();
@@ -458,7 +458,7 @@ public:
   void            AddConnectionToGroup(CFMGroup * pgrp, CFMConnection * pcnxn)
   { 
     assert(pgrp && pcnxn);
-    static CTempTimer tt(L"in AddConnectionToGroup", .01f);
+    static CTempTimer tt("in AddConnectionToGroup", .01f);
     tt.Start();
     pgrp->AddConnection(this, pcnxn); 
     tt.Stop();
@@ -467,13 +467,13 @@ public:
   void            DeleteConnectionFromGroup(CFMGroup * pgrp, CFMConnection * pcnxn)
   { 
     assert(pgrp && pcnxn);
-    static CTempTimer tt(L"in DeleteConnectionFromGroup", .01f);
+    static CTempTimer tt("in DeleteConnectionFromGroup", .01f);
     tt.Start();
     pgrp->DeleteConnection(this, pcnxn); 
     tt.Stop();
   }
 
-  HRESULT         GetIPAddress(CFMConnection & cnxn, wchar_t szRemoteAddress[16]);
+  HRESULT         GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[16]);
   HRESULT         GetListeningPort(DWORD* dwPort);
 
   //  <NKM> 07-Aug-2004
@@ -524,9 +524,9 @@ public:
   HRESULT GetLinkDetails(CFMConnection * pcnxn, OUT DWORD * pdwHundredbpsG, OUT DWORD * pdwmsLatencyG, 
                          OUT DWORD * pdwHundredbpsU, OUT DWORD * pdwmsLatencyU);
 
-  HRESULT EnumSessions(GUID guidApplication, const wchar_t * szServer); // blank for broadcast
+  HRESULT EnumSessions(GUID guidApplication, const char * szServer); // blank for broadcast
 
-  void SetSessionDetails(wchar_t * szDetails); // tokenized name/value pairs: Name\tValue\nName\tValue...
+  void SetSessionDetails(char * szDetails); // tokenized name/value pairs: Name\tValue\nName\tValue...
 
   void ResetOutBuffer()
   {
@@ -539,7 +539,7 @@ private:
   Time            m_timeMsgLast;
   CFMConnection*  GetConnectionFromDpid(DPID dpid);
   CFMGroup *      GetGroupFromDpid(DPID dpid);
-  CFMConnection * CreateConnection(const wchar_t * szName, DPID dpid); // after the physical connection has already been established
+  CFMConnection * CreateConnection(const char * szName, DPID dpid); // after the physical connection has already been established
 
   FEDMESSAGE *    PfmGetNext(FEDMESSAGE * pfm); // Use to run through all messages in a received packet
       // returns NULL if no more messages in packet
@@ -550,7 +550,7 @@ private:
   bool            KillSvr();
   HRESULT         ConnectToDPAddress(LPVOID pAddress);
   HRESULT         OnSysMessage( const DPlayMsg& msg );
-  HRESULT         EnumHostsInternal(GUID guidApplication, const wchar_t * szServer, DWORD dwPort = 6073);	// mdvalley: dwPort defaults to standard enumeration port
+  HRESULT         EnumHostsInternal(GUID guidApplication, const char * szServer, DWORD dwPort = 6073);	// mdvalley: dwPort defaults to standard enumeration port
   
   //  <NKM> 08-Aug-2004
   // No enum sessions in DX9 - probably need EnumHosts.
@@ -658,7 +658,7 @@ private:
 // Only use this to create variable length fields. NO fixed-size members can precede this
 #define FM_VAR_ITEM(NAME) IB ib##NAME; CB cb##NAME
 // Use this to actually reference existing var-length props
-#define FM_VAR_REF(PFM, NAME) ((PFM)->cb##NAME ? (wchar_t*)(PFM) + (PFM)->ib##NAME : NULL)
+#define FM_VAR_REF(PFM, NAME) ((PFM)->cb##NAME ? (char*)(PFM) + (PFM)->ib##NAME : NULL)
 
 /* For each message structure, the variable length items MUST go first, then the 
    fixed length items
@@ -694,7 +694,7 @@ extern char * g_rgszMsgNames[];
 class AddMsg
 {
 public:
-	AddMsg(FEDMSGID fmid, char * szMsgName)
+  AddMsg(FEDMSGID fmid, char * szMsgName)
   {
     assert (fmid <= MAXMESSAGES);
     g_rgszMsgNames[fmid] = szMsgName;

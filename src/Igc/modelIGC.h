@@ -95,18 +95,18 @@ class   CmodelIGC
         void            Update(Time now);
 
     // ImodelIGC
-		virtual void        LoadCVH(const wchar_t*     pszFileName,
-                                    const wchar_t*     pszIconName,
+        virtual void        LoadCVH(const char*     pszFileName,
+                                    const char*     pszIconName,
                                     ModelAttributes attributes,
                                     HitTestShape    htsDefault = c_htsSphere);
-		HRESULT         LoadMine(const wchar_t* textureName, float strength, float radius, const wchar_t* iconName, ModelAttributes attributes);
-		HRESULT         LoadWarp(const wchar_t* textureName, const wchar_t* iconName, ModelAttributes attributes);
+        HRESULT         LoadMine(const char* textureName, float strength, float radius, const char* iconName, ModelAttributes attributes);
+        HRESULT         LoadWarp(const char* textureName, const char* iconName, ModelAttributes attributes);
         HRESULT         LoadEffect(const Color& color, ModelAttributes attributes);
 
         HRESULT         Load(int                options,
-                             const wchar_t*        model,
-							 const wchar_t*        texture,
-							 const wchar_t*        icon,
+                             const char*        model,
+                             const char*        texture,
+                             const char*        icon,
                              ModelAttributes    attributes);
 
         bool            GetVisibleF(void) const
@@ -179,7 +179,7 @@ class   CmodelIGC
         {
 			// mmf replaced assert with log msg
 		    if (!(newVal * newVal >= 0.0f)) {
-				debugf(L"mmf Igc modelIGC.h SetVelocity: newVal^2 debug build would have called assert and exited, commented out for now\n");
+				debugf("mmf Igc modelIGC.h SetVelocity: newVal^2 debug build would have called assert and exited, commented out for now\n");
 			}
             // assert (newVal * newVal >= 0.0f);
             m_pHitTest->SetVelocity(newVal);
@@ -263,20 +263,20 @@ class   CmodelIGC
         }
         void                SetCluster(IclusterIGC* newVal);
 
-		const wchar_t*         GetName(void) const
+        const char*         GetName(void) const
         {
             return m_name;
         }
-		void                SetName(const wchar_t* newVal)
+        void                SetName(const char* newVal)
         {
             UTL::putName(m_name, newVal);
         }
-		void                SetSecondaryName(const wchar_t* newVal)
+        void                SetSecondaryName(const char* newVal)
         {
             assert (strlen(newVal) < c_cbName-1);
             m_name[0] = '\0';
 
-            Strcpy(m_name+1, newVal);
+            strcpy(m_name+1, newVal);
         }
 
         void                SetSignature(float    newVal)
@@ -292,13 +292,13 @@ class   CmodelIGC
             m_signature += delta;
         }
 
-		void                SetTexture(const wchar_t* pszTextureName)
+        void                SetTexture(const char* pszTextureName)
         {
             m_pThingSite->SetTexture(pszTextureName);
         }
 
-		HRESULT                 LoadDecal(const wchar_t*      textureName,
-                                          const wchar_t*      iconName,
+        HRESULT                 LoadDecal(const char*      textureName,
+                                          const char*      iconName,
                                           const Color&     color,
                                           bool             bDirectional,
                                           float            width,
@@ -365,7 +365,7 @@ class   CmodelIGC
         float               m_mass;
         float               m_signature;
         HitTest*            m_pHitTest;
-		wchar_t                m_name[c_cbName];
+        char                m_name[c_cbName];
         ModelAttributes     m_attributes;
         bool                m_visibleF;
         bool                m_selectedF;
@@ -446,8 +446,8 @@ template<class T> class TmodelIGC : public T
         {
             m_model.SetMyMission(pMission);
         }
-		virtual void        LoadCVH(const wchar_t*     pszFileName,
-                                    const wchar_t*     pszIconName,
+        virtual void        LoadCVH(const char*     pszFileName,
+                                    const char*     pszIconName,
                                     ModelAttributes attributes,
                                     HitTestShape    htsDefault = c_htsSphere)
         {
@@ -457,19 +457,19 @@ template<class T> class TmodelIGC : public T
         {
             return m_model.LoadEffect(color, attributes);
         }
-		virtual HRESULT              LoadMine(const wchar_t* textureName, float strength, float radius, const wchar_t* icon, ModelAttributes attributes)
+        virtual HRESULT              LoadMine(const char* textureName, float strength, float radius, const char* icon, ModelAttributes attributes)
         {
             return m_model.LoadMine(textureName, strength, radius, icon, attributes);
         }
-		virtual HRESULT              LoadWarp(const wchar_t* textureName, const wchar_t* icon, ModelAttributes attributes)
+        virtual HRESULT              LoadWarp(const char* textureName, const char* icon, ModelAttributes attributes)
         {
             return m_model.LoadWarp(textureName, icon, attributes);
         }
 
         virtual HRESULT              Load(int                  options,
-                                          const wchar_t*          model,
-										  const wchar_t*          texture,
-										  const wchar_t*          icon,
+                                          const char*          model,
+                                          const char*          texture,
+                                          const char*          icon,
                                           ModelAttributes      attributes)
         {
             return m_model.Load(options, model, texture, icon, attributes);
@@ -592,15 +592,15 @@ template<class T> class TmodelIGC : public T
             m_model.SetCluster(newVal);
         }
 
-		virtual wchar_t const*          GetName(void) const
+        virtual char const*          GetName(void) const
         {
             return m_model.GetName();
         }
-		virtual void                 SetName(const wchar_t* newVal)
+        virtual void                 SetName(const char* newVal)
         {
             m_model.SetName(newVal);
         }
-		void                SetSecondaryName(const wchar_t* newVal)
+        void                SetSecondaryName(const char* newVal)
         {
             m_model.SetSecondaryName(newVal);
         }
@@ -618,13 +618,13 @@ template<class T> class TmodelIGC : public T
             m_model.ChangeSignature(delta);
         }
 
-		virtual void                SetTexture(const wchar_t* pszTextureName)
+        virtual void                SetTexture(const char* pszTextureName)
         {
             m_model.SetTexture(pszTextureName);
         }
 
-		virtual HRESULT              LoadDecal(const wchar_t*      textureName,
-                                               const wchar_t*      iconName,
+        virtual HRESULT              LoadDecal(const char*      textureName,
+                                               const char*      iconName,
                                                const Color&     color,
                                                bool             bDirectional,
                                                float            width,

@@ -37,7 +37,7 @@ public:
 // Operations
 public:
 
-	int  Init(int argc, wchar_t* argv[]);
+    int  Init(int argc, char* argv[]);
     int  Run();
 
 // Handler prototypes:
@@ -52,7 +52,7 @@ public:
         m_ProgressDownload = GetDlgItem(IDC_PROGRESS_DOWNLOAD);
         m_staticFileName   = GetDlgItem(IDC_STATIC_FILENAME  );
 
-        m_staticFileName.SetWindowText(L"");
+        m_staticFileName.SetWindowText("");
 
 		return 1;  // Let the system set the focus
 	}
@@ -93,7 +93,7 @@ public:
     CWindow m_ProgressAnalyze;
     CWindow m_ProgressDownload;
     CWindow m_staticFileName;
-	wchar_t m_szPostUpdateEXE[MAX_PATH];
+    char m_szPostUpdateEXE[MAX_PATH];
 
 // Data Members
 protected:

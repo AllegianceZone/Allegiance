@@ -22,8 +22,7 @@
 //#ifndef _WIN32_WINNT
 //  #define _WIN32_WINNT 0x0400
 //#endif
-
-#define _ATL_FREE_THREADED
+#define _ATL_APARTMENT_THREADED
 
 #include <atlbase.h>
 #include <AGC.h>
@@ -58,7 +57,7 @@ public:
 
 // Operations
 public:
-  HRESULT      RegisterServer(BOOL bReRegister, BOOL bRegTypeLib, BOOL bService, int argc, wchar_t * argv[]);
+  HRESULT      RegisterServer(BOOL bReRegister, BOOL bRegTypeLib, BOOL bService, int argc, char * argv[]);
   HRESULT      UnregisterServer();
 
   void         RegisterCOMObjects();
@@ -76,7 +75,7 @@ public:
   void		   InitPIDs();																//also remember children pids for cleanup and
   int		   GetChildCount(){return m_iPIDID;}										//provide accurate count to the server list 
 #endif 
-  BOOL         InstallService(int argc, wchar_t * argv[]);
+  BOOL         InstallService(int argc, char * argv[]);
   BOOL         RemoveService(void);
 
   static void  WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
@@ -125,7 +124,7 @@ void WINAPI _ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
 
 
 extern const GUID APPID_AllSrv;
-extern const wchar_t *c_szAPPID_AllSrv; // string form of APPID_AllSrv
+extern const char *c_szAPPID_AllSrv; // string form of APPID_AllSrv
 extern const CATID CATID_AllegianceAdmin;
 
 

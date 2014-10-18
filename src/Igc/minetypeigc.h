@@ -87,16 +87,16 @@ class CmineTypeIGC : public ImineTypeIGC
         {
             return m_data.defenseType;
         }
-		virtual wchar_t const*     GetName(void) const
+        virtual char const*     GetName(void) const
         {
             return m_data.launcherDef.name;
         }
 
-		virtual wchar_t const*     GetModelName(void) const
+        virtual char const*     GetModelName(void) const
         {
             return m_data.modelName;
         }
-		virtual wchar_t const*     GetModelTexture(void) const
+        virtual char const*     GetModelTexture(void) const
         {
             return m_data.textureName;
         }

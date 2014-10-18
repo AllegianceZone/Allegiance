@@ -48,7 +48,7 @@ CFSShip::CFSShip(TRef<IshipIGC> pShip, bool fIsPlayer)
   m_bHasUpdate = false;
 
   m_warpState = warpReady;
-  debugf(L"New ship (%s): Name=%s, ShipID=%d, PilotType=%d\n", fIsPlayer ? "player" : "drone",
+  debugf("New ship (%s): Name=%s, ShipID=%d, PilotType=%d\n", fIsPlayer ? "player" : "drone",
       pShip->GetName(), pShip->GetObjectID(), pShip->GetPilotType());
 
   
@@ -58,7 +58,7 @@ CFSShip::~CFSShip()
 {
   //NYI hack ... ppso will need to be saved for players so they can rejoin and/or get their scores recorded when the game ends
 
-	debugf(L"Destroying %s, id=%d\n", GetName(), GetShipID());
+  debugf("Destroying %s, id=%d\n", GetName(), GetShipID());
 
   AnnounceExit(NULL, SDR_LOGGEDOFF);
   m_cShips--;
@@ -621,7 +621,7 @@ void CFSShip::CaptureStation(IstationIGC * pstation)
   pstation->SetSide(pside);
   // TE: Fire AGCEvent when base is captured
   CFSMission * pfsMission = this->GetMission();
-  LPCWSTR pszContext = pfsMission->GetIGCMission() ? pfsMission->GetIGCMission()->GetContextName() : NULL;
+  LPCSTR pszContext = pfsMission->GetIGCMission() ? pfsMission->GetIGCMission()->GetContextName() : NULL;
   _AGCModule.TriggerContextEvent(NULL, EventID_StationChangesSides, pszContext,
     GetName(), GetShipID(), pside->GetUniqueID(), -1, 4,
 	"GameID"	 , VT_I4   , pfsMission->GetMissionID(),

@@ -29,7 +29,7 @@ class CtreasureSetIGC : public ItreasureSetIGC
 
         ~CtreasureSetIGC(void)
         {
-			delete[](wchar_t*)m_data;
+            delete [] (char*)m_data;
         }
 
     // IbaseIGC
@@ -53,7 +53,7 @@ class CtreasureSetIGC : public ItreasureSetIGC
         }
 
     // ItreasureSetIGC
-        virtual const wchar_t*                 GetName(void) const
+        virtual const char*                 GetName(void) const
         {
             return m_data->name;
         }
@@ -80,9 +80,9 @@ class CtreasureSetIGC : public ItreasureSetIGC
 
                 m_maxTreasureData += c_increment;
 
-				DataTreasureSetIGC*    newData = (DataTreasureSetIGC*)(new wchar_t[newSize]);
+                DataTreasureSetIGC*    newData = (DataTreasureSetIGC*)(new char [newSize]);
                 memcpy(newData, m_data, oldSize);
-				delete[] (wchar_t*)m_data;
+                delete [] (char*)m_data;
 
                 m_data = newData;
             }

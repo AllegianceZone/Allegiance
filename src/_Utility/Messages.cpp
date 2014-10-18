@@ -87,7 +87,6 @@ static const char* getMessageString( DWORD id )
 	return g_dpMsgids[myMsgid];
 }
 
-/* imago removed 10/14
 //  <NKM> 08-Aug-2004
 // Added
 //-----------------------------------------------------------------------------
@@ -120,9 +119,9 @@ static WCHAR* constChar2Wchar( const char* from )
 
 	return to;
 }
-*/
 
-/* imago remove 10/14
+
+
 //  <NKM> 08-Aug-2004
 // Added
 //-----------------------------------------------------------------------------
@@ -154,7 +153,7 @@ static char* wChar2ConstChar( WCHAR* from )
 
 	return to;
 }
-*/
+
 
 /*-------------------------------------------------------------------------
 * VerifyMessages
@@ -194,9 +193,9 @@ void VerifyMessage(LPBYTE pb, CB cbTotal)
 void FedMessaging::EnumHostsCallback ( const DPNMSG_ENUM_HOSTS_RESPONSE& resp )
 {
 #ifdef DEBUG  
-	wchar_t szBuff[128];
+	char szBuff[128];
 	const DPN_APPLICATION_DESC* appDesc = resp.pApplicationDescription;
-	wsprintf(szBuff, L"Found a session: {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x} for application {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}\n", 
+	wsprintf(szBuff, "Found a session: {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x} for application {%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}\n", 
 		appDesc->guidInstance.Data1,    appDesc->guidInstance.Data2,
 		appDesc->guidInstance.Data3,    appDesc->guidInstance.Data4[0],
 		appDesc->guidInstance.Data4[1], appDesc->guidInstance.Data4[2],
@@ -374,7 +373,7 @@ StartOver: // if we overrun our buffer, need to start over after flushing it
 			{
 				if (*pBlobSrc) // pointer to non-NULL string
 				{
-					int cbLen = lstrlen((wchar_t *)(pBlobSrc));
+					int cbLen = lstrlen((char *)(pBlobSrc));
 					pbLastNonSpace = pBlobSrc + cbLen - 1;
 					while (cbLen > 0 && ' ' == *pbLastNonSpace)
 					{
@@ -540,7 +539,7 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
 	sendBufDesc.dwBufferSize = cb;
 	sendBufDesc.pBufferData = (BYTE*) pv;
 	DPNHANDLE handle;
-	static CTempTimer tt(L"in dplay Send", 0.05f);
+	static CTempTimer tt("in dplay Send", 0.05f);
 	tt.Start();
 	if ( m_pDirectPlayClient )
 	{
@@ -554,7 +553,7 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
 			if (precip)
 				rid = precip->GetID();
 		} catch (...) {
-			debugf(L"Sorry Charlie. Something \"weird\" happened.");
+			debugf("Sorry Charlie. Something \"weird\" happened.");
 			hr = DPNERR_EXCEPTION;
 		}
 		if (rid != -1) 
@@ -564,7 +563,7 @@ HRESULT FedMessaging::GenericSend(CFMRecipient * precip, const void * pv, CB cb,
 	{
 		//debugf("Return code of Send was 0x%x to player with dpid %8x.\n", hr, (precip) ? precip->GetID() : -1); //imago 10/14
 	} else {
-		tt.Stop(L"dpidTo=%8x, guaranteed=%d, hr=%x, 1st message (fmid)=%u", precip->GetID(), fGuaranteed, hr, ((FEDMESSAGE*)pv)->fmid);
+		tt.Stop("dpidTo=%8x, guaranteed=%d, hr=%x, 1st message (fmid)=%u", precip->GetID(), fGuaranteed, hr, ((FEDMESSAGE*)pv)->fmid);
 		m_pfmSite->OnMessageSent(this, precip, pv, cb, fmg);
 	}
 
@@ -689,7 +688,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 	// The body of each case is there so you can set a breakpoint and examine
 	// the contents of the message received.
 
-	static CTempTimer timerSysMsg(L"spent in OnSysMessage()", .01f);
+	static CTempTimer timerSysMsg("spent in OnSysMessage()", .01f);
 	timerSysMsg.Start();
 	Time timeNow = Time::Now();
 
@@ -700,7 +699,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 
 	if( msg.dwType == DPN_MSGID_CREATE_PLAYER )
 	{
-		static CTempTimer tt( L"handling DPN_MSGID_CREATE_PLAYER", .01f);
+		static CTempTimer tt( "handling DPN_MSGID_CREATE_PLAYER", .01f);
 		tt.Start();
 		DPNMSG_CREATE_PLAYER* lp = (DPNMSG_CREATE_PLAYER*) msg.pData;
 
@@ -708,7 +707,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 		{
 			//  <NKM> 18-Aug-2004
 			// This is the server player
-			m_pcnxnMe = new CFMConnection( this, L"<Server connection>", lp->dpnidPlayer );
+			m_pcnxnMe = new CFMConnection( this, "<Server connection>", lp->dpnidPlayer );
 			tt.Stop();
 			return DPN_OK;
 		}
@@ -744,13 +743,15 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 
 		if ( hr != DPN_OK )
 		{
-			debugf( L"m_pDirectPlayServer->GetClientInfo failed\n");
+			debugf( "m_pDirectPlayServer->GetClientInfo failed\n");
 			return hr;
 		}
 
+		char* name = wChar2ConstChar( pPlayerInfo->pwszName );
+
 		// debugf("(FM=%8x %s) Create Player for %s (%u)\n", this, sOrC, name, lp->dpnidPlayer );
 
-		CFMConnection * pcnxn = CreateConnection(pPlayerInfo->pwszName, lp->dpnidPlayer);
+		CFMConnection * pcnxn = CreateConnection( name, lp->dpnidPlayer );
 
 		//removed below becasue connections can reset here 
 		//then GetIPAddress breaks the lobby -Imago
@@ -759,6 +760,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 		// GetIPAddress( *pcnxn, szRemoteAddress );
 		// debugf(" ip=%s\n", szRemoteAddress );
 
+		delete[] name;
 		delete[] pPlayerInfo;
 		tt.Stop();
 	}
@@ -768,7 +770,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 	}
 	else if ( msg.dwType == DPN_MSGID_DESTROY_PLAYER )
 	{
-		static CTempTimer tt(L"handling DPN_MSGID_DESTROY_PLAYER", .01f);
+		static CTempTimer tt("handling DPN_MSGID_DESTROY_PLAYER", .01f);
 		tt.Start();
 
 		DPNMSG_DESTROY_PLAYER* lp = (DPNMSG_DESTROY_PLAYER *) msg.pData;
@@ -794,7 +796,7 @@ HRESULT FedMessaging::OnSysMessage( const DPlayMsg& msg )
 	}
 	else if ( msg.dwType == DPN_MSGID_SEND_COMPLETE )
 	{
-		static CTempTimer tt(L"handling DPN_MSGID_SEND_COMPLETE", .01f);
+		static CTempTimer tt("handling DPN_MSGID_SEND_COMPLETE", .01f);
 		tt.Start();
 
 		DPNMSG_SEND_COMPLETE* lp = (DPNMSG_SEND_COMPLETE *) msg.pData;
@@ -1007,7 +1009,7 @@ HRESULT FedMessaging::ReceiveMessages()
 					if (crc == *(int*)(m_rgbbuffInPacket + PacketSize()))
 					{
 #endif            
-						static CTempTimer tt(L"spent looping through message queue", .1f);
+						static CTempTimer tt("spent looping through message queue", .1f);
 						tt.Start();
 						g_fConnectionDeleted = false;
 
@@ -1030,8 +1032,8 @@ HRESULT FedMessaging::ReceiveMessages()
 							else
 							{
 								// ACK! Hacker?
-								debugf(L"HACKER?? message from %s(%8x).\ncbmsg=%d, fmid=%d, total packet size=%d\n",
-									pcnxnFrom ? pcnxnFrom->GetName() : L"<unknown>", p_dpMsg->dpnidSender,
+								debugf("HACKER?? message from %s(%8x).\ncbmsg=%d, fmid=%d, total packet size=%d\n",
+									pcnxnFrom ? pcnxnFrom->GetName() : "<unknown>", p_dpMsg->dpnidSender,
 									cb, id, m_dwcbPacket );
 
 #ifndef NO_MSG_CRC
@@ -1113,7 +1115,7 @@ HRESULT FedMessaging::ConnectToDPAddress(LPVOID pvAddress)
 * Parameters:
 *    string address of host
 */
-HRESULT FedMessaging::Connect(const wchar_t * szAddress)
+HRESULT FedMessaging::Connect(const char * szAddress)
 {
 	assert(0);
 	return DPN_OK;
@@ -1159,7 +1161,7 @@ bool FedMessaging::KillSvr()
 
 	Shutdown(); // can't be doing this with an open session
 
-	BOOL fCreated = CreateProcess(NULL, L"KillSvr.exe", NULL, NULL, FALSE, 
+	BOOL fCreated = CreateProcess(NULL, "KillSvr.exe", NULL, NULL, FALSE, 
 		CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
 
 	if (fCreated)
@@ -1179,7 +1181,7 @@ bool FedMessaging::KillSvr()
 		if (i > cRetries)
 			fCreated = false;
 		else
-			debugf(L"Slept (100ms) %d times  waiting for killsvr\n", i);
+			debugf("Slept (100ms) %d times  waiting for killsvr\n", i);
 		Sleep(1000); // wait another second to make sure it's really gone
 	}
 	else
@@ -1193,7 +1195,7 @@ bool FedMessaging::KillSvr()
 			0,
 			NULL 
 			);
-		m_pfmSite->OnMessageBox(this, (LPCTSTR)lpMsgBuf, L"Couldn't run killsvr.exe.", MB_OK | MB_ICONINFORMATION);
+		m_pfmSite->OnMessageBox(this, (LPCTSTR)lpMsgBuf, "Couldn't run killsvr.exe.", MB_OK | MB_ICONINFORMATION);
 		LocalFree( lpMsgBuf );
 	}
 
@@ -1226,20 +1228,19 @@ HRESULT FedMessaging::InitDPlayClient()
 		CLSCTX_INPROC_SERVER, IID_IDirectPlay8Client,
 		(LPVOID*) &m_pDirectPlayClient ) ) )
 	{
-		m_pfmSite->OnMessageBox(this, L"Failed to Create DirectPlayClient in DirectX 8/9", L"Allegiance", MB_OK);
+		m_pfmSite->OnMessageBox(this, "Failed to Create DirectPlayClient in DirectX 8/9", "Allegiance", MB_OK);
 		return hr;
 	}
 
 	//  <NKM> 08-Aug-2004
 	// AT some point we can set flags to DPNINITIALIZE_DISABLEPARAMVAL - but for BETA I
 	// I sugegst we leave it at this
-	//imago enabled 10/14
-	  const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL;
-	//const DWORD dwInitFlags = 0;
+	//  const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL;
+	const DWORD dwInitFlags = 0;
 
 	if( FAILED( hr = m_pDirectPlayClient->Initialize( this, DPlayMsgHandler, dwInitFlags ) ) )
 	{
-		m_pfmSite->OnMessageBox(this, L"Failed to initialize DirectX 8/9", L"Allegiance", MB_OK);
+		m_pfmSite->OnMessageBox(this, "Failed to initialize DirectX 8/9", "Allegiance", MB_OK);
 		return hr;
 	}
 
@@ -1268,27 +1269,26 @@ HRESULT FedMessaging::InitDPlayServer()
 	// Create an IDirectPlay interface
 	m_pfmSite->OnPreCreate(this);
 
-	ZDebugOutput(L"CoCreateInstance( CLSID_DirectPlay8Server ... )\n");
+	ZDebugOutput("CoCreateInstance( CLSID_DirectPlay8Server ... )\n");
 	if( FAILED( hr = CoCreateInstance( CLSID_DirectPlay8Server, NULL,
 		CLSCTX_INPROC_SERVER, IID_IDirectPlay8Server,
 		(LPVOID*) &m_pDirectPlayServer ) ) )
 	{
-		ZDebugOutput(L"Failed to Create DirectPlaySever in DirectX 8/9 hr="+ZString(hr)+L"\n");
-		m_pfmSite->OnMessageBox(this, L"Failed to Create DirectPlaySever in DirectX 8/9", L"Allegiance", MB_OK);
+		ZDebugOutput("Failed to Create DirectPlaySever in DirectX 8/9 hr="+ZString(hr)+"\n");
+		m_pfmSite->OnMessageBox(this, "Failed to Create DirectPlaySever in DirectX 8/9", "Allegiance", MB_OK);
 		return hr;
 	}
 
 	//  <NKM> 08-Aug-2004
 	// AT some point we can set flags to DPNINITIALIZE_DISABLEPARAMVAL - but for BETA I
 	// I sugegst we leave it at this
-	//imago enabled 10/14
-	  const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL;
-	//const DWORD dwInitFlags = 0;
-	ZDebugOutput(L"m_pDirectPlayServer->Initialize( ... )\n");
+	//  const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL;
+	const DWORD dwInitFlags = 0;
+	ZDebugOutput("m_pDirectPlayServer->Initialize( ... )\n");
 	if( FAILED( hr = m_pDirectPlayServer->Initialize( this, DPlayMsgHandler, dwInitFlags ) ) )
 	{
-		ZDebugOutput(L"Failed to initialize DirectX 8/9 hr="+ZString(hr)+"\n");
-		m_pfmSite->OnMessageBox(this, L"Failed to initialize DirectX 8/9", L"Allegiance", MB_OK);
+		ZDebugOutput("Failed to initialize DirectX 8/9 hr="+ZString(hr)+"\n");
+		m_pfmSite->OnMessageBox(this, "Failed to initialize DirectX 8/9", "Allegiance", MB_OK);
 		return hr;
 	}
 
@@ -1327,8 +1327,8 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 	{
 		if (!KillSvr())
 		{
-			m_pfmSite->OnMessageBox(this, L"Failed to successfully run killsvr.exe (or it failed to complete), which kills dplaysvr.exe. If we can't veryify that dplaysvr starts out clean, we're in for trouble, so I'm aborting.",
-				L"Allegiance", MB_OK);
+			m_pfmSite->OnMessageBox(this, "Failed to successfully run killsvr.exe (or it failed to complete), which kills dplaysvr.exe. If we can't veryify that dplaysvr starts out clean, we're in for trouble, so I'm aborting.",
+				"Allegiance", MB_OK);
 			return E_FAIL;
 		}
 	}
@@ -1336,7 +1336,7 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 	if( m_pDirectPlayServer == 0 )
 	{
 		hr = InitDPlayServer();
-		ZDebugOutput(PCC(ZString("LInitDPlayServer() returned ")+ZString(hr)+ZString(L"\n")));
+		ZDebugOutput(PCC(ZString("InitDPlayServer() returned ")+ZString(hr)+ZString("\n")));
 		if ( FAILED(hr) )
 			return hr;
 	}
@@ -1346,33 +1346,33 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 	IDirectPlay8Address*   pDP8AddressLocal = 0;
 
 	// Create the local device address object
-	ZDebugOutput(L"CoCreateInstance( CLSID_DirectPlay8Address ... )\n");
+	ZDebugOutput("CoCreateInstance( CLSID_DirectPlay8Address ... )\n");
 	if( FAILED( hr = CoCreateInstance( CLSID_DirectPlay8Address, NULL,
 		CLSCTX_ALL, IID_IDirectPlay8Address,
 		(LPVOID*) &pDP8AddressLocal ) ) )
 	{
-		ZDebugOutput(L"CoCreateInstance( CLSID_DirectPlay8Address ... ) returned "+ZString(hr)+L"\n");
-		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay server local address", L"Allegiance", MB_OK );
+		ZDebugOutput("CoCreateInstance( CLSID_DirectPlay8Address ... ) returned "+ZString(hr)+"\n");
+		m_pfmSite->OnMessageBox( this, "Failed to create DPlay server local address", "Allegiance", MB_OK );
 		return hr;
 	}
 
 	SafeReleaser<IDirectPlay8Address> r1( pDP8AddressLocal );
 
 	// Set IP service provider
-	ZDebugOutput(L"pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP )\n");
+	ZDebugOutput("pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP )\n");
 	if( FAILED( hr = pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP ) ) )
 	{
 		ZDebugOutput(PCC(ZString("pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP ) returned ")+ZString(hr)+ZString("\n")));
-		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay server local SP", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to create DPlay server local SP", "Allegiance", MB_OK );
 		return hr;
 	}
 
 	if( dwPort ) {
-		ZDebugOutput(L"pDP8AddressLocal->AddComponent(DPNA_KEY_PORT ... )\n");
+		ZDebugOutput("pDP8AddressLocal->AddComponent(DPNA_KEY_PORT ... )\n");
 		if(FAILED(hr = pDP8AddressLocal->AddComponent(DPNA_KEY_PORT, &dwPort, sizeof(DWORD), DPNA_DATATYPE_DWORD)))
 		{
 			ZDebugOutput(PCC(ZString("Failed to set DPlay server port - returned ")+ZString(hr)+ZString("\n")));
-			m_pfmSite->OnMessageBox( this, L"Failed to set DPlay server port", L"Allegiance", MB_OK );
+			m_pfmSite->OnMessageBox( this, "Failed to set DPlay server port", "Allegiance", MB_OK );
 			return hr;
 		}
 	}
@@ -1387,13 +1387,13 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 	// Set host player context to non-NULL so we can determine which player indication is
 	// the host's.
 	hr = m_pDirectPlayServer->Host( &dpnAppDesc, &pDP8AddressLocal, 1, NULL, NULL, (void *) 1, 0  );
-	ZDebugOutput(PCC(ZString(L"m_pDirectPlayServer->Host( &dpnAppDesc ... ) - returned ")+ZString(hr)+ZString(L"\n")));
+	ZDebugOutput(PCC(ZString("m_pDirectPlayServer->Host( &dpnAppDesc ... ) - returned ")+ZString(hr)+ZString("\n")));
 	m_guidApplication = guidApplication;
 
 	m_fConnected = true;
 
 	// then create the Everyone group
-	ZVerify(m_pgrpEveryone = CreateGroup(L"Everyone"));
+	ZVerify(m_pgrpEveryone = CreateGroup("Everyone"));
 
 	ResetOutBuffer();
 
@@ -1412,7 +1412,7 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 */
 void FedMessaging::Shutdown()
 {
-	static CTempTimer tt(L"In FedMessaging::Shutdown", 0.1f);
+	static CTempTimer tt("In FedMessaging::Shutdown", 0.1f);
 	tt.Start();
 	if ( m_pDirectPlayClient )
 	{
@@ -1467,7 +1467,7 @@ void FedMessaging::Shutdown()
 *    what server, what application, and what instance to join (or NULL for default)
 *    OUT: connection to the sevrer that all messages should be sent to
 */
-HRESULT FedMessaging::JoinSession(GUID guidApplication, const wchar_t * szServer, wchar_t * szCharName, DWORD dwPort)	// mdvalley: (optional) dwPort forces enumeration on given port
+HRESULT FedMessaging::JoinSession(GUID guidApplication, const char * szServer, const char * szCharName, DWORD dwPort)	// mdvalley: (optional) dwPort forces enumeration on given port
 {
 	HRESULT hr = E_FAIL;
 	Time timeStart = Time::Now();
@@ -1525,7 +1525,7 @@ session instance and name of player to create
 Side Effects:
 joins the session, creates the named player
 */
-HRESULT FedMessaging::JoinSessionInstance( GUID guidApplication, GUID guidInstance, IDirectPlay8Address* addr, IDirectPlay8Address* device, wchar_t * szName)	// mdvalley: added device argument
+HRESULT FedMessaging::JoinSessionInstance( GUID guidApplication, GUID guidInstance, IDirectPlay8Address* addr, IDirectPlay8Address* device, const char * szName)	// mdvalley: added device argument
 {
 	// WLP 2005 - added init client if needed for DPLAY8
 	//
@@ -1551,7 +1551,7 @@ HRESULT FedMessaging::JoinSessionInstance( GUID guidApplication, GUID guidInstan
 	ZeroMemory( &playerInfo, sizeof( DPN_PLAYER_INFO ) );
 	playerInfo.dwSize = sizeof( DPN_PLAYER_INFO );
 	playerInfo.dwInfoFlags = DPNINFO_NAME;
-	playerInfo.pwszName = szName;
+	playerInfo.pwszName = constChar2Wchar( szName );
 
 	HRESULT hr = m_pDirectPlayClient->SetClientInfo( &playerInfo, 0, 0 /*0 for sync op*/, DPNSETCLIENTINFO_SYNC );
 
@@ -1580,14 +1580,14 @@ HRESULT FedMessaging::JoinSessionInstance( GUID guidApplication, GUID guidInstan
 	m_pcnxnMe = new CFMConnection( this, szName, 0);
 
 	// Set the output connection that the client will send msgs to
-	m_pcnxnServer = new CFMConnection(this, L"Server", 1);
+	m_pcnxnServer = new CFMConnection(this, "Server", 1);
 
 	return hr;
 }
 
 // WLP 2005 added this 2 parameter call to update to DPLAY8
 
-HRESULT FedMessaging::JoinSessionInstance(GUID guidInstance, wchar_t * szName)
+HRESULT FedMessaging::JoinSessionInstance(GUID guidInstance, const char * szName)
 {
 	//return JoinSessionInstance( GUID_NULL, m_guidInstance, m_pHostAddress, szName);
 	return JoinSessionInstance( GUID_NULL, m_guidInstance, m_pHostAddress, m_pDeviceAddress, szName);
@@ -1626,7 +1626,7 @@ CFMGroup * FedMessaging::GetGroupFromDpid(DPID dpid)
 }
 
 
-HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, wchar_t szRemoteAddress[16])
+HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[16])
 {
 	//assert( m_pDirectPlayServer != 0 );
 
@@ -1648,13 +1648,20 @@ HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, wchar_t szRemoteAddress
 		}
 	}
 
+	WCHAR add[200];
 	DWORD cnt = 200;
 	DWORD type;
 
-	HRESULT hr = pAddress->GetComponentByName(DPNA_KEY_HOSTNAME, (void*)szRemoteAddress, &cnt, &type);
+	HRESULT hr = pAddress->GetComponentByName( DPNA_KEY_HOSTNAME, (void*)add, &cnt, &type );
 	if ( FAILED( hr ) )
 	{
-		Strcpy( szRemoteAddress, L"0.0.0.0" );
+		strcpy( szRemoteAddress, "0.0.0.0" );
+	}
+	else
+	{
+		char* aadd = wChar2ConstChar( add );
+		strcpy( szRemoteAddress, aadd );
+		delete[] aadd;
 	}
 
 	pAddress->Release();
@@ -1673,7 +1680,6 @@ HRESULT FedMessaging::GetListeningPort(DWORD* dwPort)	// mdvalley: Finds the por
 
 	DWORD dwAddySize = 1;
 
-	//IMAGO REVISIT THIS TO FIX THE IPv6 BUG 10/14 (EnumHosts)
 	hr = m_pDirectPlayServer->GetLocalHostAddresses(&pAddress, &dwAddySize, DPNGETLOCALHOSTADDRESSES_COMBINED);
 	if (ZFailed(hr)) return hr;
 
@@ -1690,7 +1696,7 @@ HRESULT FedMessaging::GetListeningPort(DWORD* dwPort)	// mdvalley: Finds the por
 	return S_OK;
 }
 
-HRESULT FedMessaging::EnumSessions(GUID guidApplication, const wchar_t * szServer)
+HRESULT FedMessaging::EnumSessions(GUID guidApplication, const char * szServer)
 {
 	// WLP 2005 - added init client if needed
 	//
@@ -1708,7 +1714,7 @@ HRESULT FedMessaging::EnumSessions(GUID guidApplication, const wchar_t * szServe
 	return EnumHostsInternal(guidApplication, szServer);
 }
 
-HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * szServer, DWORD dwPort)	// mdvalley: (optional) dwPort forces enumeration to that port
+HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const char * szServer, DWORD dwPort)	// mdvalley: (optional) dwPort forces enumeration to that port
 {
 	// WLP 2005 - added init client if needed
 	//
@@ -1725,7 +1731,7 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 	// Left this in from old method.... well why not :)
 	DWORD dwSize = 0;
 	Time timeStart = Time::Now();
-	static CTempTimer tt(L"in FedMessaging::EnumSessionsInternal", 1.0f);
+	static CTempTimer tt("in FedMessaging::EnumSessionsInternal", 1.0f);
 	tt.Start();
 
 	// restore the hourglass cursor
@@ -1744,7 +1750,7 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 		CLSCTX_ALL, IID_IDirectPlay8Address,
 		(LPVOID*) &pDP8AddressLocal ) ) )  //Fix memory leak -Imago 8/2/09
 	{
-		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay client local address", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to create DPlay client local address", "Allegiance", MB_OK );
 		return hr;
 	}
 
@@ -1753,7 +1759,7 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 	// Set IP service provider
 	if( FAILED( hr = pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP ) ) )
 	{
-		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay local SP", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to create DPlay local SP", "Allegiance", MB_OK );
 		return hr;
 	}
 
@@ -1762,7 +1768,7 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 		CLSCTX_ALL, IID_IDirectPlay8Address,
 		(LPVOID*) &pDP8AddressHost ) ) )
 	{
-		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay client remote address", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to create DPlay client remote address", "Allegiance", MB_OK );
 		return hr;
 	}
 
@@ -1770,14 +1776,14 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 	// Set IP service provider
 	if( FAILED( hr = pDP8AddressHost->SetSP( &CLSID_DP8SP_TCPIP ) ) )  //Fix memory leak -Imago 8/2/09
 	{
-		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay remote SP", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to create DPlay remote SP", "Allegiance", MB_OK );
 		return hr;
 	}
 
 	// Set the remote port
 	if(dwPort != 6073 && FAILED(hr = pDP8AddressHost->AddComponent(DPNA_KEY_PORT, &dwPort, sizeof(DWORD), DPNA_DATATYPE_DWORD)))  //Fix memory leak -Imago 8/2/09
 	{
-		m_pfmSite->OnMessageBox( this, L"Failed to set DPlay client remote port", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to set DPlay client remote port", "Allegiance", MB_OK );
 		return hr;
 	}
 
@@ -1785,13 +1791,17 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 	// Set the remote host name (if provided)
 	if( szServer != 0 )
 	{
-		hr = pDP8AddressHost->AddComponent(DPNA_KEY_HOSTNAME, szServer, (wcslen(szServer) + 1)*sizeof(WCHAR), DPNA_DATATYPE_STRING );  //Fix memory leak -Imago 8/2/09
+		wszHostName = constChar2Wchar( szServer );
+
+		hr = pDP8AddressHost->AddComponent( DPNA_KEY_HOSTNAME, wszHostName,
+			(wcslen(wszHostName)+1)*sizeof(WCHAR),
+			DPNA_DATATYPE_STRING );  //Fix memory leak -Imago 8/2/09
 
 		delete[] wszHostName;
 
 		if( FAILED(hr) )
 		{
-			m_pfmSite->OnMessageBox( this, L"Failed to set DPlay server", L"Allegiance", MB_OK );
+			m_pfmSite->OnMessageBox( this, "Failed to set DPlay server", "Allegiance", MB_OK );
 			return hr;
 		}
 	}
@@ -1807,9 +1817,6 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 	g_guidApplication = guidApplication;
 
 	// Enumerate all StressMazeApp hosts running on IP service providers
-
-	//--------------------^  lol nice copypasta - Imago 10/14
-
 	// mmf 05/07 implement WLP's LAN fix, use sync for LAN game, async otherwise
 
 	if (IsEqualGUID(FEDSRV_STANDALONE_PRIVATE_GUID, guidApplication)) {
@@ -1858,7 +1865,7 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 
 	if( FAILED(hr) )
 	{
-		m_pfmSite->OnMessageBox( this, L"Failed to set Enumerate Hosts", L"Allegiance", MB_OK );
+		m_pfmSite->OnMessageBox( this, "Failed to set Enumerate Hosts", "Allegiance", MB_OK );
 		return hr;
 	}
 
@@ -1866,9 +1873,9 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const wchar_t * sz
 	return hr;
 }  
 
-CFMConnection * FedMessaging::CreateConnection(const wchar_t * szName, DPID dpid) // after the physical connection has already been established
+CFMConnection * FedMessaging::CreateConnection(const char * szName, DPID dpid) // after the physical connection has already been established
 {
-	static CTempTimer tt(L"in CreateConnection", .01f);
+	static CTempTimer tt("in CreateConnection", .01f);
 	tt.Start();
 	CFMConnection * pcnxn = new CFMConnection(this, szName, dpid);
 	m_listCnxns.PushFront(pcnxn);
@@ -1882,7 +1889,7 @@ CFMConnection * FedMessaging::CreateConnection(const wchar_t * szName, DPID dpid
 //  <NKM> 07-Aug-2004
 // Moved from header file as I need to convert
 // from char* to WCHAR and I've put those functions in this file as well
-void FedMessaging::SetSessionDetails(wchar_t * szDetails) // tokenized name/value pairs: Name\tValue\nName\tValue...
+void FedMessaging::SetSessionDetails(char * szDetails) // tokenized name/value pairs: Name\tValue\nName\tValue...
 {
 	//  <NKM> 07-Aug-2004
 	// Change to use Application Desc from DPlay4 Session Desc structures
@@ -1900,10 +1907,13 @@ void FedMessaging::SetSessionDetails(wchar_t * szDetails) // tokenized name/valu
 
 	ZSucceeded( m_pDirectPlayServer->GetApplicationDesc( pAppDesc, &size, 0 ) );
 
-	pAppDesc->pwszSessionName = szDetails;
+
+	WCHAR* wDetails = constChar2Wchar( szDetails );
+	pAppDesc->pwszSessionName = wDetails;
 
 	m_pDirectPlayServer->SetApplicationDesc( pAppDesc, 0 );
 
+	delete[] wDetails;
 	delete[] pAppDesc;
 }
 
@@ -1969,7 +1979,7 @@ HRESULT FedMessaging::GetLinkDetails(CFMConnection * pcnxn, OUT DWORD * pdwHundr
 
 
 
-CFMConnection::CFMConnection(FedMessaging * pfm, const wchar_t * szName, DPID dpid) : // only FedMessaging::CreateConnection can create these things
+CFMConnection::CFMConnection(FedMessaging * pfm, const char * szName, DPID dpid) : // only FedMessaging::CreateConnection can create these things
 CFMRecipient(szName, dpid),
 	m_cAbsentCount(0),
 	m_dwPrivate(0)
@@ -1984,10 +1994,10 @@ void CFMConnection::Delete(FedMessaging * pfm) // basically the destructor, but 
 	//debugf("Deleting connection: pfm=%8x dpid=%8x, name=%s, playerdata=%p, private=%u\n",
 	//       pfm, GetDPID(), GetName(), this, m_dwPrivate);
 	// Don't want to hear anything more from this player
-	static CTempTimer tt(L"in DestroyPlayer/SetPlayerData", 0.02f);
+	static CTempTimer tt("in DestroyPlayer/SetPlayerData", 0.02f);
 	tt.Start();
 	HRESULT hr = pfm->GetDPlayServer()->DestroyClient(GetDPID(), 0, 0, 0);
-	debugf(L"DestroyPlayer=0x%08x\n", hr);
+	debugf("DestroyPlayer=0x%08x\n", hr);
 	tt.Stop();
 	delete this;
 	g_fConnectionDeleted = true;
@@ -2011,17 +2021,19 @@ void CFMGroup::DeleteConnection(FedMessaging * pfm, CFMConnection * pcnxn)
 }
 
 
-CFMGroup::CFMGroup(FedMessaging * pfm, wchar_t * szName)
+CFMGroup::CFMGroup(FedMessaging * pfm, const char * szName)
 	: m_cPlayers(0), CFMRecipient(szName, 0) // dplay group hasn't been created yet
 {
 	DPN_GROUP_INFO dpn;
 	ZeroMemory( &dpn, sizeof( DPN_GROUP_INFO ) );
 	dpn.dwSize = sizeof( DPN_GROUP_INFO );
 	dpn.dwInfoFlags = DPNINFO_NAME;
-	dpn.pwszName = szName;
+	dpn.pwszName = constChar2Wchar( szName );
 	ZSucceeded( pfm->GetDPlayServer()->CreateGroup( &dpn, this, NULL, NULL, DPNOP_SYNC ) );
 
 	//debugf("CFMGroup: pfm=%8x dpid=%8x, name=%s, playerdata(this)=%p, ", pfm, GetDPID(), szName, this );
+
+	delete[] dpn.pwszName;
 }
 
 
@@ -2054,42 +2066,45 @@ Crack the name/value pairs in the dplay session name and populate the members
 Side Effects:
 This is kinda of bad coupling, since the server packs this, and the messaging layer unpacks. 
 */
-
 FMSessionDesc::FMSessionDesc( const DPN_APPLICATION_DESC* appDesc)
 {
-	wchar_t* szName = 0;
-	wchar_t* szValue = 0;
+	char* szName = 0;
+	char* szValue = 0;
 	m_nNumPlayers = 0;
 	m_nMaxPlayers = 1;
 
-	szName = wcstok(appDesc->pwszSessionName, L"\t");
+	char* sessionName = wChar2ConstChar( appDesc->pwszSessionName );
+
+	szName = strtok( sessionName , "\t");
 	while(szName)
 	{
-		if (!Strcmp(szName, L"GAM"))
+		if (!lstrcmp(szName, "GAM"))
 		{
-			szValue = wcstok(NULL, L"\n");
+			szValue = strtok(NULL, "\n");
 			m_strGameName = szValue;
 		}
-		else if (!lstrcmp(szName, L"PLR"))
+		else if (!lstrcmp(szName, "PLR"))
 		{
-			szValue = wcstok(NULL, L"\n");
-			m_nNumPlayers = (short)_wtoi(szValue);
+			szValue = strtok(NULL, "\n");
+			m_nNumPlayers = (short)atoi(szValue);
 		}
-		else if (!lstrcmp(szName, L"LIM"))
+		else if (!lstrcmp(szName, "LIM"))
 		{
-			szValue = wcstok(NULL, L"\n");
-			m_nMaxPlayers = (short)_wtoi(szValue);
+			szValue = strtok(NULL, "\n");
+			m_nMaxPlayers = (short)atoi(szValue);
 		}
 		// there could be many more
 		else // throw away any remainder
 		{
-			szValue = wcstok(NULL, L"\n");
+			szValue = strtok(NULL, "\n");
 		}
 
-		szName = wcstok(NULL, L"\t");
+		szName = strtok(NULL, "\t");
 	}
 
 	m_guidInstance = appDesc->guidInstance;
+
+	delete[] sessionName;
 }
 
 

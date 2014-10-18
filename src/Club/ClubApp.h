@@ -29,12 +29,12 @@ public:
   virtual HRESULT OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnSessionLost(FedMessaging * pthis) ;
-  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType);
 };
 
 class CSQLSiteImpl: public ISQLSite
 {
-	virtual int  OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType);
+  virtual int  OnMessageBox(const char * strText, const char * strCaption, UINT nType);
 };
 
 extern CSQLSiteImpl g_SQLSite;  // needs to be global cause SQL stuff is globally initialized
@@ -49,8 +49,8 @@ public:
   ~CClubApp();
 
   // Win32App
-  virtual bool    OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
-  virtual void    DebugOutput(const wchar_t *psz);
+  virtual bool    OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule);
+  virtual void    DebugOutput(const char *psz);
   
   HRESULT         Init();
   int             Run();
@@ -69,7 +69,7 @@ public:
     return m_fmClients;
   }
 
-  virtual int     OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType);
+  virtual int     OnMessageBox(const char * strText, const char * strCaption, UINT nType);
 
   CLUB_COUNTERS * GetCounters()
   {
@@ -128,8 +128,8 @@ public:
 */
 
 private:
-	const wchar_t *      SzFmMsgHeader() { return L"Clients: "; }
-  bool              ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t * szItem, void * pValue, DWORD dwDefault);
+  const char *      SzFmMsgHeader() {return "Clients: ";}
+  bool              ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault);
   void              SetNow()
   {
     m_timeNow = Time::Now();
