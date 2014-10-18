@@ -2377,7 +2377,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     }
 
                     SetStateBits(~selectedWeaponMaskIGC,
-                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 1.07f))
+                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 1.01f))
                                  ? (state | allWeaponsIGC)
                                  : state);
 
