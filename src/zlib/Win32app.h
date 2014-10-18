@@ -26,8 +26,8 @@ public:
     virtual void    Terminate();
     virtual int     OnException(DWORD code, EXCEPTION_POINTERS* pdata);
 
-    virtual void    DebugOutput(const char *psz);
-    virtual bool    OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule);
+	virtual void    DebugOutput(const wchar_t *psz);
+	virtual bool    OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
     virtual void    OnAssertBreak();
 
 	// KGJV - added for DX9 behavior

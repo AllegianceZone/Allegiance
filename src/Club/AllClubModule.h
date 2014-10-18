@@ -7,7 +7,7 @@
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0400
 #endif
-#define _ATL_APARTMENT_THREADED
+#define _ATL_FREE_THREADED
 
 #include <atlbase.h>
 
@@ -19,7 +19,7 @@
 class CServiceModule : public CComModule, public IClubSite
 {
 public:
-    HRESULT RegisterServer(BOOL bRegTypeLib, BOOL bService, char * szAccount, char * szPassword);
+	HRESULT RegisterServer(BOOL bRegTypeLib, BOOL bService, wchar_t * szAccount, wchar_t * szPassword);
     HRESULT UnregisterServer();
     void Init(_ATL_OBJMAP_ENTRY* p, HINSTANCE h, UINT nServiceNameID, UINT nServiceDescID, const GUID * plibid = NULL);
     void Start();
@@ -27,15 +27,15 @@ public:
     void ExeMain();
     void Handler(DWORD dwOpcode);
     void Run();
-    const char * GetModulePath();
+	const wchar_t * GetModulePath();
     BOOL IsInstalled();
-    BOOL InstallService(char * szAccount, char * szPassword);
+	BOOL InstallService(wchar_t * szAccount, wchar_t * szPassword);
     BOOL Install();
     BOOL Uninstall();
     LONG Unlock();
     void SetServiceStatus(DWORD dwState);
     void SetupAsLocalServer();
-    bool ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault);
+	bool ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t * szItem, void * pValue, DWORD dwDefault);
 
 // IAllClubSite
     virtual int LogEvent(WORD wType, LPCTSTR pFormat, ...);

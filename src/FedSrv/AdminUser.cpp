@@ -108,14 +108,12 @@ STDMETHODIMP CAdminUser::get_Ship(/*[out, retval]*/ IAdminShip** ppShip)
 STDMETHODIMP CAdminUser::SendMsg(BSTR bstrMessage)
 {
   assert(m_pPlayer);
-
-  USES_CONVERSION;
  
   m_pPlayer->GetMission()->GetSite()->SendChat(NULL,                                // no FEDMESSAGE
                                                CHAT_INDIVIDUAL,                     // send to User
                                                m_pPlayer->GetIGCShip()->GetObjectID(),
                                                NA,                                  //No voiceover
-                                               OLE2A(bstrMessage),
+                                               OLE2CW(bstrMessage),
                                                c_cidNone,
                                                NA,
                                                NA,

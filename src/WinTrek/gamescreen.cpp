@@ -152,7 +152,7 @@ private:
         void Paint(ItemID pitemArg, Surface* psurface, bool bSelected, bool bFocus)
         {
             MissionInfo* game = (MissionInfo*)pitemArg;
-            char cbTemp[256];
+            wchar_t cbTemp[256];
 
             if (bSelected) {
                 psurface->FillRect(
@@ -168,21 +168,21 @@ private:
             // draw the Zone Icon
             if (game->WasObjectModelCreated())// KGJV #114 && trekClient.GetIsZoneClub())
             {
-                DrawIcon(psurface, m_viColumns[0] - 90, GetYSize()/2, "iconzonebmp");
+				DrawIcon(psurface, m_viColumns[0] - 90, GetYSize() / 2, L"iconzonebmp");
 
                 // draw the Squad Pointer, but shifted left to make room for the zone icon
                 if (trekClient.HasPlayerSquad(game))
-                    DrawIcon(psurface, m_viColumns[0] - 120, GetYSize()/2, "iconsquadminebmp");
+					DrawIcon(psurface, m_viColumns[0] - 120, GetYSize() / 2, L"iconsquadminebmp");
                 else if (game->GetMissionParams().bSquadGame)
-                    DrawIcon(psurface, m_viColumns[0] - 120, GetYSize()/2, "iconsquadherebmp");
+					DrawIcon(psurface, m_viColumns[0] - 120, GetYSize() / 2, L"iconsquadherebmp");
             }
             else
             {
                 // draw the Squad Pointer
                 if (trekClient.HasPlayerSquad(game))
-                    DrawIcon(psurface, m_viColumns[0] - 100, GetYSize()/2, "iconsquadminebmp");
+					DrawIcon(psurface, m_viColumns[0] - 100, GetYSize() / 2, L"iconsquadminebmp");
                 else if (game->GetMissionParams().bSquadGame)
-                    DrawIcon(psurface, m_viColumns[0] - 100, GetYSize()/2, "iconsquadherebmp");
+					DrawIcon(psurface, m_viColumns[0] - 100, GetYSize() / 2, L"iconsquadherebmp");
             }
 
             // draw the state icon
@@ -192,25 +192,25 @@ private:
             {
             case statusGreen:
                 if (game->InProgress())
-                    pimageState = GetModeler()->LoadImage("iconrunninggreenbmp", true);
+					pimageState = GetModeler()->LoadImage(L"iconrunninggreenbmp", true);
                 else
                     pimageState = GetModeler()->LoadImage("iconwaitinggreenbmp", true);
                 break;
 
             case statusYellow:
                 if (game->InProgress())
-                    pimageState = GetModeler()->LoadImage("iconrunningyellowbmp", true);
+					pimageState = GetModeler()->LoadImage(L"iconrunningyellowbmp", true);
                 else
-                    pimageState = GetModeler()->LoadImage("iconwaitingyellowbmp", true);
+					pimageState = GetModeler()->LoadImage(L"iconwaitingyellowbmp", true);
                 break;
 
             default:
                 ZAssert(false);
             case statusRed:
                 if (game->InProgress())
-                    pimageState = GetModeler()->LoadImage("iconrunningredbmp", true);
+					pimageState = GetModeler()->LoadImage(L"iconrunningredbmp", true);
                 else
-                    pimageState = GetModeler()->LoadImage("iconwaitingredbmp", true);
+					pimageState = GetModeler()->LoadImage(L"iconwaitingredbmp", true);
                 break;
             }
 
@@ -240,18 +240,18 @@ private:
                 int nMinutes = nSecondsPlayed / 60 - nHours * 60;
 
                 if (nSecondsPlayed < 0 && game->CountdownStarted())
-                    wsprintf(cbTemp, "-%d:%02d", -nHours, -nMinutes);
+					wsprintf(cbTemp, L"-%d:%02d", -nHours, -nMinutes);
                 else if (nSecondsPlayed < -100 || nHours > 99)
-                    wsprintf(cbTemp, "days");
+					wsprintf(cbTemp, L"days");
                 else if (nSecondsPlayed < 0)
-                    wsprintf(cbTemp, "0:00");
+					wsprintf(cbTemp, L"0:00");
                 else
-                    wsprintf(cbTemp, "%d:%02d", nHours, nMinutes);
+					wsprintf(cbTemp, L"%d:%02d", nHours, nMinutes);
 
                 psurface->DrawString(pfont, color,
                     WinPoint(m_viColumns[2] - pfont->GetTextExtent(cbTemp).X() - 5, 6),
                     cbTemp);
-            }
+            }//IMAGO TODO 2014 10/14 NYI
 
             // draw in the skill level
             rectClipOld = psurface->GetClipRect();
@@ -268,7 +268,7 @@ private:
 			// KGJV #114 draw server name
 			rectClipOld = psurface->GetClipRect();
 			psurface->SetClipRect(WinRect(m_viColumns[3], 0, m_viColumns[4], GetYSize()));
-            wsprintf(cbTemp, "%s", game->GetMissionDef().szServerName);
+			wsprintf(cbTemp, L"%s", game->GetMissionDef().szServerName);
 			psurface->DrawString(pfont, color,
                 WinPoint(m_viColumns[3] +4, 6),
                 cbTemp);
@@ -292,14 +292,14 @@ private:
             psurface->RestoreClipRect(rectClipOld);
 
             // draw slot info
-			wsprintf(cbTemp, "%d/%d", game->NumPlayers(), game->MaxPlayers());
+			wsprintf(cbTemp, L"%d/%d", game->NumPlayers(), game->MaxPlayers());
 			WinPoint myPoint = WinPoint(m_viColumns[6] - pfont->GetTextExtent(cbTemp).X() - 3, 3);
             psurface->DrawString(pfont, color,
                 myPoint, // KGJV #114 was col7 //Imago #169
                 cbTemp);
 
 			// #169 Imago 7/10
-			wsprintf(cbTemp, "Noat: %d", game->NumNoatPlayers());
+			wsprintf(cbTemp, L"Noat: %d", game->NumNoatPlayers());
 			WinPoint myPoint2 = WinPoint(m_viColumns[6] - pfont->GetTextExtent(cbTemp).X() - 3, 12);
             psurface->DrawString(pfont,Color::Gray(),
                 myPoint2, // KGJV #114 was col7 //Imago #169
@@ -320,19 +320,19 @@ private:
                 // custom type - draw style icons
 				// KGJV #114 was col7
                 if (game->GoalConquest())
-                    DrawIcon(psurface, m_viColumns[6] + 3, GetYSize()/2, "iconconquestbmp");
+					DrawIcon(psurface, m_viColumns[6] + 3, GetYSize() / 2, L"iconconquestbmp");
                 if (game->GoalTerritory())
-                    DrawIcon(psurface, m_viColumns[6] + 19, GetYSize()/2, "iconterritorialbmp");
+					DrawIcon(psurface, m_viColumns[6] + 19, GetYSize() / 2, L"iconterritorialbmp");
                 if (game->GoalProsperity())
-                    DrawIcon(psurface, m_viColumns[6] + 35, GetYSize()/2, "iconprosperitybmp");
+					DrawIcon(psurface, m_viColumns[6] + 35, GetYSize() / 2, L"iconprosperitybmp");
                 if (game->GoalArtifacts())
-                    DrawIcon(psurface, m_viColumns[6] + 51, GetYSize()/2, "iconartifactsbmp");
+					DrawIcon(psurface, m_viColumns[6] + 51, GetYSize() / 2, L"iconartifactsbmp");
                 if (game->GoalFlags())
-                    DrawIcon(psurface, m_viColumns[6] + 67, GetYSize()/2, "iconflagsbmp");
+					DrawIcon(psurface, m_viColumns[6] + 67, GetYSize() / 2, L"iconflagsbmp");
                 if (game->GoalDeathMatch())
-                    DrawIcon(psurface, m_viColumns[6] + 83, GetYSize()/2, "icondeathmatchbmp");
+					DrawIcon(psurface, m_viColumns[6] + 83, GetYSize() / 2, L"icondeathmatchbmp");
                 if (game->GoalCountdown())
-                    DrawIcon(psurface, m_viColumns[6] + 99, GetYSize()/2, "iconcountdownbmp");
+					DrawIcon(psurface, m_viColumns[6] + 99, GetYSize() / 2, L"iconcountdownbmp");
             }
 
             //if (game->ScoresCount())
@@ -341,15 +341,15 @@ private:
 			bool bOfficial = trekClient.CfgIsOfficialServer(game->GetMissionDef().szServerName,game->GetMissionDef().szServerAddr);
 			bOfficial &= trekClient.CfgIsOfficialCore(game->GetIGCStaticFile());
             if (bOfficial)
-                DrawIcon(psurface, m_viColumns[6] + 107, GetYSize()/2 - 1, "iconscorescountbmp"); //imago 107 was 115
+				DrawIcon(psurface, m_viColumns[6] + 107, GetYSize() / 2 - 1, L"iconscorescountbmp"); //imago 107 was 115
 
             if (game->AllowDevelopments())
-                DrawIcon(psurface, m_viColumns[6] + 107, GetYSize()/2 - 1, "icondevelopmentsbmp");
+				DrawIcon(psurface, m_viColumns[6] + 107, GetYSize() / 2 - 1, L"icondevelopmentsbmp");
             if (game->LimitedLives())
-                DrawIcon(psurface, m_viColumns[6] + 107, GetYSize()/2 - 1, "iconlivesbmp");
+				DrawIcon(psurface, m_viColumns[6] + 107, GetYSize() / 2 - 1, L"iconlivesbmp");
          }
 
-        int DrawIcon(Surface* psurface, int nXLeft, int nYCenter, const char* iconName)
+        int DrawIcon(Surface* psurface, int nXLeft, int nYCenter, const wchar_t* iconName)
         {
             TRef<Image> pimage = GetModeler()->LoadImage(iconName, true);
 
@@ -402,7 +402,7 @@ private:
 					);
 				}
 				if (pserver->bOfficial)
-					DrawIcon(psurface, 0, GetYSize()/2, "iconscorescountbmp");
+					DrawIcon(psurface, 0, GetYSize() / 2, L"iconscorescountbmp");
 
 				if (pcore) if (!pserver->HandleCore(pcore)) color = Color::White()*0.5f;
 
@@ -410,7 +410,7 @@ private:
 				WinRect rectClipOld = psurface->GetClipRect();
 
 				psurface->SetClipRect(WinRect(m_viColumns[0], 0, m_viColumns[1], GetYSize())); // clip name to fit in column
-				wsprintf(cbTemp, "%s", pserver->mStatic.szName);
+				wsprintf(cbTemp, L"%s", pserver->mStatic.szName);
 				psurface->DrawString(pfont, color,
 					WinPoint(m_viColumns[0] + 1, 1),
 					cbTemp);
@@ -418,19 +418,19 @@ private:
 
 				rectClipOld = psurface->GetClipRect();
 				psurface->SetClipRect(WinRect(m_viColumns[1], 0, m_viColumns[2], GetYSize())); // clip name to fit in column
-				wsprintf(cbTemp, "%s", pserver->mStatic.szLocation);
+				wsprintf(cbTemp, L"%s", pserver->mStatic.szLocation);
 				psurface->DrawString(pfont, color,
 					WinPoint(m_viColumns[1] + 1, 1),
 					cbTemp);
 				psurface->RestoreClipRect(rectClipOld);
 
 
-				wsprintf(cbTemp, "%d/%d", pserver->mStatic.iCurGames,pserver->mStatic.iMaxGames);
+				wsprintf(cbTemp, L"%d/%d", pserver->mStatic.iCurGames, pserver->mStatic.iMaxGames);
 				psurface->DrawString(pfont, pserver->IsFull() ? Color::Red() : color,
 					WinPoint(m_viColumns[2] + 1, 1),
 					cbTemp);
 
-				wsprintf(cbTemp, "%d", pserver->ping);
+				wsprintf(cbTemp, L"%d", pserver->ping);
 				color = Color(1,1,0); // yellow
 				if (pserver->ping<100) color = Color::Green();
 				if (pserver->ping>250) color = Color::Red();

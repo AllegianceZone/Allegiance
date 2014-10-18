@@ -73,7 +73,7 @@ END_FEDMSG
 
 DEFINE_FEDMSG(L, JOIN_MISSION, 260)
   DWORD dwCookie; // client should ignore this message unless it's the cookie for the most recent join/create request 
-  char szServer[16];
+wchar_t szServer[16];
   DWORD dwPort;			// mdvalley: pass the port to the client
   GUID guidInstance;
 END_FEDMSG    
@@ -101,23 +101,23 @@ END_FEDMSG
 // unless we pull another LOGON_LOBBY_OLD trick.  
 //
 
-#define CL_LOGON_KEY ("%x:%s: Corrupt artwork file ") // just to confuse a hacker
+#define CL_LOGON_KEY (L"%x:%s: Corrupt artwork file ") // just to confuse a hacker
 
 DEFINE_FEDMSG(C, LOGON_LOBBY, 265) // if the lobby is in club mode, everyone has to have a valid ticket, otherwise the ticket is ignored
   FM_VAR_ITEM(CdKey);
   short verLobby;    
   int   crcFileList; 
   DWORD dwTime;
-  char  szName[c_cbName];
-  char  szPW[c_cbCDKey];
+  wchar_t  szName[c_cbName];
+  wchar_t  szPW[c_cbCDKey];
 END_FEDMSG
 
 // KGJV #114
 struct ServerCoreInfo
 {
-	char szName[c_cbName];
-	char szRemoteAddress[16];
-	char szLocation[c_cbFileName]; //it's not a filename but we want it short- keep in sync with CFLServer::m_szLocation
+	wchar_t szName[c_cbName];
+	wchar_t szRemoteAddress[16];
+	wchar_t szLocation[c_cbFileName]; //it's not a filename but we want it short- keep in sync with CFLServer::m_szLocation
 	int  iCurGames;
 	int  iMaxGames;
 	DWORD dwCoreMask; // 32 bits mask (so max is 32 cores)

@@ -19,14 +19,14 @@ IAdminUsersPtr  m_spAdminUsersPtr = 0;
 
 /////////////////////////////////////////////////////////////////////////////
 
-void MsgBox(bool bService, const char* format, ...)
+void MsgBox(bool bService, const wchar_t* format, ...)
 {
     const size_t size = 256;
-    char         bfr[size];
+	wchar_t         bfr[size];
 
     va_list vl;
     va_start(vl, format);
-    _vsnprintf(bfr, size, format, vl);
+    _vsnwprintf(bfr, size, format, vl);
     va_end(vl);
 
     OutputDebugString(bfr);
@@ -34,13 +34,13 @@ void MsgBox(bool bService, const char* format, ...)
 	//Imago #105 7/10
 	if (bService) {
         // write to file
-        char szFileData[sizeof(bfr) + 200];
+		wchar_t szFileData[sizeof(bfr) + 200];
         SYSTEMTIME st;
         GetLocalTime(&st);
-        sprintf(szFileData, "\r\n\r\nUpdate attempt at: %d/%d/%02d at %d:%02d:%02d  (local time)\r\n%s\r\n\r\n", st.wMonth, st.wDay, st.wYear % 100, st.wHour, st.wMinute, st.wSecond, bfr);
-        UTL::AppendFile("UpdateError.txt", szFileData, strlen(szFileData));
+        swprintf(szFileData, L"\r\n\r\nUpdate attempt at: %d/%d/%02d at %d:%02d:%02d  (local time)\r\n%s\r\n\r\n", st.wMonth, st.wDay, st.wYear % 100, st.wHour, st.wMinute, st.wSecond, bfr);
+        UTL::AppendFile(L"UpdateError.txt", szFileData, wcslen(szFileData));
 	} else {
-		MessageBox(NULL, bfr, "AutoUpdate", MB_SERVICE_NOTIFICATION);
+		MessageBox(NULL, bfr, L"AutoUpdate", MB_SERVICE_NOTIFICATION);
 	}
 }
 
@@ -58,7 +58,7 @@ public:
             // update succeeded
             if (m_pdlg->m_szPostUpdateEXE[0] != 0)
             {
-                char * szEXE = m_pdlg->m_szPostUpdateEXE;
+				wchar_t * szEXE = m_pdlg->m_szPostUpdateEXE;
 
                 // look for signal that this is an Service
                 if ((szEXE[0] == 'S' || szEXE[0] == 's') && szEXE[1] == ':')
@@ -85,21 +85,21 @@ public:
 
                   if (bFailed)
                   {
-                    MsgBox(1,"Failed to relaunch %s as a service.", szEXE);
+                    MsgBox(1,L"Failed to relaunch %s as a service.", szEXE);
                   }
                 }
                 else
                 {
                   // Start the post update program utility as an EXE
                   if((int)ShellExecute(0, 
-                                       "Open", 
+                                       L"Open", 
                                        szEXE,
-                                       "", 
+                                       L"", 
                                        NULL,
                                        SW_SHOWNORMAL
                                        ) <= 32)
                   {
-                      MsgBox(0,"After a seemingly successful update, there was an error launching %s", m_pdlg->m_szPostUpdateEXE);
+                      MsgBox(0,L"After a seemingly successful update, there was an error launching %s", m_pdlg->m_szPostUpdateEXE);
                   }
                 }
             }
@@ -110,26 +110,26 @@ public:
 
     virtual void OnError(char *szErrorMessage) 
     {
-		char * szEXE = m_pdlg->m_szPostUpdateEXE;
+		wchar_t * szEXE = m_pdlg->m_szPostUpdateEXE;
 		bool bService = false;
 		// look for signal that this is an Service
 		if ((szEXE[0] == 'S' || szEXE[0] == 's') && szEXE[1] == ':')
 			bService = true;
 
-        debugf("\n\nAutoUpdate Error\n\n%s\n\n", szErrorMessage);
-        MsgBox(bService,"\n\nAutoUpdate Error\n\n%s\n\n", szErrorMessage);
+        debugf(L"\n\nAutoUpdate Error\n\n%s\n\n", szErrorMessage);
+        MsgBox(bService,L"\n\nAutoUpdate Error\n\n%s\n\n", szErrorMessage);
     }
 
     virtual void OnBeginRetrievingFileList() 
     {
-        debugf("\nBeginning Filelist Download (Step 1 of 3)\n\n");
+        debugf(L"\nBeginning Filelist Download (Step 1 of 3)\n\n");
     }
 
     virtual void OnRetrievingFileListProgress(unsigned long nFileSize, unsigned long cCurrentBytes) 
     {
         m_pdlg->m_ProgressFileList.SendMessage(PBM_SETPOS, int(100.0f*cCurrentBytes/nFileSize));
 
-        debugf("\rFilelist Download Progress %d out of %d (%2.2f%%)", cCurrentBytes, nFileSize, 100.0f*cCurrentBytes/nFileSize);
+        debugf(L"\rFilelist Download Progress %d out of %d (%2.2f%%)", cCurrentBytes, nFileSize, 100.0f*cCurrentBytes/nFileSize);
     }
 
     virtual void OnUserAbort()
@@ -139,26 +139,26 @@ public:
 
     virtual void OnBeginAnalysis() 
     {
-        debugf("\n\nBeginning Local Files Verification Progress (Step 2 of 3)\n\n");
+        debugf(L"\n\nBeginning Local Files Verification Progress (Step 2 of 3)\n\n");
     }
 
     virtual void OnAnalysisProgress(float fPercentDone) 
     {
         m_pdlg->m_ProgressAnalyze.SendMessage(PBM_SETPOS, int(100.0f * fPercentDone));
 
-        debugf("Verification Progress (%2.2f%%)\n", fPercentDone * 100.0f);
+        debugf(L"Verification Progress (%2.2f%%)\n", fPercentDone * 100.0f);
     }
 
     void OnBeginDownloadProgressBar(unsigned cTotalBytes, int cFiles) 
     {
-        debugf("\nBeginning File Download Process (Step 3 of 3)\n\n");
+        debugf(L"\nBeginning File Download Process (Step 3 of 3)\n\n");
         m_cGrandTotalBytes = cTotalBytes;
         m_cTotalFiles = cFiles;
     };
 
-    virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes, unsigned cEstimatedSecondsLeft) 
+	virtual void OnProgress(unsigned long cTotalBytes, const wchar_t* szCurrentFile, unsigned long cCurrentFileBytes, unsigned cEstimatedSecondsLeft)
     {
-        static const char*   szPrevCurrentFile = NULL; // last file transfered
+		static const wchar_t*   szPrevCurrentFile = NULL; // last file transfered
         static unsigned      cFilesCompleted = 0;
 
         //
@@ -167,14 +167,14 @@ public:
         if (szCurrentFile != NULL && szCurrentFile != szPrevCurrentFile)
         {
             cFilesCompleted++;
-            debugf("\rStarting next file: %s (%i out of %i)\n", szCurrentFile, cFilesCompleted, m_cTotalFiles);
+            debugf(L"\rStarting next file: %s (%i out of %i)\n", szCurrentFile, cFilesCompleted, m_cTotalFiles);
             szPrevCurrentFile = szCurrentFile;
             m_pdlg->m_staticFileName.SetWindowText(szCurrentFile);
         }
         else
         {
             m_pdlg->m_ProgressDownload.SendMessage(PBM_SETPOS, int(100.0f*float(cTotalBytes)/float(m_cGrandTotalBytes)));
-            debugf("\r%2.2f%%   %i  %s  %i  ", 100.0f*float(cTotalBytes)/float(m_cGrandTotalBytes), cTotalBytes, szCurrentFile, cCurrentFileBytes);
+            debugf(L"\r%2.2f%%   %i  %s  %i  ", 100.0f*float(cTotalBytes)/float(m_cGrandTotalBytes), cTotalBytes, szCurrentFile, cCurrentFileBytes);
         }
     }
 
@@ -186,7 +186,7 @@ public:
      *
      * Returns: true if the user wants to try again.
      */
-    bool OnMoveError(char *szErrorMessage)
+	bool OnMoveError(wchar_t *szErrorMessage)
     {
         static int cCalled = 0;
 
@@ -205,12 +205,12 @@ public:
             // Give time for Allegiance to minimize
             ::Sleep(1000);
 
-            char szTitle[100];
-            sprintf(szTitle, "Error occured during auto update (Code = %d)", nErrorCode);
+			wchar_t szTitle[100];
+            swprintf(szTitle, L"Error occured during auto update (Code = %d)", nErrorCode);
 
-            char szMsg[500];
+			wchar_t szMsg[500];
 
-            sprintf(szMsg, "%s\r\n\r\n\r\n\r\nDo you wish to retry moving the files?", szErrorMessage);
+            swprintf(szMsg, L"%s\r\n\r\n\r\n\r\nDo you wish to retry moving the files?", szErrorMessage);
 
 			//Imago commented out...7/10 #105
             //if (::MessageBox(NULL, szMsg, szTitle, MB_YESNO | MB_SERVICE_NOTIFICATION) == IDYES)
@@ -226,13 +226,13 @@ public:
         }
     }
 
-    char * GetBaseFileName (char * szFullFileName)
+	wchar_t * GetBaseFileName(wchar_t * szFullFileName)
     {
       // find pre filename
-      char * szFileName = strrchr(szFullFileName, '\\');
+		wchar_t * szFileName = wcsrchr(szFullFileName, '\\');
       if (!szFileName)
       {
-        szFileName = strrchr(szFullFileName, '/');
+        szFileName = wcsrchr(szFullFileName, '/');
         if (!szFileName)
           szFileName = szFullFileName;
         else szFileName++;
@@ -242,13 +242,13 @@ public:
     }
 
     // returns true if file should be registered
-    bool ShouldRegister(char * szFullFileName) // path is included in szFullFileName
+	bool ShouldRegister(wchar_t * szFullFileName) // path is included in szFullFileName
     { 
-      char * szFileName = GetBaseFileName(szFullFileName);
+		wchar_t * szFileName = GetBaseFileName(szFullFileName);
 
-      if (_stricmp(szFileName, "AGC.DLL") == 0 ||
-          _stricmp(szFileName, "AllSrv.EXE") == 0 ||
-          _stricmp(szFileName, "AllSrv32.EXE") == 0)
+      if (_wcsicmp(szFileName, L"AGC.DLL") == 0 ||
+          _wcsicmp(szFileName, L"AllSrv.EXE") == 0 ||
+          _wcsicmp(szFileName, L"AllSrv32.EXE") == 0)
       {
         return true; // true means register this
       }
@@ -257,35 +257,35 @@ public:
     }
 
     // returns exit code (0 means success)
-    int RegisterFile(char * szFullFileName) // path is included in szFullFileName
+	int RegisterFile(wchar_t * szFullFileName) // path is included in szFullFileName
     {
-      char * szFileName = GetBaseFileName(szFullFileName);
+		wchar_t * szFileName = GetBaseFileName(szFullFileName);
 
-      if (_stricmp(szFileName, "AGC.DLL") == 0)
+      if (_wcsicmp(szFileName, L"AGC.DLL") == 0)
       {
-        char szPath[MAX_PATH];
+		  wchar_t szPath[MAX_PATH];
         GetSystemDirectory(szPath, MAX_PATH);
 
-        PathString strPath(PathString(szPath) + PathString("regsvr32"));
+        PathString strPath(PathString(szPath) + PathString(L"regsvr32"));
         
         ZString strCommand = strPath;
 
         strCommand += " /s ";
         strCommand += szFullFileName;
 
-        return system(PCC(strCommand));
+        return _wsystem(PCC(strCommand));
       }
       else
-      if (_stricmp(szFileName, "AllSrv.EXE") == 0 ||
-          _stricmp(szFileName, "AllSrv32.EXE") == 0)
+      if (_wcsicmp(szFileName, L"AllSrv.EXE") == 0 ||
+          _wcsicmp(szFileName, L"AllSrv32.EXE") == 0)
       {
-        char szPath[MAX_PATH+20];
+		  wchar_t szPath[MAX_PATH + 20];
 
-        strncpy(szPath, szFullFileName, sizeof(szPath) - 10);
-        strcat(szPath, " -reregister");
+        Strncpy(szPath, szFullFileName, sizeof(szPath) - 10);
+        Strcat(szPath, L" -reregister");
 
         // call szFullFileName -reregserver
-        return system(szPath);
+        return _wsystem(szPath);
       }
       return -1; // unhandled file
     }
@@ -307,7 +307,7 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
-int CAutoUpdate::Init(int argc, char* argv[])
+int CAutoUpdate::Init(int argc, wchar_t* argv[])
 {
     /* example commmand line:
      AllSrv32.exe FFFFFFFF 120000 "http://a-markcu1" "/artcomp/1850" "c:/fed/objs/artwork"
@@ -317,21 +317,21 @@ int CAutoUpdate::Init(int argc, char* argv[])
 
     if (argv[1][0] != '-' && argv[1][0] != 0) // - means execute nothing after update
     {
-      strncpy(m_szPostUpdateEXE, argv[1], sizeof(m_szPostUpdateEXE));
+      Strncpy(m_szPostUpdateEXE, argv[1], sizeof(m_szPostUpdateEXE));
     }
     else
       m_szPostUpdateEXE[0] = 0;
 
-    char szCRC[30];
-    strncpy(szCRC, argv[2], sizeof(szCRC));
-    _strupr(szCRC);
+	wchar_t szCRC[30];
+    Strncpy(szCRC, argv[2], sizeof(szCRC));
+    _wcsupr(szCRC);
 
     int nFilelistCRC = UTL::hextoi(szCRC);
 
     if (nFilelistCRC == 0)
         return -3;
 
-    int nFilelistSize = atoi(argv[3]);
+    int nFilelistSize = _wtoi(argv[3]);
 
     if (nFilelistSize == 0)
         return -4;
@@ -340,15 +340,15 @@ int CAutoUpdate::Init(int argc, char* argv[])
 
     m_pAutoDownload->SetFTPSite(argv[4], 
                                 argv[5], 
-                                "blah", 
-                                "blah");
+                                L"blah", 
+                                L"blah");
 
     m_pAutoDownload->SetOfficialFileListAttributes(nFilelistCRC, 
                                                    nFilelistSize);
 
     m_pAutoDownload->SetArtPath(argv[6]);
 
-    m_pAutoDownload->SetFilelistSubDir("standalone");
+    m_pAutoDownload->SetFilelistSubDir(L"standalone");
 
     //
     // Let's do it!
@@ -398,7 +398,7 @@ bool    Error (HRESULT hr)
         _bstr_t strError (e.Description().length() ? e.Description() : _bstr_t (e.ErrorMessage()));
 
         // help trace the problem?
-       MsgBox(1,"Fail Code: %x",hr);
+       MsgBox(1,L"Fail Code: %x",hr);
 	   return true;
 	}
 	return false;
@@ -426,15 +426,15 @@ long lBigGameIndex (long lGameCount,IAdminSessionPtr spSession,IAdminServerPtr s
 }
 
 //int main(int argc, char* argv[])
-int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR lpCmdLine, int)
+int WINAPI wWinMain(HINSTANCE hinst, HINSTANCE, LPWSTR lpCmdLine, int)
 {
-	char szModule[_MAX_PATH];
+	wchar_t szModule[_MAX_PATH];
     GetModuleFileName(NULL, szModule, sizeof(szModule));
     _Module.Init(NULL, hinst);
     InitCommonControls();
 
 	//Imago 6/10 a graceful shutdown of a server (used to push an update)
-	if (_stricmp(lpCmdLine, "shutdown") == 0) {
+	if (_wcsicmp(lpCmdLine, L"shutdown") == 0) {
 		
 		CoInitialize(NULL);
 
@@ -596,10 +596,10 @@ int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR lpCmdLine, int)
 
     g_AutoDownloadSink.m_pdlg = &dlg;
 
-    int nResult = dlg.Init(__argc, __argv); //Imago 6/10
+    int nResult = dlg.Init(__argc, __wargv); //Imago 6/10
     if (nResult != 0)
     {
-        MsgBox(0,"AutoUpdate was given an invalid commmand-line.");
+        MsgBox(0,L"AutoUpdate was given an invalid commmand-line.");
         dlg.DestroyWindow();
 		
         return nResult;

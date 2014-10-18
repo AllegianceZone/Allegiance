@@ -72,7 +72,7 @@ STDMETHODIMP CAdminGames::Add(IAGCGameParameters* pGameParameters)
   #endif // defined(ALLSRV_STANDALONE)
 
   // make sure params are valid, if not tell user why
-  const char * szInvalid = pMissionParams->Invalid();
+  const wchar_t * szInvalid = pMissionParams->Invalid();
   if (szInvalid) 
     return Error(szInvalid);
 
@@ -85,9 +85,7 @@ STDMETHODIMP CAdminGames::Add(IAGCGameParameters* pGameParameters)
   // Get the story text of the specified AGCGameParameters object
   CComBSTR bstrStoryText;
   RETURN_FAILED(pGameParameters->get_StoryText(&bstrStoryText));
-  USES_CONVERSION;
-  const char* pszStoryText = bstrStoryText.Length() ?
-    OLE2CT(bstrStoryText) : NULL;
+  const wchar_t* pszStoryText = bstrStoryText.Length() ? OLE2CW(bstrStoryText) : NULL;
 
   //
   // Create a new mission first

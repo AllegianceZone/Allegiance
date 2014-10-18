@@ -23,12 +23,12 @@ public:
 
 // IDebugHook Interface Methods
 public:
-  STDMETHODIMP_(void) DebugOutput(LPCSTR psz)
+  STDMETHODIMP_(void) DebugOutput(LPCWSTR psz)
   {
     g_app.DebugOutput(psz);
   }
-  STDMETHODIMP_(boolean) OnAssert(LPCSTR psz, LPCSTR pszFile, int line,
-    LPCSTR pszModule)
+  STDMETHODIMP_(boolean) OnAssert(LPCWSTR psz, LPCWSTR pszFile, int line,
+    LPCWSTR pszModule)
   {
     return g_app.OnAssert(psz, pszFile, line, pszModule);
   }

@@ -112,21 +112,21 @@ class       CbucketIGC : public IbucketIGC
         }
 
     // IbuyableIGC
-        virtual const char*          GetModelName(void) const
+        virtual const wchar_t*          GetModelName(void) const
         {
             return m_data.buyable->GetModelName();
         }
 
-        virtual const char*          GetIconName(void) const
+		virtual const wchar_t*          GetIconName(void) const
         {
             return m_data.buyable->GetIconName();
         }
 
-        virtual const char*          GetName(void) const
+		virtual const wchar_t*          GetName(void) const
         {
             return m_data.buyable->GetName();
         }
-        virtual const char*          GetDescription(void) const
+		virtual const wchar_t*          GetDescription(void) const
         {
             return m_data.buyable->GetDescription();
         }

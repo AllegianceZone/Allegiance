@@ -14,24 +14,24 @@
 
 const Rotation      c_rotationZero(0.0f, 0.0f, 1.0f, 0.0f);
 
-char    UTL::s_artworkPath[MAX_PATH] = "";
-char    UTL::s_szUrlRoot[MAX_PATH] = ""; // (unused (or ripped out) Imago 6/10)
+wchar_t    UTL::s_artworkPath[MAX_PATH] = L"";
+wchar_t    UTL::s_szUrlRoot[MAX_PATH] = L""; // (unused (or ripped out) Imago 6/10)
 TMap<DWORD,ZString> UTL::m_PrivilegedUsersMap;
 TMap<DWORD,ZString> UTL::m_ServerVersionMap;
 
 //Imago 9/14
-ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength, bool bSecure) {
-	HINTERNET hSession = InternetOpen( "Allegiance", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
+ZString UTL::DoHTTP(wchar_t * szHdrs, wchar_t * szHost, wchar_t * szVerb, wchar_t * szUri, wchar_t * PostData, int PostLength, bool bSecure) {
+	HINTERNET hSession = InternetOpen( L"Allegiance", INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
 	if(hSession) {
 		HINTERNET hConnect = InternetConnect(hSession,szHost,(bSecure) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT,NULL,NULL,INTERNET_SERVICE_HTTP,NULL,NULL);
 		if (!hConnect)
-			debugf( "Failed to connect to %s\n", szHost);
+			debugf( L"Failed to connect to %s\n", szHost);
 		else
 		{
-			debugf("%s %s",szVerb,szUri);
+			debugf(L"%s %s",szVerb,szUri);
 			HINTERNET hRequest = HttpOpenRequest(hConnect,szVerb,szUri,NULL,NULL,NULL,(bSecure) ? INTERNET_FLAG_SECURE|INTERNET_FLAG_NO_CACHE_WRITE : INTERNET_FLAG_NO_CACHE_WRITE,0);
 			if (!hRequest)
-				debugf( "Failed to open request handle\n" );
+				debugf( L"Failed to open request handle\n" );
 			else
 			{
 				DWORD dwFlags;
@@ -39,46 +39,46 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 				InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlags, &dwBuffLen);
 				dwFlags |= SECURITY_FLAG_IGNORE_UNKNOWN_CA;
 				InternetSetOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,&dwFlags,sizeof(dwFlags));
-				if(HttpSendRequest(hRequest,szHdrs,strlen(szHdrs),PostData,PostLength))
+				if(HttpSendRequest(hRequest,szHdrs,wcslen(szHdrs),PostData,PostLength))
 				{	
-					char pcBuffer[4096];
+					wchar_t pcBuffer[4096];
 					DWORD dwBytesRead;
 
-					debugf("\nThe following was returned by the server:\n");
+					debugf(L"\nThe following was returned by the server:\n");
 					do
 					{	dwBytesRead=0;
 						if(InternetReadFile(hRequest, pcBuffer, 4096-1, &dwBytesRead))
 						{
 							pcBuffer[dwBytesRead]=0x00; // Null-terminate buffer
-							debugf("%s", pcBuffer);
+							debugf(L"%s", pcBuffer);
 							ZString Response(pcBuffer);
 							return Response;
 						}
 						else
-							debugf("\nInternetReadFile failed\n");
+							debugf(L"\nInternetReadFile failed\n");
 					}while(dwBytesRead>0);
-					debugf("\n");
+					debugf(L"\n");
 				}
 				if (!InternetCloseHandle(hRequest))
-					debugf( "Failed to close Request handle\n" );
+					debugf(L"Failed to close Request handle\n");
 			}
 			if(!InternetCloseHandle(hConnect))
-				debugf("Failed to close Connect handle\n");
+				debugf(L"Failed to close Connect handle\n");
 		}
 		if( InternetCloseHandle( hSession ) == FALSE )
-			debugf( "Failed to close Session handle\n" );
+			debugf(L"Failed to close Session handle\n");
 
 		DWORD dwError = GetLastError();
-		debugf( "\nFinished: %d.\n",dwError);
-		return "Finished\n";
+		debugf(L"\nFinished: %d.\n",dwError);
+		return L"Finished\n";
 	} else {
-		debugf("Failed to open WinInet session\n");
-		return "Failed to open WinInet session\n";
+		debugf(L"Failed to open WinInet session\n");
+		return L"Failed to open WinInet session\n";
 	}
 }
 
 //Imago #62
-void UTL::SetServerVersion(const char * szVersion, DWORD dwCookie) { 
+void UTL::SetServerVersion(const wchar_t * szVersion, DWORD dwCookie) {
 	m_ServerVersionMap.Set(dwCookie,szVersion);
 }
 ZString UTL::GetServerVersion(DWORD dwCookie) { 
@@ -89,7 +89,7 @@ ZString UTL::GetServerVersion(DWORD dwCookie) {
 }
 
 //Imago centralized and enhanced /w appending admin defined list 6/10
-void UTL::SetPrivilegedUsers(const char * szPrivilegedUsers, DWORD dwCookie) { 
+void UTL::SetPrivilegedUsers(const wchar_t * szPrivilegedUsers, DWORD dwCookie) {
 	m_PrivilegedUsersMap.Set(dwCookie,szPrivilegedUsers);
 }
 ZString UTL::GetPrivilegedUsers(DWORD dwCookie) { 
@@ -101,12 +101,12 @@ ZString UTL::GetPrivilegedUsers(DWORD dwCookie) {
 
 // mmf added member function for use for things like circumventing rank restrictions
 //TheBored 25-JUN-07: Edited function to be case insensitive (@HQ == @hq)
-bool UTL::PrivilegedUser(const char* szName, DWORD dwCookie) {
+bool UTL::PrivilegedUser(const wchar_t* szName, DWORD dwCookie) {
 	
 	//Imago 6/10 #2
 	ZString zName = szName;
 	if (m_PrivilegedUsersMap.Count() > 0) {
-		ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+		ZVersionInfo vi; ZString zInfo = (LPCWSTR)vi.GetCompanyName(); zInfo += (LPCWSTR)vi.GetLegalCopyright();
 		ZString zPrivilegedUsers = GetPrivilegedUsers(dwCookie);
 		zPrivilegedUsers = zPrivilegedUsers.Unscramble(zInfo);
 		ZString zPrivilegedUser = zPrivilegedUsers.GetToken();
@@ -127,26 +127,25 @@ bool UTL::PrivilegedUser(const char* szName, DWORD dwCookie) {
 	// /#2
 
 	size_t nameLen; 
-	nameLen=strlen(szName);
+	nameLen=wcslen(szName);
 
-	if ( (nameLen>2) && ( ((strncmp(szName,"?",1))==0) || ((strncmp(szName,"+",1))==0) 
-		|| ((strncmp(szName,"$",1))==0) ) ) return true;
-	if ( (nameLen>3) && ( (_stricmp(szName+(nameLen-3),"@HQ"))==0 ) ) return true;
-	if ( (nameLen>4) && ( (_stricmp(szName+(nameLen-4),"@Dev"))==0 ) ) return true;
-	if ( (nameLen>6) && ( (_stricmp(szName+(nameLen-6),"@Alleg"))==0 ) ) return true;
+	if ((nameLen>2) && (((wcsncmp(szName, L"?", 1)) == 0) || ((wcsncmp(szName, L"+", 1)) == 0) || ((wcsncmp(szName,L"$",1))==0) ) ) return true;
+	if ( (nameLen>3) && ( (_wcsicmp(szName+(nameLen-3),L"@HQ"))==0 ) ) return true;
+	if ((nameLen>4) && ((_wcsicmp(szName + (nameLen - 4), L"@Dev")) == 0)) return true;
+	if ((nameLen>6) && ((_wcsicmp(szName + (nameLen - 6), L"@Alleg")) == 0)) return true;
 	//TheBored 25-JUN-07: Added @Zone
-	if ( (nameLen>5) && ( (_stricmp(szName+(nameLen-5),"@Zone"))==0 ) ) return true;
+	if ((nameLen>5) && ((_wcsicmp(szName + (nameLen - 5), L"@Zone")) == 0)) return true;
 	return false;
 }
 
-void UTL::SetUrlRoot(const char * szUrlRoot)
+void UTL::SetUrlRoot(const wchar_t * szUrlRoot)
 {
     assert (szUrlRoot);
-    strcpy(s_szUrlRoot, szUrlRoot);
+    Strcpy(s_szUrlRoot, szUrlRoot);
 }
 
 
-void UTL::SetArtPath(const char* szArtwork)
+void UTL::SetArtPath(const wchar_t* szArtwork)
 {
   int cbsz = lstrlen(szArtwork);
   assert(cbsz > 0 && cbsz < MAX_PATH);
@@ -160,32 +159,38 @@ void UTL::SetArtPath(const char* szArtwork)
 }
 
 
-HRESULT UTL::getFile(    const char*    name,
-                         const char*    extension,
-                     OUT char*          artwork,
+HRESULT UTL::getFile(const wchar_t*    name,
+                         const wchar_t*    extension,
+                     OUT wchar_t*          artwork,
                          bool           downloadF,
                          bool           createF)
 {
     HRESULT rc = E_FAIL;
     assert (name && extension && artwork && *s_artworkPath);
     
-    strcpy(artwork, s_artworkPath);
+    Strcpy(artwork, s_artworkPath);
     {
-        char*       pArtwork = artwork + strlen(artwork);
-        const char* pName = name;
+		wchar_t*       pArtwork = artwork + wcslen(artwork);
+		const wchar_t* pName = name;
 
         while ((*pName != '\0') && (*pName != ' '))
             *(pArtwork++) = *(pName++);
 
-        strcpy(pArtwork, extension);
+        Strcpy(pArtwork, extension);
     }
 
-    OFSTRUCT filedata;
-    filedata.cBytes = sizeof(filedata);
-    if (OpenFile(artwork, &filedata, OF_EXIST) != HFILE_ERROR)
-        rc = S_OK;
+	HANDLE hFile = CreateFile(artwork,
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+
+	if (hFile != INVALID_HANDLE_VALUE)
+		rc = S_OK;   
     else
-        debugf("Unable to open %s%s\n", name, extension);
+        debugf(L"Unable to open %s%s\n", name, extension);
 
     return rc;
 }
@@ -199,7 +204,7 @@ HRESULT UTL::getFile(    const char*    name,
 // 
 //  returns true iff no errors
 //
-bool UTL::SaveFile(const char * szFilename, const void *pData, unsigned cLen, OUT char * szErrorMsg, bool bCreateAsTemp)
+bool UTL::SaveFile(const wchar_t * szFilename, const void *pData, unsigned cLen, OUT wchar_t * szErrorMsg, bool bCreateAsTemp)
 {
    HANDLE hFile = CreateFile(szFilename, 
                              GENERIC_WRITE, 
@@ -212,7 +217,7 @@ bool UTL::SaveFile(const char * szFilename, const void *pData, unsigned cLen, OU
    if (hFile == INVALID_HANDLE_VALUE)
    {
       if (szErrorMsg)
-        sprintf(szErrorMsg, "Failed create file (%s); Error Code: %d ", szFilename, GetLastError());
+        swprintf(szErrorMsg, L"Failed create file (%s); Error Code: %d ", szFilename, GetLastError());
       return false;
    }
 
@@ -221,14 +226,14 @@ bool UTL::SaveFile(const char * szFilename, const void *pData, unsigned cLen, OU
    if (!WriteFile(hFile, pData, cLen, &cBytesWritten, NULL))
    {
       if (szErrorMsg)
-          sprintf(szErrorMsg, "Failed write file (%s); Error Code: %d ", szFilename, GetLastError());
+          swprintf(szErrorMsg, L"Failed write file (%s); Error Code: %d ", szFilename, GetLastError());
       return false;
    }
 
    if (!::CloseHandle(hFile))
    {
       if (szErrorMsg)
-          sprintf(szErrorMsg, "Couldn't close file (%s); Error Code: %d ", szFilename, GetLastError());
+          swprintf(szErrorMsg, L"Couldn't close file (%s); Error Code: %d ", szFilename, GetLastError());
       return false;
    }
 
@@ -243,11 +248,11 @@ bool UTL::SaveFile(const char * szFilename, const void *pData, unsigned cLen, OU
 //
 //  returns true iff no errors
 //
-bool UTL::AppendFile(const char * szFileName, const void * data, unsigned bytes)
+bool UTL::AppendFile(const wchar_t * szFileName, const void * data, unsigned bytes)
 {
 	FILE* f;
 
-	f = fopen( szFileName, "ab" ); // a == open for appending
+	f = _wfopen( szFileName, L"ab" ); // a == open for appending
 	if (f == 0) return 0;
 
 	if (fwrite( data, bytes, 1, f ) != 1) 
@@ -271,38 +276,38 @@ bool UTL::AppendFile(const char * szFileName, const void * data, unsigned bytes)
 //
 //  returns number of replacements made
 //
-int UTL::SearchAndReplace(char * szDest, const char * szSource, const char * szNewWord, const char * szOldWord)
+int UTL::SearchAndReplace(wchar_t * szDest, const wchar_t * szSource, const wchar_t * szNewWord, const wchar_t * szOldWord)
 {
-    int cbSource = strlen(szSource) + 1;
-    int cbDest = strlen(szSource) + 1;
-    int nLengthOldWord = strlen(szOldWord);
-    int nLengthNewWord = strlen(szNewWord);
-    char * szUpperSource = (char*)_alloca(cbSource);
-    char * szUpperOldWord = (char*)_alloca(nLengthOldWord+1);
-    strcpy(szUpperSource, szSource);
-    strcpy(szUpperOldWord, szOldWord);
-    _strupr(szUpperSource);
-    _strupr(szUpperOldWord);
+    int cbSource = wcslen(szSource) + 1;
+	int cbDest = wcslen(szSource) + 1;
+	int nLengthOldWord = wcslen(szOldWord);
+	int nLengthNewWord = wcslen(szNewWord);
+	wchar_t * szUpperSource = (wchar_t*)_alloca(cbSource);
+	wchar_t * szUpperOldWord = (wchar_t*)_alloca(nLengthOldWord + 1);
+    Strcpy(szUpperSource, szSource);
+    Strcpy(szUpperOldWord, szOldWord);
+    _wcsupr(szUpperSource);
+	_wcsupr(szUpperOldWord);
     memset(szDest, 0, cbDest);
-    char * pszCurrent = szUpperSource;
-    char * pszPrev = szUpperSource;
+	wchar_t * pszCurrent = szUpperSource;
+	wchar_t * pszPrev = szUpperSource;
     int nSourceOffset = 0;
     int nDestOffset = 0;
     int cReplacements = 0;
 
     while(1)
     {
-      pszCurrent = strstr(pszCurrent, szUpperOldWord);
+      pszCurrent = wcsstr(pszCurrent, szUpperOldWord);
       if (!pszCurrent) // szOldWord not found
       {
           // finish up and quit
-          strcpy(szDest + nDestOffset, szSource + nSourceOffset);
+          Strcpy(szDest + nDestOffset, szSource + nSourceOffset);
           return cReplacements;
       }
       cReplacements++;
       int nMovement = pszCurrent-pszPrev;
-      strncpy(szDest + nDestOffset, szSource + nSourceOffset, nMovement);
-      strcat(szDest, szNewWord);
+      Strncpy(szDest + nDestOffset, szSource + nSourceOffset, nMovement);
+      Strcat(szDest, szNewWord);
       nSourceOffset += nMovement + nLengthOldWord;
       nDestOffset += nMovement + nLengthNewWord; 
       pszCurrent += nLengthOldWord;
@@ -323,8 +328,8 @@ int UTL::SearchAndReplace(char * szDest, const char * szSource, const char * szN
       Return value from RegOpenKeyEx or RegQueryValueEx
  */
 LONG UTL::GetPathFromReg(IN  HKEY hkey,
-                         IN  const char * szSubKey, 
-                         OUT char * szPath)
+                         IN  const wchar_t * szSubKey, 
+						 OUT wchar_t * szPath)
 {
     HKEY hKey;
     DWORD cb = MAX_PATH;
@@ -335,7 +340,7 @@ LONG UTL::GetPathFromReg(IN  HKEY hkey,
     
     if (ERROR_SUCCESS == ret)
     {
-        ret = RegQueryValueEx(hKey, "ArtPath", NULL, &dw, (unsigned char*)szPath, &cb);
+        ret = RegQueryValueEx(hKey, L"ArtPath", NULL, &dw, (unsigned char*)szPath, &cb);
         RegCloseKey(hKey);
     }
     return ret;
@@ -343,7 +348,7 @@ LONG UTL::GetPathFromReg(IN  HKEY hkey,
 
 
 // converts char * of hex to int.  Assumes uppercase for 'A' to 'F'.
-int UTL::hextoi(const char * pHex)
+int UTL::hextoi(const wchar_t * pHex)
 {
     int n = 0;
 
@@ -407,39 +412,39 @@ int CompareFileVersion(HINSTANCE hInstance, WORD v1, WORD v2, WORD v3, WORD v4)
 */
 
 
-char*    UTL::strdup(const char* s)
+wchar_t*    UTL::strdup(const wchar_t* s)
 {
     if (s)
     {
-        char*   r = new char [strlen(s) + 1];
+		wchar_t*   r = new wchar_t[wcslen(s) + 1];
         assert (r);
-        strcpy(r, s);
+        Strcpy(r, s);
         return r;
     }
     else
         return NULL;
 }
 
-void    UTL::putName(char*         name, const char*   newVal)
+void    UTL::putName(wchar_t*         name, const wchar_t*   newVal)
 {
     assert (name);
 
     if (newVal)
     {
-        strncpy(name, newVal, c_cbName - 1);
+        Strncpy(name, newVal, c_cbName - 1);
         name[c_cbName - 1] = '\0';
     }
     else
         name[0] = '\0';
 }
 
-void    UTL::putFileName(char*         fileName, const char*   newVal)
+void    UTL::putFileName(wchar_t*         fileName, const wchar_t*   newVal)
 {
     assert (fileName);
 
     if (newVal)
     {
-        strncpy(fileName, newVal, c_cbName - 1);
+        Strncpy(fileName, newVal, c_cbName - 1);
         fileName[c_cbName - 1] = '\0';
     }
     else

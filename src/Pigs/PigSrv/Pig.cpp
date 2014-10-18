@@ -526,7 +526,7 @@ bool CPig::WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds)
 }
 
 
-void CPig::SendChat(ChatTarget chatTarget, const char* psz,
+void CPig::SendChat(ChatTarget chatTarget, const wchar_t* psz,
 	IshipIGC* pshipRecipient, SoundID voiceOver)
 {
 	BaseClient::SendChat(GetShip(), chatTarget,
@@ -978,7 +978,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
 
 				// Compute the minimum number of significant characters
 				int cchMin = (entry.m_key.m_cchSignificant <= 0) ?
-					strlen(entry.m_key.m_szVerb) : entry.m_key.m_cchSignificant;
+					wcslen(entry.m_key.m_szVerb) : entry.m_key.m_cchSignificant;
 
 				// Compare down to the minimum number of significant characters
 				bool bMatched = false;
@@ -986,7 +986,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
 strVerb : chat.m_strText.Left(strVerbCompare.GetLength()));
 				int cch = strCompare.GetLength();
 				while (cch-- >= cchMin &&
-					!(bMatched = (!_stricmp(strCompare, strVerbCompare.Left(cch + 1)))))
+					!(bMatched = (!_wcsicmp(strCompare, strVerbCompare.Left(cch + 1)))))
 					strCompare = strCompare.Left(cch);
 
 				// Process the verb, if it was matched
@@ -1292,12 +1292,12 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 bool CPig::OnChat_AreYouAPig(CPig::REFXChatCommand chat)
 {
 	// Get the computer name
-	char szName[MAX_COMPUTERNAME_LENGTH + 1];
+	wchar_t szName[MAX_COMPUTERNAME_LENGTH + 1];
 	DWORD cchName = sizeofArray(szName);
-	GetComputerNameA(szName, &cchName);
+	GetComputerName(szName, &cchName);
 
 	// Do nothing if the computer name does not match that specified, if any
-	if (chat.m_strMessage.GetLength() && _stricmp(chat.m_strMessage, szName))
+	if (chat.m_strMessage.GetLength() && _wcsicmp(chat.m_strMessage, szName))
 		return true;
 
 	// Format the Oink! reply
@@ -1481,7 +1481,7 @@ void CPig::ModifyShipData(DataShipIGC* pds)
 	pds->pilotType = c_ptCheatPlayer;
 }
 
-void CPig::OnQuitMission(QuitSideReason reason, const char* szMessageParam)
+void CPig::OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam)
 {
 	// Perform default processing
 	BaseClient::OnQuitMission(reason);
@@ -1493,13 +1493,12 @@ void CPig::OnQuitMission(QuitSideReason reason, const char* szMessageParam)
 		SetCurrentState(PigState_MissionList);
 }
 
-const char* CPig::GetArtPath()  
+const wchar_t* CPig::GetArtPath()
 { 
 	CComBSTR bstrPath;
 	GetEngine().get_ArtPath(&bstrPath);
 
-	USES_CONVERSION;
-	return OLE2CA(bstrPath);
+	return bstrPath;
 } 
 
 IAutoUpdateSink* CPig::OnBeginAutoUpdate()
@@ -1559,7 +1558,7 @@ HRESULT CPig::OnAppMessage(FedMessaging* pthis, CFMConnection & cnxnFrom, FEDMES
 	return ProcessAppMessage(pfm);
 }
 
-int CPig::OnMessageBox(FedMessaging * pthis, const char* strText, const char* strCaption,
+int CPig::OnMessageBox(FedMessaging * pthis, const wchar_t* strText, const wchar_t* strCaption,
 	UINT nType)
 {
 	UNUSED_ALWAYS(nType);
@@ -1588,7 +1587,7 @@ void CPig::OnPreCreate(FedMessaging * pthis)
 /////////////////////////////////////////////////////////////////////////////
 // IClientEventSink Overrides
 
-void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
+void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
 {
 	XLock lock(this);
 	assert(PigState_CreatingMission == GetCurrentState()
@@ -1601,7 +1600,7 @@ void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 	}
 }
 
-void CPig::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
+void CPig::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
 {
 	XLock lock(this);
 	assert(PigState_LoggingOn == GetCurrentState());
@@ -2538,7 +2537,6 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 	// Validate the current state
 	//if (PigState_TeamList != GetCurrentState())
 	//return Error(IDS_E_JOINTEAM_TEAMLIST, IID_IPig);
-	USES_CONVERSION;
 	// Find a team using the specified string, if any
 	SideID idSide = NA;
 	if (BSTRLen(bstrTeamOrPlayer))
@@ -2546,7 +2544,7 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 		// Find a team with the specified name, if any
 		for (SideID i = 0; i < BaseClient::MyMission()->NumSides(); ++i)
 		{
-			if (!_stricmp(OLE2CA(bstrTeamOrPlayer), BaseClient::MyMission()->SideName(i)))
+			if (!_wcsicmp(OLE2CW(bstrTeamOrPlayer), BaseClient::MyMission()->SideName(i)))
 			{
 				if (0 < BaseClient::MyMission()->SideAvailablePositions(i))
 				{
@@ -2601,21 +2599,21 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 		SetCurrentState(eStateNew);
 		//imago 10/14
 		if (eStateNew == PigState_WaitingForMission && BSTRLen(bstrCivName) && BaseClient::MyPlayerInfo()->IsTeamLeader()) {
-			char * civNames[c_cSidesMax] = {'\0'};
+			wchar_t * civNames[c_cSidesMax] = { '\0' };
 			CivID civSelection = NA;
 			SideID civSide = BaseClient::GetSideID();
-			char * token;
+			wchar_t * token;
 			int i = 0;
-			token = strtok((char *)OLE2CA(bstrCivName), ",");
+			token = wcstok((char *)OLE2CA(bstrCivName), L",");
 			while(token)
 			{
 				civNames[i] = token;
-				token = strtok(NULL, ",");
+				token = wcstok(NULL, L",");
 				i++;
 			}
 			for (CivilizationLinkIGC* linkCiv = BaseClient::GetCore()->GetCivilizations()->first();  linkCiv != NULL; linkCiv = linkCiv->next())
             {
-				if(!_stricmp(linkCiv->data()->GetName(),civNames[civSide])) {
+				if(!_wcsicmp(linkCiv->data()->GetName(),civNames[civSide])) {
 					civSelection = linkCiv->data()->GetObjectID();
 					break;
 				}
@@ -2634,7 +2632,7 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 	else
 	{
 		SetCurrentState(PigState_TeamList);
-		return Error("The team did not accept you", IID_IPig);
+		return Error(L"The team did not accept you", IID_IPig);
 	}
 	return S_OK;
 }

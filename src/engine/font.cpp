@@ -93,7 +93,7 @@ private:
 		// Create the texture - A8R8G8B8.
 		if( CD3DDevice9::Get()->GetDevFlags()->bSupportsA1R5G6B6Format == false )
 		{
-			m_pFontTex = CreatePrivateSurface( D3DFMT_A8R8G8B8, dwTexWidth, dwTexHeight, "Font texture" );
+			m_pFontTex = CreatePrivateSurface( D3DFMT_A8R8G8B8, dwTexWidth, dwTexHeight, L"Font texture" );
 			hTex = m_pFontTex->GetTexHandle();
 
 			// Lock texture to copy font data into.
@@ -169,7 +169,7 @@ private:
 		else
 		{
 			// 16 bit version, smaller texture required.
-			m_pFontTex = CreatePrivateSurface( D3DFMT_A1R5G5B5, dwTexWidth, dwTexHeight, "Font texture" );
+			m_pFontTex = CreatePrivateSurface( D3DFMT_A1R5G5B5, dwTexWidth, dwTexHeight, L"Font texture" );
 			hTex = m_pFontTex->GetTexHandle();
 
 			// Lock texture to copy font data into.
@@ -444,7 +444,7 @@ public:
 
 	void Write(IMDLBinaryFile* pmdlFile)
 	{
-		pmdlFile->WriteReference("ImportFont");
+		pmdlFile->WriteReference(L"ImportFont");
 		TRef<ZFile>	pfile =	pmdlFile->WriteBinary();
 
 		pfile->Write(m_height);

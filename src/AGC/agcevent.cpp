@@ -48,8 +48,8 @@ void CAGCEvent::FinalRelease()
 }
 
 
-HRESULT CAGCEvent::Init(AGCEventID idEvent, LPCSTR pszContext,
-  LPCOLESTR pszSubject, long idSubject, long cArgTriplets, va_list argptr)
+HRESULT CAGCEvent::Init(AGCEventID idEvent, LPCWSTR pszContext,
+  LPCWSTR pszSubject, long idSubject, long cArgTriplets, va_list argptr)
 {
   XLock lock(this);
   m_id = idEvent;
@@ -193,7 +193,7 @@ HRESULT CAGCEvent::AddToDictionaryV(long cArgTriplets, va_list argptr)
           V_BYREF(&var) = va_arg(argptr, void*);
           break;
         }
-        debugf("CAGCEvent::Init(): Specified VARTYPE %hu (0x%04X) is unsupported\n", vt, vt);
+        debugf(L"CAGCEvent::Init(): Specified VARTYPE %hu (0x%04X) is unsupported\n", vt, vt);
         assert(false);
     }
 

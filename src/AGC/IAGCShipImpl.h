@@ -106,10 +106,9 @@ public:
     if (!BSTRLen(bstrText))
       return S_FALSE;
 
-    // Send the chat
-    USES_CONVERSION;
+    // Send the chat;
     GetIGC()->GetMission()->GetIgcSite()->SendChat(NULL, CHAT_INDIVIDUAL,
-      GetIGC()->GetObjectID(), idSound, OLE2CA(bstrText), c_cidNone, NA, NA, NULL, true); 
+      GetIGC()->GetObjectID(), idSound, bstrText, c_cidNone, NA, NA, NULL, true); 
 
     // Indicate success
     return S_OK;
@@ -138,7 +137,7 @@ public:
 
     // Send the chat
     GetIGC()->GetMission()->GetIgcSite()->SendChat(NULL, CHAT_INDIVIDUAL,
-      GetIGC()->GetObjectID(), idSound, "", idCmd, pModel->GetObjectType(),
+      GetIGC()->GetObjectID(), idSound, L"", idCmd, pModel->GetObjectType(),
       pModel->GetObjectID(), pModel, true);
       
     // Indicate success

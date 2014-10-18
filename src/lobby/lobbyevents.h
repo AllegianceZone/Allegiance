@@ -68,6 +68,6 @@ enum LobbyEvent
   LE_DatabaseError,
 };
 
-extern const char * g_rgszLobbyEvents[];
+extern const wchar_t * g_rgszLobbyEvents[];
 
 #endif

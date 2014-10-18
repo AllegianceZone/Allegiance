@@ -24,7 +24,7 @@ HRESULT     CstationIGC::Initialize(ImissionIGC* pMission, Time now, const void*
 
     HRESULT rc = S_OK;
 
-    debugf("Station initialize %d\n", ((DataStationIGC*)data)->stationID);
+    debugf(L"Station initialize %d\n", ((DataStationIGC*)data)->stationID);
     ZRetailAssert (data && (dataSize == sizeof(DataStationIGC) || dataSize == (sizeof(DataStationIGC) - sizeof(StationTypeID[c_cSidesMax]))));// #307 for back-compatibility with older station data
     {
         DataStationIGC*  dataStation = (DataStationIGC*)data;
@@ -559,17 +559,17 @@ const void*         MyStationType::GetData(void) const
 }
 
 // IbuyableIGC
-const char*          MyStationType::GetModelName(void) const
+const wchar_t*          MyStationType::GetModelName(void) const
 {
     return m_pStationData->modelName;
 }
 
 
-const char*          MyStationType::GetName(void) const
+const wchar_t*          MyStationType::GetName(void) const
 {
     return m_pStationData->name;
 }
-const char*          MyStationType::GetDescription(void) const
+const wchar_t*          MyStationType::GetDescription(void) const
 {
     return m_pStationData->description;
 }
@@ -661,15 +661,15 @@ bool                    MyStationType::HasCapability(StationAbilityBitMask sabm)
 {
     return (m_pStationData->sabmCapabilities & sabm) != 0;
 }
-const char*             MyStationType::GetTextureName(void) const
+const wchar_t*             MyStationType::GetTextureName(void) const
 {
     return m_pStationData->textureName;
 }
-const char*             MyStationType::GetBuilderName(void) const
+const wchar_t*             MyStationType::GetBuilderName(void) const
 {
     return m_pStationData->builderName;
 }
-const char*             MyStationType::GetIconName(void) const
+const wchar_t*             MyStationType::GetIconName(void) const
 {
     return m_pStationData->iconName;
 }

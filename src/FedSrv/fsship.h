@@ -92,7 +92,7 @@ public:
   IsideIGC*     GetSide()               {return m_pShip->GetSide();}
   virtual void  SetSide(CFSMission * pfsMission, IsideIGC * pside);
   IstationIGC * GetStation()            {return m_pShip->GetStation();}
-  const char *  GetName()               {return m_pShip->GetName();}
+  const wchar_t *  GetName()               {return m_pShip->GetName();}
 
   static CFSShip * GetShipFromID(ShipID shipID)  
   {
@@ -245,7 +245,7 @@ class CFSPlayer :
   public CAdminSponsor<CAdminUser>
 {
 public:
-  CFSPlayer(CFMConnection * pcnxn, int characterId, const char * szCDKey,
+	CFSPlayer(CFMConnection * pcnxn, int characterId, const wchar_t * szCDKey,
             TRef<IshipIGC> pShip, bool fCanCheat);
   virtual ~CFSPlayer();
   CFMGroup *      GetGroup() {return m_pgrp;}
@@ -316,7 +316,7 @@ public:
   {
     return m_characterId;
   }
-  const char*     GetCDKey() 
+  const wchar_t*     GetCDKey()
   { 
     return m_strCDKey; 
   }

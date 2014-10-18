@@ -274,7 +274,7 @@ private:
 		D3DADAPTER_IDENTIFIER9	d3dAdapterID;
 		D3DCAPS9				sD3DDevCaps;
 		SD3DDeviceMode *		pCurrentMode;
-		char					pszDevSetupString[256];
+		wchar_t					pszDevSetupString[256];
 		DWORD					dwCurrentWindowedWidth;
 		DWORD					dwCurrentWindowedHeight;
 		DWORD					dwCurrentFullscreenWidth;
@@ -419,7 +419,7 @@ public:
 #ifdef EnablePerformanceCounters
 	void ResetPerformanceCounters();
 	int GetPerformanceCounter(EDevice9Stat stat );
-	const char * GetDeviceSetupString()	{ return m_sD3DDev9.pszDevSetupString; }
+	const wchar_t * GetDeviceSetupString()	{ return m_sD3DDev9.pszDevSetupString; }
 #endif // EnablePerformanceCounters
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

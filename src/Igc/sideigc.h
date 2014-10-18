@@ -103,7 +103,7 @@ class       CsideIGC : public IsideIGC
         virtual void        DestroyBuckets(void);
         virtual void        CreateBuckets(void);
 
-        void                SetName(const char* newVal)
+		void                SetName(const wchar_t* newVal)
         {
 			//Rock / Imago 7/28/09
 			ZString strName = newVal;
@@ -114,7 +114,7 @@ class       CsideIGC : public IsideIGC
 			UTL::putName(m_data.name, (PCC)strName);
         }
 
-        virtual const char*             GetName(void) const
+		virtual const wchar_t*             GetName(void) const
         {
             return m_data.name;
         }
@@ -566,11 +566,11 @@ class       CsideIGC : public IsideIGC
         }
 
 		// #ALLY
-		void SetAllies(char allies)
+		void SetAllies(wchar_t allies)
 		{
 			m_data.allies = allies;
 		}
-		char GetAllies()
+		wchar_t GetAllies()
 		{
 			return m_data.allies;
 		}

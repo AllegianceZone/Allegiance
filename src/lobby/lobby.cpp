@@ -31,7 +31,7 @@ LPCTSTR FindOneOf(LPCTSTR p1, LPCTSTR p2)
 
 // Although some of these functions are big they are declared inline since they are only used once
 
-inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, char * szAccount, char * szPassword)
+inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, wchar_t * szAccount, wchar_t * szPassword)
 {
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr))
@@ -82,15 +82,15 @@ inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, c
  * Returns:
  *    path of AllLobby.exe
  */
-const char * CServiceModule::GetModulePath()
+const wchar_t * CServiceModule::GetModulePath()
 {
-    static char * pszLast = NULL;
+	static wchar_t * pszLast = NULL;
 
     if (pszLast == NULL)
     {
-        static char szFileName[MAX_PATH + 16];
+		static wchar_t szFileName[MAX_PATH + 16];
         GetModuleFileName(NULL, szFileName, MAX_PATH);
-        char*   p = strrchr(szFileName, '\\');
+		wchar_t*   p = wcschr(szFileName, '\\');
         if (p)
             *(p+1) = 0;
         else 
@@ -122,9 +122,9 @@ const char * CServiceModule::GetModulePath()
  * Returns:
  *    true: iff pValue was set
  */
-bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault, bool bWarnIfMissing)
+bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t * szItem, void * pValue, DWORD dwDefault, bool bWarnIfMissing)
 {
-    char psz[MAX_PATH] = {""};
+	wchar_t psz[MAX_PATH] = { L"" };
     DWORD dwSize = (bIsString ? sizeof(psz): sizeof(DWORD));
 
     if (RegQueryValueEx(hk, szItem, NULL, NULL, (BYTE *)psz, &dwSize) != ERROR_SUCCESS ||
@@ -134,7 +134,7 @@ bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const char * sz
         {
             if (dwDefault)
             {
-                Strcpy((char*)pValue, (char*)dwDefault);
+				Strcpy((wchar_t*)pValue, (wchar_t*)dwDefault);
                 if(bWarnIfMissing)
                     LogEvent(EVENTLOG_INFORMATION_TYPE, LE_RegStrMissingDef, szItem, dwDefault);
                 return true;
@@ -150,7 +150,7 @@ bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const char * sz
     }
 
     if (bIsString)
-        Strcpy((char*)pValue, psz);
+		Strcpy((wchar_t*)pValue, psz);
     else
         *(DWORD*)pValue = *(DWORD*)psz;
 
@@ -262,17 +262,17 @@ inline BOOL CServiceModule::Install()
 //
 //
 
-BOOL CServiceModule::InstallService(char * szAccount, char * szPassword)
+BOOL CServiceModule::InstallService(wchar_t * szAccount, wchar_t * szPassword)
 {
     SC_HANDLE schMgr;
     SC_HANDLE schSvc;
-    char szPath[512];
+	wchar_t szPath[512];
 
     schMgr = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
 
     if (!schMgr)
     {
-        printf("Unable to open SCManager.  Service not installed.\n");
+        wprintf(L"Unable to open SCManager.  Service not installed.\n");
         return FALSE;
     }
 
@@ -301,7 +301,7 @@ BOOL CServiceModule::InstallService(char * szAccount, char * szPassword)
 
     CloseServiceHandle(schSvc);
     CloseServiceHandle(schMgr);
-    printf("%s service installed.\n", m_szServiceName);
+    wprintf(L"%s service installed.\n", m_szServiceName);
 
     if (szAccount)
     {
@@ -310,7 +310,7 @@ BOOL CServiceModule::InstallService(char * szAccount, char * szPassword)
         if (S_OK != acct.HasRight(SE_SERVICE_LOGON_NAME))
         {
           acct.SetRight(SE_SERVICE_LOGON_NAME);
-          printf("The account %ls\\%ls has been granted the Logon As A Service right.", acct.GetDomainNameW(), acct.GetUserNameW());
+          wprintf(L"The account %ls\\%ls has been granted the Logon As A Service right.", acct.GetDomainNameW(), acct.GetUserNameW());
         }
     }
 
@@ -362,11 +362,11 @@ int CServiceModule::LogEvent(WORD wType, int id, ...)
     va_list pArg;
 
     va_start(pArg, id);
-    _vsnprintf(chMsg, sizeof(chMsg), g_rgszLobbyEvents[id], pArg);
+    _vsnwprintf(chMsg, sizeof(chMsg), g_rgszLobbyEvents[id], pArg);
     va_end(pArg);
 
     lpszStrings[0] = chMsg;
-    debugf("%s\n", lpszStrings[0]);
+    debugf(L"%s\n", lpszStrings[0]);
 
     if (m_bService)
     {
@@ -430,7 +430,7 @@ inline void CServiceModule::ServiceMain(DWORD /* dwArgc */, LPTSTR* /* lpszArgv 
 
 void CServiceModule::ExeMain()
 {
-    _putts("Running as an executable.");
+    _putts(L"Running as an executable.");
     Run();
 }
 
@@ -514,12 +514,12 @@ void CServiceModule::Run()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-int __cdecl main(int argc, char *argv[])
+int __cdecl wmain(int argc, wchar_t *argv[])
 { 
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
-    LPSTR lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
+    LPWSTR lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
 
     // {5B5BE9E8-F1C7-4b95-960A-542A495CCE20}
     static const GUID LIBID_LOBBY = 

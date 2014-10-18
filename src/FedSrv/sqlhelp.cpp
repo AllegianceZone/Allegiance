@@ -49,13 +49,13 @@ SQLHSTMT g_hstmt_Last = 0;
  */
 void SQLWhatsWrong(SQLSMALLINT ssiHandleType, SQLHANDLE sh)
 {
-  SQLCHAR scState[5];
+  SQLWCHAR scState[5];
   SQLINTEGER siNativeError;
-  SQLCHAR scMsgText[512];
+  SQLWCHAR scMsgText[512];
   SQLSMALLINT cbMsgText;
   SQLRETURN sqlret = SQLGetDiagRec(ssiHandleType, sh, 1, scState, &siNativeError, 
       scMsgText, sizeof(scMsgText), &cbMsgText);
-  ZDebugOutput((char *) scMsgText);
+  ZDebugOutput(scMsgText);
 
   // BIG hack to work with zone profile
   if (7312 == siNativeError)
@@ -64,7 +64,7 @@ void SQLWhatsWrong(SQLSMALLINT ssiHandleType, SQLHANDLE sh)
   // If our query is deadlocked, let's try again
   if (1205 == siNativeError)
   {
-    debugf("Query deadlocked. Retry #%d.", g_cSQLRetries);
+    debugf(L"Query deadlocked. Retry #%d.", g_cSQLRetries);
     g_fSQLRetry = true;
     g_cSQLRetries++;
     SQLCloseCursor(g_hstmt_Last); // we get an invalid cursor state without this.
@@ -73,11 +73,11 @@ void SQLWhatsWrong(SQLSMALLINT ssiHandleType, SQLHANDLE sh)
   }
   
   if(g_pSQLSite) // sometimes NULL because g_pSQLSite is sometimes constructed (and set to NULL) sometime after InitSql() has its way with it.
-    g_pSQLSite->OnMessageBox((char *) scMsgText, "FedSrv SQL Error", MB_OK | MB_ICONINFORMATION);
+	  g_pSQLSite->OnMessageBox((wchar_t *)scMsgText, L"FedSrv SQL Error", MB_OK | MB_ICONINFORMATION);
   else 
   {
-      debugf("SQL Error %s\n", scMsgText);
-      printf("SQL Error %s\n", scMsgText);
+      debugf(L"SQL Error %s\n", scMsgText);
+      wprintf(L"SQL Error %s\n", scMsgText);
   }
   // if we can't access the database, we're screwed, so give up.
   // TODO: Make the exit more graceful
@@ -92,11 +92,11 @@ void SQLWhatsWrong(SQLSMALLINT ssiHandleType, SQLHANDLE sh)
  * Purpose:
  *    initializes a sql statement and keeps track of it for auto cleanup
  */
-SQLHSTMT AddStatement(SQLCHAR * scSQL)
+SQLHSTMT AddStatement(SQLWCHAR * scSQL)
 {
   if (g_iSql >= CSTATEMENTS)
   {
-    OutputDebugString("Too many SQL statements. Increment CSTATEMENTS\n");
+    OutputDebugString(L"Too many SQL statements. Increment CSTATEMENTS\n");
     DebugBreak();
     exit(0);
   }
@@ -180,25 +180,25 @@ int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff)
  *       checked for a default value. If it's not in the registry, we get a
  *       empty result.
  */
- char*  ParseCommandLine (char * szRegKey, char* szParameterName, char* szDefault = 0)
+wchar_t*  ParseCommandLine(wchar_t * szRegKey, wchar_t* szParameterName, wchar_t* szDefault = 0)
  {
-    static  char    szBuffer[64];
+	static  wchar_t    szBuffer[64];
     LPTSTR          szCommandLine = GetCommandLine ();
-    char*           location = strstr (szCommandLine, szParameterName);
+	wchar_t*           location = wcsstr(szCommandLine, szParameterName);
     szBuffer[0] = 0;
     if (location)
     {
-        location += strlen (szParameterName);
+        location += wcslen (szParameterName);
         assert (*location == '=');
         location++;
-        char*   szBufferPtr = szBuffer;
+		wchar_t*   szBufferPtr = szBuffer;
         while (!isspace (*location))
             *szBufferPtr++ = *location++;
         *szBufferPtr = 0;
     }
     else if (szDefault)
     {
-        strcpy (szBuffer, szDefault);
+        Strcpy (szBuffer, szDefault);
     }
     else
     {
@@ -222,7 +222,7 @@ int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff)
  *    0. Returns a value only so we can call it during global initialization,
  *        before any code blocks execute.
  */
-int InitSql(char * szRegKey, ISQLSite * pSQLSite)
+int InitSql(wchar_t * szRegKey, ISQLSite * pSQLSite)
 {
   g_pSQLSite = pSQLSite;
   
@@ -247,20 +247,20 @@ int InitSql(char * szRegKey, ISQLSite * pSQLSite)
                             StrConnectionOut, sizeof(StrConnectionOut), 
                             &cbStrConnectionOut, SQL_DRIVER_NOPROMPT);
 #else
-  char szUser[64];
-  char szPW[64];
-  char szDatabase[64];
-  strcpy (szUser, ParseCommandLine (szRegKey, "SQLUser","club"));
-  strcpy (szPW, ParseCommandLine (szRegKey, "SQLPW","AllegFed@2014!NotSecret"));
-  strcpy (szDatabase, ParseCommandLine (szRegKey, "SQLSrc", "Federation"));
-  printf ("  Connecting to DSN (%s) as user (%s) with password (%s)...\n", szDatabase, szUser, szPW);
-  sqlret = SQLConnect(hSqlDbc, (SQLCHAR*) szDatabase, SQL_NTS, (SQLCHAR*) szUser, SQL_NTS, (SQLCHAR*) szPW, SQL_NTS);
+  wchar_t szUser[64];
+  wchar_t szPW[64];
+  wchar_t szDatabase[64];
+  Strcpy (szUser, ParseCommandLine (szRegKey, L"SQLUser",L"club"));
+  Strcpy (szPW, ParseCommandLine (szRegKey, L"SQLPW",L"AllegFed@2014!NotSecret"));
+  Strcpy (szDatabase, ParseCommandLine (szRegKey, L"SQLSrc", L"AZFederation"));
+  wprintf (L"  Connecting to DSN (%s) as user (%s) with password (%s)...\n", szDatabase, szUser, szPW);
+  sqlret = SQLConnect(hSqlDbc, (SQLWCHAR*) szDatabase, SQL_NTS, (SQLWCHAR*) szUser, SQL_NTS, (SQLWCHAR*) szPW, SQL_NTS);
 #endif
   
   if (SQL_SUCCESS != sqlret && SQL_SUCCESS_WITH_INFO != sqlret)
     SQLWhatsWrong(SQL_HANDLE_DBC, hSqlDbc);
   
-   SQLCHAR scODBCver[6];
+   SQLWCHAR scODBCver[6];
   SQLSMALLINT cbODBCver;
   sqlret = SQLGetInfo(hSqlDbc, SQL_DRIVER_ODBC_VER, scODBCver, sizeof(scODBCver), &cbODBCver);
   if (SQL_SUCCESS != sqlret)
@@ -296,7 +296,7 @@ void ShutDownSQL()
 SQLRETURN SqlGo(SQLHSTMT hstmt)
 {
   SQLRETURN sqlret;
-  static CTempTimer tt("in SqlGo", .05f);
+  static CTempTimer tt(L"in SqlGo", .05f);
   tt.Start();
 
   if (g_hstmt_Last)
@@ -318,7 +318,7 @@ SQLRETURN SqlGo(SQLHSTMT hstmt)
 SQLRETURN SqlGetRow(SQLHSTMT hstmt)
 {
   SQLRETURN sqlret;
-  static CTempTimer tt("in SqlGetRow", .01f);
+  static CTempTimer tt(L"in SqlGetRow", .01f);
   tt.Start();
   sqlret = SQLFetch(hstmt);
   

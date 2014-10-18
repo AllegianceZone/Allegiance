@@ -110,7 +110,7 @@ public:
         SetTextColor(m_color);
     }
 
-	void ShowWebPage(const char* szURL)
+	void ShowWebPage(const wchar_t* szURL)
     {
         ShellExecute(NULL, NULL, szURL, NULL, NULL, SW_SHOWNORMAL);
     }
@@ -432,7 +432,7 @@ public:
         pcc++;
 
         if (pcc == pccEnd) {
-            return Error("End of string");
+            return Error(L"End of string");
         }
 
         //
@@ -451,7 +451,7 @@ public:
 
         if (*pcc == 'x') {
             pcc++;
-            char ch = ReadHexNumber(pcc, 2);
+            wchar_t ch = ReadHexNumber(pcc, 2);
             InsertWord(&ch, (&ch) + 1);
 
             if (pcc == pccEnd || pcc[0] != '>') {

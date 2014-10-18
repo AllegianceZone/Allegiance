@@ -610,21 +610,21 @@ class   CmissionIGC : public ImissionIGC
         }
 
         virtual int                     Export(__int64  maskTypes,
-                                               char*    pdata) const;
+                                               wchar_t*    pdata) const;
         virtual void                    Import(Time     now,
                                                __int64  maskTypes,
-                                               char*    pdata,
+											   wchar_t*    pdata,
                                                int      datasize);
 		
 		// Imago
 		virtual ZString					BitsToTechsList(TechTreeBitMask & ttbm);
 		virtual ZString					BitsToPartsList(PartMask & pm, EquipmentType et);
 		
-		virtual void					TechsListToBits(const char * szTechs, TechTreeBitMask & ttbm);
-		virtual int						TechBitFromToken(const char * szToken);
+		virtual void					TechsListToBits(const wchar_t * szTechs, TechTreeBitMask & ttbm);
+		virtual int						TechBitFromToken(const wchar_t * szToken);
 		
-		virtual PartMask				PartMaskFromToken(const char * szToken, EquipmentType et);
-		virtual PartMask				PartsListToMask(const char * szParts, EquipmentType et);
+		virtual PartMask				PartMaskFromToken(const wchar_t * szToken, EquipmentType et);
+		virtual PartMask				PartsListToMask(const wchar_t * szParts, EquipmentType et);
 		
 		virtual bool					LoadTechBitsList(void);
 		virtual bool					LoadPartsBitsList(void);
@@ -799,8 +799,8 @@ class   CmissionIGC : public ImissionIGC
 
         void                    UpdateSides(Time now,
                                             const MissionParams * pmp,
-                                            const char  sideNames[c_cSidesMax][c_cbSideName]);
-		void                    UpdateAllies(const char  Allies[c_cSidesMax]); //#ALLY
+                                            const wchar_t  sideNames[c_cSidesMax][c_cbSideName]);
+		void                    UpdateAllies(const wchar_t  Allies[c_cSidesMax]); //#ALLY
         void                    ResetMission();
 
         void                    GenerateMission(Time                   now,
@@ -917,7 +917,7 @@ class   CmissionIGC : public ImissionIGC
         }
 
         short                   GetReplayCount(void) const;
-        const char*             GetContextName(void);
+		const wchar_t*             GetContextName(void);
 
     private:
         MissionParams            m_missionParams;
@@ -957,8 +957,8 @@ class   CmissionIGC : public ImissionIGC
         bool                     m_bHasGenerated;
         short                    m_nReplayCount;
         ZString                  m_strContextName;
-		char					 rgTechs[cTechs][CbTechBitName+1];
-		char					 rgParts[ET_MAX][16][CbTechBitName+1];
+		wchar_t					 rgTechs[cTechs][CbTechBitName + 1];
+		wchar_t					 rgParts[ET_MAX][16][CbTechBitName + 1];
 };
 
 // Read missions from plain-text Imago 8/3/08 NYI: XML
@@ -968,6 +968,6 @@ class   CmissionIGC : public ImissionIGC
 #include <fstream>
 #include <sstream>
 #include <vector>
-void readCSV(std::istream &input, std::vector< std::vector<std::string> > &output);
+void readCSV(std::wistream &input, std::vector< std::vector<std::wstring> > &output);
 
 #endif //__MISSIONIGC_H_

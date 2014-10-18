@@ -18,55 +18,55 @@
 // Static members.
 // 08/30/04 -KGJV: added Titty Baby memorial sector name
 // 12/14/11 -pkk: added Tj Butler memorial sector name
-const char * CMapData::smszClusterName[c_NumClusterNames] =
+const wchar_t * CMapData::smszClusterName[c_NumClusterNames] =
 {
-    "Aegis",        "Aeroflex",     "Ahto",         "Aredne",
-    "Blenhem",      "Borsonis",     "Bragi",        "Caladonia", "Cirt",
-    "Claytow",      "Denom",        "Dunatis",    /*"Earth",*/ "Eleesh",
-    "Enlil",        "Fejfar",       "Fenris",       "Fierro",
-    "Freya",        "Gala",         "Gery",
-    "Gobo",         "Goron",        "Holokine",   /*"Jupiter",*/ "Jol",
-    "Karlo",        "Kassano",      "Kassimier",    "Kik",
-    "Kilvero",      "Kishoten",     "Kuat",         "L'Sau",
-    "Larchis",      "Lemminakean",  "Leighton",     "Louhi",
-    "Loviatar",     "Luerentia",  /*"Mars",*/       "Meesh", "Mercor",
-  /*"Mercury",*/    "Miekko",       "Mielikki",     "Monmar",
-    "Nadir",      /*"Neptune",*/    "Night",        "Oblivion",
-    "Okanagon",     "Oxyl",       /*"Pluto",*/      "Pohjola",
-    "Raiko",        "Resnik",       "Rib'zki",		"Rimin",  "Sleipener",
-    "Solitaire",    "Soron",        "Sri Metsa",    "Surma",
-    "Tathlum",      "Tierankeen",   "Tjeerd",       "Torc",
-    "Touni",        "Tauceti",      "Tj Butler",    "Titty Baby"    ,"Turakeen",   /*"Uranus",*/"Udar", "Virkinow",
-  /*"Venus",*/      "Xuping"
+	L"Aegis", L"Aeroflex", L"Ahto", L"Aredne",
+	L"Blenhem", L"Borsonis", L"Bragi", L"Caladonia", L"Cirt",
+	L"Claytow", L"Denom", L"Dunatis",    /*"Earth",*/ L"Eleesh",
+	L"Enlil", L"Fejfar", L"Fenris", L"Fierro",
+	L"Freya", L"Gala", L"Gery",
+	L"Gobo", L"Goron", L"Holokine",   /*"Jupiter",*/ L"Jol",
+	L"Karlo", L"Kassano", L"Kassimier", L"Kik",
+	L"Kilvero", L"Kishoten", L"Kuat", L"L'Sau",
+	L"Larchis", L"Lemminakean", L"Leighton", L"Louhi",
+	L"Loviatar", L"Luerentia",  /*"Mars",*/       L"Meesh", L"Mercor",
+	/*"Mercury",*/    L"Miekko", L"Mielikki", L"Monmar",
+	L"Nadir",      /*"Neptune",*/    L"Night", L"Oblivion",
+	L"Okanagon", L"Oxyl",       /*"Pluto",*/      L"Pohjola",
+	L"Raiko", L"Resnik", L"Rib'zki", L"Rimin", L"Sleipener",
+	L"Solitaire", L"Soron", L"Sri Metsa", L"Surma",
+	L"Tathlum", L"Tierankeen", L"Tjeerd", L"Torc",
+	L"Touni", L"Tauceti", L"Tj Butler", L"Titty Baby", L"Turakeen",   /*"Uranus",*/L"Udar", L"Virkinow",
+	/*"Venus",*/      L"Xuping"
 } ;
 
-const char * CmapMakerIGC::smszPlanetName[c_NumberOfPlanetPosters] =
+const wchar_t * CmapMakerIGC::smszPlanetName[c_NumberOfPlanetPosters] =
 {
-    "nebplnt36bmp",
-    "nebplnt35bmp",
-    "nebplnt02bmp",
-    "nebplnt23bmp",
-    "nebplnt19bmp",
-    "nebplnt01bmp",
-	"nebplnt03bmp",
-	"nebplnt04bmp",
-	"nebplnt05bmp",
-	"nebplnt06bmp",
-	"nebplnt07bmp",
-	"nebplnt08bmp",
-	"nebplnt09bmp",
-	"nebplnt10bmp",
-	"nebplnt11bmp",
-	"nebplnt12bmp",
-	"nebplnt16bmp",
-	"nebplnt19bmp",
-	"nebplnt24bmp",
-	"nebplnt25bmp",
-	"nebplnt29bmp",
-	"nebplnt30bmp",
-	"nebplnt31bmp",
-	"nebplnt33bmp",
-	"nebplnt37bmp"
+	L"nebplnt36bmp",
+	L"nebplnt35bmp",
+	L"nebplnt02bmp",
+	L"nebplnt23bmp",
+	L"nebplnt19bmp",
+	L"nebplnt01bmp",
+	L"nebplnt03bmp",
+	L"nebplnt04bmp",
+	L"nebplnt05bmp",
+	L"nebplnt06bmp",
+	L"nebplnt07bmp",
+	L"nebplnt08bmp",
+	L"nebplnt09bmp",
+	L"nebplnt10bmp",
+	L"nebplnt11bmp",
+	L"nebplnt12bmp",
+	L"nebplnt16bmp",
+	L"nebplnt19bmp",
+	L"nebplnt24bmp",
+	L"nebplnt25bmp",
+	L"nebplnt29bmp",
+	L"nebplnt30bmp",
+	L"nebplnt31bmp",
+	L"nebplnt33bmp",
+	L"nebplnt37bmp"
 } ;
 
 //
@@ -116,18 +116,18 @@ VOID CMapData::SetCluster(SectorID sID, IclusterIGC * pCluster, SideID sideID)
 }
 
 
-VOID CMapData::GetNewClusterName(CHAR * szClusterName)
+VOID CMapData::GetNewClusterName(wchar_t * szClusterName)
 {
 	srand(GetTickCount() + (int)time(NULL)); //imago 10/14, apparently this call in ZLib is out of scope.
     INT n = randomInt(0, mcClusterNamesLeft - 1);
 
-    strcpy(szClusterName, smszClusterName[mClusterNamesLeft[n]]);
+    Strcpy(szClusterName, smszClusterName[mClusterNamesLeft[n]]);
     mcClusterNamesLeft--;
     mClusterNamesLeft[n] = mClusterNamesLeft[mcClusterNamesLeft];
 }
 
 
-const char* ImapMakerIGC::IsValid(const MissionParams* pmp)
+const wchar_t* ImapMakerIGC::IsValid(const MissionParams* pmp)
 {
     switch (pmp->mmMapType)
     {
@@ -163,7 +163,7 @@ const char* ImapMakerIGC::IsValid(const MissionParams* pmp)
             return CmapMakerEastWestIGC::IsValid(pmp);
     }
 
-    return "Invalid map type";
+    return L"Invalid map type";
 }
 
 void    ImapMakerIGC::Create(Time                   now,
@@ -209,7 +209,7 @@ void    ImapMakerIGC::Create(Time                   now,
 CmapMakerIGC::CmapMakerIGC()
 {
     mMMID = c_mmSingleRing;
-    this->SetName("Single Ring");
+    this->SetName(L"Single Ring");
 }
 
 
@@ -564,12 +564,12 @@ IclusterIGC * CmapMakerIGC::GenerateTeamCluster(CMapData * pMapData,
 
     pMapData->GetNewClusterName(dc.name);
 
-    strcpy(dc.posterName, "globe");
+    Strcpy(dc.posterName, L"globe");
     dc.posterName[5] = '0' + randomInt(1, 8);
     dc.posterName[6] = '\0';
 
     n = randomInt(0, c_NumberOfPlanetPosters - 1);
-    strcpy(dc.planetName, smszPlanetName[n]);
+    Strcpy(dc.planetName, smszPlanetName[n]);
     dc.planetSinLatitude = random(0.0f, 1.0f);
     dc.planetLongitude = random(0.0f, 1.0f);
     dc.planetRadius = (unsigned char)randomInt(50, 100);
@@ -620,7 +620,7 @@ IclusterIGC * CmapMakerIGC::GenerateNeutralCluster(CMapData * pMapData,
 
     pMapData->GetNewClusterName(dc.name);
 
-    strcpy(dc.posterName, "globe");
+    Strcpy(dc.posterName, L"globe");
     dc.posterName[5] = '0' + randomInt(1, 8);
     dc.posterName[6] = '\0';
     dc.planetName[0] = '\0';
@@ -710,11 +710,11 @@ VOID CmapMakerIGC::LinkClusters(CMapData* pMapData,
 {
     DataWarpIGC dw;
 
-    static const char*  c_pszIconNeutral = "neutralaleph";
-    static const char*  c_pszIconPlayer = "homealeph";
+	static const wchar_t*  c_pszIconNeutral = L"neutralaleph";
+	static const wchar_t*  c_pszIconPlayer = L"homealeph";
 
-    static const char*  c_pszTextureNeutral = "plnt19";
-    static const char*  c_pszTexturePlayer = "plnt42";
+	static const wchar_t*  c_pszTextureNeutral = L"plnt19";
+	static const wchar_t*  c_pszTexturePlayer = L"plnt42";
 
     float signature1 = 1.0f;
     float signature2 = 1.0f;
@@ -751,11 +751,11 @@ VOID CmapMakerIGC::LinkClusters(CMapData* pMapData,
         }
     }
 
-    const char* pszTexture1;
-    const char* pszTexture2;
+    const wchar_t* pszTexture1;
+	const wchar_t* pszTexture2;
 
-    const char* pszIcon1;
-    const char* pszIcon2;
+	const wchar_t* pszIcon1;
+	const wchar_t* pszIcon2;
     switch (alephType)
     {
         case c_FriendlyAleph:
@@ -812,9 +812,9 @@ VOID CmapMakerIGC::LinkClusters(CMapData* pMapData,
     //
     dw.warpDef.warpID = pMapData->GetNextWarpID();
     dw.clusterID = sID1;
-    strcpy(dw.warpDef.textureName, pszTexture1);
-    strcpy(dw.warpDef.iconName, pszIcon1);
-    strcpy(dw.name, pMapData->GetCluster(sID2)->GetName());
+    Strcpy(dw.warpDef.textureName, pszTexture1);
+    Strcpy(dw.warpDef.iconName, pszIcon1);
+    Strcpy(dw.name, pMapData->GetCluster(sID2)->GetName());
     dw.signature = signature1;
     dw.position.x = dw.position.y = 0.0f;
     dw.position.z = radius1;
@@ -824,9 +824,9 @@ VOID CmapMakerIGC::LinkClusters(CMapData* pMapData,
 
     dw.warpDef.warpID = pMapData->GetNextWarpID();
     dw.clusterID = sID2;
-    strcpy(dw.warpDef.textureName, pszTexture2);
-    strcpy(dw.warpDef.iconName, pszIcon2);
-    strcpy(dw.name, pMapData->GetCluster(sID1)->GetName());
+    Strcpy(dw.warpDef.textureName, pszTexture2);
+    Strcpy(dw.warpDef.iconName, pszIcon2);
+    Strcpy(dw.name, pMapData->GetCluster(sID1)->GetName());
     dw.signature = signature2;
     dw.position.x = dw.position.y = 0.0f;
     dw.position.z = radius2;
@@ -930,7 +930,7 @@ VOID CmapMakerIGC::GenerateStarbase(CMapData*       pMapData,
     pst = pst->GetSuccessorStationType(pSide);
 
     ds.stationTypeID = pst->GetObjectID();
-    strcpy(ds.name, pst->GetName());
+    Strcpy(ds.name, pst->GetName());
 
     IObject * o = pMapData->GetMission()->CreateObject(
                                         pMapData->GetTime(),
@@ -1077,7 +1077,7 @@ VOID CmapMakerIGC::ActivateSides(ImissionIGC * pMission)
 CmapMakerDoubleRingIGC::CmapMakerDoubleRingIGC()
 {
     mMMID = c_mmDoubleRing;
-    this->SetName("Double Ring");
+    this->SetName(L"Double Ring");
 }
 
 VOID CmapMakerDoubleRingIGC::GenerateTeamClusterScreenPosition(
@@ -1161,7 +1161,7 @@ VOID CmapMakerDoubleRingIGC::LinkClusters(CMapData * pMapData)
 CmapMakerBigRingIGC::CmapMakerBigRingIGC()
 {
     mMMID = c_mmBigRing;
-    this->SetName("Big Ring");
+    this->SetName(L"Big Ring");
 }
 
 VOID CmapMakerBigRingIGC::GenerateLayout(CMapData * pMapData)
@@ -1247,7 +1247,7 @@ VOID CmapMakerBigRingIGC::LinkClusters(CMapData * pMapData)
 CmapMakerHiLoIGC::CmapMakerHiLoIGC()
 {
     mMMID = c_mmHiLo;
-    this->SetName("HiLo");
+	this->SetName(L"HiLo");
 }
 
 VOID CmapMakerHiLoIGC::GenerateLayout(CMapData * pMapData)
@@ -1375,7 +1375,7 @@ VOID CmapMakerHiLoIGC::LinkClusters(CMapData * pMapData)
 CmapMakerHiHigherIGC::CmapMakerHiHigherIGC()
 {
     mMMID = c_mmHiHigher;
-    this->SetName("HiHigher");
+	this->SetName(L"HiHigher");
 }
 
 VOID CmapMakerHiHigherIGC::GenerateLayout(CMapData * pMapData)
@@ -1550,7 +1550,7 @@ VOID CmapMakerHiHigherIGC::LinkClusters(CMapData * pMapData)
 CmapMakerStarIGC::CmapMakerStarIGC()
 {
     mMMID = c_mmStar;
-    this->SetName("Star");
+	this->SetName(L"Star");
 }
 
 VOID CmapMakerStarIGC::GenerateLayout(CMapData * pMapData)
@@ -1689,11 +1689,11 @@ VOID CmapMakerStarIGC::LinkClusters(CMapData * pMapData)
 CmapMakerBrawlIGC::CmapMakerBrawlIGC()
 {
     mMMID = c_mmBrawl;
-    this->SetName("Brawl");
+	this->SetName(L"Brawl");
 }
 
 
-const char* CmapMakerBrawlIGC::IsValid(const MissionParams * pmp)
+const wchar_t* CmapMakerBrawlIGC::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed march 24 2006
     //if (pmp->nMaxPlayersPerTeam * pmp->nTeams > 36)
@@ -1776,7 +1776,7 @@ VOID CmapMakerBrawlIGC::PopulateCluster(CMapData*    pMapData,
         assert (pst);
 
         ds.stationTypeID = pst->GetObjectID();
-        strcpy(ds.name, pst->GetName());
+        Strcpy(ds.name, pst->GetName());
 
         IstationIGC*    pstation = (IstationIGC*)pMapData->GetMission()->CreateObject(pMapData->GetTime(),
                                                                                        OT_station,
@@ -1804,11 +1804,11 @@ VOID CmapMakerBrawlIGC::PopulateCluster(CMapData*    pMapData,
 CmapMakerPinWheelIGC::CmapMakerPinWheelIGC()
 {
     mMMID = c_mmPinWheel;
-    this->SetName("PinWheel");
+	this->SetName(L"PinWheel");
 }
 
 
-const char* CmapMakerPinWheelIGC::IsValid(const MissionParams * pmp)
+const wchar_t* CmapMakerPinWheelIGC::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed march 24 2006
     //if (pmp->nMaxPlayersPerTeam > 200)
@@ -1924,15 +1924,15 @@ VOID CmapMakerPinWheelIGC::PopulateCluster(CMapData*    pMapData,
 CmapMakerDiamondRingIGC::CmapMakerDiamondRingIGC()
 {
     mMMID = c_mmDiamondRing;
-    this->SetName("Diamond Ring");
+	this->SetName(L"Diamond Ring");
 }
 
 
-const char* CmapMakerDiamondRingIGC::IsValid(const MissionParams * pmp)
+const wchar_t* CmapMakerDiamondRingIGC::IsValid(const MissionParams * pmp)
 {
     if (pmp->nTeams < 3)
-        return("Diamond ring maps must have more than 2 teams; "
-               "please change the map type, or number of teams.");
+        return(L"Diamond ring maps must have more than 2 teams; "
+		L"please change the map type, or number of teams.");
 
     return(NULL);
 }
@@ -2055,7 +2055,7 @@ VOID CmapMakerDiamondRingIGC::LinkClusters(CMapData * pMapData)
 CmapMakerSnowFlakeIGC::CmapMakerSnowFlakeIGC()
 {
     mMMID = c_mmSnowFlake;
-    this->SetName("SnowFlake");
+	this->SetName(L"SnowFlake");
 }
 
 
@@ -2241,7 +2241,7 @@ VOID CmapMakerSnowFlakeIGC::LinkClusters(CMapData * pMapData)
 // Split Base
 //
 
-const char* CmapMakerLargeSplitIGC::IsValid(const MissionParams * pmp)
+const wchar_t* CmapMakerLargeSplitIGC::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed march 24 2006
     //if (pmp->nMinPlayersPerTeam < 10)
@@ -2254,19 +2254,19 @@ const char* CmapMakerLargeSplitIGC::IsValid(const MissionParams * pmp)
 CmapMakerLargeSplitIGC::CmapMakerLargeSplitIGC()
 {
     mMMID = c_mmLargeSplit;
-    this->SetName("LargeSplit");
+	this->SetName(L"LargeSplit");
 }
 
 CmapMakerInsideOutIGC::CmapMakerInsideOutIGC()
 {
     mMMID = c_mmInsideOut;
-    this->SetName("Inside out");
+	this->SetName(L"Inside out");
 }
 
 CmapMakerGridIGC::CmapMakerGridIGC()
 {
     mMMID = c_mmGrid;
-    this->SetName("Grid");
+	this->SetName(L"Grid");
 }
 
 
@@ -2414,11 +2414,11 @@ VOID CmapMakerGridIGC::LinkClusters(CMapData * pMapData)
     }
 }
 
-const char* CmapMakerEastWestIGC::IsValid(const MissionParams * pmp)
+const wchar_t* CmapMakerEastWestIGC::IsValid(const MissionParams * pmp)
 {
     if (pmp->nTeams != 2) 
-        return("East West maps must have exactly two teams; "
-                "please change the map type, or the number of teams.");
+		return(L"East West maps must have exactly two teams; "
+		L"please change the map type, or the number of teams.");
 	// yp your_persona removed march 24 2006
     // else if (pmp->nMinPlayersPerTeam < 10)
     //     return("East West maps must have at least 10 players per team; "
@@ -2430,7 +2430,7 @@ const char* CmapMakerEastWestIGC::IsValid(const MissionParams * pmp)
 CmapMakerEastWestIGC::CmapMakerEastWestIGC()
 {
     mMMID = c_mmEastWest;
-    this->SetName("EastWest");
+	this->SetName(L"EastWest");
 }
 
 
@@ -2553,7 +2553,7 @@ VOID CmapMakerEastWestIGC::PopulateCluster(CMapData*    pMapData,
                     cMineable[localID], cSpecial[localID]);
 }
 
-const char* CmapMakerSplitBaseIGC::IsValid(const MissionParams * pmp)
+const wchar_t* CmapMakerSplitBaseIGC::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed  march 24 2006
     //if (pmp->nTeams * pmp->nMinPlayersPerTeam < 30)
@@ -2565,7 +2565,7 @@ const char* CmapMakerSplitBaseIGC::IsValid(const MissionParams * pmp)
 CmapMakerSplitBaseIGC::CmapMakerSplitBaseIGC()
 {
     mMMID = c_mmSplitBase;
-    this->SetName("Split Base");
+	this->SetName(L"Split Base");
 }
 VOID CmapMakerSplitBaseIGC::GenerateLayout(CMapData * pMapData)
 {

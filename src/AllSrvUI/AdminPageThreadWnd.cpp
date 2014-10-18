@@ -41,7 +41,7 @@ CAdminPageThreadWnd::CAdminPageThreadWnd()
 
 BOOL CAdminPageThreadWnd::Create()
 {
-  return CWnd::CreateEx(0, "static", NULL, WS_OVERLAPPED, 0, 0, 0, 0, NULL, NULL);
+  return CWnd::CreateEx(0, L"static", NULL, WS_OVERLAPPED, 0, 0, 0, 0, NULL, NULL);
 }
 
 BOOL CAdminPageThreadWnd::Create(CString strShortcutPath)

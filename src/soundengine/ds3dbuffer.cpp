@@ -387,7 +387,7 @@ HRESULT DS3DSoundBuffer::StartImpl(bool bLooping)
     if (hr == DSERR_BUFFERLOST)
     {
         // the buffer was lost
-        debugf("DSound buffer lost.\n");
+        debugf(L"DSound buffer lost.\n");
 
         // try reloading it 
         hr = RestoreBuffer();
@@ -402,7 +402,7 @@ HRESULT DS3DSoundBuffer::StartImpl(bool bLooping)
     if (FAILED(hr)) 
     { 
         ZAssert(hr == DSERR_INVALIDCALL);
-        debugf("Error starting sound: %X\n", hr); 
+        debugf(L"Error starting sound: %X\n", hr); 
         return hr; 
     }
 
@@ -595,7 +595,7 @@ ZString DS3DSoundBuffer::DebugDump(const ZString& strIndent)
 	else
 		m_pdirectsoundbuffer->GetStatus(&dwStatus);
 
-    return strIndent + "DS3DSoundBuffer: "
+    return strIndent + L"DS3DSoundBuffer: "
         + (m_b3D ? " 3D" : " 2D")
         + ((dwStatus & DSBSTATUS_PLAYING) ? " playing" : "")
         + ((dwStatus & DSBSTATUS_LOOPING) ? " looping" : "")
@@ -985,7 +985,7 @@ HRESULT DS3DStreamingSoundBuffer::UpdateBufferContents(bool bTrustWritePtr)
         )
     {
         // Doh! We've played incorrect sound!
-        debugf("sound buffer underflow; read %d, write %d, min write %d\n", 
+        debugf(L"sound buffer underflow; read %d, write %d, min write %d\n", 
             dwReadOffset, m_dwWriteOffset, dwMinWriteOffset);
 
         // recover as best we can.

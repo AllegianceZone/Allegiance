@@ -20,6 +20,8 @@ const CFLMission * CFLServer::c_AllMissions = (CFLMission*) -1;
 // for allowed servers.  I used the existing GetPrivateProfileString functions, not the most
 // efficient as it pulls the info one line at a time but it is more than quick enough
 // for this check
+//imago 10/14 this is retarded
+/*
 bool IsServerAllowed(const char *ip)
 {
 	char    config_dir[MAX_PATH];
@@ -115,7 +117,7 @@ bool IsServerAllowed(const char *ip)
 		return true;
 	}
 }
-
+*/
 // end mmf
 
 
@@ -132,7 +134,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmLogon, S, LOGON_LOBBY, pfm);
 	  pfmLogon->cbvStaticCoreInfo;
-	  char szRemote[16];
+	  wchar_t szRemote[16];
       if (pfmLogon->verLobby == LOBBYVER_LS)
       {
         if(pfmLogon->dwPort != 0)						// A port of 0 means the server couldn't find out its listening port
@@ -145,13 +147,13 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		pServer->SetStaticCoreInfo(pfmLogon->cStaticCoreInfo, pcoreinfo);
 		//Imago: reorganized some stuff to get a better debug message		
 		// location
-		char * szLoc =  FM_VAR_REF(pfmLogon, szLocation);
+		wchar_t * szLoc =  FM_VAR_REF(pfmLogon, szLocation);
 		pServer->SetLocation(szLoc);
 		//Imago #2 6/10
-		char * szPrivilegedUsers =  FM_VAR_REF(pfmLogon, szPrivilegedUsers);
+		wchar_t * szPrivilegedUsers = FM_VAR_REF(pfmLogon, szPrivilegedUsers);
 		pServer->SetPrivilegedUsers(szPrivilegedUsers);
 		//Imago #62 6/10
-		char * szVersion =  FM_VAR_REF(pfmLogon, szServerVersion);
+		wchar_t * szVersion = FM_VAR_REF(pfmLogon, szServerVersion);
 		pServer->SetVersion(szVersion);
 		// max games
 		pServer->SetMaxGamesAllowed(pfmLogon->MaxGames);
@@ -166,24 +168,25 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		// mmf add check to see if they are an allowed or blocked server
 
 		  pthis->GetIPAddress(cnxnFrom, szRemote);
-		  debugf("FM_S_LOGON_LOBBY: %s:%d loc:%s #games:%i\n",&szRemote,pfmLogon->dwPort,pServer->GetLocation(),pfmLogon->CurGames);
-		  if (!strncmp("127.0.0.1",szRemote,9)) break;  // check for loopback and always allow
-		  if (IsServerAllowed(szRemote)) break;
+		  debugf(L"FM_S_LOGON_LOBBY: %s:%d loc:%s #games:%i\n",&szRemote,pfmLogon->dwPort,pServer->GetLocation(),pfmLogon->CurGames);
+		  if (!wcsncmp(L"127.0.0.1",szRemote,9)) break;  // check for loopback and always allow
+		  //if (IsServerAllowed(szRemote)) break;
+		  //imago 10/14 - TODO NYI check a block list in the registry
 	  }
 
-	  char * szReason;
+	  wchar_t * szReason;
 
 	  // if we got this far we are not on the approved list fall through to reject below
-	  szReason = "Your server IP address is not approved for connection to this Lobby.  Please contact the Lobby Admin."; //Imago fix typo 6/10
+	  szReason = L"Your server IP address is not approved for connection to this Lobby.  Please contact the Lobby Admin."; //Imago fix typo 6/10
 	  // end mmf
 	  
       if (pfmLogon->verLobby > LOBBYVER_LS)
-        szReason = "The Public Lobby server that you connected to is older than your version.  The Zone needs to update their lobby server.  Please try again later.";
+        szReason = L"The Public Lobby server that you connected to is older than your version.  The Zone needs to update their lobby server.  Please try again later.";
       if (pfmLogon->verLobby < LOBBYVER_LS) // mmf took out the else and made this an explicit if for above szReason
-        szReason = "Your server's version did not get auto-updated properly.  Please try again later.";
+        szReason = L"Your server's version did not get auto-updated properly.  Please try again later.";
 
       BEGIN_PFM_CREATE(*pthis, pfmNewMissionAck, L, LOGON_SERVER_NACK)
-          FM_VAR_PARM((char *)szReason, CB_ZTS)
+		  FM_VAR_PARM((wchar_t *)szReason, CB_ZTS)
       END_PFM_CREATE
       pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
       pthis->DeleteConnection(cnxnFrom);
@@ -201,7 +204,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       pfmNewMissionAck->dwCookie = (DWORD) pMission;
       pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
       // we won't broadcast it until the server sends us a lobby mission info, when it's good and ready
-	  debugf("FM_S_NEW_MISSION id:%d cookie:%d\n",pfmNewMissionAck->dwIGCMissionID,pfmNewMissionAck->dwCookie);
+	  debugf(L"FM_S_NEW_MISSION id:%d cookie:%d\n",pfmNewMissionAck->dwIGCMissionID,pfmNewMissionAck->dwCookie);
     }
     break;
 
@@ -217,11 +220,11 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 
 			//KGJV #114 - server didnt fill szServerAddr but only reserved the bits. We fill it here.
-			debugf("FM_LS_LOBBYMISSIONINFO:%d (pmission:%x cookie:%x) sent cookie:%x connected?%i\n",pfmLobbyMissionInfo->dwPort,pMission,pfmLobbyMissionInfo->dwCookie,pfmLobbyMissionInfo->dwCookie,(pthis->IsConnected()) ? 1 : 0);  
-			char szAddr[16];
+			debugf(L"FM_LS_LOBBYMISSIONINFO:%d (pmission:%x cookie:%x) sent cookie:%x connected?%i\n",pfmLobbyMissionInfo->dwPort,pMission,pfmLobbyMissionInfo->dwCookie,pfmLobbyMissionInfo->dwCookie,(pthis->IsConnected()) ? 1 : 0);  
+			wchar_t szAddr[16];
 			pthis->GetIPAddress(cnxnFrom, szAddr); // get the real addr
-			debugf("\tFM_LS_LOBBYMISSIONINFO:%s sent port %d\n",&szAddr,pfmLobbyMissionInfo->dwPort);		
-			char *pfmdata = FM_VAR_REF(pfmLobbyMissionInfo, szServerAddr); // get the addr in the message	  
+			debugf(L"\tFM_LS_LOBBYMISSIONINFO:%s sent port %d\n",&szAddr,pfmLobbyMissionInfo->dwPort);		
+			wchar_t *pfmdata = FM_VAR_REF(pfmLobbyMissionInfo, szServerAddr); // get the addr in the message	  
 			Strcpy(pfmdata,szAddr); // overwrite with the real addr
 
 			//end move code
@@ -237,7 +240,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmMissionGone, LS, MISSION_GONE, pfm);
       CFLMission * pMission = CFLMission::FromCookie(pfmMissionGone->dwCookie);
-	  debugf("deleting GONE mission: %x\n",pfmMissionGone->dwCookie);
+	  debugf(L"deleting GONE mission: %x\n",pfmMissionGone->dwCookie);
       pServer->DeleteMission(pMission);
     }
     break;
@@ -251,9 +254,9 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmPlayerJoined, S, PLAYER_JOINED, pfm);
       CFLMission * pMission = CFLMission::FromCookie(pfmPlayerJoined->dwMissionCookie);
-      const char* szCharacterName = FM_VAR_REF(pfmPlayerJoined, szCharacterName);
-      const char* szCDKey = FM_VAR_REF(pfmPlayerJoined, szCDKey);
-	  const char* szAddress = FM_VAR_REF(pfmPlayerJoined, szAddress);
+	  const wchar_t* szCharacterName = FM_VAR_REF(pfmPlayerJoined, szCharacterName);
+	  const wchar_t* szCDKey = FM_VAR_REF(pfmPlayerJoined, szCDKey);
+	  const wchar_t* szAddress = FM_VAR_REF(pfmPlayerJoined, szAddress);
 
       if (NULL == szCharacterName || '\0' != szCharacterName[pfmPlayerJoined->cbszCharacterName-1])
           /* || NULL == szCDKey || '\0' != szCDKey[pfmPlayerJoined->cbszCDKey-1]  
@@ -274,16 +277,16 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
         if (g_pLobbyApp->EnforceCDKey())
         {
-          char * szUnencryptedCDKey = (char*)_alloca(strlen(szCDKey) + 1);
+			wchar_t * szUnencryptedCDKey = (wchar_t*)_alloca(wcslen(szCDKey) + 1);
           ZUnscramble(szUnencryptedCDKey, szCDKey, szCharacterName);
 
           szCDKey = szUnencryptedCDKey;
         }
 
 		// BT - 11/15/2012 - Guarding against lobby crashing from bad player data.
-		if(szCharacterName != NULL && strlen(szCharacterName) > 0 && strlen(szCharacterName) < 255 
-			&& szCDKey != NULL && strlen(szCDKey) != 0 && strlen(szCDKey) < 2064 
-			&& szAddress != NULL && strlen(szAddress) != 0 && strlen(szAddress) < 255 )
+		if(szCharacterName != NULL && wcslen(szCharacterName) > 0 && wcslen(szCharacterName) < 255 
+			&& szCDKey != NULL && wcslen(szCDKey) != 0 && wcslen(szCDKey) < 2064 
+			&& szAddress != NULL && wcslen(szAddress) != 0 && wcslen(szAddress) < 255 )
 		{
 			g_pLobbyApp->SetPlayerMission(szCharacterName, szCDKey, pMission, szAddress);
 		}
@@ -295,7 +298,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmPlayerQuit, S, PLAYER_QUIT, pfm);
       CFLMission * pMission = CFLMission::FromCookie(pfmPlayerQuit->dwMissionCookie);
-      const char* szCharacterName = FM_VAR_REF(pfmPlayerQuit, szCharacterName);
+	  const wchar_t* szCharacterName = FM_VAR_REF(pfmPlayerQuit, szCharacterName);
 
       if (NULL == szCharacterName || '\0' != szCharacterName[pfmPlayerQuit->cbszCharacterName-1])
       {
@@ -322,12 +325,12 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	{
 		CASTPFM(pfmPlayerRankRequest, LS, PLAYER_RANK, pfm);
 
-		const char* szCharacterName = FM_VAR_REF(pfmPlayerRankRequest, szCharacterName);
-		const char* szReason = FM_VAR_REF(pfmPlayerRankRequest, szReason);
-		const char* szPassword = FM_VAR_REF(pfmPlayerRankRequest, szPassword);
-		const char* szCDKey = FM_VAR_REF(pfmPlayerRankRequest, szCDKey);
+		const wchar_t* szCharacterName = FM_VAR_REF(pfmPlayerRankRequest, szCharacterName);
+		const wchar_t* szReason = FM_VAR_REF(pfmPlayerRankRequest, szReason);
+		const wchar_t* szPassword = FM_VAR_REF(pfmPlayerRankRequest, szPassword);
+		const wchar_t* szCDKey = FM_VAR_REF(pfmPlayerRankRequest, szCDKey);
 
-		char szRankName[50];
+		wchar_t szRankName[50];
 		int rankNameLen = sizeof(szRankName);
 		int rank = 0;
 		double sigma = 0;
@@ -356,20 +359,20 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 			// BT - 1/27/2012 - Enables lobby to return ranks when ACSS is disabled using old callsign(rank) format.
 			rankRetrieved = true;
 
-			std::tr1::regex rgx("(\\W+)?((?:\\w|@)+)(\\((\\d+)\\))?");
-			std::tr1::smatch result;
-			std::string charName(szCharacterName);
+			std::tr1::wregex rgx(L"(\\W+)?((?:\\w|@)+)(\\((\\d+)\\))?");
+			std::tr1::wsmatch result;
+			std::wstring charName(szCharacterName);
 
 			if(std::tr1::regex_search(charName, result, rgx) == true)
 			{
 				if(result.size() > 2)
-					sprintf((char *) szCharacterName, "%s%s", result[1].str().c_str(), result[2].str().c_str());
+					swprintf((wchar_t *)szCharacterName, L"%s%s", result[1].str().c_str(), result[2].str().c_str());
 				
 				if(result.size() > 4)
 				{
-					char rankString[50];
-					sprintf(rankString, "%s", result[4].str().c_str());
-					rank = atoi(rankString);
+					wchar_t rankString[50];
+					swprintf(rankString, L"%s", result[4].str().c_str());
+					rank = _wtoi(rankString);
 				}
 			}
 		//}
@@ -407,7 +410,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		if(rankRetrieved == false)
 			pfmPlayerRankResponse->rank = -2;
 		
-		debugf("Client: %s from <%s> at time %u. Rank: %ld\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now(), pfmPlayerRankResponse->rank);
+		debugf(L"Client: %s from <%s> at time %u. Rank: %ld\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now(), pfmPlayerRankResponse->rank);
 
 		pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
 
@@ -434,7 +437,7 @@ void    LobbyServerSite::OnMessageNAK(FedMessaging * pthis, DWORD dwTime, CFMRec
 
 HRESULT LobbyServerSite::OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) 
 {
-  char szRemote[16];
+	wchar_t szRemote[16];
   pthis->GetIPAddress(cnxn, szRemote);
   CFLServer * pServer = new CFLServer(&cnxn);
   g_pLobbyApp->GetSite()->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_ServerConnected, cnxn.GetName(), szRemote);
@@ -466,9 +469,9 @@ HRESULT LobbyServerSite::OnSessionLost(FedMessaging * pthis)
 }
 
 
-int LobbyServerSite::OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType)
+int LobbyServerSite::OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType)
 {
-  debugf("LobbyServerSite::OnMessageBox: "); 
+  debugf(L"LobbyServerSite::OnMessageBox: "); 
   return g_pLobbyApp->OnMessageBox(strText, strCaption, nType);
 }
 
@@ -502,7 +505,7 @@ CFLServer::CFLServer(CFMConnection * pcnxn) :
 
   m_pCounters = g_pLobbyApp->AllocatePerServerCounters(pcnxn->GetName());  
 
-  Strcpy(m_szLocation,"unknown"); // KGJV #114 - default location
+  Strcpy(m_szLocation,L"West US"); // KGJV #114 - default location
 }
 
 CFLServer::~CFLServer()

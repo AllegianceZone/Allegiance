@@ -92,7 +92,7 @@ Window::Window(
     if (strClass.IsEmpty()) {
         m_hwnd = ::CreateWindowEx(
             m_styleEX.GetWord(),
-            TEXT(GetTopLevelWindowClassname()),
+            GetTopLevelWindowClassname(),
             strTitle,
             m_style.GetWord(),
 			//Imago restored original impl in multimon & topmost effort 7/10
@@ -148,8 +148,8 @@ Window::Window(
 BOOL Window::Create(
           Window*  pwindowParent,
     const WinRect& rect,
-          LPCSTR   szTitle,
-          LPCSTR   szClass,
+          LPCWSTR   szTitle,
+          LPCWSTR   szClass,
           Style    style,
           HMENU    hmenu,
           UINT     nID,
@@ -172,7 +172,7 @@ BOOL Window::Create(
     
     m_hwnd = ::CreateWindowEx(
             styleEX.GetWord(),
-            szClass ? szClass : "Window",
+            szClass ? szClass : TEXT("Window"),
             szTitle,
             m_style.GetWord(),
             m_rect.left, m_rect.top,
@@ -613,7 +613,7 @@ ZString Window::GetText() const
     if (length == 0) {
         return ZString();
     } else {
-        char* pch = new char[length];
+		wchar_t* pch = new wchar_t[length];
         GetWindowText(m_hwnd, pch, length);
         ZString str(pch);
         delete[] pch;
@@ -1045,7 +1045,7 @@ HRESULT Window::StaticInitialize()
     //
     s_pfnTrackMouseEvent = 
         (PFNTrackMouseEvent)GetProcAddress(
-            GetModuleHandle("user32"),
+            GetModuleHandle(L"user32"),
             "TrackMouseEvent"
         );
     return S_OK;

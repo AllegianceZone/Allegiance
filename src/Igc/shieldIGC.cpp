@@ -81,7 +81,7 @@ void        CshieldIGC::Update(Time now)
 
         IIgcSite*   pigc = m_pMission->GetIgcSite();
         pigc->PlayNotificationSound(mountedSound, m_ship);
-        pigc->PostNotificationText(m_ship, false, "%s ready.", GetPartType()->GetName());
+        pigc->PostNotificationText(m_ship, false, L"%s ready.", GetPartType()->GetName());
         m_mountedFraction = 1.0f;
     }
 

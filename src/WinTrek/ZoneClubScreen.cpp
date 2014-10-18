@@ -592,7 +592,7 @@ public:
 
         if (bUseEXEFolder)
         {
-            PathString pathEXE(PathString::GetCurrentDirectory());
+            PathString pathEXE(PathString::ZGetCurrentDirectory());
             PathString pathConfig(pathEXE + PathString(PathString(m_szConfig).GetFilename()));
 
             if (bDownloadSuccesful)

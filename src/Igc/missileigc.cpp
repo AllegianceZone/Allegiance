@@ -253,7 +253,7 @@ double   NewtonB(double a, double b, double c, double d, double tOld, double ti)
 		// mmf commented this out, occurs too often in 'normal' play, especially with quickfires
 		// we can stick it back in if someone wants to work on this code and needs this info
         // debugf("**** Timeout NewtonA(%f %f %f %f %f) %f %f\n", a, b, c, d, tOld, t0, t1);
-        debugf("**** Timeout NewtonB(%f %f %f %f %f) %f %f\n", a, b, c, d, tOld, t0, t1);
+        debugf(L"**** Timeout NewtonB(%f %f %f %f %f) %f %f\n", a, b, c, d, tOld, t0, t1);
     }
 
     return t0;

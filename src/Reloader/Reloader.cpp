@@ -21,8 +21,34 @@
 
 
 #include "pch.h"
-
 #include "..\Zlib\zassert.h" //Imago 6/10
+
+// safe strcpy
+static wchar_t * Strcpy(wchar_t * szDst, const wchar_t * szSrc)
+{
+	assert(szDst);
+	return wcscpy(szDst, szSrc ? szSrc : L"");
+}
+
+// safe strncpy
+static wchar_t * Strncpy(wchar_t * szDst, const wchar_t * szSrc, size_t cb)
+{
+	assert(szDst);
+	return wcsncpy(szDst, szSrc ? szSrc : L"", cb);
+}
+
+// safe strcmp
+static int Strcmp(const wchar_t * szDst, const wchar_t * szSrc)
+{
+	return wcscmp(szDst ? szDst : L"", szSrc ? szSrc : L"");
+}
+
+// safe strcat //Imago 7/15/09
+static wchar_t * Strcat(const wchar_t * szDst, const wchar_t * szSrc)
+{
+	return wcscat(szDst ? szDst : L"", szSrc ? szSrc : L"");
+}
+
 #include "..\Zlib\FTPSession.h"
 #include "..\Clintlib\AutoDownload.h" // don't included in pch because build process doesn't realize
                                       // when AutoDownload.h changes, and since this project
@@ -37,9 +63,9 @@
  * Returns:
  *      Art Path of client as specified in registry
  */
-char * GetArtPath()
+wchar_t * GetArtPath()
 {
-    static char pathStr[MAX_PATH + 16];
+	static wchar_t pathStr[MAX_PATH + 16];
 
     HKEY hKey;
     DWORD dwType;
@@ -51,25 +77,25 @@ char * GetArtPath()
     {
 
         // Get the art path from the registry
-        bResult = (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "ArtPath", NULL, &dwType, (unsigned char*)&pathStr, &cbValue));
+        bResult = (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"ArtPath", NULL, &dwType, (unsigned char*)&pathStr, &cbValue));
 
         ::RegCloseKey(hKey);
 
-        int const cLen = strlen(pathStr);
+        int const cLen = wcslen(pathStr);
         // convert to \ format
         for (int i = 0; i < cLen; ++i)
             if(pathStr[i] == '/')
                 pathStr[i] = '\\';
         // assure last char has end
         if (cLen == 0 || pathStr[cLen-1] != '\\')
-            strcat(pathStr, "\\");
+            wcscat(pathStr, L"\\");
     }
 
     if (!bResult)
     {
 //        ::MessageBox(NULL, "Error reading ArtPath from registry; assuming .\\Artwork\\ if this isn't right, you might need to reinstall.", "AutoUpdate Reloader Error", MB_ICONEXCLAMATION);
 
-        strcpy(pathStr, ".\\Artwork\\");
+        Strcpy(pathStr, L".\\Artwork\\");
     }
 
     return pathStr;
@@ -84,15 +110,15 @@ char * GetArtPath()
  * Purpose:
  *      report an error
  */
-void DisplayErrorMsg(char *szError)
+void DisplayErrorMsg(wchar_t *szError)
 {
     int nErrorCode = GetLastError();
 
     // Give time for Allegiance to minimize
     ::Sleep(1000);
 
-    char sz[100];
-    sprintf(sz, "Error occured during auto update (Code = %d)", nErrorCode);
+	wchar_t sz[100];
+    swprintf(sz, L"Error occured during auto update (Code = %d)", nErrorCode);
 
     ::MessageBox(NULL, szError, sz, MB_ICONEXCLAMATION);
 }
@@ -128,12 +154,12 @@ class CAutoDownloadSink : public IAutoUpdateSink
           // Give time for Allegiance to minimize
           ::Sleep(1000);
 
-          char szTitle[100];
-          sprintf(szTitle, "Error occured during auto update (Code = %d)", nErrorCode);
+		  wchar_t szTitle[100];
+          swprintf(szTitle, L"Error occured during auto update (Code = %d)", nErrorCode);
 
-          char szMsg[500];
+		  wchar_t szMsg[500];
 
-          sprintf(szMsg, "%s\r\n\r\n\r\n\r\nDo you wish to retry moving the files?", szErrorMessage);
+          swprintf(szMsg, L"%s\r\n\r\n\r\n\r\nDo you wish to retry moving the files?", szErrorMessage);
 
           if (::MessageBox(NULL, szMsg, szTitle, MB_YESNO) == IDYES)
               return true;
@@ -151,7 +177,7 @@ class CAutoDownloadSink : public IAutoUpdateSink
 
 
 // returns true only if file exists
-bool Exists(const char * szFileName)
+bool Exists(const wchar_t * szFileName)
 {
         HANDLE hFile = CreateFile(szFileName,
                                  0,
@@ -171,7 +197,7 @@ bool Exists(const char * szFileName)
 
 
 
-bool GetFileTime(char * szFileName, LPFILETIME pft)
+bool GetFileTime(wchar_t * szFileName, LPFILETIME pft)
 {
     HANDLE hFile = CreateFile(szFileName,
                            0,
@@ -196,15 +222,15 @@ bool GetFileTime(char * szFileName, LPFILETIME pft)
 //
 // Rename mangled name to correct name
 //
-void RenameMangledFile(char * szMangled, char * szCorrect)
+void RenameMangledFile(wchar_t * szMangled, wchar_t * szCorrect)
 {
         if (Exists(szMangled))
         {
             // force another autoupdate to ensure version is correct
-            DeleteFile("FileList.txt");
-            DeleteFile("AutoUpdate\\FileList.txt");
+            DeleteFile(L"FileList.txt");
+            DeleteFile(L"AutoUpdate\\FileList.txt");
 
-            char szBuffer[MAX_PATH*2 + 20];
+			wchar_t szBuffer[MAX_PATH * 2 + 20];
 
             if (Exists(szCorrect))
             {
@@ -214,7 +240,7 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
                 if (!GetFileTime(szMangled, &ftMangled) ||
                     !GetFileTime(szCorrect, &ftCorrect))
                 {
-                    sprintf(szBuffer, "Unable to examine at least one of these files: %s, %s.  Reboot your computer and try again.", szMangled, szCorrect);
+                    swprintf(szBuffer, L"Unable to examine at least one of these files: %s, %s.  Reboot your computer and try again.", szMangled, szCorrect);
                     DisplayErrorMsg(szBuffer);
                     ExitProcess(-1);
                     return;
@@ -222,13 +248,13 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
 
                 if (CompareFileTime(&ftCorrect, &ftMangled) > 0) // if existing correct file is newer; keep it
                 {
-                    OutputDebugString("\nDeleting old file with mangled name ");
+                    OutputDebugString(L"\nDeleting old file with mangled name ");
                     OutputDebugString(szMangled);
                     DeleteFile(szMangled);
                     return;
                 }
 
-                OutputDebugString("\nDeleting old file with correct name ");
+                OutputDebugString(L"\nDeleting old file with correct name ");
                 OutputDebugString(szCorrect);
                 if (!DeleteFile(szCorrect))
                 {
@@ -241,11 +267,11 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
                 }
             }
 
-            sprintf(szBuffer, "\nRenaming %s to %s\n", szMangled, szCorrect);
+            swprintf(szBuffer, L"\nRenaming %s to %s\n", szMangled, szCorrect);
             OutputDebugString(szBuffer);
             if (!MoveFile(szMangled, szCorrect))
             {
-                sprintf(szBuffer, "Unable to rename %s to %s.  Reboot your computer and run Allegiance to try again.", szMangled, szCorrect);
+                swprintf(szBuffer, L"Unable to rename %s to %s.  Reboot your computer and run Allegiance to try again.", szMangled, szCorrect);
                 DisplayErrorMsg(szBuffer);
                 ExitProcess(-1);
             }
@@ -260,47 +286,48 @@ void RenameMangledFile(char * szMangled, char * szCorrect)
  *  Rename files with mangled filenames as part of the PC-Gamer/Beta1 fix.
  *
  */
+/*
 void RenameMangledFiles()
 {
     for (int i = 0; i < g_cEXEFiles; ++i)
     {
-        char szMangled[MAX_PATH];
-        char * szCorrect = CAutoDownloadUtil::GetEXEFileName(i);
+		wchar_t szMangled[MAX_PATH];
+		wchar_t * szCorrect = CAutoDownloadUtil::GetEXEFileName(i);
 
         // we can only handle string of at least 8 characters
-        if (strlen(szCorrect) < 8)
+        if (wcslen(szCorrect) < 8)
             continue;
         //
         // create the mangled counterpart to GetEXEFileName(i)
         //
-        strcpy(szMangled, szCorrect);
-        strcpy(szMangled+8, szCorrect);
+        Strcpy(szMangled, szCorrect);
+        Strcpy(szMangled+8, szCorrect);
 
         RenameMangledFile(szMangled, szCorrect);
     }
     //
     // Now do special files
     //
-    RenameMangledFile("AllegianAllegiance.exe", "Allegiance.exe");
-    RenameMangledFile("AllegianAllegianceDebug.exe", "Allegiance.exe");
-    RenameMangledFile("AllegianAllegianceRetail.exe", "Allegiance.exe");
-    RenameMangledFile("AllegianAllegianceTest.exe", "Allegiance.exe");
+    RenameMangledFile(L"AllegianAllegiance.exe", "Allegiance.exe");
+    RenameMangledFile(L"AllegianAllegianceDebug.exe", "Allegiance.exe");
+    RenameMangledFile(L"AllegianAllegianceRetail.exe", "Allegiance.exe");
+    RenameMangledFile(L"AllegianAllegianceTest.exe", "Allegiance.exe");
 
-    RenameMangledFile("AllegianAllegiance.pdb", "Allegiance.pdb");
-    RenameMangledFile("AllegianAllegianceDebug.pdb", "Allegiance.pdb");
-    RenameMangledFile("AllegianAllegianceRetail.pdb", "Allegiance.pdb");
-    RenameMangledFile("AllegianAllegianceTest.pdb", "Allegiance.pdb");
+    RenameMangledFile(L"AllegianAllegianceDebug.pdb", "Allegiance.pdb");
+    RenameMangledFile(L"AllegianAllegianceRetail.pdb", "Allegiance.pdb");
+    RenameMangledFile(L"AllegianAllegianceTest.pdb", "Allegiance.pdb");
 
-    RenameMangledFile("AllegianAllegiance.sym", "Allegiance.sym");
-    RenameMangledFile("AllegianAllegianceDebug.sym", "Allegiance.sym");
-    RenameMangledFile("AllegianAllegianceRetail.sym", "Allegiance.sym");
-    RenameMangledFile("AllegianAllegianceTest.sym", "Allegiance.sym");
+    RenameMangledFile(L"AllegianAllegiance.sym", L"Allegiance.sym");
+    RenameMangledFile(L"AllegianAllegianceDebug.sym", "Allegiance.sym");
+    RenameMangledFile(L"AllegianAllegianceRetail.sym", "Allegiance.sym");
+    RenameMangledFile(L"AllegianAllegianceTest.sym", "Allegiance.sym");
 
-    RenameMangledFile("AllegianAllegiance.map", "Allegiance.map");
+    RenameMangledFile(L"AllegianAllegiance.map", "Allegiance.map");
     RenameMangledFile("AllegianAllegianceDebug.map", "Allegiance.map");
     RenameMangledFile("AllegianAllegianceRetail.map", "Allegiance.map");
     RenameMangledFile("AllegianAllegianceTest.map", "Allegiance.map");
 }
+*/
 
 
 
@@ -311,28 +338,28 @@ void RenameMangledFiles()
  * See top of file for description.
  *
  */
-int APIENTRY WinMain(HINSTANCE hInstance,
+int APIENTRY wWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
+                     LPWSTR     lpCmdLine,
                      int       nCmdShow)
 {
     // make sure this is commmented out
 //    DebugBreak();
 
-    RenameMangledFiles(); // PC-Gamer/Beta 1 build fix
+    //RenameMangledFiles(); // PC-Gamer/Beta 1 build fix
 
-    char *pCmdLine = lpCmdLine;
+	wchar_t *pCmdLine = lpCmdLine;
 
-    DWORD dwProcessID = atol(pCmdLine);
+    DWORD dwProcessID = _wtol(pCmdLine);
     HANDLE hProcess;
 
     if(dwProcessID == 0)
     {
-        DisplayErrorMsg("Allegiance.exe gave Reloader.exe an invalid command-line.");
+        DisplayErrorMsg(L"Allegiance.exe gave Reloader.exe an invalid command-line.");
         return 1;
     }
 
-    char * szArtPath = GetArtPath();
+	wchar_t * szArtPath = GetArtPath();
 
     hProcess = ::OpenProcess(PROCESS_TERMINATE, false, dwProcessID);
 
@@ -340,7 +367,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
     {
         if (GetLastError() != ERROR_INVALID_PARAMETER) // returns this if Process of this ID doesn't exist
         {
-            DisplayErrorMsg("Couldn't Access Allegiance.exe Process.  Press OK to try continue update anyway.");
+            DisplayErrorMsg(L"Couldn't Access Allegiance.exe Process.  Press OK to try continue update anyway.");
         }
         else
         {
@@ -375,7 +402,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
             //
             if (::TerminateProcess(hProcess, 0) == 0)
             {
-                DisplayErrorMsg("Couldn't Terminate Allegiance.  Press OK to try continue update anyway.");
+                DisplayErrorMsg(L"Couldn't Terminate Allegiance.  Press OK to try continue update anyway.");
             }
 
             ::Sleep(1000); // give some time for terminatation
@@ -393,9 +420,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	
 
-    if (!CAutoDownloadUtil::MoveFiles("AutoUpdate\\", szArtPath, false, NULL, false, NULL, &g_AutoDownloadSink))
+    if (!CAutoDownloadUtil::MoveFiles(L"AutoUpdate\\", szArtPath, false, NULL, false, NULL, &g_AutoDownloadSink))
     {
-        DisplayErrorMsg("Couldn't move at least one of the downloaded files.  If this happens with Allegiance.exe, make sure you have the Application Experience (AeLookupSvc) and Program Compatibility Assistant Service (PcaSvc) enabled!  Also, try deleting FileList.txt.  As a last resort, you may need to reboot or reinstall.");
+        DisplayErrorMsg(L"Couldn't move at least one of the downloaded files.  If this happens with Allegiance.exe, make sure you have the Application Experience (AeLookupSvc) and Program Compatibility Assistant Service (PcaSvc) enabled!  Also, try deleting FileList.txt.  As a last resort, you may need to reboot or reinstall.");
         return 3;
     }
 
@@ -403,36 +430,36 @@ int APIENTRY WinMain(HINSTANCE hInstance,
     //  Reload Allegiance
     //
     if (pCmdLine && pCmdLine[0] != 0)
-        pCmdLine = strchr(pCmdLine+1, ' '); // fast forward a bit
+        pCmdLine = wcschr(pCmdLine+1, ' '); // fast forward a bit
 
     bool bLaunchMinimized = false;
 
     if (pCmdLine && pCmdLine[0] != 0)
     {
-        if (_strnicmp(pCmdLine, "-Minimized", 10))
+        if (_wcsnicmp(pCmdLine, L"-Minimized", 10))
         {
             bLaunchMinimized = true;
         }
 
-        pCmdLine = strchr(pCmdLine+1, ' '); // fast forward a bit
+        pCmdLine = wcschr(pCmdLine+1, ' '); // fast forward a bit
     }
 
-    char szNewCommandLine[512] = {""};
+	wchar_t szNewCommandLine[512] = { L"" };
 
     if (pCmdLine && pCmdLine[0] != 0)
-        strncpy(szNewCommandLine, pCmdLine, 500);   // re-feed the original command-line back into Allegiance.exe
+        Strncpy(szNewCommandLine, pCmdLine, 500);   // re-feed the original command-line back into Allegiance.exe
 
-    strcat(szNewCommandLine, " -reloaded");
+    Strcat(szNewCommandLine, L" -reloaded");
 
     if((int)ShellExecute(0,
-                         "Open",
-                         "Allegiance.exe",
+                         L"Open",
+                         L"Allegiance.exe",
                          szNewCommandLine,
                          NULL,
                          bLaunchMinimized ? SW_SHOWNOACTIVATE : SW_SHOWNORMAL
                          ) <= 32)
     {
-        DisplayErrorMsg("Couldn't automatically restart Allegiance.  Please manually restart the game.");
+        DisplayErrorMsg(L"Couldn't automatically restart Allegiance.  Please manually restart the game.");
         return 5;
     }
 

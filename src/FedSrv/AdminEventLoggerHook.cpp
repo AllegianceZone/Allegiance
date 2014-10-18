@@ -57,19 +57,18 @@ STDMETHODIMP CAdminEventLoggerHook::LogEvent(IAGCEvent* pEvent, VARIANT_BOOL bSy
   pquery->SetCallbackOnMainThread(false);
 
   // Populate the query parameters from the event fields
-  USES_CONVERSION;
 	pqd->nEvent   = idEvent;
 	pqd->nSubject = idSubject;
   if (bstrComputerName.Length())
-    lstrcpyn(pqd->szComputerName, OLE2CT(bstrComputerName), sizeofArray(pqd->szComputerName));
+    lstrcpyn(pqd->szComputerName, OLE2CW(bstrComputerName), sizeofArray(pqd->szComputerName));
   else
     pqd->szComputerName[0] = TEXT('\0');
   if (bstrSubjectName.Length())
-    lstrcpyn(pqd->szSubjectName, OLE2CT(bstrSubjectName), sizeofArray(pqd->szSubjectName));
+    lstrcpyn(pqd->szSubjectName, OLE2CW(bstrSubjectName), sizeofArray(pqd->szSubjectName));
   else
     pqd->szSubjectName[0] = TEXT('\0');
   if (bstrContext.Length())
-    lstrcpyn(pqd->szContext, OLE2CT(bstrContext), sizeofArray(pqd->szContext));
+    lstrcpyn(pqd->szContext, OLE2CW(bstrContext), sizeofArray(pqd->szContext));
   else
     pqd->szContext[0] = TEXT('\0');
 
@@ -78,8 +77,7 @@ STDMETHODIMP CAdminEventLoggerHook::LogEvent(IAGCEvent* pEvent, VARIANT_BOOL bSy
   assert(IMarshalPtr(pEvent) != NULL);
   CComBSTR bstrTemp;
   ZSucceeded(pEvent->SaveToString(&bstrTemp));
-  WideCharToMultiByte(CP_ACP, 0, bstrTemp, -1,
-    pqd->szObjectRef, sizeof(pqd->szObjectRef), 0, 0);
+  lstrcpyn(pqd->szObjectRef, OLE2CW(bstrContext), sizeofArray(pqd->szObjectRef));
 
   // Create an event upon which to wait, if event is synchronous
   TCHandle shevt;

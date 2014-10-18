@@ -67,7 +67,7 @@ extern Win32App* g_papp;
   // Overrides
   public:
     /////////////////////////////////////////////////////////////////////////
-    virtual void DebugOutput(const char *psz)
+	  virtual void DebugOutput(const wchar_t *psz)
     {
       int cch = strlen(psz);
       if (cch < (int)(sizeof(m_szModuleName) - (m_cchModuleName + 1))) //Imago 8/10 added (int)
@@ -77,14 +77,14 @@ extern Win32App* g_papp;
       }
       else
       {
-        char* pszCopy = (char*)_alloca(cch + m_cchModuleName + 1);
-        strncpy(pszCopy, m_szModuleName, m_cchModuleName);
-        strcpy(pszCopy + m_cchModuleName, psz);
+		  wchar_t* pszCopy = (wchar_t*)_alloca(cch + m_cchModuleName + 1);
+        Strncpy(pszCopy, m_szModuleName, m_cchModuleName);
+        Strcpy(pszCopy + m_cchModuleName, psz);
         _CrtDbgReport(_CRT_WARN, NULL, NULL, NULL, pszCopy);
       }
     }
     /////////////////////////////////////////////////////////////////////////
-    virtual bool OnAssert(const char* psz, const char* pszFile, int line,
+	  virtual bool OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line,
       const char* pszModule)
     {
       // Save the current _CRT_ASSERT report mode, if we are interactive
@@ -145,7 +145,7 @@ extern Win32App* g_papp;
       return false;
     }
     /////////////////////////////////////////////////////////////////////////
-    static int ReportHook(int reportType, char* message, int* returnValue)
+	static int ReportHook(int reportType, wchar_t* message, int* returnValue)
     {
       static bool s_bInHook = false;
       if (s_bInHook)
@@ -160,7 +160,7 @@ extern Win32App* g_papp;
         s_bInHook = true;
         int nReportModePrev = _CrtSetReportMode(reportType, _CRTDBG_REPORT_MODE);
         _CrtSetReportMode(reportType, nReportModePrev & ~_CRTDBG_MODE_WNDW);
-        _CrtDbgReport(reportType, NULL, NULL, NULL, "\n");
+        _CrtDbgReport(reportType, NULL, NULL, NULL, L"\n");
         _CrtSetReportMode(reportType, nReportModePrev);
         s_bInHook = false;
       }

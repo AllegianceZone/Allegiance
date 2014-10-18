@@ -34,7 +34,7 @@ const ExplosionType c_etSmallStation    = 5;
 const ExplosionType c_etAsteroid        = 6;
 const ExplosionType c_etLargeStation    = 7;
 
-typedef char    DamageResult;
+typedef wchar_t    DamageResult;
 const DamageResult  c_drKilled          = 1;
 const DamageResult  c_drHullDamage      = 2;
 const DamageResult  c_drShieldDamage    = 3;
@@ -489,7 +489,7 @@ const WingID            c_widMax = 10;
 const SideID c_cSidesMax = 6;
 const int c_cAlliancesMax = c_cSidesMax/2; // #ALLY max alliances possible (distinct groups of allied teams)
 
-extern const char*      c_pszWingName[c_widMax];
+extern const wchar_t*      c_pszWingName[c_widMax];
 
 const DevelopmentID     c_didTeamMoney = 1;
 
@@ -527,11 +527,11 @@ const AbilityType	  AT_Expendable		= 2;
 const AbilityType	  AT_Asteroid		= 3;
 
 
-typedef char     PackType;
+typedef wchar_t     PackType;
 const PackType      c_packAmmo    = 0;
 const PackType      c_packFuel    = 1;
 
-typedef char     BuoyType;
+typedef wchar_t     BuoyType;
 const BuoyType      c_buoyWaypoint = 0;
 const BuoyType      c_buoyCluster  = 1;
 
@@ -614,11 +614,11 @@ const StationClassID    c_scResearch                    = 5;
 const StationClassID    c_scOrdinance                   = 6;
 const StationClassID    c_scElectronics                 = 7;
 
-typedef char    WarningMask;
+typedef wchar_t    WarningMask;
 const WarningMask   c_wmOutOfBounds   = 0x01;
 const WarningMask   c_wmCrowdedSector = 0x02;
 
-typedef char BuyableGroupID;
+typedef wchar_t BuyableGroupID;
 
 /*
 · Max Speed: Up the sides maximum speed
@@ -812,8 +812,8 @@ enum ClusterQuality
 // ships have a capacity, and mounted parts use up that capacity (drain)
 typedef float HitPoints;
 typedef int   Money;
-typedef char  Mount;
-typedef char  Command;
+typedef wchar_t  Mount;
+typedef wchar_t  Command;
 typedef short RankID;
 
 const Mount c_maxCargo = 5;
@@ -838,20 +838,20 @@ const Mount   c_maxMountedWeapons = 8;
 
 struct  CommandData
 {
-    char            szVerb[c_cbFileName];
-    char            szAccepted[c_cbFileName];
-    char            szQueued[c_cbFileName];
+	wchar_t            szVerb[c_cbFileName];
+	wchar_t            szAccepted[c_cbFileName];
+	wchar_t            szQueued[c_cbFileName];
 
     enum    Match
     {
         c_mNone, c_mPartial, c_mComplete
     };
 
-    Match   MatchCommand(const char*    szString) const
+	Match   MatchCommand(const wchar_t*    szString) const
     {
         assert (szString);
-        const char* p1 = szString;
-        const char* p2 = szVerb;
+		const wchar_t* p1 = szString;
+		const wchar_t* p2 = szVerb;
 
         while ((*p1 != '\0') && (*p2 != '\0'))
         {
@@ -973,8 +973,8 @@ const int c_cbGamePassword = 17;
 //------------------------------------------------------------------------------
 // for now, there is only one static data core, and this is its name
 //------------------------------------------------------------------------------
-#define IGC_STATIC_CORE_FILENAME    "static_core"
-#define IGC_ENCRYPT_CORE_FILENAME   "zone_core"
+#define IGC_STATIC_CORE_FILENAME    L"static_core"
+#define IGC_ENCRYPT_CORE_FILENAME   L"zone_core"
 
 
 const float c_fMissionBriefingCountdown = 15.0f; // seconds
@@ -1059,15 +1059,15 @@ typedef Slink_utl<WarpBomb> WarpBombLink;
 class ImapMakerIGC
 {
     public:
-        static const char*  IsValid(const MissionParams * pmp);
+		static const wchar_t*  IsValid(const MissionParams * pmp);
         static void         Create(Time                   now,
                                    const MissionParams*   pmp,
                                    ImissionIGC*           pmission);
 
         virtual MapMakerID  GetMapMakerID() const = 0;
         virtual VOID        SetMapMakerID(MapMakerID mbID) = 0;
-        virtual char const* GetName(void) const = 0;
-        virtual void        SetName(const char* newVal) = 0;
+		virtual wchar_t const* GetName(void) const = 0;
+		virtual void        SetName(const wchar_t* newVal) = 0;
 
         virtual VOID        GenerateMission(Time                 now,
                                             const MissionParams* pmp,
@@ -1090,10 +1090,10 @@ struct MissionParams
     // AGCGameParameters.cpp, AGCGameParameters.h, and AGCIDL.h.
     //
     //------------------------------------------------------------------------------
-    char        strGameName[c_cbGameName];              //Name of game
-    char        szIGCStaticFile[c_cbFileName];          //Name of static IGC file
-    char        szCustomMapFile[c_cbFileName];          //Name of custom Map file; used only if not blank
-    char        strGamePassword[c_cbGamePassword];      //Password
+	wchar_t        strGameName[c_cbGameName];              //Name of game
+	wchar_t        szIGCStaticFile[c_cbFileName];          //Name of static IGC file
+	wchar_t        szCustomMapFile[c_cbFileName];          //Name of custom Map file; used only if not blank
+	wchar_t        strGamePassword[c_cbGamePassword];      //Password
     bool        bEjectPods          : 1;                //Are eject pods used
     bool        bInvulnerableStations : 1;              //Do station NOT take damage
     bool        bShowMap            : 1;                //Show all warps at the start of the game
@@ -1187,8 +1187,8 @@ struct MissionParams
     unsigned char nMinPlayersPerTeam;                   //Min players on team
     unsigned char nMaxPlayersPerTeam;                   //Max players on team
 
-    char        nInitialMinersPerTeam;                  //Number of miners to start the game with
-    char        nMaxDronesPerTeam;                      //Maximum # of drones a team is allowed to control
+	wchar_t        nInitialMinersPerTeam;                  //Number of miners to start the game with
+	wchar_t        nMaxDronesPerTeam;                      //Maximum # of drones a team is allowed to control
 
     short       nTotalMaxPlayersPerGame;                //Maximum # of players per game (mostly used for StandAlone server)
 
@@ -1203,7 +1203,7 @@ struct MissionParams
         //
         // default to reasonable values
         //
-        strcpy(strGameName, "Uninitialized Game Name");
+        Strcpy(strGameName, L"Uninitialized Game Name");
         szIGCStaticFile[0] = '\0';
         m_killPenalty                   = 0;
         m_killReward                    = 0;
@@ -1313,7 +1313,7 @@ struct MissionParams
         nTotalMaxPlayersPerGame         = 90; // 6 teams * 15 players per team
     }
 
-    const char* Invalid(bool bFromClient = false) const
+	const wchar_t* Invalid(bool bFromClient = false) const
     {
         // do some data validation... should do this is a cleaner way
 
@@ -1322,158 +1322,158 @@ struct MissionParams
             if ((nMaxPlayersPerTeam > 100) ||
                  (nMaxPlayersPerTeam < 1))
             {
-                return "Maximum number of players must be between 1 and 100.";
+                return L"Maximum number of players must be between 1 and 100.";
             }
             else if (IsNoWinningConditionsGame())
             {
-                return "You must choose one or more winning conditions.";
+                return L"You must choose one or more winning conditions.";
             }
 			else if (bAutoRestart || (bObjectModelCreated && bClubGame)) // KGJV #62 || bAllowEmptyTeams)
             {
-                return "HACK: one or more admin-only flags are set.";
+                return L"HACK: one or more admin-only flags are set.";
             }
         }
 
         if (nInitialMinersPerTeam > nMaxDronesPerTeam)
         {
-            return "Initial miners per team must be less than max miners per team.";
+            return L"Initial miners per team must be less than max miners per team.";
         }
         else if (nMaxDronesPerTeam > 10)
         {
-            return "Max drones per team must be less than or equal to 10.";
+            return L"Max drones per team must be less than or equal to 10.";
         }
         else if (nNeutralSectorSpecialAsteroids > 9)
         {
-            return "NeutralSectorSpecialAsteroids must be less than 10.";
+            return L"NeutralSectorSpecialAsteroids must be less than 10.";
         }
         else if (nPlayerSectorSpecialAsteroids > 9)
         {
-            return "PlayerSectorSpecialAsteroids must be less than 10.";
+            return L"PlayerSectorSpecialAsteroids must be less than 10.";
         }
         else if (nNeutralSectorMineableAsteroids > 9)
         {
-            return "NeutralSectorMineableAsteroids must be less than 10.";
+            return L"NeutralSectorMineableAsteroids must be less than 10.";
         }
         else if (nPlayerSectorMineableAsteroids > 9)
         {
-            return "PlayerSectorMineableAsteroids must be less than 10.";
+            return L"PlayerSectorMineableAsteroids must be less than 10.";
         }
         else if (nNeutralSectorTreasureRate > 1.0f/60.0f)
         {
-            return "NeutralSectorTreasureRate must be less than 1/60.";
+            return L"NeutralSectorTreasureRate must be less than 1/60.";
         }
         else if (nPlayerSectorTreasureRate > 1.0f/60.0f)
         {
-            return "PlayerSectorTreasureRate must be less than 1/60.";
+            return L"PlayerSectorTreasureRate must be less than 1/60.";
         }
         else if (nNeutralSectorTreasures > 20)
         {
-            return "NeutralSectorTreasures must be less than 21.";
+            return L"NeutralSectorTreasures must be less than 21.";
         }
         else if (nPlayerSectorTreasures > 20)
         {
-            return "PlayerSectorTreasures must be less than 21.";
+            return L"PlayerSectorTreasures must be less than 21.";
         }
         else if (nNeutralSectorAsteroids > 40)
         {
-            return "NeutralSectorAsteroids must be less than 40.";
+            return L"NeutralSectorAsteroids must be less than 40.";
         }
         else if (nPlayerSectorAsteroids > 40)
         {
-            return "PlayerSectorAsteroids must be less than 40.";
+            return L"PlayerSectorAsteroids must be less than 40.";
         }
         else if ((nGoalArtifactsCount < 0) || (nGoalArtifactsCount > 100))
         {
-            return "GoalArtifactsCount must be between 0% and 100%.";
+            return L"GoalArtifactsCount must be between 0% and 100%.";
         }
         else if ((nGoalFlagsCount < 0) || (nGoalFlagsCount > 100))
         {
-            return "GoalFlagsCount must be between 0% and 100%.";
+            return L"GoalFlagsCount must be between 0% and 100%.";
         }
         else if ((fHe3Density < 0.0f) || (fHe3Density > 9.0f))
         {
-            return "He3Density must be between 0 and 9.";
+            return L"He3Density must be between 0 and 9.";
         }
         else if ((fGoalTeamMoney < 0.0f) || (fGoalTeamMoney > 9.0f))
         {
-            return "GoalTeamMoney must be between 0 and 9.";
+            return L"GoalTeamMoney must be between 0 and 9.";
         }
         else if ((fStartingMoney < 0.0f) || (fStartingMoney > 9.0f))
         {
-            return "StartingMoney must be between 0 and 9.";
+            return L"StartingMoney must be between 0 and 9.";
         }
         else if (NULL == memchr(strGameName, 0, c_cbGameName))
         {
-            return "invalid game name";
+            return L"invalid game name";
         }
         else if (NULL == memchr(szIGCStaticFile, 0, c_cbFileName))
         {
-            return "invalid IGC static file name";
+            return L"invalid IGC static file name";
         }
         else if (NULL == memchr(szCustomMapFile, 0, c_cbFileName))
         {
-            return "invalid IGC static file name";
+            return L"invalid IGC static file name";
         }
         else if (NULL == memchr(strGamePassword, 0, c_cbGamePassword))
         {
-            return "invalid IGC static file name";
+            return L"invalid IGC static file name";
         }
         else if ((nTeams > 6) || (nTeams < 2))
         {
-            return "Number of teams must be between 2 and 6.";
+            return L"Number of teams must be between 2 and 6.";
         }
         else if (nTotalMaxPlayersPerGame < 1)
         {
-            return "Number of players per game must be greater than 0.";
+            return L"Number of players per game must be greater than 0.";
         }
         else if ((nMaxPlayersPerTeam > 200) ||
                  (nMaxPlayersPerTeam < 1))
         {
-            return "Maximum number of players must be between 1 and 200.";
+            return L"Maximum number of players must be between 1 and 200.";
         }
         else if (nMinPlayersPerTeam < 1)
         {
-            return "Minimum number of players must be 1 or greater.";
+            return L"Minimum number of players must be 1 or greater.";
         }
         else if (nMinPlayersPerTeam > nMaxPlayersPerTeam)
         {
-            return "Minimum number of players must not be greater than the maximum number of players.";
+            return L"Minimum number of players must not be greater than the maximum number of players.";
         }
         else if (bScoresCount && bAllowDefections)
         {
-            return "Scores can't be counted for a game where defections are allowed; "
-                "please turn off defections or stats count.";
+            return L"Scores can't be counted for a game where defections are allowed; "
+                L"please turn off defections or stats count.";
         }
 		// TE: Confirms that the MaxImbalance = AUTO when scores count
         else if (bScoresCount && iMaxImbalance != 0x7ffe)
         {
-            return "Scores can't be counted for a game where the MaxImbalance setting is not Auto; "
-                "please set the MaxImbalance setting to Auto, or turn off stats count.";
+            return L"Scores can't be counted for a game where the MaxImbalance setting is not Auto; "
+                L"please set the MaxImbalance setting to Auto, or turn off stats count.";
         }
         else if (IsConquestGame() && bInvulnerableStations)
         {
-            return "You can't play a conquest game with invulnerable stations; "
-                "You must disable the conquest winning condition or turn off "
-                "the invulnerable stations option.";
+            return L"You can't play a conquest game with invulnerable stations; "
+                L"You must disable the conquest winning condition or turn off "
+                L"the invulnerable stations option.";
         }
         else if (IsProsperityGame() && !bAllowDevelopments)
         {
-            return "You can't play a prosperity game with developments turned off; "
-                "You must disable the prosperity winning condition or turn on "
-                "developments.";
+            return L"You can't play a prosperity game with developments turned off; "
+                L"You must disable the prosperity winning condition or turn on "
+                L"developments.";
         }
         else if (nPlayerSectorTreasureRate > 0.01 ||  nNeutralSectorTreasureRate > 0.01)
         {
-            return "Treasure rate(s) too high; max is 0.01";
+            return L"Treasure rate(s) too high; max is 0.01";
         }
         else if (IsTerritoryGame())
         {
             if (mmMapType == c_mmBrawl)
-                return "Brawl maps can not have a territory win condition";
+                return L"Brawl maps can not have a territory win condition";
             else if ((nTeams == 2) &&
                      ((mmMapType == c_mmSingleRing) ||
                       (mmMapType == c_mmDoubleRing)))
-                return "Small maps can not have a territory win condition";
+                return L"Small maps can not have a territory win condition";
         }
 
         return ImapMakerIGC::IsValid(this);
@@ -1674,9 +1674,9 @@ struct  HardpointData
     SoundID     interiorSound;
     SoundID     turnSound;
 
-    char        frameName[c_cbFileName];
+	wchar_t        frameName[c_cbFileName];
     //char        hudName[c_cbFileName];
-    char        locationAbreviation[c_cbLocAbrev];
+	wchar_t        locationAbreviation[c_cbLocAbrev];
     PartMask    partMask;
     bool        bFixed;
 };
@@ -1689,9 +1689,9 @@ struct AsteroidDef
     AsteroidID              asteroidID;
     HitPoints               hitpoints;
     short                   radius;
-    char                    modelName[c_cbFileName];
-    char                    textureName[c_cbFileName];
-    char                    iconName[c_cbFileName];
+	wchar_t                    modelName[c_cbFileName];
+	wchar_t                    textureName[c_cbFileName];
+	wchar_t                    iconName[c_cbFileName];
 };
 
 struct  WarpDef
@@ -1699,8 +1699,8 @@ struct  WarpDef
     WarpID              warpID;
     WarpID              destinationID;
     short               radius;
-    char                textureName[c_cbFileName];
-    char                iconName[c_cbFileName];
+	wchar_t                textureName[c_cbFileName];
+	wchar_t                iconName[c_cbFileName];
 };
 
 //Exported data structures ... these data structures define the data used by Initialize()
@@ -1715,9 +1715,9 @@ struct  DataClusterIGC
     SectorID            clusterID;
     short               nDebris;
     short               nStars;
-    char                name[c_cbName];
-    char                posterName[c_cbFileName];
-    char                planetName[c_cbFileName];
+	wchar_t                name[c_cbName];
+	wchar_t                posterName[c_cbFileName];
+	wchar_t                planetName[c_cbFileName];
     BytePercentage      planetSinLatitude;
     BytePercentage      planetLongitude;
     unsigned char       planetRadius;
@@ -1729,10 +1729,10 @@ struct  DataBuyableIGC
 {
     Money               price;
     DWORD               timeToBuild;
-    char                modelName[c_cbFileName + 1]; // because we allow a 1 character prefix
-    char                iconName[c_cbFileName];
-    char                name[c_cbName];
-    char                description[c_cbDescription];
+	wchar_t                modelName[c_cbFileName + 1]; // because we allow a 1 character prefix
+	wchar_t                iconName[c_cbFileName];
+	wchar_t                name[c_cbName];
+	wchar_t                description[c_cbDescription];
     BuyableGroupID      groupID;
     TechTreeBitMask     ttbmRequired;
     TechTreeBitMask     ttbmEffects;
@@ -1776,7 +1776,7 @@ struct  DataHullTypeIGC : public DataBuyableIGC
     PartID              preferredPartsTypes[c_cMaxPreferredPartTypes];
 
     HullAbilityBitMask  habmCapabilities;
-    char                textureName[c_cbFileName];
+	wchar_t                textureName[c_cbFileName];
 
     //char                pilotHUDName[c_cbFileName];
     //char                observerHUDName[c_cbFileName];
@@ -1802,7 +1802,7 @@ struct  DataPartTypeIGC : public DataBuyableIGC
     PartID              successorPartID;
     EquipmentType       equipmentType;
     PartMask            partMask;
-    char                inventoryLineMDL[c_cbFileName];
+	wchar_t                inventoryLineMDL[c_cbFileName];
 };
 
 struct  DataWeaponTypeIGC : public DataPartTypeIGC
@@ -1860,7 +1860,7 @@ struct  DataLauncherTypeIGC
     PartID          successorPartID;
     short           launchCount;
     ObjectID        expendabletypeID;
-    char            inventoryLineMDL[c_cbFileName];
+	wchar_t            inventoryLineMDL[c_cbFileName];
 };
 
 struct  DataAsteroidIGC
@@ -1872,7 +1872,7 @@ struct  DataAsteroidIGC
     Rotation            rotation;
     AsteroidDef         asteroidDef;
     SectorID            clusterID;
-    char                name[c_cbName];
+	wchar_t                name[c_cbName];
     BytePercentage      fraction;
 };
 
@@ -1881,8 +1881,8 @@ struct  DataObjectIGC
     COLORVALUE          color; // was D3DCOLORVALUE
     float               radius;
     float               rotation;
-    char                modelName[c_cbFileName];
-    char                textureName[c_cbFileName];
+	wchar_t                modelName[c_cbFileName];
+	wchar_t                textureName[c_cbFileName];
 };
 
 struct  DataBuoyIGC
@@ -1928,7 +1928,7 @@ struct  DataExpendableTypeIGC : public DataObjectIGC
     DefenseTypeID       defenseType;
     ExpendableTypeID    expendabletypeID;
     AbilityBitMask      eabmCapabilities;
-    char                iconName[c_cbFileName];
+	wchar_t                iconName[c_cbFileName];
 };
 
 struct  DataMissileTypeIGC : public DataExpendableTypeIGC
@@ -2019,7 +2019,7 @@ struct  DataMissileIGC
 
 struct  DataSideIGC
 {
-    char                name[c_cbName];
+	wchar_t                name[c_cbName];
     CivID               civilizationID;
     SideID              sideID;
     TechTreeBitMask     ttbmInitialTechs;
@@ -2039,16 +2039,16 @@ struct  DataSideIGC
     unsigned char       conquest;
     unsigned char       territory;
 
-	char				allies; // #ALLY
+	wchar_t				allies; // #ALLY
 };
 
 struct  DataCivilizationIGC
 {
     float               incomeMoney;
     float               bonusMoney;
-    char                name[c_cbName];
-    char                iconName[c_cbFileName];
-    char                hudName[c_cbFileName];
+	wchar_t                name[c_cbName];
+	wchar_t                iconName[c_cbFileName];
+	wchar_t                hudName[c_cbFileName];
     TechTreeBitMask     ttbmBaseTechs;
     TechTreeBitMask     ttbmNoDevTechs;
     GlobalAttributeSet  gasBaseAttributes;
@@ -2057,7 +2057,7 @@ struct  DataCivilizationIGC
     StationTypeID       initialStationTypeID;
 };
 
-typedef char    TreasureCode;
+typedef wchar_t    TreasureCode;
 const TreasureCode  c_tcPart        = 1;
 const TreasureCode  c_tcPowerup     = 2;
 const TreasureCode  c_tcDevelopment = 3;
@@ -2080,7 +2080,7 @@ struct  TreasureData
 
 struct DataTreasureSetIGC
 {
-    char            name[c_cbName];
+	wchar_t            name[c_cbName];
     TreasureSetID   treasureSetID;
     short           nTreasureData;
     bool            bZoneOnly;
@@ -2104,7 +2104,7 @@ class   ShipLoadout
 
         ExpandedPartData*   PartDataN(short cb) const
         {
-            return (ExpandedPartData*)(((char*)this) + cb);
+			return (ExpandedPartData*)(((wchar_t*)this) + cb);
         }
 };
 
@@ -2288,13 +2288,13 @@ class   CompactVelocity     //5 bytes
 class   CompactTurnRates           //3 bytes
 {
     private:
-        char                m_turnRates[3];
+		wchar_t                m_turnRates[3];
 
     public:
         void        Set(const float  turnRates[3])
         {
             for (Axis i = c_axisYaw; (i <= c_axisRoll); i++)
-                m_turnRates[i] = (char)floor(turnRates[i] * 127.0f / (2.0f * pi) + 0.5f);
+				m_turnRates[i] = (wchar_t)floor(turnRates[i] * 127.0f / (2.0f * pi) + 0.5f);
         }
 
         void            Export(float   turnRates[3]) const
@@ -2307,13 +2307,13 @@ class   CompactTurnRates           //3 bytes
 class   CompactControlData      //4 bytes
 {
     private:
-        char        m_jsValues[c_axisMax]; //joystick settings
+		wchar_t        m_jsValues[c_axisMax]; //joystick settings
 
     public:
         void        Set(const ControlData&  cd)
         {
             for (Axis i = c_axisYaw; (i <= c_axisThrottle); i++)
-                m_jsValues[i]  = (char)floor(cd.jsValues[i] * 127.0f + 0.5f);
+				m_jsValues[i] = (wchar_t)floor(cd.jsValues[i] * 127.0f + 0.5f);
         }
 
         void            Export(ControlData*    cd) const
@@ -2465,7 +2465,7 @@ struct  DataShipIGC
     short           partsOffset;
     HullID          hullID;
     ShipID          shipID;
-    char            name[c_cbName];
+	wchar_t            name[c_cbName];
     Mount           nParts;
     SideID          sideID;
     //WingID          wingID;
@@ -2480,7 +2480,7 @@ struct  DataShipIGC
 struct  DataWarpIGC
 {
     WarpDef             warpDef;
-    char                name[c_cbName];
+	wchar_t                name[c_cbName];
     Vector              position;
     Vector              forward;
     Rotation            rotation;
@@ -2505,9 +2505,9 @@ struct  DataTreasureIGC
 struct DataMunitionExport
 {
     unsigned char       lifespan;
-    char                dx;
-    char                dy;
-    char                dz;
+	wchar_t                dx;
+	wchar_t                dy;
+	wchar_t                dz;
 };
 
 struct  DataMunitionIGC
@@ -2617,7 +2617,7 @@ struct  DataStationIGC
     StationTypeID       stationTypeID;
     BytePercentage      bpHull;
     BytePercentage      bpShield;
-    char                name[c_cbName];
+	wchar_t                name[c_cbName];
 	StationTypeID		knownStationTypeID[c_cSidesMax]; //Turkey #307 02/31
 };
 
@@ -2659,8 +2659,8 @@ struct  DataStationTypeIGC : public DataBuyableIGC
     SoundID                 enemyCapturedSound;
     SoundID                 enemyDestroyedSound;
 
-    char                    textureName[c_cbFileName];
-    char                    builderName[c_cbName];
+	wchar_t                    textureName[c_cbFileName];
+	wchar_t                    builderName[c_cbName];
 };
 
 struct DataDevelopmentIGC : public DataBuyableIGC
@@ -2785,18 +2785,18 @@ class ImissionIGC : public IstaticIGC
 {
     public:
         virtual int                     Export(__int64   maskTypes,
-                                               char*     pdata) const = 0;
+                                               wchar_t*     pdata) const = 0;
         virtual void                    Import(Time      now,
                                                __int64   maskTypes,
-                                               char*     pdata,
+											   wchar_t*     pdata,
                                                int       datasize) = 0;
 		//Imago added
 		virtual ZString					BitsToTechsList(TechTreeBitMask & ttbm) = 0;
-		virtual void					TechsListToBits(const char * szTechs, TechTreeBitMask & ttbm) = 0;
+		virtual void					TechsListToBits(const wchar_t * szTechs, TechTreeBitMask & ttbm) = 0;
 
 		virtual ZString					BitsToPartsList(PartMask & pm, EquipmentType et) = 0;
-		virtual PartMask				PartMaskFromToken(const char * szToken, EquipmentType et) = 0;
-		virtual PartMask				PartsListToMask(const char * szParts, EquipmentType et) = 0;
+		virtual PartMask				PartMaskFromToken(const wchar_t * szToken, EquipmentType et) = 0;
+		virtual PartMask				PartsListToMask(const wchar_t * szParts, EquipmentType et) = 0;
 
 		virtual bool					LoadTechBitsList(void) = 0;
 		virtual bool					LoadPartsBitsList(void) = 0;
@@ -2891,7 +2891,7 @@ class ImissionIGC : public IstaticIGC
 
         virtual void                    UpdateSides(Time now,
                                                     const MissionParams * pmp,
-                                                    const char  sideNames[c_cSidesMax][c_cbSideName]) = 0;
+													const wchar_t  sideNames[c_cSidesMax][c_cbSideName]) = 0;
         virtual void                    ResetMission() = 0;
         virtual void                    GenerateMission(Time                     now,
                                                         const MissionParams *    pmp,
@@ -2914,9 +2914,9 @@ class ImissionIGC : public IstaticIGC
         virtual void                    SetStaticCore(CstaticIGC*   pStatic) = 0;
 
         virtual short                   GetReplayCount(void) const = 0;
-        virtual const char*             GetContextName(void) = 0;
+		virtual const wchar_t*             GetContextName(void) = 0;
 		//#ALLY
-		virtual void                    UpdateAllies(const char  Allies[c_cSidesMax]) = 0;
+		virtual void                    UpdateAllies(const wchar_t  Allies[c_cSidesMax]) = 0;
 };
 
 class IbaseIGC : public IObject
@@ -2997,17 +2997,17 @@ class ThingSite : public AttachSite
         virtual void        SetOrientation(const Orientation& orientation)  {}
         virtual void        Spin(float r)  {}
 
-        virtual void        SetTexture(const char* pszTextureName) {}
+		virtual void        SetTexture(const wchar_t* pszTextureName) {}
 
         virtual void        SetTrailColor(const Color& c) {}
 
-        virtual HRESULT     LoadDecal(const char* textureName, bool bDirectional, float width) { return S_OK; }
-        virtual HRESULT     LoadModel(int options, const char* modelName, const char* textureName) { return S_OK; }
-        virtual HRESULT     LoadAleph(const char* textureName) { return S_OK; }
+		virtual HRESULT     LoadDecal(const wchar_t* textureName, bool bDirectional, float width) { return S_OK; }
+		virtual HRESULT     LoadModel(int options, const wchar_t* modelName, const wchar_t* textureName) { return S_OK; }
+		virtual HRESULT     LoadAleph(const wchar_t* textureName) { return S_OK; }
         virtual HRESULT     LoadEffect(const Color& color) { return S_OK; }
         virtual void        SetColors(float aInner, float fInner, float fOuter) {}
 
-        virtual HRESULT     LoadMine(const char* textureName, float strength, float radius) { return S_OK; }
+		virtual HRESULT     LoadMine(const wchar_t* textureName, float strength, float radius) { return S_OK; }
         virtual void        SetMineStrength(float strength) {}
 
 
@@ -3038,22 +3038,22 @@ class ImodelIGC : public IbaseIGC
         virtual void                 SetLastUpdate(Time now) = 0;
 
         virtual void                 SetMission(ImissionIGC*    pmission) = 0;
-        virtual void                 LoadCVH(const char*        pszFileName,
-                                             const char*        iconName,
+		virtual void                 LoadCVH(const wchar_t*        pszFileName,
+                                             const wchar_t*        iconName,
                                              ModelAttributes    attributes,
                                              HitTestShape       htsDefault = c_htsSphere) = 0;
         virtual HRESULT              LoadEffect(const Color&    color,
                                                 ModelAttributes attributes) = 0;
-        virtual HRESULT              LoadWarp(const char*       textureName,
-                                              const char*       iconName,
+		virtual HRESULT              LoadWarp(const wchar_t*       textureName,
+                                              const wchar_t*       iconName,
                                               ModelAttributes   attributes) = 0;
-        virtual HRESULT              LoadMine(const char*       textureName,
+		virtual HRESULT              LoadMine(const wchar_t*       textureName,
                                               float             strength,
                                               float             radius,
-                                              const char*       iconName,
+											  const wchar_t*       iconName,
                                               ModelAttributes   attributes) = 0;
-        virtual HRESULT              LoadDecal(const char*      textureName,
-                                               const char*      iconName,
+		virtual HRESULT              LoadDecal(const wchar_t*      textureName,
+                                               const wchar_t*      iconName,
                                                const Color&     color,
                                                bool             bDirectional,
                                                float            width,
@@ -3061,9 +3061,9 @@ class ImodelIGC : public IbaseIGC
                                                HitTestShape     htsDefault = c_htsPoint) = 0;
 
         virtual HRESULT              Load(int                  options,
-                                          const char*          model,
-                                          const char*          texture,
-                                          const char*          iconName,
+                                          const wchar_t*          model,
+										  const wchar_t*          texture,
+										  const wchar_t*          iconName,
                                           ModelAttributes      attributes) = 0;
 
         virtual bool                 GetVisibleF(void) const = 0;
@@ -3104,16 +3104,16 @@ class ImodelIGC : public IbaseIGC
         virtual IclusterIGC*         GetCluster(void) const = 0;
         virtual void                 SetCluster(IclusterIGC* pVal) = 0;
 
-        virtual char const*          GetName(void) const = 0;
-        virtual void                 SetName(const char* newVal) = 0;
+		virtual wchar_t const*          GetName(void) const = 0;
+		virtual void                 SetName(const wchar_t* newVal) = 0;
 
-        virtual void                 SetSecondaryName(const char* newVal) = 0;
+		virtual void                 SetSecondaryName(const wchar_t* newVal) = 0;
 
         virtual float                GetSignature(void) const = 0;
         virtual void                 SetSignature(float newVal) = 0;
         virtual void                 ChangeSignature(float delta) = 0;
 
-        virtual void                 SetTexture(const char* pszTextureName) = 0;
+		virtual void                 SetTexture(const wchar_t* pszTextureName) = 0;
 
         virtual void                 Move(float t) = 0;
         virtual void                 Move(void) = 0;
@@ -3306,7 +3306,7 @@ class IshipIGC : public IscannerIGC
 
         virtual const ShipListIGC*  GetChildShips(void) const = 0;
 
-        virtual void    Complain(SoundID    sid, const char* pszMsg) = 0;
+		virtual void    Complain(SoundID    sid, const wchar_t* pszMsg) = 0;
 
         virtual short               GetKills(void) const = 0;
         virtual void                SetKills(short n) = 0;
@@ -3540,10 +3540,10 @@ class IstationIGC : public IscannerIGC
 class IbuyableIGC : public ItypeIGC
 {
     public:
-        virtual const char*             GetName(void) const = 0;
-        virtual const char*             GetIconName(void) const = 0;
-        virtual const char*             GetDescription(void) const = 0;
-        virtual const char*             GetModelName(void) const = 0;
+		virtual const wchar_t*             GetName(void) const = 0;
+		virtual const wchar_t*             GetIconName(void) const = 0;
+		virtual const wchar_t*             GetDescription(void) const = 0;
+		virtual const wchar_t*             GetModelName(void) const = 0;
         virtual const TechTreeBitMask&  GetRequiredTechs(void) const = 0;
         virtual const TechTreeBitMask&  GetEffectTechs(void) const = 0;
 
@@ -3591,8 +3591,8 @@ class IstationTypeIGC : public IbuyableIGC
         virtual StationAbilityBitMask   GetCapabilities(void) const = 0;
         virtual bool                    HasCapability(StationAbilityBitMask habm) const = 0;
 
-        virtual const char*             GetTextureName(void) const = 0;
-        virtual const char*             GetBuilderName(void) const = 0;
+		virtual const wchar_t*             GetTextureName(void) const = 0;
+		virtual const wchar_t*             GetBuilderName(void) const = 0;
 
         virtual  IstationTypeIGC*       GetSuccessorStationType(const IsideIGC*   pside) = 0;
         virtual  IstationTypeIGC*       GetDirectSuccessorStationType() = 0; // EF5P - see wintrek\loadout.cpp
@@ -3663,8 +3663,8 @@ class IprojectileTypeIGC : public ItypeIGC
         virtual float            GetBlastRadius(void) const = 0;
         virtual float            GetSpeed(void) const = 0;
         virtual bool             GetAbsoluteF(void) const = 0;
-        virtual char const*      GetModelName(void) const = 0;
-        virtual char const*      GetModelTexture(void) const = 0;
+		virtual wchar_t const*      GetModelName(void) const = 0;
+		virtual wchar_t const*      GetModelTexture(void) const = 0;
         virtual float            GetLifespan(void) const = 0;
         virtual float            GetRadius(void) const = 0;
         virtual float            GetRotation(void) const = 0;
@@ -3684,9 +3684,9 @@ class   IexpendableTypeIGC : public ItypeIGC
         virtual HitPoints                   GetHitPoints(void) const = 0;
         virtual DefenseTypeID               GetDefenseType(void) const = 0;
         virtual float                       GetLifespan(void) const = 0;
-        virtual char const*                 GetName(void) const = 0;
-        virtual char const*                 GetModelName(void) const = 0;
-        virtual char const*                 GetModelTexture(void) const = 0;
+		virtual wchar_t const*                 GetName(void) const = 0;
+		virtual wchar_t const*                 GetModelName(void) const = 0;
+		virtual wchar_t const*                 GetModelTexture(void) const = 0;
         virtual float                       GetRadius(void) const = 0;
 
         virtual ExpendableAbilityBitMask    GetCapabilities(void) const = 0;
@@ -3772,7 +3772,7 @@ class IhullTypeIGC : public IbuyableIGC
         virtual const HardpointData& GetHardpointData(Mount hardpointID) const = 0;
         virtual bool                 CanMount(IpartTypeIGC* ppt, Mount  mountID) const = 0;
 
-        virtual const char*          GetTextureName(void) const = 0;
+		virtual const wchar_t*          GetTextureName(void) const = 0;
 
         virtual const Vector&        GetCockpit(void) const = 0;
 		virtual const Vector&		 GetChaffPosition(void) const = 0; // TurkeyXIII 11/09 #94
@@ -3831,9 +3831,9 @@ class IpartTypeIGC : public IbuyableIGC
 
         virtual IpartTypeIGC*   GetSuccessorPartType(void) const = 0;
 
-        virtual const char*     GetInventoryLineMDLName(void) const = 0;
+        virtual const wchar_t*     GetInventoryLineMDLName(void) const = 0;
 
-        static const char*      GetEquipmentTypeName(EquipmentType et);
+		static const wchar_t*      GetEquipmentTypeName(EquipmentType et);
 
         virtual short           GetAmount(IshipIGC* pship) const { return 1; }
 };
@@ -3991,7 +3991,7 @@ class IdispenserIGC : public IlauncherIGC
 class IclusterIGC : public IbaseIGC
 {
     public:
-        virtual const char*             GetName(void) const = 0;
+		virtual const wchar_t*             GetName(void) const = 0;
 
         virtual Time                    GetLastUpdate(void) const = 0;
         virtual void                    SetLastUpdate(Time now) = 0;
@@ -4001,7 +4001,7 @@ class IclusterIGC : public IbaseIGC
         virtual void                    AddModel(ImodelIGC* modelNew) = 0;
         virtual void                    DeleteModel(ImodelIGC* modelOld) = 0;
 
-        virtual ImodelIGC*              GetModel(const char* name) const = 0;
+		virtual ImodelIGC*              GetModel(const wchar_t* name) const = 0;
         virtual const ModelListIGC*     GetModels(void) const = 0;
 
         virtual const ModelListIGC*     GetPickableModels(void) const = 0;
@@ -4082,7 +4082,7 @@ class IclusterIGC : public IbaseIGC
                                                  const Vector&  position,
                                                  ImodelIGC*     pLauncher) = 0;
 
-        virtual const char*      GetPosterName(void) const = 0;
+		virtual const wchar_t*      GetPosterName(void) const = 0;
 
         virtual void             SetPrivateData(DWORD dwPrivate) = 0;
         virtual DWORD            GetPrivateData(void) const = 0;
@@ -4114,8 +4114,8 @@ class IasteroidIGC : public IdamageIGC
         virtual IbuildingEffectIGC*     GetBuildingEffect(void) const = 0;
         virtual void                    SetBuildingEffect(IbuildingEffectIGC* pbe) = 0;
 
-        static const char*              GetTypeName(AsteroidAbilityBitMask aabm);
-        static const char*              GetTypePrefix(int   index);
+		static const wchar_t*              GetTypeName(AsteroidAbilityBitMask aabm);
+		static const wchar_t*              GetTypePrefix(int   index);
         static const AsteroidDef&       GetTypeDefaults(int index);
 
         static int                      NumberSpecialAsteroids(const MissionParams*  pmp);
@@ -4170,8 +4170,8 @@ class IsideIGC : public IbaseIGC
         virtual void                        DestroyBuckets(void) = 0;
         virtual void                        CreateBuckets(void) = 0;
 
-        virtual void                        SetName(const char* newVal) = 0;
-        virtual const char*                 GetName(void) const = 0;
+		virtual void                        SetName(const wchar_t* newVal) = 0;
+		virtual const wchar_t*                 GetName(void) const = 0;
 
         virtual SquadID                     GetSquadID() const = 0;
         virtual void                        SetSquadID(SquadID squadID) = 0;
@@ -4263,8 +4263,8 @@ class IsideIGC : public IbaseIGC
         virtual long          GetProsperityPercentComplete(void) const = 0;
 
 		// ALLIES #ALLY
-		virtual void		  SetAllies(char allies) = 0;
-		virtual char          GetAllies() = 0;
+		virtual void		  SetAllies(wchar_t allies) = 0;
+		virtual wchar_t          GetAllies() = 0;
 		static bool           AlliedSides(IsideIGC *side1, IsideIGC *side2)
 		{
 			if( side1==side2) return true;
@@ -4282,9 +4282,9 @@ class IsideIGC : public IbaseIGC
 class IcivilizationIGC : public IbaseIGC
 {
     public:
-        virtual const char*                 GetName(void) const = 0;
-        virtual const char*                 GetIconName(void) const = 0;
-        virtual const char*                 GetHUDName(void) const = 0;
+		virtual const wchar_t*                 GetName(void) const = 0;
+		virtual const wchar_t*                 GetIconName(void) const = 0;
+		virtual const wchar_t*                 GetHUDName(void) const = 0;
         virtual IhullTypeIGC*               GetLifepod(void) const = 0;
 
         virtual IstationTypeIGC*            GetInitialStationType(void) const = 0;
@@ -4301,7 +4301,7 @@ class IcivilizationIGC : public IbaseIGC
 class ItreasureSetIGC : public IbaseIGC
 {
     public:
-        virtual const char*                 GetName(void) const = 0;
+		virtual const wchar_t*                 GetName(void) const = 0;
         virtual bool                        GetZoneOnly(void) const = 0;
 		virtual short						GetSize(void) const = 0; //imago added 7/30/08
         virtual void                        AddTreasureData(TreasureCode tc, ObjectID oid, unsigned char chance) = 0;
@@ -4347,9 +4347,9 @@ const ClusterWarning    c_cwStationCaptureThreat    = 15;
 const ClusterWarning    c_cwMax                     = 16;
 
 ClusterWarning  GetClusterWarning(AssetMask am, bool bInvulnerableStations);
-const char*     GetClusterWarningText(ClusterWarning cw);
+const wchar_t*     GetClusterWarningText(ClusterWarning cw);
 
-typedef char    ShipState;
+typedef wchar_t    ShipState;
 
 const ShipState    c_ssDead = 1;                //A nice enumeration of all the things it could have been doing
 const ShipState    c_ssDocked = 2;              //when it was last seen (if only briefly)
@@ -4474,16 +4474,16 @@ class   ShipStatus
 class ClusterSite : public AttachSite
 {
     public:
-        virtual HRESULT         AddPoster(const char*      textureName,
+		virtual HRESULT         AddPoster(const wchar_t*      textureName,
                                           const Vector&    position,
                                           float            radius) { return S_OK;}
 
-        virtual HRESULT         GetEnvironmentGeo(const char* pszName) { return S_OK; }
+		virtual HRESULT         GetEnvironmentGeo(const wchar_t* pszName) { return S_OK; }
 
         virtual Geo*            GetEnvironmentGeo() { return NULL; }
         virtual GroupGeo*       GetGroupScene()     { return NULL; }
         virtual PosterImage*    GetPosterImage()    { return NULL; }
-        virtual void            SetEnvironmentGeo(const char* pszName) {}
+		virtual void            SetEnvironmentGeo(const wchar_t* pszName) {}
 
         virtual float           GetRotation(void) const { return 0.0f; }
         virtual void            AddRotation(float da) {}
@@ -4518,8 +4518,8 @@ float    turnToFace(const Vector&       deltaTarget,
 
 IwarpIGC*   FindPath(IshipIGC* pShip, ImodelIGC* pTarget, bool bCowardly);
 
-const char* GetModelType(ImodelIGC* pmodel);
-const char* GetModelName(ImodelIGC* pmodel);
+const wchar_t* GetModelType(ImodelIGC* pmodel);
+const wchar_t* GetModelName(ImodelIGC* pmodel);
 
 bool        LineOfSightExist(const IclusterIGC* pcluster,
                              const ImodelIGC*   pmodel1,
@@ -4763,7 +4763,7 @@ class IIgcSite : public IObject
                                  ChatTarget     ctRecipient,
                                  ObjectID       oidRecipient,
                                  SoundID        voiceOver,
-                                 const char*    szText,
+								 const wchar_t*    szText,
                                  CommandID      cid,
                                  ObjectType     otTarget,
                                  ObjectID       oidTarget,
@@ -4772,7 +4772,7 @@ class IIgcSite : public IObject
                               ChatTarget        chatTarget,
                               ObjectID          oidRecipient,
                               SoundID           soVoiceOver,
-                              const char*       szText,
+							  const wchar_t*       szText,
                               CommandID         cid           = c_cidNone,
                               ObjectType        otTarget      = NA,
                               ObjectID          oidTarget     = NA,
@@ -4781,14 +4781,14 @@ class IIgcSite : public IObject
 
         void SendChatf(IshipIGC*   pshipSender,
                        ChatTarget  ctRecipient, ObjectID  oidRecipient,
-                       SoundID     soVoiceOver, const char* pszText, ...)
+					   SoundID     soVoiceOver, const wchar_t* pszText, ...)
         {
             const int c_cbBfr = 256;
-            char szChatBfr[c_cbBfr];
+			wchar_t szChatBfr[c_cbBfr];
 
             va_list vl;
             va_start(vl, pszText);
-            _vsnprintf(szChatBfr, c_cbBfr, pszText, vl);
+            _vsnwprintf(szChatBfr, c_cbBfr, pszText, vl);
             va_end(vl);
 
             SendChat(pshipSender, ctRecipient, oidRecipient,
@@ -4814,8 +4814,8 @@ class IIgcSite : public IObject
         virtual void KillBuildingEffectEvent(IbuildingEffectIGC* pbe) {}
         virtual void KillMineEvent(ImineIGC* pmine) {}
         virtual void KillTreasureEvent(ItreasureIGC* ptreasure) { ptreasure->Terminate(); }
-        virtual void PostText(bool bCritical, const char* pszText, ...) {}
-        virtual void PostNotificationText(ImodelIGC* pmodel, bool bCritical, const char* pszText, ...) {}
+		virtual void PostText(bool bCritical, const wchar_t* pszText, ...) {}
+		virtual void PostNotificationText(ImodelIGC* pmodel, bool bCritical, const wchar_t* pszText, ...) {}
         virtual void EjectPlayer(ImodelIGC* pmodelCredit) {}
         virtual void TargetKilled(ImodelIGC* pmodel) {}
         virtual void ShipWarped(IshipIGC* pship, SectorID sidOld, SectorID sidNew) {};
@@ -4850,8 +4850,8 @@ class IIgcSite : public IObject
                                    IclusterIGC* pclusterNew)  {}    //changing clusters
         virtual void CommandChangedEvent(Command i, IshipIGC * pship, ImodelIGC* ptarget, CommandID cid) {};
 
-        virtual void Preload(const char*    pszModelName,
-                             const char*    pszFileName) {};
+		virtual void Preload(const wchar_t*    pszModelName,
+                             const wchar_t*    pszFileName) {};
 
         virtual void ActivateTeleportProbe(IprobeIGC* pprobe) {};
 
@@ -4859,7 +4859,7 @@ class IIgcSite : public IObject
 
         virtual void LoadoutChangeEvent(IshipIGC* pship, IpartIGC* ppart, LoadoutChange lc) {}
 
-        virtual IObject*    LoadRadarIcon(const char* szName)
+		virtual IObject*    LoadRadarIcon(const wchar_t* szName)
         {
             return NULL;
         }
@@ -5349,7 +5349,7 @@ static  AssetMask   GetAssetMask(IshipIGC* pship, IhullTypeIGC* pht, bool bFrien
 IshipIGC*   CreateDrone(ImissionIGC*     pmission,
                         ShipID           shipID,
                         PilotType        pt,
-                        const char*      pszName,
+						const wchar_t*      pszName,
                         HullID           hullID,
                         IsideIGC*        pside,
                         AbilityBitMask   abmOrders = 0,
@@ -6081,9 +6081,8 @@ class GameOverScoreObject
 // normal igc files, i.e. missions can be dumped and loaded using these two
 // functions. They return true if successful.
 //------------------------------------------------------------------------------
-bool    DumpIGCFile (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes,
-                     void (*munge)(int size, char* data) = NULL);
-bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int size, char* data) = NULL);
+bool    DumpIGCFile(const wchar_t* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void(*munge)(int size, wchar_t* data) = NULL);
+bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int size, wchar_t* data) = NULL);
 
 //------------------------------------------------------------------------------
 // static data core files are dealt with by these functions. They are
@@ -6091,8 +6090,8 @@ bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int 
 // number in the file, and it is returned by the LoadIGCStaticCore function.
 // if the load function fails, it returns NA.
 //------------------------------------------------------------------------------
-bool    DumpIGCStaticCore (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, char* data) = NULL);
-int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
-int     CacheIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data) = NULL);
+bool    DumpIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void(*munge)(int size, wchar_t* data) = NULL);
+int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, wchar_t* data) = NULL);
+int     CacheIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, wchar_t* data) = NULL);
 
 #endif

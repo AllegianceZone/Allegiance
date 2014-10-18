@@ -319,7 +319,7 @@ class CbuildingEffectIGC : public TmodelIGC<IbuildingEffectIGC>
 
                 GetMyMission()->GetIgcSite()->SendChatf(m_pshipBuilder, CHAT_TEAM, m_pside->GetObjectID(),
                                                         m_pstationType->GetCompletionSound(), 
-                                                        "Finished building %s", m_pstationType->GetName());
+                                                        L"Finished building %s", m_pstationType->GetName());
 
 				//Imago #120 #121 8/10
 				bool bseenside[c_cSidesMax] = {false};

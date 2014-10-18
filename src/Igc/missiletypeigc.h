@@ -86,16 +86,16 @@ class CmissileTypeIGC : public ImissileTypeIGC
         {
             return m_data.defenseType;
         }
-        virtual char const*     GetName(void) const
+		virtual wchar_t const*     GetName(void) const
         {
             return m_data.launcherDef.name;
         }
 
-        virtual char const*     GetModelName(void) const
+		virtual wchar_t const*     GetModelName(void) const
         {
             return m_data.modelName;
         }
-        virtual char const*     GetModelTexture(void) const
+		virtual wchar_t const*     GetModelTexture(void) const
         {
             return m_data.textureName;
         }

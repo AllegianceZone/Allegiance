@@ -184,7 +184,7 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
 						tipdistV = tipV-probeV;
 						distance = tipdistV.Length();
 						if (distance < 30) {
-							debugf("Destroying probe as it was dropped too close (within 30) of aleph(warp) tip. dist = $f\n",distance);
+							debugf(L"Destroying probe as it was dropped too close (within 30) of aleph(warp) tip. dist = $f\n",distance);
 							return S_FALSE; // this will destroy the probe
 						}
 					}
@@ -205,7 +205,7 @@ HRESULT CprobeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data,
                     dV=this->GetPosition() - pal->data()->GetPosition();
 					distance = dV.Length();
 					if (distance < (asteroid_rad-5)) {
-						debugf("Teleprobe dropped too close to asteroid (within -5) destroying probe. dist = %f, asteroid rad = %f\n",
+						debugf(L"Teleprobe dropped too close to asteroid (within -5) destroying probe. dist = %f, asteroid rad = %f\n",
 							distance,asteroid_rad);
 						// this->Terminate(); should be terminated when missionigc processes S_FALSE
 						return S_FALSE; 

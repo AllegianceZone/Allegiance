@@ -90,7 +90,7 @@ void        CdispenserIGC::Update(Time   now)
 
         IIgcSite*   pigc = GetMission()->GetIgcSite();
         pigc->PlayNotificationSound(mountedSound, m_ship);
-        pigc->PostNotificationText(m_ship, false, "%s ready.", GetPartType()->GetName());
+        pigc->PostNotificationText(m_ship, false, L"%s ready.", GetPartType()->GetName());
         m_mountedFraction = 1.0f;
     }
 
@@ -140,7 +140,7 @@ void        CdispenserIGC::SetShip(IshipIGC*       newVal, Mount mount)
         m_ship->AddRef();
         m_ship->AddPart(this);
 
-        m_emissionPt = m_ship->GetHitTest()->GetFrameOffset("missemt");
+        m_emissionPt = m_ship->GetHitTest()->GetFrameOffset(L"missemt");
 
         SetMountID(mount);
     }

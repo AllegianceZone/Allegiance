@@ -13,14 +13,14 @@
 /////////////////////////////////////////////////////////////////////////////
 // Command Name Resolution
 
-inline HRESULT FindCommandName(const char* pszCommand, CommandID* pID,
+inline HRESULT FindCommandName(const wchar_t* pszCommand, CommandID* pID,
   REFCLSID clsid, REFIID iid)
 {
   // Search for the specified command string
   assert(pszCommand);
   for (CommandID i = 0; i < c_cidMax; ++i)
   {
-    if (!_stricmp(pszCommand, c_cdAllCommands[i].szVerb))
+    if (!_wcsicmp(pszCommand, c_cdAllCommands[i].szVerb))
     {
       *pID = i;
       return S_OK;
@@ -32,15 +32,6 @@ inline HRESULT FindCommandName(const char* pszCommand, CommandID* pID,
     MAKE_HRESULT(1, FACILITY_ITF, IDS_E_COMMANDNAME),
     GetAGCGlobal()->GetResourceInstance());
 }
-
-inline HRESULT FindCommandName(const OLECHAR* pszCommand, CommandID* pID,
-  REFCLSID clsid, REFIID iid)
-{
-  USES_CONVERSION;
-  const char* pszCommandA = pszCommand ? OLE2CA(pszCommand) : "";
-  return FindCommandName(pszCommandA, pID, clsid, iid);
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 

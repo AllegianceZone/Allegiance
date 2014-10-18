@@ -18,14 +18,14 @@ const DWORD CFSMission::c_sbtPlayer = 0x00000001;
 const DWORD CFSMission::c_sbtLeader = 0x00000002;
 const float c_flUpdateTimeInterval = 10.0f;
 
-static const char* sideNames[c_cSidesMax] =
+static const wchar_t* sideNames[c_cSidesMax] =
   {
-    "Team 1",
-    "Team 2",
-    "Team 3",
-    "Team 4",
-    "Team 5",
-    "Team 6"
+    L"Team 1",
+    L"Team 2",
+    L"Team 3",
+    L"Team 4",
+    L"Team 5",
+    L"Team 6"
   };
 
 void CFSMission::InitSide(SideID sideID)
@@ -39,7 +39,7 @@ void CFSMission::InitSide(SideID sideID)
 */
   assert(sideID >= 0 && sideID < c_cSidesMax);
 
-  strcpy(m_misdef.rgszName[sideID], sideNames[sideID]);
+  Strcpy(m_misdef.rgszName[sideID], sideNames[sideID]);
 
   /*
   if (m_misdef.misparms.rgCivID[sideID] == NA)
@@ -76,12 +76,11 @@ static int InitializeCivList(const CivilizationListIGC*    pcivs,
 
 CFSMission::CFSMission(
     const MissionParams& misparms,
-    char * szDesc,
+	wchar_t * szDesc,
     IMissionSite * psiteMission,
     IIgcSite* psiteIGC,
     CAdditionalAGCParamData * paagcParamData,
-    const char* pszStoryText
-    ) :
+	const wchar_t* pszStoryText,
     m_pMission(::CreateMission()), // IGC CreateMission
     m_psiteMission(psiteMission),
     m_psiteIGC(psiteIGC),
@@ -455,7 +454,7 @@ void CFSMission::AddPlayerToMission(CFSPlayer * pfsPlayer)
  *    This must be called INSTEAD OF IGC's SetSide() for the player's new side.
  */
 
-void CFSMission::RemovePlayerFromMission(CFSPlayer * pfsPlayer, QuitSideReason reason, const char* szMessageParam)
+void CFSMission::RemovePlayerFromMission(CFSPlayer * pfsPlayer, QuitSideReason reason, const wchar_t* szMessageParam)
 {
   debugf("Player %s, ship=%d quiting mission=%x, reason=%d\n",
           pfsPlayer->GetName(), pfsPlayer->GetShipID(),
@@ -1243,7 +1242,7 @@ bool CFSMission::HasBallots(BallotType iType)
  * Returns:
  *    true if a player was booted
  */
-bool CFSMission::RemovePlayerByName(const char* szCharacterName, QuitSideReason reason, const char* szMessageParam)
+bool CFSMission::RemovePlayerByName(const wchar_t* szCharacterName, QuitSideReason reason, const wchar_t* szMessageParam)
 {
   ShipLinkIGC * pShiplink = GetIGCMission()->GetShips()->first();
 
@@ -1255,10 +1254,10 @@ bool CFSMission::RemovePlayerByName(const char* szCharacterName, QuitSideReason 
     {
       CFSPlayer * pfsPlayer = pfsShip->GetPlayer();
 
-      if (_stricmp(pfsPlayer->GetName(), szCharacterName) == 0)
+      if (_wcsicmp(pfsPlayer->GetName(), szCharacterName) == 0)
       {
         RemovePlayerFromMission(pfsShip->GetPlayer(), reason, szMessageParam);
-        debugf("Booted duplicate character %s from mission %x.\n",
+        debugf(L"Booted duplicate character %s from mission %x.\n",
             pfsPlayer->GetName(), GetCookie());
         break;
       }
@@ -2663,7 +2662,7 @@ void CFSMission::SaveAsOldPlayer(CFSPlayer* pfsplayer, bool bBooted)
    Parameters:
       The winning side
  */
-void CFSMission::GameOver(IsideIGC * psideWin, const char* pszReason)
+void CFSMission::GameOver(IsideIGC * psideWin, const wchar_t* pszReason)
 {
   m_psideWon = psideWin;
   m_pszReason = pszReason;
@@ -2671,17 +2670,17 @@ void CFSMission::GameOver(IsideIGC * psideWin, const char* pszReason)
 
   // TE: Safely retrieve the team's ID and name
   const ObjectID iTeamObjectID = (psideWin) ? psideWin->GetObjectID() : -1;
-  const char* pszTeamName = (psideWin) ? psideWin->GetName() : "";
+  const wchar_t* pszTeamName = (psideWin) ? psideWin->GetName() : L"";
 
-  LPCSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
+  LPCWSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
 
   // the game will actually end when we get around to checking whether a team has won
   // TE, Modify GameEnded AGCEvent to include MissionName and MissionID.
   _AGCModule.TriggerContextEvent(NULL, AllsrvEventID_GameEnded, pszContext,
       GetIGCMission()->GetMissionParams()->strGameName, GetMissionID(), -1, -1, 3, // changed "" to MissionName and -1 to MissionID
-      "Reason", VT_LPSTR, pszReason,
-	  "WinningTeamID", VT_I4, iTeamObjectID,	 // TE: Added winning teamID
-	  "WinningTeamName", VT_LPSTR, pszTeamName); // TE: Added winning teamName
+      L"Reason", VT_LPSTR, pszReason,
+	  L"WinningTeamID", VT_I4, iTeamObjectID,	 // TE: Added winning teamID
+	  L"WinningTeamName", VT_LPSTR, pszTeamName); // TE: Added winning teamName
 
 }
 

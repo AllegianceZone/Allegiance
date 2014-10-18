@@ -45,7 +45,7 @@ public:
      *      during large file transfers.  The 8k interval is determined by Windows and subject to change.
      *
      */
-    virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes) {}
+	virtual void OnProgress(unsigned long cTotalBytes, const wchar_t* szCurrentFile, unsigned long cCurrentFileBytes) {}
 
     /*-------------------------------------------------------------------------
      * OnProgress()
@@ -56,7 +56,7 @@ public:
      * Paramters:
      *      szErrorMessage: Error message.  Could be long and detailed.
      */
-    virtual void OnError(char *szErrorMessage) {}
+	virtual void OnError(wchar_t *szErrorMessage) {}
 
     /*-------------------------------------------------------------------------
      * OnDataReceived()
@@ -88,7 +88,7 @@ public:
      *      true:  if file downloaded okay
      *      false: if file should be re-downloaded (sometimes http downloads fail, so you might want to retry)
      */
-    virtual bool OnFileCompleted(char *szFileName) 
+	virtual bool OnFileCompleted(wchar_t *szFileName)
     {
         return true;
     }
@@ -149,7 +149,7 @@ public:
      * Remarks:
      *    Errors also are reported to the Sink.
      */               
-    virtual const char* GetLastErrorMessage() = 0; // TODO: make this report the error code too
+	virtual const wchar_t* GetLastErrorMessage() = 0; // TODO: make this report the error code too
 
 
     /*-------------------------------------------------------------------------
@@ -159,7 +159,7 @@ public:
      * Returns a path of where the downloaded files are going.  Guarenteed to
      * end with a backslash.
      */
-    virtual const char* GetDownloadPath() = 0; 
+	virtual const wchar_t* GetDownloadPath() = 0;
 
     /*-------------------------------------------------------------------------
      * Abort()
@@ -192,10 +192,10 @@ public:
      * Remarks:
      *    Errors are reported to the Sink.
      */
-    virtual bool  ConnectToSite(const char *szFTPSite, 
-                                const char *szDirectory, 
-                                const char *szUsername, 
-                                const char *szPassword) = 0; 
+	virtual bool  ConnectToSite(const wchar_t *szFTPSite,
+                                const wchar_t *szDirectory, 
+								const wchar_t *szUsername,
+								const wchar_t *szPassword) = 0;
 
 
     /*-------------------------------------------------------------------------
@@ -221,8 +221,8 @@ public:
      * Remarks:
      *    Errors are reported to the Sink.
      */
-    virtual bool  InitiateDownload(const char * const * pszFileList, 
-                                   const char * szDestFolder, 
+	virtual bool  InitiateDownload(const wchar_t * const * pszFileList,
+                                   const wchar_t * szDestFolder, 
                                    bool bDisconnectWhenDone = true,
                                    int nMaxBufferSize = 1024*1024) = 0;
 
@@ -270,8 +270,8 @@ public:
      * Remarks:
      *    Errors are reported to the Sink.
      */
-    virtual bool  InitiateDownload(const char * const * pszFileList, 
-                                   const char * szDestFolder, 
+	virtual bool  InitiateDownload(const wchar_t * const * pszFileList,
+                                   const wchar_t * szDestFolder, 
                                    int nMaxBufferSize = 1024*1024) = 0;
 
 };
