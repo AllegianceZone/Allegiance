@@ -68,10 +68,10 @@ typedef IDirectDrawGammaControl      IDirectDrawGammaControlX;*/
 //////////////////////////////////////////////////////////////////////////////
 
 #ifdef _DEBUG
-    bool DDError(HRESULT hr, const char* pszCall, const char* pszFile, int line, const char* pszModule);
+bool DDError(HRESULT hr, const char* pszCall, const wchar_t* pszFile, int line, const wchar_t* pszModule);
     bool DDSCallImpl(HRESULT hr, const char* pszCall, const char* pszFile, int line, const char* pszModule);
 
-    #define DDCall(hr)  DDError(hr, #hr, __FILE__, __LINE__, __MODULE__)
+    #define DDCall(hr)  DDError(hr, #hr, TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
     #define DDSCall(hr) DDSCallImpl(hr, #hr, __FILE__, __LINE__, __MODULE__)
 #else
     bool DDSCallImpl(HRESULT hr);

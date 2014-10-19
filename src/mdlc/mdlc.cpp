@@ -169,7 +169,7 @@ public:
        // TRef<Surface> psurface = GetEngine()->CreateSurface(hbitmap);
         //ZVerify(::DeleteObject(hbitmap));
 		
-		TRef<ZFile> zf = GetModeler()->GetFile(strInput,"",false);
+		TRef<ZFile> zf = GetModeler()->GetFile(strInput,L"",false);
 		ZFile * pFile = (ZFile*) zf;
 		D3DXIMAGE_INFO fileInfo;
 		D3DXGetImageInfoFromFileInMemory(pFile->GetPointer(),pFile->GetLength(),&fileInfo );
@@ -264,7 +264,7 @@ public:
 
 		
 		//Imago set the modeler up to work in the CWD
-		PathString pathStr = pathStr.ZGetCurrentDirectory;
+		PathString pathStr = pathStr.ZGetCurrentDirectory();
 		wprintf(pathStr);
         
 		// Imago DX9 junk

@@ -221,23 +221,23 @@ void CPageEvents::InitEventList()
   lvcol.iSubItem = 0;
   lvcol.fmt    = LVCFMT_LEFT | LVCFMT_IMAGE;
   strColumn.LoadString(IDS_COLUMN_TYPE);
-  lvcol.pszText  = const_cast<LPTSTR>((LPCSTR)strColumn);
+  lvcol.pszText  = const_cast<LPTSTR>((LPCWSTR)strColumn);
   m_listEvents.InsertColumn(lvcol.iSubItem, &lvcol);
-  m_cxMaxType = m_listEvents.GetStringWidth(strColumn + "    + ");
+  m_cxMaxType = m_listEvents.GetStringWidth(strColumn + L"    + ");
   
   // Insert EventID column
   lvcol.iSubItem = 1;
   lvcol.fmt    = LVCFMT_RIGHT;
   strColumn.LoadString(IDS_COLUMN_EVENTID);
-  lvcol.pszText  = const_cast<LPTSTR>((LPCSTR)strColumn);
+  lvcol.pszText = const_cast<LPTSTR>((LPCWSTR)strColumn);
   m_listEvents.InsertColumn(lvcol.iSubItem, &lvcol);
-  m_cxMaxID = m_listEvents.GetStringWidth(strColumn + "    + ");
+  m_cxMaxID = m_listEvents.GetStringWidth(strColumn + L"    + ");
   
   // Insert Name column
   lvcol.iSubItem = 2;
   lvcol.fmt    = LVCFMT_LEFT;
   strColumn.LoadString(IDS_COLUMN_NAME);
-  lvcol.pszText  = const_cast<LPTSTR>((LPCSTR)strColumn);
+  lvcol.pszText = const_cast<LPTSTR>((LPCWSTR)strColumn);
   m_listEvents.InsertColumn(lvcol.iSubItem, &lvcol);
 }
 

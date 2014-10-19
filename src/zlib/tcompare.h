@@ -30,7 +30,7 @@ public:
     template<class TEqualsValue>
     bool operator () (const TEqualsValue& value1, const TEqualsValue& value2)
     {
-        ZError("DefaultNoEquals(...) called");
+        ZError(L"DefaultNoEquals(...) called");
         return false;
     }
 };
@@ -41,7 +41,7 @@ public:
     template<class TEqualsValue>
     bool operator () (const TEqualsValue& value1, const TEqualsValue& value2)
     {
-        ZError("DefaultNoCompare(...) called");
+        ZError(L"DefaultNoCompare(...) called");
         return false;
     }
 };

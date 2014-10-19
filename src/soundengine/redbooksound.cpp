@@ -359,7 +359,7 @@ public:
             int nDrivesStringLength = GetLogicalDriveStrings(1, &cTemp);
             if (nDrivesStringLength == 0)
             {
-                ZError("Error getting drives list\n");
+                ZError(L"Error getting drives list\n");
                 return strDevice;
             }
 
@@ -369,7 +369,7 @@ public:
 
             if (nDrivesStringLength == 0)
             {
-                ZError("Error getting drives list\n");
+                ZError(L"Error getting drives list\n");
                 return strDevice;
             }
 
@@ -663,7 +663,7 @@ private:
         // reason)
         virtual IEventSource* GetFinishEventSource()
         {
-            ZError("NYI");
+            ZError(L"NYI");
             return NULL;
         }
 

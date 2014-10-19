@@ -146,7 +146,7 @@ UINT CAGCEventData::ComputeVariableDataSize(LPCWSTR pszContext,
       }
       case VT_VARIANT:
         // TODO: Could recurse here to support VT_VARIANT
-        ZError("Unsupported Variant Type");
+        ZError(L"Unsupported Variant Type");
         break;
       case VT_LPSTR:
       {
@@ -163,7 +163,7 @@ UINT CAGCEventData::ComputeVariableDataSize(LPCWSTR pszContext,
         break;
       }
       default:
-        ZError("Unsupported Variant Type");
+        ZError(L"Unsupported Variant Type");
     }
   }
 

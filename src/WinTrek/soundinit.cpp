@@ -14,7 +14,7 @@ namespace SoundInit {
         DWORD dwStartTime = timeGetTime();
 
         // load the training sound definitions
-        TRef<ZFile>         pFile = pmodeler->LoadFile ("trainingsounddef", "mdl", false);
+        TRef<ZFile>         pFile = pmodeler->LoadFile (L"trainingsounddef", L"mdl", false);
         TRef<INameSpace>    pnsTrainingSoundDef;
         if (pFile == NULL)
         {
@@ -35,7 +35,7 @@ namespace SoundInit {
         #include "sounds.h"
         #undef DEFSOUND
 
-        debugf("Time reading sounds: %d ms\n", timeGetTime() - dwStartTime);
+        debugf(L"Time reading sounds: %d ms\n", timeGetTime() - dwStartTime);
     }
 
     void AddMembers(INameSpace* pns) 

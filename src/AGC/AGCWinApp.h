@@ -25,19 +25,30 @@ public:
 // Overrides
 public:
   #ifdef _DEBUG
-	virtual void DebugOutput(wchar_t char* psz)
+	virtual void DebugOutput(const wchar_t* psz)
     {
-      if (NULL != m_spDebugHook)
-        m_spDebugHook->DebugOutput(psz);
-      else
-        TCWinAppDLL::DebugOutput(psz);
+		if (NULL != m_spDebugHook) {
+			m_spDebugHook->DebugOutput(psz);
+		} else {
+			char mbstring[4096];
+			wcstombs(mbstring, psz, wcslen(psz));
+			TCWinAppDLL::DebugOutput(mbstring);
+		}
     }
 
-    virtual bool OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule)
+	virtual bool OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
     {
-      return (NULL != m_spDebugHook) ?
-        !!m_spDebugHook->OnAssert(psz, pszFile, line, pszModule) :
-        TCWinAppDLL::OnAssert(psz, pszFile, line, pszModule);
+		if (NULL != m_spDebugHook) {
+			return !!m_spDebugHook->OnAssert(psz, pszFile, line, pszModule);
+		} else {
+			char mbstring[4096];
+			wcstombs(mbstring, psz, wcslen(psz));
+			char mbpath[MAX_PATH+128];
+			wcstombs(mbpath, pszFile, wcslen(pszFile));
+			char mbmodule[MAX_PATH + 128];
+			wcstombs(mbmodule, pszModule, wcslen(pszModule));
+			return TCWinAppDLL::OnAssert(mbstring, mbpath, line, mbmodule);
+		}
     }
 
     virtual void OnAssertBreak()

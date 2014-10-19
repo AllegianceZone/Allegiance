@@ -893,7 +893,7 @@ public:
     }
     virtual HRESULT     ReceiveMessages(void);
 	virtual HRESULT     CheckLauncher(void);
-    virtual HRESULT     OnSessionLost(char * szReason, FedMessaging * pthis);
+	virtual HRESULT     OnSessionLost(wchar_t * szReason, FedMessaging * pthis);
     virtual void        OnSessionFound(FedMessaging * pthis, FMSessionDesc * pSessionDesc);
     virtual HRESULT     HandleMsg(FEDMESSAGE* pfm, Time lastUpdate, Time now);
     bool                GetIsZoneClub()

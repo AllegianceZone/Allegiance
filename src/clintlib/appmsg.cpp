@@ -384,7 +384,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 				{
 	                // then propose the issue.
 					m_listBallots.PushEnd(BallotInfo(
-						(char*)(FM_VAR_REF(pfmBallot, BallotText)) + ZString("Press [Y] to vote yes, [N] to vote no."),
+						(wchar_t*)(FM_VAR_REF(pfmBallot, BallotText)) + ZString(L"Press [Y] to vote yes, [N] to vote no."),
 						pfmBallot->ballotID,
 						ClientTimeFromServerTime(pfmBallot->timeExpiration)
 						));
@@ -2223,7 +2223,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             if (NULL == m_pCoreIGC->GetSide(SIDE_TEAMLOBBY))
             {
                 assert(false);
-                OnSessionLost("Unexpected message received.", &m_fm);
+                OnSessionLost(L"Unexpected message received.", &m_fm);
             }
 
             CASTPFM(pfmPlayerInfo, S, PLAYERINFO, pfm);
@@ -3600,7 +3600,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             // Note: we can't assert here because there are some messages
             // which are only handled in TrekWindowImpl::HandleMessage. TrekIGC.cpp
             // already asserts that one of the two handles the message, however.
-            //ZError("unknown message");
+            //ZError(L"unknown message");
             hr = S_FALSE;
         }
     }

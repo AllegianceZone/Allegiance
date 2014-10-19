@@ -46,7 +46,7 @@ STDMETHODIMP CAGCCommand::get_Text(BSTR* pbstrText)
 /////////////////////////////////////////////////////////////////////////////
 // IAGCCommandPrivate Interface Methods
 
-STDMETHODIMP_(void) CAGCCommand::Init(LPCSTR pszTarget, LPCSTR pszVerb)
+STDMETHODIMP_(void) CAGCCommand::Init(LPCWSTR pszTarget, LPCWSTR pszVerb)
 {
   XLock lock(this);
   m_bstrTarget = pszTarget;

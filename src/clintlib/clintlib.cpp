@@ -1887,7 +1887,7 @@ void BaseClient::JoinMission(MissionInfo * pMission, const wchar_t* szMissionPas
     pfmJoinGameReq->dwCookie = pMission->GetCookie();
     SendLobbyMessages();
     m_dwCookieToJoin = pMission->GetCookie();
-    assert(strlen(szMissionPassword) < c_cbGamePassword);
+    assert(wcslen(szMissionPassword) < c_cbGamePassword);
     Strncpy(m_strPasswordToJoin, szMissionPassword, c_cbGamePassword);
     m_strPasswordToJoin[c_cbGamePassword - 1] = '\0';
     // waiting for FM_L_JOIN_GAME_ACK. When we get that we can join it
@@ -1948,7 +1948,7 @@ void BaseClient::CheckServerLag(Time now)
             if (m_cUnansweredPings > g_cPingsTimeout && (now - m_timeLastServerMessage) >= g_sDeadTime)
             {
                 // what should that number be? 
-                OnSessionLost("Pings aren't coming back.", &m_fm);
+                OnSessionLost(L"Pings aren't coming back.", &m_fm);
             }
             else
             {
@@ -2031,7 +2031,7 @@ HRESULT BaseClient::CheckLauncher()
 	return(S_OK);
 }
 
-HRESULT BaseClient::OnSessionLost(char * szReason, FedMessaging * pthis)
+HRESULT BaseClient::OnSessionLost(wchar_t * szReason, FedMessaging * pthis)
 {
     debugf(L"OnSessionLost. %s. lastUpdate=%d now=%d Time::Now()=%d\n", 
            szReason, m_lastUpdate.clock(), m_now.clock(), Time::Now().clock());
@@ -2053,13 +2053,13 @@ HRESULT BaseClient::OnSessionLost(char * szReason, FedMessaging * pthis)
 void BaseClient::OnMessageNAK(FedMessaging * pthis, DWORD dwTime, CFMRecipient * prcp)
 {
     // we can't recover from this, so...
-    OnSessionLost("guaranteed message couldn't be delivered", pthis);
+    OnSessionLost(L"guaranteed message couldn't be delivered", pthis);
 }
 
 
 HRESULT BaseClient::OnSessionLost(FedMessaging * pthis)
 {
-    return OnSessionLost("DPlay session terminated", pthis);
+    return OnSessionLost(L"DPlay session terminated", pthis);
 }
 
 
@@ -2207,14 +2207,14 @@ bool    BaseClient::ParseShellCommand(const wchar_t* pszCommand)
         bCommand = true;
     }
 #ifdef _DEBUG
-    else if (_strnicmp(pszCommand, "!chatcountdown ", 8) == 0)
+    else if (_wcsnicmp(pszCommand, L"!chatcountdown ", 8) == 0)
     {
-        int i = atoi(pszCommand + strlen("!chatcountdown "));
-        char cbTemp[20];
+        int i = _wtoi(pszCommand + wcslen(L"!chatcountdown "));
+        wchar_t cbTemp[20];
 
         for (; i > 0; i--)
         {
-            SendChat(m_ship, CHAT_EVERYONE, NA, NA, _itoa(i, cbTemp, 10));
+            SendChat(m_ship, CHAT_EVERYONE, NA, NA, _itow(i, cbTemp, 10));
 
             // send the messages every so often so that we don't overflow the 
             // send buffer

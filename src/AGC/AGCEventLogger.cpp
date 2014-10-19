@@ -1194,7 +1194,7 @@ STDMETHODIMP CAGCEventLogger::Initialize(BSTR bstrSourceApp, BSTR bstrRegKey)
   HKEY hkeyRoot = RootKeyFromString(bstrRegKey, &cchEaten);
   if (!hkeyRoot)
   {
-    ZError("CAGCEventLogger::Initialize(): Invalid registry key name specified.");
+    ZError(L"CAGCEventLogger::Initialize(): Invalid registry key name specified.");
     return E_INVALIDARG;
   }
 

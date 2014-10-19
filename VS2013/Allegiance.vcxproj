@@ -57,6 +57,7 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -628,7 +629,6 @@
     <ClCompile Include="..\src\WinTrek\logon.cpp" />
     <ClCompile Include="..\src\WinTrek\mappreview.cpp" />
     <ClCompile Include="..\src\WinTrek\mappvmaker.cpp" />
-    <ClCompile Include="..\src\WinTrek\netinfo.cpp" />
     <ClCompile Include="..\src\WinTrek\newgamescreen.cpp" />
     <ClCompile Include="..\src\WinTrek\passworddialog.cpp" />
     <ClCompile Include="..\src\WinTrek\pch.cpp">

@@ -676,8 +676,8 @@ void CFSShip::CaptureStation(IstationIGC * pstation)
   IsideIGC*   psideWin = m_pfsMission->CheckForVictoryByStationCapture(pside, psideOld);
   if (psideWin)
   {
-      static char szReason[100];     //Make this static so we only need to keep a pointer to it around
-      sprintf(szReason, "%s won because %s captured %s", psideWin->GetName(), GetIGCShip()->GetName(), pstation->GetName());
+	  static wchar_t szReason[100];     //Make this static so we only need to keep a pointer to it around
+      swprintf(szReason, L"%s won because %s captured %s", psideWin->GetName(), GetIGCShip()->GetName(), pstation->GetName());
       m_pfsMission->GameOver(psideWin, szReason);
   }
   else if (psideOld->GetActiveF())						//RESET OUR EYE HERE?  IMAGO CAPTURE EYE BUG FIX?  REVIEW 7/23/09
@@ -918,7 +918,7 @@ void CFSPlayer::SetCluster(IclusterIGC* pcluster, bool bViewOnly)
     SetDPGroup(NULL, false);
 }
 
-CFSPlayer::CFSPlayer(CFMConnection * pcnxn, int characterID, const char * szCDKey,
+CFSPlayer::CFSPlayer(CFMConnection * pcnxn, int characterID, const wchar_t * szCDKey,
                       TRef<IshipIGC> pShip, bool fCanCheat) :
   CFSShip(pShip, true), // parent
   m_fReady(true),
@@ -940,7 +940,7 @@ CFSPlayer::CFSPlayer(CFMConnection * pcnxn, int characterID, const char * szCDKe
 
   ShipID    shipID = pShip->GetObjectID();
 
-  LPCSTR pszContext = pShip->GetMission()->GetContextName();
+  LPCWSTR pszContext = pShip->GetMission()->GetContextName();
 
   _AGCModule.TriggerContextEvent(NULL, EventID_LoginServer, pszContext,
     pShip->GetName(), GetConnection()->GetID(), -1, -1, 1,
@@ -964,7 +964,7 @@ CFSPlayer::~CFSPlayer()
   */
   m_pcnxn->SetPrivateData(0); // disconnect two-way link between connection and this
 
-  LPCSTR pszContext = GetIGCShip() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
+  LPCWSTR pszContext = GetIGCShip() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
 
   _AGCModule.TriggerContextEvent(NULL, EventID_LogoutServer, pszContext,
     GetName(), GetConnection()->GetID(), -1, -1, 1,
@@ -1070,11 +1070,11 @@ void CFSPlayer::SetSide(CFSMission * pfsMission, IsideIGC * pside)
 
     if (pfsmOld) // if leaving a game
     {
-        const char * szName = pfsmOld->GetIGCMission() && pfsmOld->GetIGCMission()->GetMissionParams() ? pfsmOld->GetIGCMission()->GetMissionParams()->strGameName : "?" ;
+		const wchar_t * szName = pfsmOld->GetIGCMission() && pfsmOld->GetIGCMission()->GetMissionParams() ? pfsmOld->GetIGCMission()->GetMissionParams()->strGameName : L"?";
         int id = pfsmOld->GetIGCMission() ? pfsmOld->GetIGCMission()->GetMissionID() : -1;
         long idShip = (AGC_AdminUser << 16) | CAdminUser::DetermineID(this->GetPlayer());
 
-        LPCSTR pszContext = pfsmOld->GetIGCMission() ? pfsmOld->GetIGCMission()->GetContextName() : NULL;
+        LPCWSTR pszContext = pfsmOld->GetIGCMission() ? pfsmOld->GetIGCMission()->GetContextName() : NULL;
 
       _AGCModule.TriggerContextEvent(NULL, EventID_LogoutGame, pszContext,
         GetName(), idShip, -1, -1, 2,
@@ -1084,16 +1084,16 @@ void CFSPlayer::SetSide(CFSMission * pfsMission, IsideIGC * pside)
 
     if (pfsMission) // if joining a game
     {
-        const char * szName = pfsMission->GetIGCMission() && pfsMission->GetIGCMission()->GetMissionParams() ? pfsMission->GetIGCMission()->GetMissionParams()->strGameName : "?" ;
+		const wchar_t * szName = pfsMission->GetIGCMission() && pfsMission->GetIGCMission()->GetMissionParams() ? pfsMission->GetIGCMission()->GetMissionParams()->strGameName : L"?";
         int id = pfsMission->GetIGCMission() ? pfsMission->GetIGCMission()->GetMissionID() : -1;
         long idShip = (AGC_AdminUser << 16) | CAdminUser::DetermineID(this->GetPlayer());
 
-        LPCSTR pszContext = pfsMission->GetIGCMission() ? pfsMission->GetIGCMission()->GetContextName() : NULL;
+        LPCWSTR pszContext = pfsMission->GetIGCMission() ? pfsMission->GetIGCMission()->GetContextName() : NULL;
 
       _AGCModule.TriggerContextEvent(NULL, EventID_LoginGame, pszContext,
         GetName(), idShip, -1, -1, 2,
-        "GameID",   VT_I4,    id,
-        "GameName", VT_LPSTR, szName);
+        L"GameID",   VT_I4,    id,
+        L"GameName", VT_LPSTR, szName);
     }
   }
 
@@ -1111,7 +1111,7 @@ void CFSPlayer::SetSide(CFSMission * pfsMission, IsideIGC * pside)
 
     if (psideOld ) // if leaving a side
     {
-      LPCSTR pszContext = GetIGCShip()->GetMission() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
+      LPCWSTR pszContext = GetIGCShip()->GetMission() ? GetIGCShip()->GetMission()->GetContextName() : NULL;
 	  // TE Modify LeaveTeam AGCEvent to include MissionID, and change UniqueID to ObjectID
       _AGCModule.TriggerContextEvent(NULL, EventID_LeaveTeam, pszContext,
         GetName(), idShip, psideOld->GetUniqueID(), -1, 3, // Changed UniqueID to ObjectID. Modified ParamCount to 3
@@ -1241,7 +1241,7 @@ void CFSPlayer::SetDPGroup(CFSCluster*  pfsCluster, bool bFlying)
   {
 #ifdef DEBUG
     // mmf only log this in debug build
-    debugf("Removing %s(%u) from group %s(%u)\n", GetName(), GetConnection()->GetID(), 
+    debugf(L"Removing %s(%u) from group %s(%u)\n", GetName(), GetConnection()->GetID(), 
             m_pgrp->GetName(), m_pgrp->GetID());
 #endif
     g.fm.DeleteConnectionFromGroup(m_pgrp, GetConnection());

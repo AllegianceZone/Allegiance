@@ -351,12 +351,12 @@ public:
 
 		// KGJV : reformated + official stuff added
 		// 
-		const char* szServerName = trekClient.MyMission()->GetMissionDef().szServerName;
-		const char* szCoreName = mp.szIGCStaticFile;
+		const wchar_t* szServerName = trekClient.MyMission()->GetMissionDef().szServerName;
+		const wchar_t* szCoreName = mp.szIGCStaticFile;
 
 
         str =
-			ZString("<Color|yellow><Font|medBoldVerdana>Game details<Font|smallFont><Color|white><p>")
+			ZString(L"<Color|yellow><Font|medBoldVerdana>Game details<Font|smallFont><Color|white><p>")
             + "Name: "                  + ZString(mp.strGameName)         + "<p>"
             + "<p>Server: " +
 			+ (trekClient.CfgIsOfficialServer(szServerName,trekClient.MyMission()->GetMissionDef().szServerAddr) ?
@@ -765,11 +765,11 @@ public:
         }
     }
 
-    int FindMapType(const char* szMapFile)
+	int FindMapType(const wchar_t* szMapFile)
     {
         for (int i = 0; i < trekClient.GetNumStaticMaps(); i++)
         {
-            if (strcmp(szMapFile, trekClient.GetStaticMapInfo(i).cbIGCFile) == 0)
+            if (Strcmp(szMapFile, trekClient.GetStaticMapInfo(i).cbIGCFile) == 0)
                 return i;
         }
         return NA;
@@ -796,10 +796,10 @@ public:
             return 0;
     }
 
-    const char* ItemIDToMapFile(int itemID)
+	const wchar_t* ItemIDToMapFile(int itemID)
     {
         if (itemID >= 0)
-            return "";
+            return L"";
         else
             return trekClient.GetStaticMapInfo(ItemIDToCustomMapID(itemID)).cbIGCFile;
     }
@@ -812,7 +812,7 @@ public:
             return trekClient.GetStaticMapInfo(ItemIDToCustomMapID(itemID)).nNumTeams == cRequested;
     }
 
-    bool ValidateNumTeams(int cRequested, const char* szIGCFile)
+	bool ValidateNumTeams(int cRequested, const wchar_t* szIGCFile)
     {
         int mapTypeIndex = FindMapType(szIGCFile);
 
@@ -831,7 +831,7 @@ public:
 	// KGJV #62 handler for settings change that affect mappreview
     bool OnRefreshMapPreview(int max)
 	{
-		debugf("mapid = %d\n",m_pcomboMapType->GetSelection());
+		debugf(L"mapid = %d\n",m_pcomboMapType->GetSelection());
 		MissionParams mp;
         ReadControls(mp);
 		m_pimageMapPreview->ComputePreview(mp);
@@ -1001,8 +1001,8 @@ public:
     {
         misparams = GetBaseMissionParams();
 		GetHiddenParameters(misparams); //Spunky #342
-		strcpy(misparams.strGameName, m_peditPaneGameName->GetString());
-        strcpy(misparams.strGamePassword, m_peditPaneGamePassword->GetString());
+		Strcpy(misparams.strGameName, m_peditPaneGameName->GetString());
+        Strcpy(misparams.strGamePassword, m_peditPaneGamePassword->GetString());
 
         misparams.bEjectPods = m_pbuttonEjectPods->GetChecked();
         misparams.bAllowFriendlyFire = m_pbuttonFriendlyFire->GetChecked();
@@ -1038,7 +1038,7 @@ public:
         misparams.iMinRank = FindValue(m_pcomboSkillLevel->GetSelection(), "GameSkillLevelMin");
         misparams.iMaxRank = FindValue(m_pcomboSkillLevel->GetSelection(), "GameSkillLevelMax");
         misparams.mmMapType = ItemIDToMapType(m_pcomboMapType->GetSelection());
-        strcpy(misparams.szCustomMapFile, ItemIDToMapFile(m_pcomboMapType->GetSelection()));
+        Strcpy(misparams.szCustomMapFile, ItemIDToMapFile(m_pcomboMapType->GetSelection()));
         misparams.iRandomEncounters = FindValue(m_pcomboConnectivity->GetSelection(), "ConnectivityValues");
         misparams.iLives = FindValue(m_pcomboLives->GetSelection(), "LivesValues");
         misparams.nNeutralSectorMineableAsteroids = FindValue(m_pcomboResources->GetSelection(), "ResourcesNeutralMinable");
@@ -1074,7 +1074,7 @@ public:
 
         ReadControls(pfmMissionParams->missionparams);
 
-        const char* pszReason = pfmMissionParams->missionparams.Invalid(true);
+		const wchar_t* pszReason = pfmMissionParams->missionparams.Invalid(true);
 
         // don't let the player choose a game which they can't play in.
 		// mmf unless they are a Privileged user
@@ -1083,11 +1083,11 @@ public:
         {
 			if ( (rankOwner < pfmMissionParams->missionparams.iMinRank) && !UTL::PrivilegedUser(trekClient.m_szCharName,trekClient.m_pMissionInfo->GetCookie())) //Imago 6/10 #2
             {
-                pszReason = "Skill Level must be set low enough for you to play.";
+                pszReason = L"Skill Level must be set low enough for you to play.";
             }
 			else if ( (rankOwner > pfmMissionParams->missionparams.iMaxRank) && !UTL::PrivilegedUser(trekClient.m_szCharName,trekClient.m_pMissionInfo->GetCookie()) ) //Imago 6/10 #2
             {
-                pszReason = "Skill Level must be set high enough for you to play.";
+                pszReason = L"Skill Level must be set high enough for you to play.";
             }
             else if (pfmMissionParams->missionparams.bSquadGame)
             {
@@ -1105,7 +1105,7 @@ public:
                 }
 
                 if (!bFoundSquad)
-                    pszReason = "You must be a squad leader or an assistant squad leader to create a squad game";
+                    pszReason = L"You must be a squad leader or an assistant squad leader to create a squad game";
             }
             else if (!ValidateNumTeams(pfmMissionParams->missionparams.nTeams, pfmMissionParams->missionparams.szCustomMapFile))
             {
@@ -1113,8 +1113,8 @@ public:
                 assert(mapTypeIndex != NA);
                 const StaticMapInfo& mapinfo = trekClient.GetStaticMapInfo(mapTypeIndex);
 
-                const char* szFormat = "The map type '%s' can only be played with %d teams";
-                char* cbTemp = (char*)_alloca(strlen(szFormat) + c_cbName + 8 + 1);
+				const wchar_t* szFormat = L"The map type '%s' can only be played with %d teams";
+				wchar_t* cbTemp = (wchar_t*)_alloca(wcslen(szFormat) + c_cbName + 8 + 1);
                 wsprintf(cbTemp, szFormat, mapinfo.cbFriendlyName, mapinfo.nNumTeams);
                 pszReason = cbTemp;
             }
@@ -1138,7 +1138,7 @@ public:
                 }
                 if (bAllInactive)
                 {
-                    pszReason = "You can't reduce the number of teams if all remaining teams would be inactive.";
+                    pszReason = L"You can't reduce the number of teams if all remaining teams would be inactive.";
                 }
             }
         }
@@ -1161,7 +1161,7 @@ public:
             trekClient.m_fm.QueueExistingMsg((FEDMESSAGE *)pfmMissionParams);
             GetWindow()->SetWaitCursor();
             GetWindow()->GetPopupContainer()->OpenPopup(
-                CreateMessageBox("Changing mission parameters...", NULL, false, false, 1.0f),
+                CreateMessageBox(L"Changing mission parameters...", NULL, false, false, 1.0f),
                 false
             );
             m_fQuitting = true;

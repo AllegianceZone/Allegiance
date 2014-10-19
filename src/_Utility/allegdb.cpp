@@ -43,7 +43,7 @@ unsigned CALLBACK SQLQueueProc(void * pvSQLQueueThread)
           break;
 
         default:
-          ZError("SQLThreadProc: Unexpected thread message.\n");
+          ZError(L"SQLThreadProc: Unexpected thread message.\n");
       }
     }
   } while (WAIT_OBJECT_0 != dwWait); 
@@ -84,7 +84,7 @@ unsigned CALLBACK SQLThreadProc(void * pvsqlThread)
         break;
 
       default:
-        ZError("Unexpected object signaled in SQLThreadProc.\n");
+        ZError(L"Unexpected object signaled in SQLThreadProc.\n");
     }
 
   } while (WAIT_OBJECT_0 != dwWait);

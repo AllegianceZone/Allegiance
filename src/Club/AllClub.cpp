@@ -361,7 +361,7 @@ int CServiceModule::LogEvent(WORD wType, LPCTSTR pFormat, ...)
     va_end(pArg);
 
     lpszStrings[0] = chMsg;
-    debugf("%s\n", lpszStrings[0]);
+    debugf(L"%s\n", lpszStrings[0]);
 
     if (m_bService)
     {

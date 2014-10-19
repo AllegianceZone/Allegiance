@@ -85,21 +85,21 @@ public:
 
     /////////////////////////////////////////////////////////////////////////
 
-    void    SetName(const char *szName)
+	void    SetName(const wchar_t *szName)
     {
-        strncpy(m_szName, szName, sizeof(m_szName)-1);
+        Strncpy(m_szName, szName, sizeof(m_szName)-1);
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    char *  GetName() 
+    wchar_t *  GetName() 
     {
         return m_szName;
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    void    SetImageFileName(const char * szFileName)
+    void    SetImageFileName(const wchar_t * szFileName)
     {
         m_pImage = GetModeler()->LoadImage(szFileName, true);
     }
@@ -127,14 +127,14 @@ public:
 
     /////////////////////////////////////////////////////////////////////////
 
-    void SetDescription(const char * szDescription)
+    void SetDescription(const wchar_t * szDescription)
     {
-        strncpy(m_szDescription, szDescription, sizeof(m_szDescription));
+        Strncpy(m_szDescription, szDescription, sizeof(m_szDescription));
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    char * GetDescription()
+    wchar_t * GetDescription()
     {
         return m_szDescription;
     }
@@ -143,8 +143,8 @@ public:
 
 private:
 
-    char            m_szName[256];
-    char            m_szDescription[512];
+    wchar_t            m_szName[256];
+	wchar_t            m_szDescription[512];
     int             m_fRanking;
     TRef<Image>     m_pImage;
 };
@@ -511,14 +511,14 @@ public:
             {
                 CASTPFM(pfmCharInfoGeneral, S, CHARACTER_INFO_GENERAL, pCharInfoMessage);
 
-                char * szPlayerName = FM_VAR_REF(pfmCharInfoGeneral, szName);
+                wchar_t * szPlayerName = FM_VAR_REF(pfmCharInfoGeneral, szName);
 
                 if (szPlayerName)
                     m_peditPaneCharName->SetString(szPlayerName);
                 else
                     m_peditPaneCharName->SetString(ZString());
 
-                char * szDescription = FM_VAR_REF(pfmCharInfoGeneral, szDescription);
+				wchar_t * szDescription = FM_VAR_REF(pfmCharInfoGeneral, szDescription);
 
                 if (szDescription)
                 {
@@ -562,7 +562,7 @@ public:
                     m_pStats[i].m_cMinutesPlayed = pfmCharInfoByCiv->cMinutesPlayed;
                     m_pStats[i].m_nRank = pfmCharInfoByCiv->nRank;
                     m_pStats[i].m_nCombatRating = pfmCharInfoByCiv->nRating;
-                    char * szLastPlayed = FM_VAR_REF(pfmCharInfoByCiv, szLastPlayed);
+					wchar_t * szLastPlayed = FM_VAR_REF(pfmCharInfoByCiv, szLastPlayed);
                     if (szLastPlayed)
                         m_pStats[i].m_strLastPlayed = szLastPlayed;
 
@@ -582,9 +582,9 @@ public:
                 TRef<IZoneMedal> pMedal = CreateZoneMedal();
                 pMedal->SetName(FM_VAR_REF(pMedalInfo, szName));
                 pMedal->SetDescription(ZString(FM_VAR_REF(pMedalInfo, szDescription)) 
-                    + "\n\n" + ZString(FM_VAR_REF(pMedalInfo, szSpecificInfo)));
+                    + L"\n\n" + ZString(FM_VAR_REF(pMedalInfo, szSpecificInfo)));
 
-                pMedal->SetImageFileName(ZString(FM_VAR_REF(pMedalInfo, szBitmap)) + ZString("bmp"));
+                pMedal->SetImageFileName(ZString(FM_VAR_REF(pMedalInfo, szBitmap)) + ZString(L"bmp"));
                 // mdvalley: Gotta be explicit int in 2005
                 static int c = 0;
                 pMedal->SetRanking(c++);
@@ -616,7 +616,7 @@ public:
             case FM_S_SQUAD_INFO_DUDEX:
             {
                 CASTPFM(pfmInfo, S, SQUAD_INFO_DUDEX, pCharInfoMessage);
-                char *szName = FM_VAR_REF(pfmInfo, szName);
+				wchar_t *szName = FM_VAR_REF(pfmInfo, szName);
                 m_plistPaneSquads->GetStringList()->AddItem(szName);
            }
             break;

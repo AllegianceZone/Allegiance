@@ -181,7 +181,7 @@ protected:
   HRESULT ProcessAppMessage(FEDMESSAGE* pfm);
   bool OnChat_AreYouAPig(REFXChatCommand chat);
   bool OnChat_Evaluate(REFXChatCommand chat);
-  bool FindMissionName(char* pszMissionName);
+  bool FindMissionName(wchar_t* pszMissionName);
   void CacheMaxShipAngleThresholds();
   void CacheMaxShipDistanceThresholds();
   void CacheMaxShipsUpdateLatencyThresholds();
@@ -194,14 +194,14 @@ public:
 
 // BaseClient Overrides
 public:
-  virtual HRESULT OnSessionLost(char* szReason, FedMessaging * pthis);
+	virtual HRESULT OnSessionLost(wchar_t* szReason, FedMessaging * pthis);
   virtual void ModifyShipData(DataShipIGC* pds);
   virtual void OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam);
   virtual void OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
   virtual void OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
   virtual const wchar_t* GetArtPath();
   virtual IAutoUpdateSink* OnBeginAutoUpdate();
-  virtual bool ResetStaticData(char* szIGCStaticFile,
+  virtual bool ResetStaticData(wchar_t* szIGCStaticFile,
     ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt);
   virtual void StartLockDown(const ZString& strReason, LockdownCriteria criteria);
   virtual void EndLockDown(LockdownCriteria criteria);
@@ -226,7 +226,7 @@ public:
 // IAutoUpdateSink Overrides
 public:
   virtual void OnBeginRetrievingFileList();
-  virtual bool ShouldFilterFile(const char * szFileName); // if returns true, then file is not downloaded
+  virtual bool ShouldFilterFile(const wchar_t * szFileName); // if returns true, then file is not downloaded
   virtual void OnAutoUpdateSystemTermination(bool bErrorOccurred, bool bRestarting);
   virtual void OnError(char* szErrorMessage);
 
@@ -242,7 +242,7 @@ public:
   virtual void ChangeCluster(IshipIGC*  pship, IclusterIGC* pclusterOld,
     IclusterIGC* pclusterNew);
   virtual void ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
-    ObjectID oidRecipient, SoundID voiceOver, const char* szText,
+	  ObjectID oidRecipient, SoundID voiceOver, const wchar_t* szText,
     CommandID cid, ObjectType otTarget, ObjectID oidTarget,
     ImodelIGC* pmodelTarget = NULL, bool bObjectModel = false);
   virtual void SendChat(IshipIGC* pshipSender, ChatTarget chatTarget,

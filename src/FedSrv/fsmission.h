@@ -223,7 +223,7 @@ class CFSMission
 public:
   CFSMission(
       const MissionParams& misparms,
-      char * szDesc,
+      wchar_t * szDesc,
       IMissionSite * psiteMission,
       IIgcSite * psiteIGC,
       CAdditionalAGCParamData * paagcParamData,
@@ -316,7 +316,7 @@ public:
   IsideIGC*             CheckForVictoryByFlags(IsideIGC* pside, SideID sidFlag);
 
   void                  GameOver(IsideIGC*      psideWin,
-                                 const char*    pszReason);
+                                 const wchar_t*    pszReason);
 
   void                  SetMissionParams(const MissionParams & misparms);
   void                  StartCountdown(float fCountdownLength);
@@ -425,7 +425,7 @@ public:
     return m_misdef.misparms.bScoresCount;
   }
 
-  void AddInvitation(SideID sid, char * szPlayerName);
+  void AddInvitation(SideID sid, wchar_t * szPlayerName);
 
   bool                  RequiresInvitation() 
   { 
@@ -492,7 +492,7 @@ private:
 
   int                   m_rgMoney[c_cSidesMax];
   TRef<IsideIGC>        m_psideWon;         // set when a side won--not acted upon until out of igc updates
-  const char*           m_pszReason;
+  const wchar_t*           m_pszReason;
 
   IMissionSite *        m_psiteMission;
   ListJoinReq           m_listJoinReq;

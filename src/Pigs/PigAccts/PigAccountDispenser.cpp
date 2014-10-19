@@ -76,7 +76,7 @@ HRESULT CPigAccountDispenser::LoadAccounts()
   TCHAR szINI[_MAX_PATH];
   TCHAR szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szName[_MAX_FNAME];
   _tsplitpath(szModule, szDrive, szDir, szName, NULL);
-  _tmakepath(szINI, szDrive, szDir, szName, ".ini");
+  _tmakepath(szINI, szDrive, szDir, szName, L".ini");
 
   // Compute the number of bytes needed to read all the account names
   TCHandle shFile = CreateFile(szINI, GENERIC_READ, FILE_SHARE_READ, NULL,

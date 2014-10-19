@@ -87,7 +87,7 @@ public:
         virtual void OnClose()
         {
             IPopup::OnClose();
-            debugf("train live popup closed\n");
+            debugf(L"train live popup closed\n");
         }
 
         Pane* GetPane()
@@ -258,7 +258,7 @@ public:
         DWORD   dwHasRunTraining = 1;
         if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
         {
-            RegSetValueEx (hKey, "HasTrained", NULL, REG_DWORD, (const BYTE*) &dwHasRunTraining, sizeof (dwHasRunTraining));
+            RegSetValueEx (hKey, L"HasTrained", NULL, REG_DWORD, (const BYTE*) &dwHasRunTraining, sizeof (dwHasRunTraining));
             RegCloseKey (hKey);
         }
 
@@ -665,7 +665,7 @@ public:
         while (iTryCount-- && (listResults.GetCount () == 0))
         {
             // initiate a query for the local server
-            trekClient.FindStandaloneServersByName ("127.0.0.1", listResults); //Imago REVIEW this hardly works now-a-days 6/10
+            trekClient.FindStandaloneServersByName (L"127.0.0.1", listResults); //Imago REVIEW this hardly works now-a-days 6/10
 
             // now, for 6 seconds, check to see if we found it every half second
             for (int i = 0; (i < 12) && (listResults.GetCount () == 0); i++)
@@ -689,7 +689,7 @@ public:
                 // set up the connection info
                 BaseClient::ConnectInfo     ci;
                 ci.guidSession = iterNew.Value ()->guidSession;
-                strcpy (ci.szName, "Cadet");
+                Strcpy (ci.szName, L"Cadet");
 
                 // we try five times
                 iTryCount = 5;
@@ -701,7 +701,7 @@ public:
                     GetWindow()->RestoreCursor();
                     
                     // connect to the server
-                    trekClient.ConnectToServer (ci, NA, Time::Now(), "", true);
+                    trekClient.ConnectToServer (ci, NA, Time::Now(), L"", true);
                 }
             }
         }
@@ -715,7 +715,7 @@ public:
             GetWindow()->RestoreCursor();
 
             // give some indication of what happened
-            TRef<IMessageBox> pmsgBox = CreateMessageBox("Connection to standalone server failed.");
+            TRef<IMessageBox> pmsgBox = CreateMessageBox(L"Connection to standalone server failed.");
             GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
 
             // terminate the game so they can try again
@@ -723,8 +723,8 @@ public:
 
             // report the number of servers found as a diagnostic
             #ifdef _DEBUG
-            char    szBuffer[256];
-            sprintf (szBuffer, "Found %d servers.\n", listResults.GetCount ());
+            wchar_t    szBuffer[256];
+            swprintf (szBuffer, L"Found %d servers.\n", listResults.GetCount ());
             debugf (szBuffer);
             #endif
         }
@@ -760,7 +760,7 @@ public:
     {
         if ((Training::GetTrainingMissionID () == Training::c_TM_7_Live) && pMissionInfo && (pPlayerInfo == trekClient.MyPlayerInfo()))
         {
-            debugf ("Player was added, waiting for the game to start\n");
+            debugf (L"Player was added, waiting for the game to start\n");
 
             // start the game
             Error (m_spAdminGamePtr->StartGame ());
@@ -773,7 +773,7 @@ public:
 
     void OnEnterMission (void)
     {
-        debugf ("Game has started!\n");
+        debugf (L"Game has started!\n");
 
         // set the cluster
         GetWindow ()->SetCluster (trekClient.GetShip ()->GetCluster ());

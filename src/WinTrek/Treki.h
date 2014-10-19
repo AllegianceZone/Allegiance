@@ -190,7 +190,7 @@ public:
     virtual void                screen(ScreenID s)        = 0;
     virtual ScreenID            screen(void) const        = 0;
     virtual void        CharInfoScreenForPlayer(int idZone) = 0;
-    virtual void        SquadScreenForPlayer(const char * szName, int idZone, const char * szSquad) = 0;
+	virtual void        SquadScreenForPlayer(const wchar_t * szName, int idZone, const wchar_t * szSquad) = 0;
     virtual void        LeaderBoardScreenForPlayer(const ZString & strCharacter) = 0;
 
     virtual void SetTarget(ImodelIGC*   pmodel, CommandID cid) = 0;
@@ -209,9 +209,9 @@ public:
     virtual HRESULT HandleMsg(FEDMESSAGE* pfm,
                               Time        lastUpdate,
                               Time        now) = 0;
-    virtual VOID VTSetText(LPSTR szFormat, ...) = 0;
+    virtual VOID VTSetText(LPWSTR szFormat, ...) = 0;
 
-    virtual void SetCursor(const char* pszCursorImage) = 0;
+	virtual void SetCursor(const wchar_t* pszCursorImage) = 0;
     virtual void SetWaitCursor() = 0;
     virtual void RestoreCursor() = 0;
     virtual void SetLightDirection(const Vector& direction) = 0;
@@ -239,7 +239,7 @@ public:
     virtual void StartLockDown(const ZString& strReason) = 0;
     virtual void EndLockDown() = 0;
 
-    virtual void ShowWebPage(const char* szURL = "") = 0;
+	virtual void ShowWebPage(const wchar_t* szURL = L"") = 0;
 
     virtual void DoInputConfigure() = 0;
 

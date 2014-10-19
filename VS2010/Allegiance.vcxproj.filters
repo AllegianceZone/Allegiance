@@ -50,7 +50,6 @@
     <ClCompile Include="..\src\WinTrek\logon.cpp" />
     <ClCompile Include="..\src\WinTrek\mappreview.cpp" />
     <ClCompile Include="..\src\WinTrek\mappvmaker.cpp" />
-    <ClCompile Include="..\src\WinTrek\netinfo.cpp" />
     <ClCompile Include="..\src\WinTrek\newgamescreen.cpp" />
     <ClCompile Include="..\src\WinTrek\passworddialog.cpp" />
     <ClCompile Include="..\src\WinTrek\pch.cpp" />

@@ -191,7 +191,7 @@ class CmapMakerIGC : public ImapMakerIGC
 		wchar_t mszName[c_cbDescription + 4];
 
     public:
-        static const char*  IsValid(const MissionParams* pmp)
+		static const wchar_t*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }

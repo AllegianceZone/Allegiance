@@ -1206,7 +1206,7 @@ interface IAGCCommand : IDispatch
 interface IAGCCommandPrivate : IUnknown
 {
   [helpstring("Initializes the object.")]
-  void Init([in] LPCSTR pszTarget, [in] LPCSTR pszVerb);
+  void Init([in] LPCWSTR pszTarget, [in] LPCWSTR pszVerb);
 
 }; // End: interface IAGCCommandPrivate : IDispatch
 

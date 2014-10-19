@@ -1047,7 +1047,7 @@ public:
                         return false;
                     }
                 } else if (strType == "AnimationOptions") {
-                    ZError("Not Implemented");
+                    ZError(L"Not Implemented");
                 }
                 m_ptoken->LeaveSection();
             }

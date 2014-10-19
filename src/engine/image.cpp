@@ -397,7 +397,7 @@ public:
             } else if (m_justification == JustifyCenter()) {
                 x = (m_width - size.X()) / 2;
             } else {
-                ZError("Invalid Justification");
+                ZError(L"Invalid Justification");
             }
 
             y -= size.Y();
@@ -526,7 +526,7 @@ public:
             } else if (m_justification == JustifyBottom()) {
                 rect.SetYMax(m_rect.YMin() + yoffset);
             } else {
-                ZError("Bad Justification for GaugePane");
+                ZError(L"Bad Justification for GaugePane");
             }
 
             pcontext->DrawImage3D(psurface, rect, Color::White(), false, offset);
@@ -542,7 +542,7 @@ public:
             } else if (m_justification == JustifyBottom()) {
                 rect.SetYMin(m_rect.YMin() + ynegOffset);
             } else {
-                ZError("Bad Justification for GaugePane");
+                ZError(L"Bad Justification for GaugePane");
             }
 
             pcontext->DrawImage(psurface, rect, false, offset);

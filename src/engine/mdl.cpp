@@ -685,7 +685,7 @@ public:
             if (ptype != NULL) {
                 return true;
             }
-            ZError("Undefined indentifier " + strType);
+            ZError(L"Undefined indentifier " + strType);
         }
 
         return false;

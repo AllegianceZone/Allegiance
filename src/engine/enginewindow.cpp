@@ -82,7 +82,7 @@ public:
                 #ifdef _DEBUG
                     case VK_F9:
                         if (ks.bShift) {
-                            ZError("Forced Assert");
+                            ZError(L"Forced Assert");
                         }
                         return true;
 

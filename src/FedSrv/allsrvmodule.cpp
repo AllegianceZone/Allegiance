@@ -903,7 +903,7 @@ VOID CServiceModule::RunAsExecutable()
 #if defined(SRV_PARENT)
 	if (g.bRestarting == false) {
 		ZVersionInfo vi;
-		printf("%s\n%s\n\n",(LPCSTR)vi.GetFileDescription(), (LPCSTR)vi.GetLegalCopyright());
+		printf("%s\n%s\n\n",(LPCWSTR)vi.GetFileDescription(), (LPCWSTR)vi.GetLegalCopyright());
 	}
 #else
 #if !defined(SRV_CHILD)

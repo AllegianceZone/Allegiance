@@ -298,7 +298,7 @@ extern bool g_bOutput = true;
 
 #ifdef SRVLOG // mmf changed this from _DEBUG
 
-    void ZWarningImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule)
+void ZWarningImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
     {
         if (!bSucceeded) {
             debugf(L"%s(%d) : ShouldBe failed: '%s'\n", pszFile, line, psz);

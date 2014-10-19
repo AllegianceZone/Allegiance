@@ -24,7 +24,7 @@ private:
     TRef<IbucketIGC>    m_pBucket;
     TRef<IbuyableIGC>   m_pBuyable;
     Money               m_moneyCost;
-    const char*         m_szModel;
+	const wchar_t*         m_szModel;
     TRef<Image>         m_pImagePart;
     TRef<Image>         m_pImageBkgnd;
     TRef<Image>         m_pImageSelect;
@@ -49,11 +49,11 @@ public:
         assert(m_pBuyable);
         m_szModel = m_pBuyable->GetModelName();
         
-        m_pImageBrackets = GetModeler()->LoadImage("conshadebracketsbmp", true);
+        m_pImageBrackets = GetModeler()->LoadImage(L"conshadebracketsbmp", true);
         m_pImageBkgnd = GetModeler()->LoadImage(AWF_LOADOUT_ITEM, true);
-        m_pImageSelect = GetModeler()->LoadImage("investhighlightbmp", true);
+        m_pImageSelect = GetModeler()->LoadImage(L"investhighlightbmp", true);
         m_pImagePart = GetModeler()->LoadImage(
-            (ZString("i") + ZString(m_szModel) + "bmp").ToLower(), 
+            (ZString("i") + ZString(m_szModel) + L"bmp").ToLower(), 
             false
             );
         
@@ -77,7 +77,7 @@ public:
 		TechTreeBitMask ttbo =  m_pBuyable->GetRequiredTechs();
 		TechTreeBitMask ttdiff = ttbo - ttbside;
 		TechTreeBitMask ttremain = ttdiff;
-		debugf("%s red because:\n",m_pBuyable->GetName());
+		debugf(L"%s red because:\n",m_pBuyable->GetName());
 
 		const BucketListIGC* pList = pSide->GetBuckets();
 		for (BucketLinkIGC* pBucketNode = pList->first();
@@ -135,7 +135,7 @@ public:
 		if (!b) return; // shouldnt happen but in case
 		if (m_pDepList.GetCount()==0 && !ttremain.GetAllZero() && b->GetObjectType() != OT_development)
 		{
-			debugf("3rd pass for %s %d\n",b->GetName(),b->GetObjectType());
+			debugf(L"3rd pass for %s %d\n",b->GetName(),b->GetObjectType());
 			// 1st check if this is an obsolete station
 			if (b->GetObjectType() == OT_stationType)
 			{
@@ -1084,7 +1084,7 @@ public:
       {
           if (trekClient.GetSideID() == sid)
           {
-			  debugf("TT Changed\n");
+			  debugf(L"TT Changed\n");
               UpdateTechList();
           }
       }

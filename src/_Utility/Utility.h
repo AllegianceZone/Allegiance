@@ -1563,7 +1563,7 @@ private:
   DWORD  m_dtTotal;
 };
 
-#ifdef NDEBUG
+#ifndef _DEBUG //imago 10/14
 #define CTempTimer CTempTimer_OptimizedOut
 #else
 #define CTempTimer CTimer

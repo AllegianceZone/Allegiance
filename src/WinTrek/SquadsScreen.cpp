@@ -331,7 +331,7 @@ public:
     }
 
 
-    SquadsScreen(Modeler* pmodeler, const char * szNameDudeX, int idPlayerDudeX, const char * szSquad):
+	SquadsScreen(Modeler* pmodeler, const wchar_t * szNameDudeX, int idPlayerDudeX, const wchar_t * szSquad) :
       m_nNextCreationID(0),
       m_nCurrentRanking(1),
       m_psquadBeingMade(NULL),
@@ -375,7 +375,7 @@ public:
         if(s_pActivePlayer->GetID() == idPlayerDudeX)
         {
            m_nTab = FILTER_MY;
-           m_strSquadToBeSelected = szSquad ? szSquad : "";
+           m_strSquadToBeSelected = szSquad ? szSquad : L"";
            szNameDudeX = NULL;
         }
         else
@@ -383,7 +383,7 @@ public:
           if(szNameDudeX)
           {
               m_nTab = FILTER_DUDEX;
-              m_strSquadToBeSelected = szSquad ? szSquad : "";
+              m_strSquadToBeSelected = szSquad ? szSquad : L"";
               TRef<IZonePlayer> pplayer = FindPlayerByID(idPlayerDudeX);
               if (pplayer == NULL)
                 pplayer = CreateZonePlayer(szNameDudeX, idPlayerDudeX);
@@ -875,7 +875,7 @@ public:
         return psquad;
     }
 
-    TRef<IZonePlayer> CreateZonePlayer(const char *szName, int nID)
+	TRef<IZonePlayer> CreateZonePlayer(const wchar_t *szName, int nID)
     {
         TRef<IZonePlayer> pPlayer = ::CreateZonePlayer(szName, nID);
         m_listAllPlayers.PushEnd(pPlayer);
@@ -900,7 +900,7 @@ public:
      */
     #define SEND_FOR_ACTIVE_MEMBER(MessageType) \
     { \
-        debugf("Sending %s; squad %d (%s)\n", #MessageType, s_pSelectedSquad->GetID(), s_pSelectedSquad->GetName()); \
+        debugf(L"Sending %s; squad %d (%s)\n", #MessageType, s_pSelectedSquad->GetID(), s_pSelectedSquad->GetName()); \
         BEGIN_PFM_CREATE(trekClient.m_fmClub, pfmSquadMessage, C, MessageType) \
         END_PFM_CREATE \
         pfmSquadMessage->nSquadID = s_pSelectedSquad->GetID(); \
@@ -922,7 +922,7 @@ public:
      */
     #define SEND_FOR_SELECTED_MEMBER(MessageType) \
     { \
-        debugf("Sending %s; member %d (%s)\n; squad %d (%s)", #MessageType, s_pSelectedPlayer->GetID(), s_pSelectedPlayer->GetName(), s_pSelectedSquad->GetID(), s_pSelectedSquad->GetName()); \
+        debugf(L"Sending %s; member %d (%s)\n; squad %d (%s)", #MessageType, s_pSelectedPlayer->GetID(), s_pSelectedPlayer->GetName(), s_pSelectedSquad->GetID(), s_pSelectedSquad->GetName()); \
         BEGIN_PFM_CREATE(trekClient.m_fmClub, pfmSquadMessage, C, MessageType) \
         END_PFM_CREATE \
         pfmSquadMessage->nMemberID = s_pSelectedPlayer->GetID(); \
@@ -1000,7 +1000,7 @@ public:
             pfmNextPage->nSquadID = -1;
         }
  
-        debugf("Sending SQUAD_NEXT_PAGE_ALL; squad %d (%s)\n", pfmNextPage->nSquadID, FindSquadByID(pfmNextPage->nSquadID) ? FindSquadByID(pfmNextPage->nSquadID)->GetName() : "TOP"); 
+        debugf(L"Sending SQUAD_NEXT_PAGE_ALL; squad %d (%s)\n", pfmNextPage->nSquadID, FindSquadByID(pfmNextPage->nSquadID) ? FindSquadByID(pfmNextPage->nSquadID)->GetName() : L"TOP"); 
         trekClient.SendClubMessages();
 
         DisplaySquadsInRange();
@@ -1057,7 +1057,7 @@ public:
         //
         // Since we know we have enough to show, let's show them
         //
-        debugf("Ranking At Top: %d\n", m_nCurrentRanking);
+        debugf(L"Ranking At Top: %d\n", m_nCurrentRanking);
 
         //
         //  Let's see if we already have some of the squads we need, if so add it now
@@ -1179,7 +1179,7 @@ public:
                 {
                     // check for Ranking discontinuity.  That happens if ranking has changed
                     // and the cache is out-of-date.
-                    debugf("Ranking discontinuity detected in column %d, Ranking of %d\n", column, pfmInfo->nRanking);
+                    debugf(L"Ranking discontinuity detected in column %d, Ranking of %d\n", column, pfmInfo->nRanking);
 
                     ResetHighLowRanges();
 
@@ -1199,10 +1199,10 @@ public:
                     psquad->SetID(pfmInfo->nSquadID);
                 }
 
-                char *szName = FM_VAR_REF(pfmInfo, szName);
+				wchar_t *szName = FM_VAR_REF(pfmInfo, szName);
 
                 if(szName == NULL)
-                  szName = "";
+                  szName = L"";
 
                 psquad->SetName(szName);
 
@@ -1239,7 +1239,7 @@ public:
                         if(!m_listSquads[FILTER_ALL].Find(psquad))
                         {
                             AddSquadToScreen(psquad);
-                            debugf("Warning, Forcing squad to be shown (after search): %s\n", psquad->GetName());
+                            debugf(L"Warning, Forcing squad to be shown (after search): %s\n", psquad->GetName());
                         }
                         SelectSquad(*psquad);
                     }
@@ -1260,7 +1260,7 @@ public:
                         // It's rare, but this can happen if user request lots of pages and switching between columns frequently
                         if(!m_listSquads[FILTER_ALL].Find(psquad))
                         {
-                            debugf("Warning, pre-column change squad is not on screen when it should, resending Request for Page: %s\n", psquad->GetName());
+                            debugf(L"Warning, pre-column change squad is not on screen when it should, resending Request for Page: %s\n", psquad->GetName());
                             ResetHighLowRanges();
                             m_nCurrentRanking = psquad->GetRanking(s_column);
                             RequestPage(psquad);
@@ -1303,7 +1303,7 @@ public:
                     psquad->SetID(pfmInfo->nSquadID);
                 }
 
-                char *szName = FM_VAR_REF(pfmInfo, szName);
+				wchar_t *szName = FM_VAR_REF(pfmInfo, szName);
 
                 if(szName)
                     psquad->SetName(szName);
@@ -1346,25 +1346,25 @@ public:
                         m_listPlayers.SetEmpty(); // clear list of players on screen
                     m_psquadLastDetails->SetDetailsReceived();
 
-                    char * szDesc =             FM_VAR_REF(pfmDetails, szDescription);
-                    char * szURL =              FM_VAR_REF(pfmDetails, szURL);
-                    char * szInceptionDate =    FM_VAR_REF(pfmDetails, szInceptionDate);
+					wchar_t * szDesc = FM_VAR_REF(pfmDetails, szDescription);
+					wchar_t * szURL = FM_VAR_REF(pfmDetails, szURL);
+					wchar_t * szInceptionDate = FM_VAR_REF(pfmDetails, szInceptionDate);
 
                     if(szDesc)
                         m_psquadLastDetails->SetDescription(szDesc);
                     else
-                        m_psquadLastDetails->SetDescription("");
+                        m_psquadLastDetails->SetDescription(L"");
                     if(szURL)
                         m_psquadLastDetails->SetURL(szURL);
                     else
-                        m_psquadLastDetails->SetURL("");
+                        m_psquadLastDetails->SetURL(L"");
 
                     m_psquadLastDetails->SetCivID(pfmDetails->civid);
 
                     if(szInceptionDate)
                         m_psquadLastDetails->SetInceptionDate(szInceptionDate);
                     else
-                        m_psquadLastDetails->SetInceptionDate("");
+                        m_psquadLastDetails->SetInceptionDate(L"");
 
                     RefreshScreen();
                 }
@@ -1393,17 +1393,17 @@ public:
 
                 TRef<IZonePlayer> pmember = FindPlayerByID(pfmDetails->nMemberID);
 
-                char * szName =       FM_VAR_REF(pfmDetails, szName);
+				wchar_t * szName = FM_VAR_REF(pfmDetails, szName);
 
                 if (pmember == NULL)
                 {
-                    pmember = CreateZonePlayer(szName ? szName : "?", pfmDetails->nMemberID);
+                    pmember = CreateZonePlayer(szName ? szName : L"?", pfmDetails->nMemberID);
                 }
 
                 if (szName)
                     pmember->SetName(szName);
 
-                char * szLastPlayed = FM_VAR_REF(pfmDetails, szLastPlayed);
+				wchar_t * szLastPlayed = FM_VAR_REF(pfmDetails, szLastPlayed);
 
                 // set/refresh member data
 
@@ -1450,7 +1450,7 @@ public:
                 if (szLastPlayed)
                     pmember->SetLastPlayedDate(*m_psquadLastDetails, szLastPlayed);
                 else
-                    pmember->SetLastPlayedDate(*m_psquadLastDetails, "        ");
+                    pmember->SetLastPlayedDate(*m_psquadLastDetails, L"        ");
 
                 // this keeps selected player selected (despite the fact we recently cleared m_listPlayers)
                 if (pmember == s_pSelectedPlayer && 
@@ -1500,7 +1500,7 @@ public:
             case FM_S_SQUAD_TEXT_MESSAGE:
             {
                 CASTPFM(pfmTextMsg, S, SQUAD_TEXT_MESSAGE, pSquadMessage);
-                char * szTextMsg = FM_VAR_REF(pfmTextMsg, szMsg);
+				wchar_t * szTextMsg = FM_VAR_REF(pfmTextMsg, szMsg);
 
                 MessageBox(szTextMsg);
             }
@@ -1782,7 +1782,7 @@ public:
 
         m_nCurrentRanking = 1;
 
-        debugf("Paging to Top, m_nCurrentRanking = %d \n", m_nCurrentRanking);
+        debugf(L"Paging to Top, m_nCurrentRanking = %d \n", m_nCurrentRanking);
 
         RequestPage(NULL);
 
@@ -1803,13 +1803,13 @@ public:
         if (m_nCurrentRanking < m_nHighestRanking[s_column])
             m_nCurrentRanking = m_nHighestRanking[s_column];
 
-        debugf("Paging Up, m_nCurrentRanking = %d \n", m_nCurrentRanking);
+        debugf(L"Paging Up, m_nCurrentRanking = %d \n", m_nCurrentRanking);
 
         TRef<IZoneSquad> psquad = FindSquadByRanking(s_column, m_nCurrentRanking);
 
         if (psquad == NULL)  // if we scrolled too fast and the high/low ranges are no longer valid
         {
-            debugf("High Range was invalid, resetting it.\n");
+            debugf(L"High Range was invalid, resetting it.\n");
             ResetHighLowRanges();
             m_nCurrentRanking = nOriginalCurrentRanking;
             psquad = FindSquadByRanking(s_column, m_nCurrentRanking);
@@ -1831,13 +1831,13 @@ public:
         if (m_nCurrentRanking > m_nLowestRanking[s_column])
             m_nCurrentRanking  = m_nLowestRanking[s_column];
 
-        debugf("Paging Down, m_nCurrentRanking = %d \n", m_nCurrentRanking);
+        debugf(L"Paging Down, m_nCurrentRanking = %d \n", m_nCurrentRanking);
 
         TRef<IZoneSquad> psquad = FindSquadByRanking(s_column, m_nCurrentRanking);
 
         if (psquad == NULL) // if we scrolled too fast and the high/low ranges are no longer valid
         {
-            debugf("Low Range was invalid, resetting it.\n");
+            debugf(L"Low Range was invalid, resetting it.\n");
             ResetHighLowRanges();
             m_nCurrentRanking = nOriginalCurrentRanking;
             psquad = FindSquadByRanking(s_column, m_nCurrentRanking);
@@ -2040,10 +2040,10 @@ public:
 
         psquad->SetCreationID(m_nNextCreationID++);
 
-        psquad->SetName("Click Here to Enter Name");
-        psquad->SetDescription("Enter Description Here");
-        psquad->SetURL("Enter Squad Home Page Here");
-        psquad->SetInceptionDate("1/1/00");
+        psquad->SetName(L"Click Here to Enter Name");
+        psquad->SetDescription(L"Enter Description Here");
+        psquad->SetURL(L"Enter Squad Home Page Here");
+        psquad->SetInceptionDate(L"1/1/00");
 
         assert(s_pActivePlayer);
 
@@ -2168,7 +2168,7 @@ public:
 
         if (s_pSelectedSquad == m_psquadBeingMade)
         {
-            debugf("Sending SQUAD_CREATE: name: %s, descrip: %s, URL: %s", PCC(m_peditPaneSquadName->GetString()),
+            debugf(L"Sending SQUAD_CREATE: name: %s, descrip: %s, URL: %s", PCC(m_peditPaneSquadName->GetString()),
                                                                            PCC(m_peditPaneSquadURL->GetString()),
                                                                            PCC(m_peditPaneSquadDescription->GetString()));
 
@@ -2184,7 +2184,7 @@ public:
         }
         else
         {
-            debugf("Sending SQUAD_EDIT; descrip: %s, URL: %s",             PCC(m_peditPaneSquadURL->GetString()),
+            debugf(L"Sending SQUAD_EDIT; descrip: %s, URL: %s",             PCC(m_peditPaneSquadURL->GetString()),
                                                                            PCC(m_peditPaneSquadDescription->GetString()));
 
             BEGIN_PFM_CREATE(trekClient.m_fmClub, pfm, C, SQUAD_EDIT)
@@ -2243,7 +2243,7 @@ public:
         BEGIN_PFM_CREATE(trekClient.m_fmClub, pfmPage, C, SQUAD_PAGE_FIND)
                 FM_VAR_PARM(PCC(m_peditPaneFind->GetString()), CB_ZTS)
         END_PFM_CREATE
-        debugf("Sending SQUAD_PAGE_FIND; %s\n", PCC(m_peditPaneFind->GetString())); 
+        debugf(L"Sending SQUAD_PAGE_FIND; %s\n", PCC(m_peditPaneFind->GetString())); 
         trekClient.SendClubMessages();
 
         return true;
@@ -2367,7 +2367,7 @@ public:
 
             BEGIN_PFM_CREATE(trekClient.m_fmClub, pfmSquadMessage, C, SQUAD_NEXT_PAGE_MY) 
             END_PFM_CREATE 
-            debugf("Sending SQUAD_NEXT_PAGE_MY\n"); 
+            debugf(L"Sending SQUAD_NEXT_PAGE_MY\n"); 
             trekClient.SendClubMessages(); 
         }
         else if(nColumn == FILTER_DUDEX) // DudeX Tab was pressed
@@ -2389,7 +2389,7 @@ public:
 
             DisplaySquadsInRangeForDudeX(FILTER_DUDEX, s_pDudeXPlayer);
 
-            debugf("Sending SQUAD_NEXT_PAGE_DUDEX; member %d (%s)\n", s_pDudeXPlayer->GetID(), s_pDudeXPlayer->GetName()); 
+            debugf(L"Sending SQUAD_NEXT_PAGE_DUDEX; member %d (%s)\n", s_pDudeXPlayer->GetID(), s_pDudeXPlayer->GetName()); 
 
             BEGIN_PFM_CREATE(trekClient.m_fmClub, pfmSquadMessage, C, SQUAD_NEXT_PAGE_DUDEX) 
             END_PFM_CREATE 
@@ -2484,7 +2484,7 @@ public:
         {
             DisplaySquadsInRangeForDudeX(FILTER_DUDEX, s_pDudeXPlayer);
 
-            debugf("Sending SQUAD_NEXT_PAGE_DUDEX; member %d (%s)\n", s_pActivePlayer->GetID(), s_pActivePlayer->GetName()); 
+            debugf(L"Sending SQUAD_NEXT_PAGE_DUDEX; member %d (%s)\n", s_pActivePlayer->GetID(), s_pActivePlayer->GetName()); 
 
             BEGIN_PFM_CREATE(trekClient.m_fmClub, pfmSquadMessage, C, SQUAD_NEXT_PAGE_DUDEX) 
             END_PFM_CREATE 
@@ -2735,7 +2735,7 @@ public:
     }
 
     // how different are these strings?
-    unsigned CompareStrings(const char * sz1, const char * sz2, int cCharacters)
+	unsigned CompareStrings(const wchar_t * sz1, const wchar_t * sz2, int cCharacters)
     {
         unsigned sum = 0;
         for (int i = 0; i < cCharacters; ++i)
@@ -2810,7 +2810,7 @@ public:
         IZoneSquad* psquad1 = (IZoneSquad*)pitem1;
         IZoneSquad* psquad2 = (IZoneSquad*)pitem2;
                                                            
-        return _stricmp(psquad1->GetName(), psquad2->GetName()) > 0;
+        return _wcsicmp(psquad1->GetName(), psquad2->GetName()) > 0;
     }
 
     static bool ScoreCompare(ItemID pitem1, ItemID pitem2)
@@ -2850,7 +2850,7 @@ public:
         IZonePlayer* pPlayer1 = (IZonePlayer*)pitem1;
         IZonePlayer* pPlayer2 = (IZonePlayer*)pitem2;
                                                            
-        return _stricmp(pPlayer1->GetName(), pPlayer2->GetName()) > 0;
+        return _wcsicmp(pPlayer1->GetName(), pPlayer2->GetName()) > 0;
     }
 
     static bool PlayerStatusCompare(ItemID pitem1, ItemID pitem2)
@@ -2869,10 +2869,10 @@ public:
         IZonePlayer* pPlayer1 = (IZonePlayer*)pitem1;
         IZonePlayer* pPlayer2 = (IZonePlayer*)pitem2;
 
-        char * sz1 = pPlayer1->GetLastPlayedDate(*s_pSelectedSquad);
-        char * sz2 = pPlayer2->GetLastPlayedDate(*s_pSelectedSquad);
+        wchar_t * sz1 = pPlayer1->GetLastPlayedDate(*s_pSelectedSquad);
+		wchar_t * sz2 = pPlayer2->GetLastPlayedDate(*s_pSelectedSquad);
 
-        if (strlen(sz1) == 8 && strlen(sz2) == 8)  // help ensure proper format
+        if (wcslen(sz1) == 8 && wcslen(sz2) == 8)  // help ensure proper format
         {
           // Generate points for each day; a point is sort of like a day.   It's not exactly equal to a
           // day because there is no need to be exact.  Besides being exact would be quite tricky (think about leap year).
@@ -2938,7 +2938,7 @@ public:
         {
             IZoneSquad* psquad = (IZoneSquad*)pitemArg;
 
-            char cbTemp[256];
+			wchar_t cbTemp[256];
 
             if (bSelected)
             {
@@ -2960,7 +2960,7 @@ public:
             //
             if(psquad->GetRanking(SquadsScreen::s_column) != -1 && m_pSquadsScreen->m_nTab == FILTER_ALL)
             {
-                wsprintf(cbTemp, "%i", psquad->GetRanking(SquadsScreen::s_column));
+                wsprintf(cbTemp, L"%i", psquad->GetRanking(SquadsScreen::s_column));
                 psurface->DrawString(pfont, Color::White(), WinPoint(/*m_viColumns[-1] +*/ 2, 0), cbTemp);
             }
 
@@ -2972,10 +2972,10 @@ public:
 			WinRect rectClipOld = psurface->GetClipRect();
 			
 			
-			if (strcmp(PCC(psquad->GetName()), "Click Here to Enter Name") == 0)
-                wsprintf(cbTemp, "New Squad");
+			if (wcscmp(PCC(psquad->GetName()), L"Click Here to Enter Name") == 0)
+                wsprintf(cbTemp, L"New Squad");
             else
-                wsprintf(cbTemp, "%s", psquad->GetName());
+                wsprintf(cbTemp, L"%s", psquad->GetName());
 
             psurface->SetClipRect(WinRect(WinPoint(m_viColumns[0] + 18, 0), WinPoint(m_viColumns[1], GetYSize()))); // clip name to fit in column
             psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[0] + 18, 0), cbTemp);
@@ -2985,19 +2985,19 @@ public:
             //
             // Display Score
             //
-            wsprintf(cbTemp, "%i", psquad->GetScore());
+            wsprintf(cbTemp, L"%i", psquad->GetScore());
             psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[1] + 2, 0), cbTemp);
 
             //
             // Display Wins
             //
-            wsprintf(cbTemp, "%i", psquad->GetWins());
+            wsprintf(cbTemp, L"%i", psquad->GetWins());
             psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[2] + 2, 0), cbTemp);
 
             //
             // Display Losses
             //
-            wsprintf(cbTemp, "%i", psquad->GetLosses());
+            wsprintf(cbTemp, L"%i", psquad->GetLosses());
             psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[3] + 2, 0), cbTemp);
 
             //
@@ -3286,7 +3286,7 @@ public:
                 detailedstatus == IZonePlayer::DSTAT_UNKNOWN)
                 return;
 
-            char cbTemp[256];        
+			wchar_t cbTemp[256];
 
             if (bSelected)
              {
@@ -3309,7 +3309,7 @@ public:
 
             WinRect rectClipOld = psurface->GetClipRect();
             psurface->SetClipRect(WinRect(WinPoint(2, 0), WinPoint(m_viColumns[0], GetYSize()))); // clip name to fit in column
-            wsprintf(cbTemp, "%s", pplayer->GetName());
+            wsprintf(cbTemp, L"%s", pplayer->GetName());
             psurface->DrawString(pfont, Color::White(), WinPoint(/*m_viColumns[-1] + */2, 0), cbTemp);
             psurface->RestoreClipRect(rectClipOld);
             
@@ -3319,7 +3319,7 @@ public:
             rectClipOld = psurface->GetClipRect();
             psurface->SetClipRect(WinRect(WinPoint(m_viColumns[0] + 2, 0), WinPoint(m_viColumns[1], GetYSize()))); // clip rank to fit in column
             CivID civid = s_pSelectedSquad ? s_pSelectedSquad->GetCivID() : -1;
-            wsprintf(cbTemp, "%s", PCC(trekClient.LookupRankName((RankID)pplayer->GetRank(), civid)));
+            wsprintf(cbTemp, L"%s", PCC(trekClient.LookupRankName((RankID)pplayer->GetRank(), civid)));
             psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[0] + 2, 0), cbTemp);
             psurface->RestoreClipRect(rectClipOld);
 
@@ -3328,7 +3328,7 @@ public:
             //
             rectClipOld = psurface->GetClipRect();
             psurface->SetClipRect(WinRect(WinPoint(m_viColumns[1] + 2, 0), WinPoint(m_viColumns[2], GetYSize()))); // clip status to fit in column
-            wsprintf(cbTemp, "%s", IZonePlayer::DetailedStatus2String(detailedstatus));
+            wsprintf(cbTemp, L"%s", IZonePlayer::DetailedStatus2String(detailedstatus));
             psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[1] + 2, 0), cbTemp);
             psurface->RestoreClipRect(rectClipOld);
 
@@ -3337,7 +3337,7 @@ public:
             //
             if(s_pSelectedSquad)
             {
-              wsprintf(cbTemp, "%s", pplayer->GetLastPlayedDate(*s_pSelectedSquad));
+              wsprintf(cbTemp, L"%s", pplayer->GetLastPlayedDate(*s_pSelectedSquad));
               psurface->DrawString(pfont, Color::White(), WinPoint(m_viColumns[2] + 2, 0), cbTemp);
             }
         }
@@ -3373,7 +3373,7 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////////
 
-TRef<Screen> CreateSquadsScreen(Modeler* pmodeler, const char * szNameDudeX, int idZoneDudeX, const char * szSquad)
+TRef<Screen> CreateSquadsScreen(Modeler* pmodeler, const wchar_t * szNameDudeX, int idZoneDudeX, const wchar_t * szSquad)
 {
     g_pSquadScreen = new SquadsScreen(pmodeler, szNameDudeX, idZoneDudeX, szSquad);
 

@@ -773,7 +773,7 @@ PathString PathString::operator+(const PathString& strRelativeArg) const
         if (ch2 == '/' || ch2 == '\\') {
             return strRelative;
         } else {
-            ZError("Current directory relative paths not supported.");
+            ZError(L"Current directory relative paths not supported.");
             return strAbsolute;
         }
     } else {

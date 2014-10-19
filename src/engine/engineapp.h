@@ -42,7 +42,7 @@ public:
     int OnException(DWORD code, ExceptionData* pdata);
 
     #ifdef _DEBUG
-        bool OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule);
+	bool OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
     #endif
 
 	bool IsBuildDX9(); // KGJV added - see ZLib/Win32App

@@ -413,7 +413,7 @@ IshipIGC*   PickNewLeader(const ShipListIGC*    pships,
                           IshipIGC*             pshipIgnore,
                           int                   maxVotes);
 void SetSessionDetails();
-HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not override */);
+HRESULT ConnectToLobby(const wchar_t * pszLobby_OverrideCFG /* NULL == do not override */);
   
 #define TrapHack(x) assert(x)
 

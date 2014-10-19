@@ -626,7 +626,7 @@ public:
             }
         }
 
-        ZError("unreached");
+        ZError(L"unreached");
         return colPlayerName;
     };
 
@@ -702,7 +702,7 @@ public:
 
         case colPosition:
         default:
-            ZError("invalid column");
+            ZError(L"invalid column");
             return lbSortScore;
         };
     }
@@ -716,7 +716,7 @@ public:
         if ((m_idBasis != NA && m_idBasis != -2) || m_strBasis.IsEmpty())
             pfmLeaderBoardQuery->szBasis[0] = '\0';
         else
-            strcpy(pfmLeaderBoardQuery->szBasis, m_strBasis);
+            Strcpy(pfmLeaderBoardQuery->szBasis, m_strBasis);
         pfmLeaderBoardQuery->idBasis = m_idBasis;
         pfmLeaderBoardQuery->civid = m_civId = FindIntValue(m_pcomboCiv->GetSelection(), "CivIDs");        
         pfmLeaderBoardQuery->sort = ColumnToSort(sortCol);
@@ -728,11 +728,11 @@ public:
         return OffsetOfCharacter(szCharacterName, m_vEntries, m_cEntries);
     }
 
-    int OffsetOfCharacter(const char* szCharacterName, LeaderBoardEntry* vEntries, int cEntries)
+	int OffsetOfCharacter(const wchar_t* szCharacterName, LeaderBoardEntry* vEntries, int cEntries)
     {
         for (int i = 0; i < cEntries; i++)
         {
-            if (_stricmp(vEntries[i].CharacterName, szCharacterName) == 0)
+            if (_wcsicmp(vEntries[i].CharacterName, szCharacterName) == 0)
             {
                 return i;
             }
@@ -741,12 +741,12 @@ public:
         return -1;
     }
 
-    int OffsetOfCharacterPrefix(const char* szCharacterPrefix, LeaderBoardEntry* vEntries, int cEntries)
+	int OffsetOfCharacterPrefix(const wchar_t* szCharacterPrefix, LeaderBoardEntry* vEntries, int cEntries)
     {
         for (int i = 0; i < cEntries; i++)
         {
-            int nLength = strlen(szCharacterPrefix);
-            if (_strnicmp(vEntries[i].CharacterName, szCharacterPrefix, nLength) == 0)
+            int nLength = wcslen(szCharacterPrefix);
+            if (_wcsnicmp(vEntries[i].CharacterName, szCharacterPrefix, nLength) == 0)
             {
                 return i;
             }

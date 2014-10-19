@@ -343,7 +343,7 @@ class ClusterSiteImpl : public ClusterSite
                 };
 
                 if ((cwNew >= c_cwMinerThreatened) || (trekClient.GetShip()->GetWingID() == 0))
-                    trekClient.PostText(cwNew > cwOld, "%s in %s", GetClusterWarningText(cwNew), m_pcluster->GetName());
+                    trekClient.PostText(cwNew > cwOld, L"%s in %s", GetClusterWarningText(cwNew), m_pcluster->GetName());
 
                 if (c_vAlertSounds[cwNew] != NA)
                     trekClient.PlaySoundEffect(c_vAlertSounds[cwNew]);
@@ -358,13 +358,13 @@ class ClusterSiteImpl : public ClusterSite
             
                 if (bNewSectorSecured && !bOldSectorSecured)
                 {
-                    trekClient.PostText(false, "%s secured.", m_pcluster->GetName());
+					trekClient.PostText(false, L"%s secured.", m_pcluster->GetName());
                     trekClient.PlaySoundEffect(sectorSecuredSound);
                 }
                 else if (!(m_assetmask & c_amStation) 
                     && (m_assetmaskLastWarning & c_amStation))
                 {
-                    trekClient.PostText(false, "%s lost.", m_pcluster->GetName());
+					trekClient.PostText(false, L"%s lost.", m_pcluster->GetName());
                     trekClient.PlaySoundEffect(sectorLostSound);
                 }
             }
@@ -2006,7 +2006,7 @@ class ThingSiteImpl : public ThingSitePrivate
                                 }
 								else if (ppt->GetRipcordDelay() >= 0.0f)
                                 {
-                                    trekClient.PostText(true, "%s deployed in %s", GetModelName(pmodel), pcluster->GetName());
+									trekClient.PostText(true, L"%s deployed in %s", GetModelName(pmodel), pcluster->GetName());
                                 }
                             }
                         }
@@ -2356,13 +2356,13 @@ WinTrekClient::WinTrekClient(void)
 
     if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, 
         ALLEGIANCE_REGISTRY_KEY_ROOT,
-        0, "", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hKey, NULL))
+        0, L"", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hKey, NULL))
     {
         DWORD dwSize = c_cbCDKey;
         DWORD dwType;
         char szCDKey[c_cbCDKey];
 
-        if (::RegQueryValueEx(hKey, "CDKey", NULL, &dwType, 
+		if (::RegQueryValueEx(hKey, L"CDKey", NULL, &dwType,
                 (unsigned char*)szCDKey, &dwSize) == ERROR_SUCCESS
             && dwType == REG_SZ && dwSize != 0)
         {
@@ -2885,12 +2885,12 @@ void WinTrekClient::ActivateTeleportProbe(IprobeIGC* pprobe)
     if ( (pside != trekClient.GetSide()) && !pside->AlliedSides(pside,trekClient.GetSide()) ) //ALLY - imago 7/3/09
     {
         assert (pside);
-        PostText(true, START_COLOR_STRING "%s %s" END_COLOR_STRING " active in %s",
+        PostText(true, START_COLOR_STRING L"%s %s" END_COLOR_STRING L" active in %s",
                  (PCC) ConvertColorToString (pside->GetColor ()), pside->GetName(), GetModelName(pprobe), pcluster->GetName());
     }
     else
     {
-        PostText(true, "%s active in %s", GetModelName(pprobe), pcluster->GetName());
+        PostText(true, L"%s active in %s", GetModelName(pprobe), pcluster->GetName());
     }
 }
 
@@ -2920,12 +2920,12 @@ void WinTrekClient::DestroyTeleportProbe(IprobeIGC* pprobe)
 			}
 			pcs->SetClusterAssetMask(am);
 
-			PostText(false, START_COLOR_STRING "%s %s" END_COLOR_STRING " in %s was destroyed",
+			PostText(false, START_COLOR_STRING L"%s %s" END_COLOR_STRING L" in %s was destroyed",
 				(PCC) ConvertColorToString (pside->GetColor ()), pside->GetName(), GetModelName(pprobe), pcluster->GetName());
 		}
 		else
 		{
-			PostText(true, "%s in %s was destroyed", GetModelName(pprobe), pcluster->GetName());
+			PostText(true, L"%s in %s was destroyed", GetModelName(pprobe), pcluster->GetName());
 		}
 	} 
 	else //is a warn probe
@@ -2955,11 +2955,11 @@ void WinTrekClient::PostText(bool bCritical, const wchar_t* pszText, ...)
     {
         assert (pszText);
         const size_t size = 256;
-        char bfr[size];
+		wchar_t bfr[size];
 
         va_list vl;
         va_start(vl, pszText);
-        _vsnprintf(bfr, size, pszText, vl);
+        _vsnwprintf(bfr, size, pszText, vl);
         va_end(vl);
 
         if (bCritical) 
@@ -2988,7 +2988,7 @@ int WinTrekClient::GetSavePassword(){ // imago 9/14
     DWORD dwSize = sizeof(DWORD);
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
     {
-        RegQueryValueEx(hKey, "SavePW", NULL, &dwType, (PBYTE)&dSave, &dwSize);
+        RegQueryValueEx(hKey, L"SavePW", NULL, &dwType, (PBYTE)&dSave, &dwSize);
         RegCloseKey(hKey);
     }
 
@@ -3006,17 +3006,17 @@ ZString WinTrekClient::GetSavedPassword()
     
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
     {
-        RegQueryValueEx(hKey, "PW", NULL, &dwType, (unsigned char*)&szPWz, &cbName);
+        RegQueryValueEx(hKey, L"PW", NULL, &dwType, (unsigned char*)&szPWz, &cbName);
         RegCloseKey(hKey);
     }
-	ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+	ZVersionInfo vi; ZString zInfo = (LPCWSTR)vi.GetCompanyName(); zInfo += (LPCWSTR)vi.GetLegalCopyright();
 	ZString szPWt = ZString(szPWz);
 	ZString szPWu = szPWt.Unscramble(zInfo);
-	char * szRes = (char*)_alloca(c_cbCDKey);
+	wchar_t * szRes = (wchar_t*)_alloca(c_cbCDKey);
 	Strcpy(szRes,(PCC)szPWu);
-	char * szToken;
-	szToken = strtok(szRes,"\t");
-	szToken = strtok(NULL,"\t");
+	wchar_t * szToken;
+	szToken = wcstok(szRes,L"\t");
+	szToken = wcstok(NULL,L"\t");
     return szToken;
 }
 
@@ -3025,13 +3025,13 @@ void WinTrekClient::SavePassword(ZString strPW, BOOL fSave)
 	DWORD dSave = (DWORD)fSave;
     HKEY hKey;  
 	DWORD dwSize = sizeof(DWORD);
-	ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+	ZVersionInfo vi; ZString zInfo = (LPCWSTR)vi.GetCompanyName(); zInfo += (LPCWSTR)vi.GetLegalCopyright();
 	strPW = zInfo + "\t" + strPW;
 	ZString strPWz = strPW.Scramble(zInfo);
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
     {
-        RegSetValueEx(hKey, "PW", NULL, REG_SZ, (const BYTE*)(const char*)strPWz, strPWz.GetLength() + 1);
-		RegSetValueEx(hKey, "SavePW", NULL, REG_DWORD, (PBYTE)&dSave, dwSize);
+		RegSetValueEx(hKey, L"PW", NULL, REG_SZ, (const BYTE*)(const wchar_t*)strPWz, strPWz.GetLength() + 1);
+		RegSetValueEx(hKey, L"SavePW", NULL, REG_DWORD, (PBYTE)&dSave, dwSize);
         RegCloseKey(hKey);
     }
 }
@@ -3045,7 +3045,7 @@ ZString WinTrekClient::GetSavedCharacterName()
     
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
     {
-        RegQueryValueEx(hKey, "CharacterName", NULL, &dwType, (unsigned char*)&szName, &cbName);
+        RegQueryValueEx(hKey, L"CharacterName", NULL, &dwType, (unsigned char*)&szName, &cbName);
         RegCloseKey(hKey);
     }
 
@@ -3058,8 +3058,8 @@ void WinTrekClient::SaveCharacterName(ZString strName)
     HKEY hKey;
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
     {
-        RegSetValueEx(hKey, "CharacterName", NULL, REG_SZ, 
-            (const BYTE*)(const char*)strName, strName.GetLength() + 1);
+        RegSetValueEx(hKey, L"CharacterName", NULL, REG_SZ, 
+			(const BYTE*)(const wchar_t*)strName, strName.GetLength() + 1);
         RegCloseKey(hKey);
     }
 }
@@ -3070,7 +3070,7 @@ int WinTrekClient::GetSavedWingAssignment(){ // kolie 6/10
     DWORD dwSize = sizeof(DWORD);
     if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
     {
-        RegQueryValueEx(hKey, "WingAssignment", NULL, &dwType, (PBYTE)&dwWing, &dwSize);
+        RegQueryValueEx(hKey, L"WingAssignment", NULL, &dwType, (PBYTE)&dwWing, &dwSize);
         RegCloseKey(hKey);
     }
 
@@ -3082,30 +3082,30 @@ void WinTrekClient::SaveWingAssignment(int index){ // kolie 6/10
 	dwWing = (DWORD)index;
 	if ( ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey))
 	{
-		RegSetValueEx(hKey, "WingAssignment", NULL, REG_DWORD,  (PBYTE)&dwWing, sizeof(DWORD) );
+		RegSetValueEx(hKey, L"WingAssignment", NULL, REG_DWORD,  (PBYTE)&dwWing, sizeof(DWORD) );
 		RegCloseKey(hKey);
 	}
 }
 
 // KGJV : added utility functions for cores & server names
 // find the user friendly name of a core - return param if not found
-ZString WinTrekClient::CfgGetCoreName(const char *s) 
+ZString WinTrekClient::CfgGetCoreName(const wchar_t *s) 
 {
-	char temp[c_cbName];
-	DWORD l = GetCfgInfo().GetCfgProfileString("Cores",s,s,temp,c_cbName);
+	wchar_t temp[c_cbName];
+	DWORD l = GetCfgInfo().GetCfgProfileString(L"Cores",s,s,temp,c_cbName);
 	return ZString(temp,(int)l);
 }
-bool WinTrekClient::CfgIsOfficialCore(const char *s)
+bool WinTrekClient::CfgIsOfficialCore(const wchar_t *s)
 {
-	char temp[c_cbName];
-	DWORD l = GetCfgInfo().GetCfgProfileString("OfficialCores",s,"false",temp,c_cbName);
-	return (_stricmp(temp,"true") == 0);
+	wchar_t temp[c_cbName];
+	DWORD l = GetCfgInfo().GetCfgProfileString(L"OfficialCores",s,L"false",temp,c_cbName);
+	return (_wcsicmp(temp,L"true") == 0);
 }
-bool WinTrekClient::CfgIsOfficialServer(const char *name, const char *addr)
+bool WinTrekClient::CfgIsOfficialServer(const wchar_t *name, const wchar_t *addr)
 {
-	char temp[c_cbName];
-	DWORD l = GetCfgInfo().GetCfgProfileString("OfficialServers",name,"",temp,c_cbName);
-	return (_stricmp(temp,addr) == 0);
+	wchar_t temp[c_cbName];
+	DWORD l = GetCfgInfo().GetCfgProfileString(L"OfficialServers",name,L"",temp,c_cbName);
+	return (_wcsicmp(temp,addr) == 0);
 }
 // KGJV end
 
@@ -3235,7 +3235,7 @@ public:
             if (bRestarting)  
             {
                 GetWindow()->SetWaitCursor();
-                m_pmsgBox = CreateMessageBox("Restarting to complete update...", NULL, false);
+                m_pmsgBox = CreateMessageBox(L"Restarting to complete update...", NULL, false);
                 GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
             }
             else
@@ -3261,7 +3261,7 @@ public:
         if(m_pmsgBox != NULL)
             return;
 
-        m_pmsgBox = CreateMessageBox("AutoUpdate Aborted. ");
+        m_pmsgBox = CreateMessageBox(L"AutoUpdate Aborted. ");
 
         m_pmsgBox->GetEventSource()->AddSink(IIntegerEventSink::CreateDelegate(this));
 
@@ -3276,7 +3276,7 @@ public:
 
     virtual void OnRetrievingFileListProgress(unsigned long nFileSize, unsigned long cCurrentBytes)
     {
-        debugf("FileList.txt %d out of %d \n", cCurrentBytes, nFileSize);
+        debugf(L"FileList.txt %d out of %d \n", cCurrentBytes, nFileSize);
 
         m_pModifiableNumberFileListPercent->SetValue(float(cCurrentBytes)/float(nFileSize));
         m_pModifiableNumberFileListPercent->Update();
@@ -3286,7 +3286,7 @@ public:
 
     virtual void OnAnalysisProgress(float fPercentDone) 
     {
-        debugf("Verify %3.3f%% \n", 100.0f*fPercentDone);
+        debugf(L"Verify %3.3f%% \n", 100.0f*fPercentDone);
 
         m_pModifiableNumberVerifyPercent->SetValue(float(fPercentDone));
         m_pModifiableNumberVerifyPercent->Update();
@@ -3338,9 +3338,9 @@ public:
     virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes, unsigned nEstimatedSecondsLeft) 
     {
 		if (g_outputdebugstring) { //Imago - was DEBUG ifdef 8/16/09
-	        char sz[80];
+			wchar_t sz[80];
 
-	        sprintf(sz, "%2.2f%%   %i  %s  %i\n", 100.0f*float(cTotalBytes)/float(m_cGrandTotalBytes), cTotalBytes, szCurrentFile, cCurrentFileBytes);
+	        swprintf(sz, L"%2.2f%%   %i  %s  %i\n", 100.0f*float(cTotalBytes)/float(m_cGrandTotalBytes), cTotalBytes, szCurrentFile, cCurrentFileBytes);
 	        ZDebugOutput(sz);
 		}
 
@@ -3463,10 +3463,10 @@ void WinTrekClient::CreateMissionReq(const wchar_t *szServer, const wchar_t *szA
 	BaseClient::CreateMissionReq(szServer,szAddr,szIGCStaticFile,szGameName);
 }
 
-void WinTrekClient::JoinMission(MissionInfo * pMission, const char* szMissionPassword)
+void WinTrekClient::JoinMission(MissionInfo * pMission, const wchar_t* szMissionPassword)
 {
     GetWindow()->SetWaitCursor();
-    TRef<IMessageBox> pmsgBox = CreateMessageBox("Joining the game...", NULL, false);
+    TRef<IMessageBox> pmsgBox = CreateMessageBox(L"Joining the game...", NULL, false);
     GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
     BaseClient::JoinMission(pMission, szMissionPassword);
 }
@@ -3520,7 +3520,7 @@ void WinTrekClient::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFail
 }
 
 
-void WinTrekClient::OnLogonClubAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
+void WinTrekClient::OnLogonClubAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
 {
     //
     // We've just logged onto Zone Club server.
@@ -3550,7 +3550,7 @@ void WinTrekClient::Disconnect(void)
 }
 
 
-HRESULT WinTrekClient::OnSessionLost(char* szReason, FedMessaging * pthis)
+HRESULT WinTrekClient::OnSessionLost(wchar_t* szReason, FedMessaging * pthis)
 {
     m_strDisconnectReason = "";
 
@@ -3564,8 +3564,8 @@ HRESULT WinTrekClient::OnSessionLost(char* szReason, FedMessaging * pthis)
 
     if (pthis == &m_fm)
     {
-        ZString strMsg = "Your connection to the game server was lost.\n"
-            "Reason: " + ZString(szReason) + ".\n";
+        ZString strMsg = L"Your connection to the game server was lost.\n"
+            L"Reason: " + ZString(szReason) + L".\n";
 
         if (trekClient.GetIsLobbied())
         {
@@ -3585,8 +3585,8 @@ HRESULT WinTrekClient::OnSessionLost(char* szReason, FedMessaging * pthis)
 
                 TRef<IMessageBox> pmsgBox = 
                     CreateMessageBox(
-                        "Your connection to the game server was lost.\n"
-                        "Reason: " + ZString(szReason) + ".\n"
+                        L"Your connection to the game server was lost.\n"
+                        L"Reason: " + ZString(szReason) + L".\n"
                     );
 
                 GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
@@ -3677,7 +3677,7 @@ bool WinTrekClient::OnEvent(IIntegerEventSource* pevent, int value)
 void WinTrekClient::OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg)
 {
   // uh, bad crc from the server? Let's just assert for now
-  debugf("ACK! Bad crc *from* the %s!!\n", pthis == &m_fmLobby ? "Lobby" : "Server");
+  debugf(L"ACK! Bad crc *from* the %s!!\n", pthis == &m_fmLobby ? L"Lobby" : L"Server");
   assert(0);
 }
 #endif
@@ -3700,7 +3700,7 @@ HRESULT WinTrekClient::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFr
 
     if (m_bDisconnected && pthis == &m_fm)
     {
-        debugf("Client is disconnected - message ignored.\n");
+        debugf(L"Client is disconnected - message ignored.\n");
         hr = S_FALSE;
     }
     else 
@@ -3805,7 +3805,7 @@ void WinTrekClient::StationTypeCompleted(IbucketIGC * pbucket, IstationIGC* psta
 void WinTrekClient::BuildStation(IasteroidIGC* pasteroid, IsideIGC* pside, IstationTypeIGC* pstationtype, Time now, bool pbseensides[])
 {
     DataStationIGC  ds;
-    strcpy(ds.name, pstationtype->GetName());
+    Strcpy(ds.name, pstationtype->GetName());
     ds.clusterID    = pasteroid->GetCluster()->GetObjectID();
     ds.position     = pasteroid->GetPosition();
     ds.forward      = pasteroid->GetOrientation ().GetForward ();
@@ -4511,8 +4511,8 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
             strOrder += c_cdAllCommands[cid].szVerb;
             if (pmodelTarget)
             {
-                const char*   modelname = GetModelName (pmodelTarget);
-                strOrder += " ";
+				const wchar_t*   modelname = GetModelName(pmodelTarget);
+                strOrder += L" ";
                 strOrder += modelname;
 
                 ObjectType  type = pmodelTarget->GetObjectType();
@@ -4521,7 +4521,7 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
                     IclusterIGC*  pcluster = trekClient.GetCluster(trekClient.GetShip(), pmodelTarget);
                     if (pcluster)
                     {
-                        strOrder += " in ";
+                        strOrder += L" in ";
                         strOrder += pcluster->GetName();
                     }
                 }
@@ -4646,24 +4646,23 @@ void      WinTrekClient::ReceiveChat(IshipIGC*   pshipSender,
                     if ((cid == c_cidPickup) && (pmodelTarget == pshipSender) &&
                         pshipSender->  GetBaseHullType()->HasCapability(c_habmRescue))
                     {
-                        trekClient.PostText(true, "New orders from %s: prepare for recovery. Press ["+str+"] to accept.", 
-                                            (const char*)strSender);
+                        trekClient.PostText(true, L"New orders from %s: prepare for recovery. Press ["+str+L"] to accept.", 
+							(const wchar_t*)strSender);
                     }
                     else
 						if (ppi->IsTeamLeader())  //Xynth #14 7/2010 change color if from comm
-							trekClient.PostText(true, "\x81 " + ConvertColorToString(Color::Orange()) + "New orders from %s to %s: %s. Press ["+str+"] to accept." + END_COLOR_STRING, 
-                                            (const char*)strSender, (const char*)strRecipient, (const char*)strOrder);
+							trekClient.PostText(true, "\x81 " + ConvertColorToString(Color::Orange()) + L"New orders from %s to %s: %s. Press ["+str+L"] to accept." + END_COLOR_STRING, 
+							(const wchar_t*)strSender, (const wchar_t*)strRecipient, (const wchar_t*)strOrder);
 						else
-							trekClient.PostText(true, "New orders from %s to %s: %s. Press ["+str+"] to accept.", 
-                                            (const char*)strSender, (const char*)strRecipient, (const char*)strOrder);
+							trekClient.PostText(true, L"New orders from %s to %s: %s. Press ["+str+L"] to accept.", 
+							(const wchar_t*)strSender, (const wchar_t*)strRecipient, (const wchar_t*)strOrder);
                 }
             }
         }
     }
 }
 
-void            WinTrekClient::Preload(const char*  pszModelName,
-                                       const char*  pszTextureName)
+void            WinTrekClient::Preload(const wchar_t*  pszModelName,const wchar_t*  pszTextureName)
 {
 // BUILD_DX9
 	bool bOldColorKeyValue = GetModeler()->SetColorKeyHint( false );
@@ -4675,9 +4674,9 @@ void            WinTrekClient::Preload(const char*  pszModelName,
 
     if (pszTextureName)
     {
-        char    bfr[c_cbFileName + 4];
-        strcpy(bfr, pszTextureName);
-        strcat(bfr, "bmp");
+		wchar_t    bfr[c_cbFileName + 4];
+        Strcpy(bfr, pszTextureName);
+        Strcat(bfr, L"bmp");
 
         GetModeler()->GetNameSpace(bfr);
     }
@@ -5055,19 +5054,19 @@ void WinTrekClient::OnQuitMission(QuitSideReason reason, const wchar_t* szMessag
         switch (reason)
         {
         case QSR_LeaderBooted:
-            strMessage = "You have been booted by your commander! You can rejoin the game by logging in with a different ASGS callsign."; // TurkeyXIII - #239 
+            strMessage = L"You have been booted by your commander! You can rejoin the game by logging in with a different ASGS callsign."; // TurkeyXIII - #239 
             break;
 
         case QSR_OwnerBooted:
-            strMessage = "You have been lobby booted by the mission owner!  You can rejoin the game by logging in with a different ASGS callsign."; // pkk - #239 - conform with wiki information
+            strMessage = L"You have been lobby booted by the mission owner!  You can rejoin the game by logging in with a different callsign."; // pkk - #239 - conform with wiki information //imago 10/14
             break;
 
         case QSR_AdminBooted:
-            strMessage = "You have been booted by a server administrator!";
+            strMessage = L"You have been booted by a server administrator!";
             break;
 
         case QSR_ServerShutdown:
-            strMessage = "The game has been shut down by an administrator.";
+            strMessage = L"The game has been shut down by an administrator.";
             break;
 
         case QSR_SquadChange:
@@ -5084,17 +5083,17 @@ void WinTrekClient::OnQuitMission(QuitSideReason reason, const wchar_t* szMessag
             break;
 
         case QSR_DuplicateRemoteLogon:
-            strMessage = "Someone used your zone account to log into another game.";
+            strMessage = L"Someone used your zone account to log into another game.";
             break;
 
         case QSR_DuplicateLocalLogon:
-            strMessage = "Someone used your zone account to log into the game you were playing.";
+            strMessage = L"Someone used your zone account to log into the game you were playing.";
             break;
 
         case QSR_DuplicateCDKey:
             assert(szMessageParam);
-            strMessage = ZString(szMessageParam ? szMessageParam : "someone") 
-                + " used your CD Key to log into a game!";
+            strMessage = ZString(szMessageParam ? szMessageParam : L"someone") 
+                + L" used your CD Key to log into a game!";
             break;
 
         case QSR_SwitchingSides:
@@ -5160,7 +5159,7 @@ void WinTrekClient::AddGameoverPlayers(PlayerEndgameInfo* vEndgamePlayerInfo, in
     for (int iPlayerIndex = m_nNumEndgamePlayers - nCount; iPlayerIndex < nCount; iPlayerIndex++)
     {
         // if these are our stats...
-        if (strcmp(m_vplayerEndgameInfo[iPlayerIndex].characterName, GetShip()->GetName()) == 0)
+        if (Strcmp(m_vplayerEndgameInfo[iPlayerIndex].characterName, GetShip()->GetName()) == 0)
         {
             // check to see if the game counted.
             m_bGameCounted = m_vplayerEndgameInfo[iPlayerIndex].scoring.GetGameCounted();
@@ -5209,7 +5208,7 @@ Color WinTrekClient::GetEndgameSideColor(SideID sideId)
     return m_vsideEndgameInfo[sideId].color;
 };
 
-void  WinTrekClient::SaveSquadMemberships(const char* szCharacterName)
+void  WinTrekClient::SaveSquadMemberships(const wchar_t* szCharacterName)
 {
     DWORD dwMembershipSize = m_squadmemberships.GetCount() * sizeof(SquadID);
     SquadID* vsquadIDs = (SquadID*)_alloca(dwMembershipSize);
@@ -5226,8 +5225,8 @@ void  WinTrekClient::SaveSquadMemberships(const char* szCharacterName)
     HKEY hKey;
 
     if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, 
-        ALLEGIANCE_REGISTRY_KEY_ROOT "\\SquadMemberships",
-        0, "", REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))
+        ALLEGIANCE_REGISTRY_KEY_ROOT L"\\SquadMemberships",
+        0, L"", REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))
     {
         ::RegSetValueEx(hKey, szCharacterName, NULL, REG_BINARY, 
             (const unsigned char*)vsquadIDs, dwMembershipSize);
@@ -5242,8 +5241,8 @@ void  WinTrekClient::RestoreSquadMemberships(const wchar_t* szCharacterName)
     HKEY hKey;
 
     if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, 
-        ALLEGIANCE_REGISTRY_KEY_ROOT "\\SquadMemberships",
-        0, "", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hKey, NULL))
+        ALLEGIANCE_REGISTRY_KEY_ROOT L"\\SquadMemberships",
+        0, L"", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hKey, NULL))
     {
         DWORD dwSize = 0;
         DWORD dwType;
@@ -5259,7 +5258,7 @@ void  WinTrekClient::RestoreSquadMemberships(const wchar_t* szCharacterName)
 
             for (int iSquad = 0; iSquad < numSquads; iSquad++)
             {
-                m_squadmemberships.PushEnd(SquadMembership(vsquadIDs[iSquad], "<bug>", false, false));
+                m_squadmemberships.PushEnd(SquadMembership(vsquadIDs[iSquad], L"<bug>", false, false));
             }
         }
         ::RegCloseKey(hKey);

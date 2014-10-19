@@ -107,8 +107,8 @@ class       CsideIGC : public IsideIGC
         {
 			//Rock / Imago 7/28/09
 			ZString strName = newVal;
-			int istart = strName.ReverseFind("\x81");
-			int iend = strName.ReverseFind("\x82");
+			int istart = strName.ReverseFind(L"\x81");
+			int iend = strName.ReverseFind(L"\x82");
 			if ( (istart != -1 && iend == -1) || iend < istart)
 				strName += END_COLOR_STRING;
 			UTL::putName(m_data.name, (PCC)strName);

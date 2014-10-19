@@ -26,8 +26,7 @@ class __declspec(uuid("0002e005-0000-0000-c000-000000000046")) StdComponentCateg
     nBuf = _vstprintf(szBuffer, lpszFormat, args);
     assert(nBuf < sizeof(szBuffer));
 
-    USES_CONVERSION;
-    ZDebugOutputImpl(T2CA(szBuffer));
+    ZDebugOutputImpl(szBuffer);
     va_end(args);
   }
 #endif // _DEBUG

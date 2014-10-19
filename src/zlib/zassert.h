@@ -43,18 +43,18 @@ extern bool g_bOutput;
 
 
     // void debugf(const char* , ...);
-    void ZWarningImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule);
-    bool ZFailedImpl(HRESULT hr, const char* pszFile, int line, const char* pszModule);
-    bool ZSucceededImpl(HRESULT hr, const char* pszFile, int line, const char* pszModule);
+	void ZWarningImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
+	bool ZFailedImpl(HRESULT hr, const wchar_t* pszFile, int line, const wchar_t* pszModule);
+	bool ZSucceededImpl(HRESULT hr, const wchar_t* pszFile, int line, const wchar_t* pszModule);
     // void ZDebugOutputImpl(const char* psz);
 
-    #define ZAssert(bCond)    ZAssertImpl((bCond) ? true : false, #bCond, __FILE__, __LINE__, __MODULE__)
+    #define ZAssert(bCond)    ZAssertImpl((bCond) ? true : false, TEXT(#bCond), TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
     #define ZVerify(bCond)    ZAssert(bCond)
-    #define ZWarning(bCond)   ZWarningImpl((bCond) ? true : false, #bCond, __FILE__, __LINE__, __MODULE__)
-    #define ZError(psz)       ZAssertImpl(false, psz, __FILE__, __LINE__, __MODULE__)
-    #define ZBadCase()        ZError("Bad case in switch statement"); break;
-    #define ZFailed(hr)       ZFailedImpl(hr, __FILE__, __LINE__, __MODULE__)
-    #define ZSucceeded(hr)    ZSucceededImpl(hr, __FILE__, __LINE__, __MODULE__)
+#define ZWarning(bCond)   ZWarningImpl((bCond) ? true : false, TEXT(#bCond), TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
+#define ZError(psz)       ZAssertImpl(false, psz, TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
+    #define ZBadCase()        ZError(L"Bad case in switch statement"); break;
+#define ZFailed(hr)       ZFailedImpl(hr, TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
+#define ZSucceeded(hr)    ZSucceededImpl(hr, TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
     // #define ZDebugOutput(str) ZDebugOutputImpl(str)
 #else
     // inline void debugf(...) {}

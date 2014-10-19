@@ -724,7 +724,7 @@ float ModelData::GetScanRange()
 
 ZString PartWrapper::GetPartName()
 {
-    return m_ppart ? m_ppart->GetPartType()->GetName() : "";
+    return m_ppart ? m_ppart->GetPartType()->GetName() : L"";
 }
 
 float PartWrapper::GetRange()

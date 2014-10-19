@@ -39,6 +39,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -223,7 +224,9 @@
     <None Include="..\src\Pigs\Scripts\create demo game.vbs" />
     <None Include="..\src\Pigs\Scripts\create scout test game.vbs" />
     <None Include="..\src\Pigs\Scripts\CreatePig.js" />
+    <None Include="..\src\Pigs\Scripts\CreatePig.pl" />
     <None Include="..\src\Pigs\Scripts\CreatePigs.js" />
+    <None Include="..\src\Pigs\Scripts\CreatePigs.pl" />
     <None Include="..\src\Pigs\Scripts\debugger.js" />
     <None Include="..\src\Pigs\Scripts\debugger.vbs" />
     <None Include="..\src\Pigs\Scripts\DeployPigs.js" />
@@ -235,6 +238,7 @@
     <None Include="..\src\Pigs\Scripts\listpigs2.js" />
     <None Include="..\src\Pigs\Scripts\LobbyServer.js" />
     <None Include="..\src\Pigs\Scripts\MaxPigs.js" />
+    <None Include="..\src\Pigs\Scripts\PigCommand.pl" />
     <None Include="..\src\Pigs\Scripts\RemAccountServer.js" />
     <None Include="..\src\Pigs\Scripts\RemCreatePig.js" />
     <None Include="..\src\Pigs\Scripts\RemCreatePigs.js" />

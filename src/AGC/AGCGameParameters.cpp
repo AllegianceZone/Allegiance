@@ -2471,8 +2471,7 @@ STDMETHODIMP CAGCGameParameters::put_TeamName(short iTeam, BSTR Val)
     if (cchVal >= sizeof(m_mp.m_szTeamName[0]))
       return E_INVALIDARG;
 
-    USES_CONVERSION;
-    lstrcpynA(m_mp.m_szTeamName[iTeam], OLE2CA(Val), sizeof(m_mp.m_szTeamName[0]));
+    lstrcpyn(m_mp.m_szTeamName[iTeam], OLE2CW(Val), sizeof(m_mp.m_szTeamName[0]));
   }
   else
   {

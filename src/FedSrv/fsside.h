@@ -18,8 +18,8 @@ public:
   }
 
   bool         IsInvited(CFSPlayer * pfsPlayer);
-  void         AddInvitation(const char * szPlayerName);
-  const char*  GetInvitedSquadName();
+  void         AddInvitation(const wchar_t * szPlayerName);
+  const wchar_t*  GetInvitedSquadName();
 
 private:
 

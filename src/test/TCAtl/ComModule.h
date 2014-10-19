@@ -367,7 +367,7 @@ HRESULT TCComModule<T>::OnRegServer(int argc, TCHAR* argv[], int* pnArgs)
       RETURN_FAILED(acct.Init(argv[0]))
     else if (argc > 1)
     {
-      Echo("Password not allowed for \"Interactive User\".\n");
+      Echo(L"Password not allowed for \"Interactive User\".\n");
       Syntax();
       return S_FALSE;
     }
@@ -475,7 +475,7 @@ HRESULT TCComModule<T>::OnExit(int argc, TCHAR* argv[], int* pnArgs)
     return HRESULT_FROM_WIN32(GetLastError());
   if (GetLastError() != ERROR_ALREADY_EXISTS)
   {
-    Echo("No server is currently running.");
+    Echo(L"No server is currently running.");
     return S_FALSE;
   }
 
@@ -483,7 +483,7 @@ HRESULT TCComModule<T>::OnExit(int argc, TCHAR* argv[], int* pnArgs)
   SetEvent(hevt);
 
   // Display status
-  Echo("Server has been signaled to exit.");
+  Echo(L"Server has been signaled to exit.");
   EchoFlush();
 
   // Indicate success

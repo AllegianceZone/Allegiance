@@ -80,7 +80,7 @@ CFSMission::CFSMission(
     IMissionSite * psiteMission,
     IIgcSite* psiteIGC,
     CAdditionalAGCParamData * paagcParamData,
-	const wchar_t* pszStoryText,
+	const wchar_t* pszStoryText) :
     m_pMission(::CreateMission()), // IGC CreateMission
     m_psiteMission(psiteMission),
     m_psiteIGC(psiteIGC),
@@ -105,7 +105,7 @@ CFSMission::CFSMission(
   //m_misdef.misparms.iRandomEncounters = 2;  //NYI
 
   // KGJV fix: fill in server friendly name so clients can display it
-  strcpy_s(m_misdef.szServerName,sizeof(m_misdef.szServerName),g.strLocalAddress);
+  wcscpy_s(m_misdef.szServerName,sizeof(m_misdef.szServerName),g.strLocalAddress);
 
   psiteMission->Create(this);
 
@@ -125,7 +125,7 @@ CFSMission::CFSMission(
   // -KGJV only set core if not defined in game params
   if (m_misdef.misparms.szIGCStaticFile[0] == '\0')
   {
-  strcpy(m_misdef.misparms.szIGCStaticFile, IGC_STATIC_CORE_FILENAME);
+  Strcpy(m_misdef.misparms.szIGCStaticFile, IGC_STATIC_CORE_FILENAME);
   }
   // hardcode this cap in one more place to make it harder to work around.
   m_misdef.misparms.nTotalMaxPlayersPerGame = min(c_cMaxPlayersPerGame, misparms.nTotalMaxPlayersPerGame);
@@ -149,7 +149,7 @@ CFSMission::CFSMission(
   else
   {
     // use the description in the mission params
-    strncpy(m_misdef.szDescription, m_misdef.misparms.strGameName, sizeof(m_misdef.szDescription));
+    Strncpy(m_misdef.szDescription, m_misdef.misparms.strGameName, sizeof(m_misdef.szDescription));
     m_misdef.szDescription[sizeof(m_misdef.szDescription)-1] = '\0';
   }
   m_misdef.iSideMissionOwner = NA; // will turn into the person who created this when they do a SideChange
@@ -199,9 +199,9 @@ CFSMission::CFSMission(
 
   // Build the mission
   m_pMission->SetMissionID(s_iMissionID++);
-  char szRealTeams[] = ": All real teams";
-  char szBuff[sizeof(m_misdef.misparms.strGameName) + sizeof(szRealTeams)];
-  wsprintf(szBuff, "%s%s", m_misdef.misparms.strGameName, szRealTeams);
+  wchar_t szRealTeams[] = L": All real teams";
+  wchar_t szBuff[sizeof(m_misdef.misparms.strGameName) + sizeof(szRealTeams)];
+  wsprintf(szBuff, L"%s%s", m_misdef.misparms.strGameName, szRealTeams);
   m_pgrpSidesReal = g.fm.CreateGroup(szBuff);
 
   GetSystemTime(&m_stStartTime);
@@ -242,10 +242,10 @@ CFSMission::CFSMission(
   //
   // Fire off an AGC event that a game was created
   //
-  LPCSTR pszGame = GetMissionDef()->misparms.strGameName;
+  LPCWSTR pszGame = GetMissionDef()->misparms.strGameName;
   long idGame = GetIGCMission() ? GetIGCMission()->GetMissionID() : -1;
 
-  LPCSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
+  LPCWSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
 
   _AGCModule.TriggerContextEvent(NULL, EventID_GameCreated, pszContext,
     pszGame, idGame, -1, -1, 0);
@@ -257,10 +257,10 @@ CFSMission::~CFSMission()
   //
   // Fire off an AGC event that a game was destroyed
   //
-  LPCSTR pszGame = GetMissionDef()->misparms.strGameName;
+  LPCWSTR pszGame = GetMissionDef()->misparms.strGameName;
   long idGame = GetIGCMission() ? GetIGCMission()->GetMissionID() : -1;
 
-  LPCSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
+  LPCWSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
 
   _AGCModule.TriggerContextEvent(NULL, EventID_GameDestroyed, pszContext,
     pszGame, idGame, -1, -1, 0);
@@ -365,7 +365,7 @@ CFSMission::~CFSMission()
 
 void CFSMission::AddPlayerToMission(CFSPlayer * pfsPlayer)
 {
-  debugf("Player %s, ship=%d joined mission=%x\n",
+  debugf(L"Player %s, ship=%d joined mission=%x\n",
           pfsPlayer->GetName(), pfsPlayer->GetShipID(),
           GetCookie());
 
@@ -414,7 +414,7 @@ void CFSMission::AddPlayerToMission(CFSPlayer * pfsPlayer)
     assert(GetCookie()); // we can't be sending messages w/ cookies unless we have a real cookie
 
 	 // BT - 9/11/2010 ACSS - Supports authentication check of the CD Key.
-	char szAddress[16];
+	wchar_t szAddress[16];
 	g.fm.GetIPAddress(*pfsPlayer->GetConnection(), szAddress);
 
     BEGIN_PFM_CREATE(g.fmLobby, pfmPlayerJoined, S, PLAYER_JOINED)
@@ -456,7 +456,7 @@ void CFSMission::AddPlayerToMission(CFSPlayer * pfsPlayer)
 
 void CFSMission::RemovePlayerFromMission(CFSPlayer * pfsPlayer, QuitSideReason reason, const wchar_t* szMessageParam)
 {
-  debugf("Player %s, ship=%d quiting mission=%x, reason=%d\n",
+  debugf(L"Player %s, ship=%d quiting mission=%x, reason=%d\n",
           pfsPlayer->GetName(), pfsPlayer->GetShipID(),
           GetCookie(), reason);
 
@@ -562,7 +562,7 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
   // mdvalley: Set side last flown for
   pfsPlayer->SetLastSide(sideid);
 
-  debugf("Player %s, ship=%d joined side %d, mission=%x\n",
+  debugf(L"Player %s, ship=%d joined side %d, mission=%x\n",
           pfsPlayer->GetName(), pfsPlayer->GetShipID(),
           sideid, GetCookie());
 
@@ -662,14 +662,14 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
       // if this is a squad game, set the squad to the invited squad.
       if (m_misdef.misparms.bSquadGame)
       {
-        const char* pzSquadName = CFSSide::FromIGC(pside)->GetInvitedSquadName();
+		  const wchar_t* pzSquadName = CFSSide::FromIGC(pside)->GetInvitedSquadName();
 
         if(pzSquadName)
         {
           SquadMembershipLink* pSquadLink = pfsPlayer->GetSquadMembershipList()->first();
           for (; pSquadLink; pSquadLink = pSquadLink->next())
           {
-            if (_stricmp(pSquadLink->data()->GetName(), pzSquadName) == 0)
+            if (_wcsicmp(pSquadLink->data()->GetName(), pzSquadName) == 0)
             {
               SetSideSquad(sideid, pSquadLink->data()->GetID());
               break;
@@ -720,7 +720,7 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
 
     // tell them their starting sector so they can display the mission briefing
     bool bGenerateCivBriefing = m_strStoryText.IsEmpty();
-    const char* szBriefingText =  bGenerateCivBriefing
+	const wchar_t* szBriefingText = bGenerateCivBriefing
         ? GetBase(pside)->GetCluster()->GetName() : m_strStoryText;
     BEGIN_PFM_CREATE(g.fm, pfmSetBriefingText, S, SET_BRIEFING_TEXT)
       FM_VAR_PARM(szBriefingText, CB_ZTS)
@@ -842,7 +842,7 @@ void CFSMission::AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside)
  *    Maintain team/mission leader status
  */
 
-void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reason, const char* szMessageParam)
+void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reason, const wchar_t* szMessageParam)
 {
   IsideIGC * psideOld = pfsPlayer->GetSide();
   SideID sideidOld = psideOld->GetObjectID();
@@ -883,7 +883,7 @@ void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reas
     }
   }
 
-  debugf("Player %s, ship=%d quitting side %d, mission=%x\n",
+  debugf(L"Player %s, ship=%d quitting side %d, mission=%x\n",
           pfsPlayer->GetName(), pfsPlayer->GetShipID(),
           pfsPlayer->GetSide() ? pfsPlayer->GetSide()->GetObjectID() : NA,
           GetCookie());
@@ -1162,7 +1162,7 @@ void CFSMission::RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reas
 }
 
 
-void CFSMission::AddInvitation(SideID sid, char * szPlayerName)
+void CFSMission::AddInvitation(SideID sid, wchar_t * szPlayerName)
 {
    if(sid >= c_cSidesMax)
      return;
@@ -1283,7 +1283,7 @@ bool CFSMission::RemovePlayerByName(const wchar_t* szCharacterName, QuitSideReas
  * Returns:
  *    true if a player was booted
  */
-bool CFSMission::RemovePlayerByCDKey(const char* szCDKey, QuitSideReason reason, const char* szMessageParam)
+bool CFSMission::RemovePlayerByCDKey(const wchar_t* szCDKey, QuitSideReason reason, const wchar_t* szMessageParam)
 {
   ShipLinkIGC * pShiplink = GetIGCMission()->GetShips()->first();
 
@@ -1295,10 +1295,10 @@ bool CFSMission::RemovePlayerByCDKey(const char* szCDKey, QuitSideReason reason,
     {
       CFSPlayer * pfsPlayer = pfsShip->GetPlayer();
 
-      if (_stricmp(pfsPlayer->GetCDKey(), szCDKey) == 0)
+      if (_wcsicmp(pfsPlayer->GetCDKey(), szCDKey) == 0)
       {
         RemovePlayerFromMission(pfsShip->GetPlayer(), reason, szMessageParam);
-        debugf("Booted character %s with duplicate CD Key %s from mission %x.\n",
+        debugf(L"Booted character %s with duplicate CD Key %s from mission %x.\n",
             pfsPlayer->GetName(), pfsPlayer->GetCDKey(), GetCookie());
         break;
       }
@@ -1533,10 +1533,10 @@ void CFSMission::SetLeader(CFSPlayer * pfsPlayer)
  * Parameters:
  *    The side whose name should changed and the new name
  */
-void CFSMission::SetSideName(SideID sid, const char* szName)
+void CFSMission::SetSideName(SideID sid, const wchar_t* szName)
 {
   assert(sid >= 0 && sid < c_cSidesMax);
-  assert(strlen(szName) < c_cbName);
+  assert(wcslen(szName) < c_cbName);
   IsideIGC* pside = m_pMission->GetSide(sid);
   if (!pside)
     return;
@@ -1544,7 +1544,7 @@ void CFSMission::SetSideName(SideID sid, const char* szName)
   ZString strNameOld(m_misdef.rgszName[sid]);
   if (szName != m_misdef.rgszName[sid])
   {
-    strncpy(m_misdef.rgszName[sid], szName, c_cbName - 1);
+    Strncpy(m_misdef.rgszName[sid], szName, c_cbName - 1);
     m_misdef.rgszName[sid][c_cbName-1] = '\0';
     m_pMission->GetSide(sid)->SetName(m_misdef.rgszName[sid]);
   }
@@ -1554,15 +1554,15 @@ void CFSMission::SetSideName(SideID sid, const char* szName)
   END_PFM_CREATE
   pfmSetTeamInfo->sideID = sid;
   pfmSetTeamInfo->squadID = pside->GetSquadID();
-  strcpy(pfmSetTeamInfo->SideName, m_misdef.rgszName[sid]);
+  Strcpy(pfmSetTeamInfo->SideName, m_misdef.rgszName[sid]);
   g.fm.SendMessages(GetGroupMission(), FM_GUARANTEED, FM_FLUSH);
 
   // Fire an AGCEvent to indicate the Team info change
-  LPCSTR pszGame = GetMissionDef()->misparms.strGameName;
+  LPCWSTR pszGame = GetMissionDef()->misparms.strGameName;
   long idGame = GetIGCMission() ? GetIGCMission()->GetMissionID() : -1;
   long idTeam = GetIGCMission()->GetSide(sid)->GetUniqueID();
 
-  LPCSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
+  LPCWSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
 
   _AGCModule.TriggerContextEvent(NULL, EventID_TeamInfoChange, pszContext,
     strNameOld, idTeam, -1, -1, 3,
@@ -1612,7 +1612,7 @@ void CFSMission::SetSideSquad(SideID sid, SquadID squadID)
     }
   }
 
-  const char* szSquadName = NULL;
+  const wchar_t* szSquadName = NULL;
 
   if (m_misdef.misparms.bLockTeamSettings)
   {
@@ -1724,7 +1724,7 @@ void CFSMission::SetStage(STAGE stage)
   if (m_misdef.stage != stage)
   {
     assert(m_misdef.stage < stage || stage == STAGE_NOTSTARTED); // it's a one-way road (sort of)
-    debugf("SetStage, stage=%d, mission=%x\n", stage, GetCookie());
+    debugf(L"SetStage, stage=%d, mission=%x\n", stage, GetCookie());
     m_misdef.stage = stage;
     m_misdef.fInProgress = stage == STAGE_STARTED;
 
@@ -1773,7 +1773,7 @@ void CFSMission::SetMissionParams(const MissionParams & misparmsNew)
 
   // don't even think about changing the IGC static stuff.
   misparms.verIGCcore = m_misdef.misparms.verIGCcore;
-  strncpy(misparms.szIGCStaticFile, m_misdef.misparms.szIGCStaticFile, c_cbFileName);
+  Strncpy(misparms.szIGCStaticFile, m_misdef.misparms.szIGCStaticFile, c_cbFileName);
 
   // make sure it's properly marked as a club or non-club game too.
   #if !defined(ALLSRV_STANDALONE)
@@ -1932,7 +1932,7 @@ void CFSMission::StartCountdown(float fCountdownLength)
 
         // tell them their starting sector so they can display the mission briefing
         bool bGenerateCivBriefing = m_strStoryText.IsEmpty();
-        const char* szBriefingText =  bGenerateCivBriefing
+		const wchar_t* szBriefingText = bGenerateCivBriefing
             ? GetBase(pside)->GetCluster()->GetName() : m_strStoryText;
         BEGIN_PFM_CREATE(g.fm, pfmSetBriefingText, S, SET_BRIEFING_TEXT)
           FM_VAR_PARM(szBriefingText, CB_ZTS)
@@ -2159,7 +2159,7 @@ void CFSMission::StartCountdown(float fCountdownLength)
 		  while (StationLinkIGC* psl = pside->GetStations()->first())
 		  {
 			  IstationIGC*   pstation = psl->data();
-			  debugf("removing station %s, cause bAllowEmptyTeams & Inactive side\n",pstation->GetName());
+			  debugf(L"removing station %s, cause bAllowEmptyTeams & Inactive side\n",pstation->GetName());
 			  m_psiteIGC->KillStationEvent(pstation,NULL,0);
 		  }
 		}
@@ -2236,9 +2236,9 @@ void CFSMission::StartGame()
     END_PFM_CREATE
     g.fm.SendMessages(GetGroupRealSides(), FM_GUARANTEED, FM_FLUSH);
 
-    LPCSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
+    LPCWSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
 
-    GetSite()->SendChat(NULL, CHAT_EVERYONE, NA, NA, "The game has started.");
+    GetSite()->SendChat(NULL, CHAT_EVERYONE, NA, NA, L"The game has started.");
     // TE, Modify GameStarted AGCEvent to include MissionID.
     //Imago / Sgt_Baker: Include alliances info: <allyid>:<team ids>,<allyid>:<team ids>...  NYI 7/10/09
     	//Note:  Alliances may change in-game (NYI), create your own AGC Event! AllsrvEventID_AlliancesChanged
@@ -2475,13 +2475,13 @@ void CFSMission::DoTick(Time timeNow)
 
                 if (psideWin)
                 {
-                    static char szReason[100];
-                    sprintf(szReason, "The clock has stopped. The winner: %s by %s", psideWin->GetName(), pszClue);
+                    static wchar_t szReason[100];
+                    swprintf(szReason, L"The clock has stopped. The winner: %s by %s", psideWin->GetName(), pszClue);
                     GameOver(psideWin, szReason);
                 }
                 else
                 {
-                    GameOver(NULL, "The clock has stopped. The game is a draw.");
+                    GameOver(NULL, L"The clock has stopped. The game is a draw.");
                 }
             }
         }
@@ -2607,7 +2607,7 @@ void CFSMission::SaveAsOldPlayer(CFSPlayer* pfsplayer, bool bBooted)
 
   OldPlayerInfo&  opi = popl->data();
 
-  strcpy(opi.name, pfsplayer->GetName());
+  Strcpy(opi.name, pfsplayer->GetName());
 
   PlayerScoreObject*  ppso = pfsplayer->GetPlayerScoreObject();
   opi.pso = *ppso;
@@ -2848,7 +2848,7 @@ void CFSMission::RecordTeamResults(IsideIGC* pside)
    Purpose:
      Records the results of the player to the database.
  */
-void CFSMission::RecordPlayerResults(const char* pszName, PlayerScoreObject* ppso, SideID sid)
+void CFSMission::RecordPlayerResults(const wchar_t* pszName, PlayerScoreObject* ppso, SideID sid)
 {
   #if !defined(ALLSRV_STANDALONE)
 
@@ -2932,14 +2932,14 @@ void CFSMission::QueueGameoverMessage()
   // queue the general game over stats and side stats
 
   BEGIN_PFM_CREATE(g.fm, pfmGameOver, S, GAME_OVER)
-    FM_VAR_PARM((const char*)(m_pszReason ? m_pszReason : "Your side has been eliminated."), CB_ZTS)
+	  FM_VAR_PARM((const wchar_t*)(m_pszReason ? m_pszReason : L"Your side has been eliminated."), CB_ZTS)
   END_PFM_CREATE
 
   for (SideID sideID = 0; sideID < c_cSidesMax; sideID++)
   {
     IsideIGC* pside = m_pMission->GetSide(sideID);
 
-    strcpy(pfmGameOver->rgSides[sideID].sideName, pside ? pside->GetName() : "<bug>");
+    Strcpy(pfmGameOver->rgSides[sideID].sideName, pside ? pside->GetName() : L"<bug>");
     pfmGameOver->rgSides[sideID].civID = pside ? pside->GetCivilization()->GetObjectID() : -1;
     pfmGameOver->rgSides[sideID].color = pside ? pside->GetColor() : Color(0.5, 0.5, 0.5);
     pfmGameOver->rgSides[sideID].cKills = pside ? pside->GetKills() : 0;
@@ -2973,7 +2973,7 @@ void CFSMission::QueueGameoverMessage()
       PlayerScoreObject*    ppso = pfsPlayer->GetPlayerScoreObject();
       if (ppso->GetTimePlayed() > 0.0f && pfsPlayer->GetSide()->GetObjectID() != SIDE_TEAMLOBBY)
       {
-          strcpy(playerlist[nPlayerIndex].characterName, pfsPlayer->GetName());
+          Strcpy(playerlist[nPlayerIndex].characterName, pfsPlayer->GetName());
           playerlist[nPlayerIndex].scoring.Set(pfsPlayer->GetPlayerScoreObject());
           playerlist[nPlayerIndex].stats = ppso->GetPersist();
           playerlist[nPlayerIndex].sideId = pfsPlayer->GetSide()->GetObjectID();
@@ -2989,7 +2989,7 @@ void CFSMission::QueueGameoverMessage()
 
       if (opi.pso.GetTimePlayed() != 0.0f && opi.sideID != SIDE_TEAMLOBBY)
       {
-          strcpy(playerlist[nPlayerIndex].characterName, opi.name);
+          Strcpy(playerlist[nPlayerIndex].characterName, opi.name);
           playerlist[nPlayerIndex].scoring.Set(&(opi.pso));
           playerlist[nPlayerIndex].stats = opi.pso.GetPersist();
           playerlist[nPlayerIndex].sideId = opi.sideID;
@@ -3326,7 +3326,7 @@ void CFSMission::ProcessGameOver()
       psl->data()->Reset();
   m_pMission->ResetMission();
 
-  LPCSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
+  LPCWSTR pszContext = GetIGCMission() ? GetIGCMission()->GetContextName() : NULL;
   // TE, Modify GameOver AGCEvent to include MissionID.
   _AGCModule.TriggerContextEvent(NULL, AllsrvEventID_GameOver, pszContext,
     GetIGCMission()->GetMissionParams()->strGameName, GetMissionID(),
@@ -3711,12 +3711,12 @@ IsideIGC*   CFSMission::CheckForVictoryByFlags(IsideIGC*    psideTest, SideID si
 void CFSMission::CreateDPGroups(IclusterIGC * pcluster)
 {
   ClusterGroups * pcg = new ClusterGroups;
-  char szDocked[] = "Everyone docked in sector ";
-  char szFlying[] = "Everyone flying in sector ";
-  char szBuff[max(sizeof(szDocked), sizeof(szFlying)) + c_cbName + 1];
-  wsprintf(szBuff, "%s%s", szDocked, pcluster->GetName());
+  wchar_t szDocked[] = L"Everyone docked in sector ";
+  wchar_t szFlying[] = L"Everyone flying in sector ";
+  wchar_t szBuff[max(sizeof(szDocked), sizeof(szFlying)) + c_cbName + 1];
+  wsprintf(szBuff, L"%s%s", szDocked, pcluster->GetName());
   pcg->pgrpClusterDocked = g.fm.CreateGroup(szBuff);
-  wsprintf(szBuff, "%s%s", szDocked, pcluster->GetName());
+  wsprintf(szBuff, L"%s%s", szDocked, pcluster->GetName());
   pcg->pgrpClusterFlying = g.fm.CreateGroup(szBuff);
 
   ((CFSCluster*)pcluster->GetPrivateData())->SetClusterGroups(pcg);
@@ -3816,7 +3816,7 @@ void CFSMission::QueueLobbyMissionInfo()
 
   char szAddr[16];
   ZeroMemory(szAddr, sizeof(szAddr));
-  ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetFileVersionString(); //Imago 7/10 #62
+  ZVersionInfo vi; ZString zInfo = (LPCWSTR)vi.GetFileVersionString(); //Imago 7/10 #62
   // KGJV: added sending m_misdef.misparms.szIGCStaticFile to lobby
   BEGIN_PFM_CREATE(g.fmLobby, pfmLobbyMissionInfo, LS, LOBBYMISSIONINFO)
     FM_VAR_PARM(m_misdef.misparms.strGameName, CB_ZTS)
@@ -3831,7 +3831,7 @@ void CFSMission::QueueLobbyMissionInfo()
   pfmLobbyMissionInfo->dwPort = dwPort;
   pfmLobbyMissionInfo->dwCookie = GetCookie();
 
-  debugf("sending lobby our mission info for %x listening on port %d\n",pfmLobbyMissionInfo->dwCookie,dwPort);
+  debugf(L"sending lobby our mission info for %x listening on port %d\n",pfmLobbyMissionInfo->dwCookie,dwPort);
   // adjust the clock time to be an offset from the current time (the lobby server will fix this)
   pfmLobbyMissionInfo->dwStartTime = m_misdef.misparms.timeStart.clock() - Time::Now().clock();
 
@@ -5072,7 +5072,7 @@ void CFSMission::DeactivateSide(IsideIGC * pside)
   //if (!m_misdef.misparms.bAllowEmptyTeams)
   //{
       assert(pside->GetMission() == m_pMission);
-      debugf("DeactivateSide side=%d.\n", pside->GetObjectID());
+      debugf(L"DeactivateSide side=%d.\n", pside->GetObjectID());
       pside->SetActiveF(false);
       SideID sideid = pside->GetObjectID();
       m_misdef.rgfActive[sideid]  =
@@ -5125,7 +5125,7 @@ void CFSMission::DeactivateSide(IsideIGC * pside)
 	  pfmSideInactive->bActive = false; // KGJV #62
 	  pfmSideInactive->bChangeAET = false; // KGJV #62
       g.fm.SendMessages(GetGroupMission(), FM_GUARANTEED, FM_FLUSH);
-      GetSite()->SendChatf(NULL, CHAT_EVERYONE, NA, NA, "%s is no more.", pside->GetName());
+      GetSite()->SendChatf(NULL, CHAT_EVERYONE, NA, NA, L"%s is no more.", pside->GetName());
 
 
       bool bAllSidesInactive;
@@ -5136,7 +5136,7 @@ void CFSMission::DeactivateSide(IsideIGC * pside)
           if (GetStage() == STAGE_STARTING)
             StartGame();
 
-          GameOver(NULL, "All sides were destroyed");
+          GameOver(NULL, L"All sides were destroyed");
       }
       else if (psideWin)
       {
@@ -5144,7 +5144,7 @@ void CFSMission::DeactivateSide(IsideIGC * pside)
           if (GetStage() == STAGE_STARTING)
             StartGame();
 
-          static char szReason[256];     //Make this static so we only need to keep a pointer to it around
+		  static wchar_t szReason[256];     //Make this static so we only need to keep a pointer to it around
 
 		  //make the allies team name list Imago ALLY 7/13/09
 		  if (psideWin->GetAllies() != NA) {
@@ -5158,13 +5158,13 @@ void CFSMission::DeactivateSide(IsideIGC * pside)
 					IsideIGC*   otherside = psidelink->data();
 					//this side is ally...and not ours
 					if (pside->AlliedSides(psideWin,otherside) && otherside != psideWin)
-						strWinningTeams += " & " + ZString(otherside->GetName());
+						strWinningTeams += L" & " + ZString(otherside->GetName());
 				}
 				strWinningTeams = psideWin->GetName() + strWinningTeams;
-				sprintf(szReason, "%s won by outlasting all other sides.", (PCC)strWinningTeams);
+				swprintf(szReason, L"%s won by outlasting all other sides.", (PCC)strWinningTeams);
 				GameOver(psideWin, szReason);
 		  } else {
-	          sprintf(szReason, "%s won by outlasting all other sides.", psideWin->GetName());
+	          swprintf(szReason, L"%s won by outlasting all other sides.", psideWin->GetName());
 			  GameOver(psideWin, szReason);
 		  }
       }
@@ -5409,9 +5409,9 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 			AlliesMasks[i] = 0;
 	}
 
-	debugf("UpdateAlliances begin: %d %d %d %d %d %d\n",GetSideAllies(0),GetSideAllies(1),GetSideAllies(2),GetSideAllies(3),GetSideAllies(4),GetSideAllies(5));
-	debugf("  m: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
-	debugf("  team %d ,sideAlly = %d\n",sideID,sideAlly);
+	debugf(L"UpdateAlliances begin: %d %d %d %d %d %d\n",GetSideAllies(0),GetSideAllies(1),GetSideAllies(2),GetSideAllies(3),GetSideAllies(4),GetSideAllies(5));
+	debugf(L"  m: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
+	debugf(L"  team %d ,sideAlly = %d\n",sideID,sideAlly);
 
 	if (sideID != NA) // we got a valid parameter sideID
 	{
@@ -5426,7 +5426,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 		else
 			AlliesMasks[sideID]= 0;
 	}
-	debugf("  m1: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
+	debugf(L"  m1: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
 
 	SideID NumSides = GetCountSides();
 
@@ -5453,7 +5453,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 		else
 			AlliesMasks[i] = AlliesMasks[i] & ~(1<<sideID); // if not then make sure team i isnt ally with team sideid
 	}
-	debugf("  m2: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
+	debugf(L"  m2: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
 
 	// build the final allied groups
 	char Allies[c_cSidesMax]; for (SideID i = 0; i <  c_cSidesMax ; i++) Allies[i] = NA;
@@ -5465,7 +5465,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 		{
 			if (AlliesMasks[i] == (1<<i)) AlliesMasks[i] = 0;
 		}
-		debugf("  m3: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
+		debugf(L"  m3: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
 
 		// propagate the alliance till it's stable
 		while (true)
@@ -5491,7 +5491,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 			}
 			if (stop) break; // nothing changed after this pass, we stop
 		}
-		debugf("  m4: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
+		debugf(L"  m4: %d %d %d %d %d %d\n",AlliesMasks[0],AlliesMasks[1],AlliesMasks[2],AlliesMasks[3],AlliesMasks[4],AlliesMasks[5]);
 
 		// create the different allied groups
 
@@ -5530,7 +5530,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 			}
 		}
 		// validation: if no group at all OR no solo teams and only 1 group then invalid alliances
- 		debugf("  final g=%d, st=%d\n",numgroups,soloteams);
+ 		debugf(L"  final g=%d, st=%d\n",numgroups,soloteams);
 		if ((numgroups==0) || ((soloteams==0) && (numgroups==1)))
 		{
 			// in that case, we clear all alliances
@@ -5552,7 +5552,7 @@ void CFSMission::UpdateAlliances(SideID sideID,SideID sideAlly)
 	}
 	g.fm.SendMessages(GetGroupMission(), FM_GUARANTEED, FM_FLUSH);
 
-	debugf("UpdateAlliances end: %d %d %d %d %d %d\n",GetSideAllies(0),GetSideAllies(1),GetSideAllies(2),GetSideAllies(3),GetSideAllies(4),GetSideAllies(5));
+	debugf(L"UpdateAlliances end: %d %d %d %d %d %d\n",GetSideAllies(0),GetSideAllies(1),GetSideAllies(2),GetSideAllies(3),GetSideAllies(4),GetSideAllies(5));
 
 }
 // #ALLY end
@@ -5638,7 +5638,7 @@ void Ballot::Init(CFSPlayer* pfsInitiator, const ZString& strProposalName, const
   if (pfsInitiator == m_pmission->GetLastBallotInitiator() && Time::Now() - m_pmission->GetLastBallotTime() < 300.0f)
   {
 	  m_pmission->GetSite()->SendChat(NULL, CHAT_INDIVIDUAL, pfsInitiator->GetShipID(), NA,
-      "You have to wait five minutes before initating another vote.", c_cidNone, NA, NA, NULL, true);
+      L"You have to wait five minutes before initating another vote.", c_cidNone, NA, NA, NULL, true);
 	  return;
   }
   
@@ -5718,7 +5718,7 @@ void Ballot::Init(CFSPlayer* pfsInitiator, const ZString& strProposalName, const
   if (pfsInitiator == m_pmission->GetLastBallotInitiator() && Time::Now() - m_pmission->GetLastBallotTime() < 300.0f)
   {
 	  m_pmission->GetSite()->SendChat(NULL, CHAT_INDIVIDUAL, pfsInitiator->GetShipID(), NA,
-      "You have to wait five minutes before initating another vote.", c_cidNone, NA, NA, NULL, true);
+      L"You have to wait five minutes before initating another vote.", c_cidNone, NA, NA, NULL, true);
 	  return;
   }
   
@@ -5856,26 +5856,26 @@ ZString Ballot::GetTallyString()
       if (bFirst)
       {
         bFirst = false;
-        strMessage += "(";
+        strMessage += L"(";
       }
       else
-        strMessage += ", ";
+        strMessage += L", ";
 
       // only display the team name if more than one team is voting on the issue
       if (m_chattarget != CHAT_TEAM && !m_bPollEveryone)
-        strMessage += ZString(m_pmission->GetIGCMission()->GetSide(sideID)->GetName()) + ":" ;
+        strMessage += ZString(m_pmission->GetIGCMission()->GetSide(sideID)->GetName()) + L":" ;
 
       if (m_cInFavor[sideID])
-        strMessage += " " + ZString(m_cInFavor[sideID]) + " for";
+        strMessage += L" " + ZString(m_cInFavor[sideID]) + L" for";
       if (m_cOpposed[sideID])
-        strMessage += " " + ZString(m_cOpposed[sideID]) + " against";
+        strMessage += L" " + ZString(m_cOpposed[sideID]) + L" against";
       if (m_cAbstaining[sideID])
-        strMessage += " " + ZString(m_cAbstaining[sideID]) + " abstained";
+        strMessage += L" " + ZString(m_cAbstaining[sideID]) + L" abstained";
     }
   }
 
   if (!bFirst)
-    strMessage += ")";
+    strMessage += L")";
 
   return strMessage;
 }
@@ -5887,7 +5887,7 @@ void Ballot::OnPassed()
 	m_pmission->SetLastBallotIime(0);
 	m_pmission->SetLastBallotInitiator(0);
 	
-	ZString strMessage = m_strProposal + " has passed.  " + GetTallyString();
+	ZString strMessage = m_strProposal + L" has passed.  " + GetTallyString();
 
   m_pmission->GetSite()->SendChat(NULL, m_chattarget, m_groupID, NA,
       strMessage, c_cidNone, NA, NA, NULL, true);
@@ -5896,7 +5896,7 @@ void Ballot::OnPassed()
 // performs the appropriate result when the vote passes
 void Ballot::OnFailed()
 {
-  ZString strMessage = m_strProposal + " has been defeated.  " + GetTallyString();
+  ZString strMessage = m_strProposal + L" has been defeated.  " + GetTallyString();
 
   m_pmission->GetSite()->SendChat(NULL, m_chattarget, m_groupID, NA,
       strMessage, c_cidNone, NA, NA, NULL, true);
@@ -5945,8 +5945,8 @@ RemoveComBallot::RemoveComBallot(CFSPlayer* pfsInitiator, SideID sideID)
 	m_bHideToLeader = true;
 	m_type = BALLOT_REMOVECOM;
 	Init(pfsInitiator, 
-		pfsInitiator->GetName() + ZString("'s proposal to remove ") + pmission->GetLeader(sideID)->GetName(),
-		pfsInitiator->GetName() + ZString(" has proposed to remove ") + pmission->GetLeader(sideID)->GetName() + ZString(" from command of ") + m_pside->GetName() + ZString(".  "),
+		pfsInitiator->GetName() + ZString(L"'s proposal to remove ") + pmission->GetLeader(sideID)->GetName(),
+		pfsInitiator->GetName() + ZString(L" has proposed to remove ") + pmission->GetLeader(sideID)->GetName() + ZString(L" from command of ") + m_pside->GetName() + ZString(L".  "),
 		m_idTargetShip);
 
 }
@@ -6052,14 +6052,14 @@ OfferDrawBallot::OfferDrawBallot(CFSPlayer* pfsInitiator)
   m_pfside = CFSSide::FromIGC(pfsInitiator->GetSide());
   m_bHideToLeader = false; // KGJV #110
   m_type = BALLOT_OFFERDRAW; // mmf/KGJV 09/07 allow only one ballot of each type at a time
-  Init(pfsInitiator, pfsInitiator->GetName() + ZString("'s proposal to offer a draw"), pfsInitiator->GetName() + ZString(" has proposed offering a draw.  "));
+  Init(pfsInitiator, pfsInitiator->GetName() + ZString(L"'s proposal to offer a draw"), pfsInitiator->GetName() + ZString(L" has proposed offering a draw.  "));
 }
 
 void OfferDrawBallot::OnPassed()
 {
   Ballot::OnPassed();
   m_pmission->GetSite()->SendChat(NULL, m_chattarget, m_groupID, NA,
-      "A draw is being offered to the other teams.", c_cidNone, NA, NA, NULL, true);
+      L"A draw is being offered to the other teams.", c_cidNone, NA, NA, NULL, true);
   m_pmission->AddBallot(new AcceptDrawBallot(m_pfside));
 }
 
@@ -6068,13 +6068,13 @@ AcceptDrawBallot::AcceptDrawBallot(CFSSide* pfsideInitiator)
 {
   m_bHideToLeader = false; // KGJV #110
   m_type = BALLOT_ACCEPTDRAW; // mmf/KGJV 09/07 allow only one ballot of each type at a time
-  Init(pfsideInitiator, pfsideInitiator->GetSideIGC()->GetName() + ZString("'s offer of a draw"), pfsideInitiator->GetSideIGC()->GetName() + ZString(" has offered a draw.  "));
+  Init(pfsideInitiator, pfsideInitiator->GetSideIGC()->GetName() + ZString(L"'s offer of a draw"), pfsideInitiator->GetSideIGC()->GetName() + ZString(L" has offered a draw.  "));
 }
 
 void AcceptDrawBallot::OnPassed()
 {
   Ballot::OnPassed();
-  m_pmission->GameOver(NULL, "The game was declared a draw");
+  m_pmission->GameOver(NULL, L"The game was declared a draw");
 }
 
 

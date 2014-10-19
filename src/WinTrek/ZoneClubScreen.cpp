@@ -45,10 +45,10 @@ private:
     TRef<ButtonPane>   m_pbuttonLeaderboard;
     TRef<ButtonPane>   m_pbuttonWeb;
     TRef<MDLFileImage> m_pMDLFileImage;
-    char               m_szName[c_cbPassportName];
-    char               m_szPW[c_cbCDKey];
-    char               m_szPWOrig[c_cbCDKey];
-    char               m_szConfig[MAX_PATH];
+    wchar_t               m_szName[c_cbPassportName];
+	wchar_t               m_szPW[c_cbCDKey];
+	wchar_t               m_szPWOrig[c_cbCDKey];
+	wchar_t               m_szConfig[MAX_PATH];
     BOOL               m_fRememberPW;
 
     bool               m_bErrorOccured;
@@ -264,7 +264,7 @@ public:
 			m_fRememberPW = trekClient.GetSavePassword();
 #endif
 		  // wlp - don't ask for callsign if it was on the command line //imago include m_szPWOrig 9/14
-          if (!g_bAskForCallSign && strlen(m_szPWOrig) > 1) 
+          if (!g_bAskForCallSign && wcslen(m_szPWOrig) > 1) 
 		  {
 		  this->OnLogon(trekClient.GetSavedCharacterName(), m_szPWOrig, false); 
 	      } // wlp - end of dont ask for callsign
@@ -389,18 +389,18 @@ public:
     void BeginConfigDownload()
     {
 #ifdef _ALLEGIANCE_PROD_
-        lstrcpy(m_szConfig, "http://autoupdate.allegiancezone.com/config/AZ.cfg");  //imago updated 7/4/09 9/14
+        lstrcpy(m_szConfig, L"http://autoupdate.allegiancezone.com/config/AZ.cfg");  //imago updated 7/4/09 9/14
 #else
-		lstrcpy(m_szConfig, "http://autoupdate.allegiancezone.com/config/AZDev.cfg");  //imago updated 6/10 9/14
+		lstrcpy(m_szConfig, L"http://autoupdate.allegiancezone.com/config/AZDev.cfg");  //imago updated 6/10 9/14
 #endif
         HKEY hKey;
 
         if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
             DWORD cbValue = MAX_PATH;
-            char szConfig[MAX_PATH];
+            wchar_t szConfig[MAX_PATH];
             szConfig[0] = '\0';
-            ::RegQueryValueEx(hKey, "CfgFile", NULL, NULL, (LPBYTE)&szConfig, &cbValue);
+            ::RegQueryValueEx(hKey, L"CfgFile", NULL, NULL, (LPBYTE)&szConfig, &cbValue);
             // if it didn't succeed, we'll just use the default above
             if (lstrlen(szConfig) > 0)
               lstrcpy(m_szConfig, szConfig);
@@ -408,14 +408,14 @@ public:
 
         if (!g_bDownloadNewConfig || g_bQuickstart)  //imago added quickstart and reordered 7/4/09
         {
-            debugf("Skipping download of config file due to command-line switch.\n");
+             debugf(L"Skipping download of config file due to command-line switch.\n");
             OnConfigDownloadDone(true, false);
             return;
         }
 
         if (ZString(m_szConfig).Find("http://") == -1)
         {
-            debugf("Using local config file due to registry setting for ConfigFile because \"http://\" was missing from it. %s\n", m_szConfig);
+             debugf(L"Using local config file due to registry setting for ConfigFile because \"http://\" was missing from it. %s\n", m_szConfig);
 
             if (!IsFileValid(m_szConfig))
             {
@@ -432,13 +432,13 @@ public:
         if (m_pSession)
             return;
 
-        debugf("Beginning Config Download: %s.\n", m_szConfig);
+         debugf(L"Beginning Config Download: %s.\n", m_szConfig);
 
         m_pSession = CreateHTTPSession(this);
 
-        const char * szFileList[] = { m_szConfig, "temp.cfg", NULL };
+		const wchar_t * szFileList[] = { m_szConfig, L"temp.cfg", NULL };
 
-        m_pSession->InitiateDownload(szFileList, "."); // . means EXE path
+        m_pSession->InitiateDownload(szFileList, L"."); // . means EXE path
 
         return;
     }
@@ -447,13 +447,13 @@ public:
     {
         if (!g_bDownloadZoneMessage || g_bQuickstart) //imago 7/4/09
         {
-            debugf("Skipping download of Message Of the Day due to command-line switch.\n");
+             debugf(L"Skipping download of Message Of the Day due to command-line switch.\n");
             OnMessageOfDayDone(false);
             return;
         }
 
         PCC szMessageOfTheDayFileName = trekClient.GetIsZoneClub()
-            ? "clubmessageoftheday.mdl" : "publicmessageoftheday.mdl";
+            ? L"clubmessageoftheday.mdl" : L"publicmessageoftheday.mdl";
 
         PathString path(trekClient.GetArtPath());
         path = path + szMessageOfTheDayFileName;
@@ -464,13 +464,13 @@ public:
             ? trekClient.GetCfgInfo().crcClubMessageFile
             : trekClient.GetCfgInfo().crcPublicMessageFile))
         {
-            debugf("Existing messageoftheday file has the correct CRC, skipping download.\n");
+             debugf(L"Existing messageoftheday file has the correct CRC, skipping download.\n");
             OnMessageOfDayDone(true);
             return;
         }
         else
         {
-            debugf("Existing messageoftheday file has the wrong CRC (%X).\n", crc);
+             debugf(L"Existing messageoftheday file has the wrong CRC (%X).\n", crc);
         }
 
         if (m_pSession)
@@ -480,11 +480,11 @@ public:
             ? PCC(trekClient.GetCfgInfo().strClubMessageURL)
             : PCC(trekClient.GetCfgInfo().strPublicMessageURL);
 
-        debugf("Beginning messageoftheday download: %s.\n", szMessageOfTheDayURL);
+         debugf(L"Beginning messageoftheday download: %s.\n", szMessageOfTheDayURL);
 
         m_pSession = CreateHTTPSession(this);
 
-        const char * szFileList[3] = { szMessageOfTheDayURL, szMessageOfTheDayFileName, NULL };
+		const wchar_t * szFileList[3] = { szMessageOfTheDayURL, szMessageOfTheDayFileName, NULL };
 
         m_pSession->InitiateDownload(szFileList, trekClient.GetArtPath());
 
@@ -494,12 +494,12 @@ public:
     void OnError(char * szErrorMessage) // on HTTP download error
     {
         // Errors are essentially ignored
-        debugf("Error while downloading file.\n");
-        debugf("%s\n", szErrorMessage);
+         debugf(L"Error while downloading file.\n");
+         debugf(L"%s\n", szErrorMessage);
         m_bErrorOccured = true;
     }
 
-    bool IsFileValid(char * szFileName)
+	bool IsFileValid(wchar_t * szFileName)
     {
         ZFile file(szFileName);
 
@@ -514,7 +514,7 @@ public:
             {
                 if (strstr(pData, szValidMotd) == NULL)
                 {
-                    debugf("File %s is not a valid messageoftheday file.\n", szFileName);
+                     debugf(L"File %s is not a valid messageoftheday file.\n", szFileName);
 #ifdef DEBUG
                     m_pmsgBox = CreateMessageBox("Warning, downloaded Motd file missing validation string");
                     GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
@@ -527,7 +527,7 @@ public:
             {
                 if (strstr(pData, szValidCfg) == NULL)
                 {
-                    debugf("File %s is not a valid config file.\n", szFileName);
+                     debugf(L"File %s is not a valid config file.\n", szFileName);
 #ifdef DEBUG
                     m_pmsgBox = CreateMessageBox("Warning, CFG file missing validation string");
                     GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
@@ -540,24 +540,24 @@ public:
         }
         else
         {
-             debugf("File %s error while trying to load downloaded config file.\n", szFileName);
+              debugf(L"File %s error while trying to load downloaded config file.\n", szFileName);
              return false;
         }
         return true;
     }
 
-    bool OnFileCompleted(char * szFileName)
+	bool OnFileCompleted(wchar_t * szFileName)
     {
-        debugf("Downloaded file: %s\n", szFileName);
+         debugf(L"Downloaded file: %s\n", szFileName);
 
-        char szPath[MAX_PATH+20];
-        strcpy(szPath, m_pSession->GetDownloadPath());
-        strcat(szPath, szFileName);
+		 wchar_t szPath[MAX_PATH + 20];
+        Strcpy(szPath, m_pSession->GetDownloadPath());
+        Strcat(szPath, szFileName);
 
         if (!IsFileValid(szPath))
         {
             m_bErrorOccured = true;
-            debugf("Aborting either cfg or motd because file is invalid.");
+             debugf(L"Aborting either cfg or motd because file is invalid.");
 
             m_pmsgBox = CreateMessageBox("Unable to connect to Zone.  Please try again later.");
             GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
@@ -599,24 +599,24 @@ public:
             {
                 PathString pathTemp(pathEXE + "temp.cfg");
                 trekClient.GetCfgInfo().Load(PCC(pathTemp));
-                debugf("Loaded downloaded config file: %s\n", PCC(pathTemp));
+                 debugf(L"Loaded downloaded config file: %s\n", PCC(pathTemp));
 
                 // rename file, so that next time if there is an error, there is
                 // a recent config file to use.
-                debugf("Renaming %s to %s\n", PCC(pathTemp), PCC(pathConfig));
+                 debugf(L"Renaming %s to %s\n", PCC(pathTemp), PCC(pathConfig));
                 DeleteFile(PCC(pathConfig));
                 MoveFile(PCC(pathTemp), PCC(pathConfig));
 				trekClient.GetCfgInfo().SetCfgFile(pathConfig);
             }
             else
             {
-                debugf("Error detected, loading existing config file: %s\n", PCC(pathConfig));
+                 debugf(L"Error detected, loading existing config file: %s\n", PCC(pathConfig));
                 trekClient.GetCfgInfo().Load(PCC(pathConfig));
             }
         }
         else
         {
-            debugf("Using local config file %s\n", m_szConfig);
+             debugf(L"Using local config file %s\n", m_szConfig);
             trekClient.GetCfgInfo().Load(m_szConfig);
         }
 
@@ -642,8 +642,8 @@ public:
 
                         trekClient.m_pAutoDownload->SetFTPSite(PCC(trekClient.GetCfgInfo().strFilelistSite),
                                                                PCC(trekClient.GetCfgInfo().strFilelistDirectory),
-                                                               "blah", // account
-                                                               "blah"); // pw
+                                                               L"blah", // account
+                                                               L"blah"); // pw
 
                         trekClient.m_pAutoDownload->SetOfficialFileListAttributes(trekClient.GetCfgInfo().crcFileList,
                                                                                   trekClient.GetCfgInfo().nFilelistSize);
@@ -666,7 +666,7 @@ public:
                 }
                 else
                 {
-                    debugf("Your cfg file is missing one or more of the following:\nFilelistCRC, FilelistSize, FilelistSite, FilelistDirectory\nSkipping AutoUpdate.\n");
+                     debugf(L"Your cfg file is missing one or more of the following:\nFilelistCRC, FilelistSize, FilelistSite, FilelistDirectory\nSkipping AutoUpdate.\n");
                     // signal successful update/version already up-to-date
                     OnAutoUpdateSystemTermination(false, false);
 
@@ -698,13 +698,13 @@ public:
 
         if (bSuccessful)
         {
-            debugf("Loading messageoftheday file.\n");
+             debugf(L"Loading messageoftheday file.\n");
             m_pMDLFileImage->Load(trekClient.GetIsZoneClub()
                 ? "clubmessageoftheday" : "publicmessageoftheday");
         }
         else
         {
-            debugf("Errors detected while downloading message of the day.  Skipping load.\n");
+             debugf(L"Errors detected while downloading message of the day.  Skipping load.\n");
         }
     }
 

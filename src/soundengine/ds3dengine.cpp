@@ -154,7 +154,7 @@ HRESULT DS3DSoundEngine::SetPrimaryBufferFormat(int nSampleRate, int nNumberOfBi
 
     // print the new format in the debug window
     debugf(
-        "Primary buffer set to %d Hz, %d bits, %d channels (attempted %d Hz, %d bits, %d channels)\n",
+        L"Primary buffer set to %d Hz, %d bits, %d channels (attempted %d Hz, %d bits, %d channels)\n",
         waveformatex.nSamplesPerSec, waveformatex.wBitsPerSample, waveformatex.nChannels,
         nSampleRate, nNumberOfBits, nChannels
         );

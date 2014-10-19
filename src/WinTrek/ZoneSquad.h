@@ -37,7 +37,7 @@ class IZoneSquad:
 {
 public:
 
-  virtual char *GetName() = 0;
+	virtual wchar_t *GetName() = 0;
   virtual void  SetName(PCC szName) = 0;
 
   virtual int   GetID() = 0;                         // True ID determined by Zone database servers
@@ -46,18 +46,18 @@ public:
   virtual int   GetCreationID() = 0;                 // Creation ID is valid on client only
   virtual void  SetCreationID(int nCreationID) = 0;
 
-  virtual char *GetDescription() = 0;
+  virtual wchar_t *GetDescription() = 0;
   virtual void  SetDescription(PCC szDescription) = 0;
 
-  virtual char *GetURL() = 0;
+  virtual wchar_t *GetURL() = 0;
   virtual void  SetURL(PCC szURL) = 0;
 
-  virtual char *GetInceptionDate() = 0;
-  virtual void  SetInceptionDate(char *szInceptionDate) = 0;
+  virtual wchar_t *GetInceptionDate() = 0;
+  virtual void  SetInceptionDate(wchar_t *szInceptionDate) = 0;
 
   virtual TRef<IZonePlayer>  GetOwner() = 0;
 
-  virtual char const * GetRank() = 0;
+  virtual wchar_t const * GetRank() = 0;
 
   virtual int   GetRanking(SQUAD_SORT_COLUMN column)          = 0;
   virtual void  SetRanking(SQUAD_SORT_COLUMN column, int nRanking) = 0;
@@ -90,7 +90,7 @@ public:
 
   virtual void  SetEmpty() = 0;  // Clears all membership
 
-  virtual void  SetOwnershipLog(char *szLog) = 0;
+  virtual void  SetOwnershipLog(wchar_t *szLog) = 0;
   virtual TList<ZString> * GetOwnershipLog() = 0;
 
   virtual void  AddPlayersToList(XZonePlayers & list) = 0;
@@ -108,13 +108,13 @@ public:
 
   virtual void              Randomize() = 0; // fill in random data
 
-  virtual char *            GetName()       = 0;
+  virtual wchar_t *            GetName() = 0;
   virtual void              SetName(PCC szName) = 0;       
 
   virtual int               GetID() = 0;
   virtual void              SetID(int nID) = 0;
 
-  virtual char *            GetLastPlayedDate(IZoneSquad & squad) = 0;
+  virtual wchar_t *            GetLastPlayedDate(IZoneSquad & squad) = 0;
   virtual void              SetLastPlayedDate(IZoneSquad & squad, PCC szLastPlayedDate) = 0;       
 
   virtual DetailedStatus    GetStatus(IZoneSquad & squad) = 0;
@@ -132,4 +132,4 @@ public:
   virtual bool              IsPendingFor(IZoneSquad & squad) = 0;
 };
 
-TRef<IZonePlayer> CreateZonePlayer(const char *szName, int nID);
+TRef<IZonePlayer> CreateZonePlayer(const wchar_t *szName, int nID);

@@ -111,7 +111,7 @@ public:
   LANGID GetLanguageID    () const;
   void   SetCodePage      (WORD wCodePage = -1);
   WORD   GetCodePage      () const;
-  ZString GetStringValue(LPCTSTR pszKey, bool* pbExists = NULL) const;
+  ZString GetStringValue(const wchar_t* pszKey, bool* pbExists = false) const;
 
   // Common String Values
   ZString GetCompanyName     (bool* pbExists = NULL) const;
@@ -150,8 +150,8 @@ protected:
 inline ZString ZVersionInfo::GetFileVersionString() const
 {
   assert(m_pFixed);
-  TCHAR szText[32];
-  _stprintf_s(szText, 32, TEXT("%hu.%02hu.%02hu.%04hu"),
+  ZString szText;
+  _stprintf_s((wchar_t*)(PCC)szText, 32, TEXT("%hu.%02hu.%02hu.%04hu"),
     GetFileVersionMSHigh(), GetFileVersionMSLow(),
     GetFileVersionLSHigh(), GetFileVersionLSLow());
   return ZString(szText);
@@ -532,7 +532,7 @@ inline ZString ZVersionInfo::GetCompanyName(bool* pbExists) const
 
 inline ZString ZVersionInfo::GetFileDescription(bool* pbExists) const
 {
-  return GetStringValue(TEXT("FileDescription"), pbExists);
+  return GetStringValue(L"FileDescription", pbExists);
 }
 
 inline ZString ZVersionInfo::GetFileVersion(bool* pbExists) const
@@ -547,7 +547,7 @@ inline ZString ZVersionInfo::GetInternalName(bool* pbExists) const
 
 inline ZString ZVersionInfo::GetLegalCopyright(bool* pbExists) const
 {
-  return GetStringValue(TEXT("LegalCopyright"), pbExists);
+  return GetStringValue(L"LegalCopyright", pbExists);
 }
 
 inline ZString ZVersionInfo::GetOriginalFilename(bool* pbExists) const

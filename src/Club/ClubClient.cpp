@@ -1458,7 +1458,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
           pfmLogonAck->nMemberID = pClient->GetZoneID();
 
-          debugf("Zone ID: %d\n", pfmLogonAck->nMemberID);
+          debugf(L"Zone ID: %d\n", pfmLogonAck->nMemberID);
 
           // Send them the ranking info
           CheckRankInfo();
@@ -1500,7 +1500,7 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         //
         // First, we send civ-independent info
         //
-        debugf("Sending Character Info for %d.\n", CharInfoGeneral_CharacterID);
+        debugf(L"Sending Character Info for %d.\n", CharInfoGeneral_CharacterID);
 
         // do query
         SQL_GO(CharInfoGeneral);

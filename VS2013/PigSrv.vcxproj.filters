@@ -265,6 +265,15 @@
     <None Include="..\src\Pigs\Piglets\dm.pig">
       <Filter>Piglets</Filter>
     </None>
+    <None Include="..\src\Pigs\Scripts\CreatePig.pl">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="..\src\Pigs\Scripts\CreatePigs.pl">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="..\src\Pigs\Scripts\PigCommand.pl">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\Pigs\PigSrv\PigSrv.rc">

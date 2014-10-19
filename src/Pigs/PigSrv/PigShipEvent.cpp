@@ -72,9 +72,7 @@ ImodelIGC* CPigShipEvent::FindTargetName(CPig* pPig, BSTR bstrTarget, bool bFrie
 		IclusterIGC* pCluster = pPig->BaseClient::GetCluster();
 		if (pCluster)
 		{
-			// Convert the BSTR to ANSI
-			USES_CONVERSION;
-			LPCSTR pszTarget = OLE2CA(bstrTarget);
+			LPCWSTR pszTarget = OLE2CW(bstrTarget);
 
 			// Get the pig ship's position
 			Vector vPig = pPig->GetShip()->GetPosition();
@@ -86,7 +84,7 @@ ImodelIGC* CPigShipEvent::FindTargetName(CPig* pPig, BSTR bstrTarget, bool bFrie
 			{
 				ImodelIGC* pModel = it->data();
 				if (pModel) { //imago 10/14 (model can disappear here)
-					if (0 == _stricmp(GetModelName(pModel), pszTarget))
+					if (0 == _wcsicmp(GetModelName(pModel), pszTarget))
 					{
 						if (bFriendsOnly && pModel->GetSide() != pPig->BaseClient::GetSide()) {
 							//Imago skip! 10/14

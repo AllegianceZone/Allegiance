@@ -10,7 +10,7 @@ public:
 
   TechTreeBitMask   m_ttbmAltered[c_cSidesMax];    // which bits have changed
   TechTreeBitMask   m_ttbmNewSetting[c_cSidesMax]; // the new bits
-  char              m_szTeamName[c_cSidesMax][c_cbName];
+  wchar_t              m_szTeamName[c_cSidesMax][c_cbName];
 
   void Reset()
   {

@@ -8,20 +8,20 @@ const Money moneyLots = 0x7fffffff;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-static  const char* GetBuyableName(IbuyableIGC*   ppt)
+static  const wchar_t* GetBuyableName(IbuyableIGC*   ppt)
 {
-    const char* name = ppt->GetName();
+	const wchar_t* name = ppt->GetName();
     Money       cost = ppt->GetPrice();
 
     if (cost == 0)
         return name;
     else
     {
-        static char bfr[c_cbName + 10];
-        strcpy(bfr, name);
-        strcat(bfr, " $(");
-        _itoa(cost, bfr + strlen(bfr), 10);
-        strcat(bfr, ")");
+		static wchar_t bfr[c_cbName + 10];
+        Strcpy(bfr, name);
+        Strcat(bfr, L" $(");
+        _itow(cost, bfr + wcslen(bfr), 10);
+        Strcat(bfr, L")");
 
         return bfr;
     }
@@ -2224,7 +2224,7 @@ public:
                     // Save the current loadout of this ship into the Custom Loadout array
                     trekClient.SaveCustomLoadout(m_pship, num);
                     
-                    trekClient.PostText(false, "Saved %s loadout %d", m_pship->GetBaseHullType()->GetName(), num);
+                    trekClient.PostText(false, L"Saved %s loadout %d", m_pship->GetBaseHullType()->GetName(), num);
 
                     if (trekClient.SaveCustomLoadoutFile())
                         trekClient.PlaySoundEffect(positiveButtonClickSound);
@@ -2237,7 +2237,7 @@ public:
 
                     UpdateHullType();
 
-                    trekClient.PostText(false, "Loaded %s loadout %d", m_pship->GetBaseHullType()->GetName(), num);
+                    trekClient.PostText(false, L"Loaded %s loadout %d", m_pship->GetBaseHullType()->GetName(), num);
 
                     trekClient.PlaySoundEffect(mountSound);
                 }

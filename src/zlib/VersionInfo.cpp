@@ -183,7 +183,7 @@ void ZVersionInfo::Unload()
 /////////////////////////////////////////////////////////////////////////////
 // String Values
 
-ZString ZVersionInfo::GetStringValue(LPCTSTR pszKey, bool* pbExists) const
+ZString ZVersionInfo::GetStringValue(const wchar_t* pszKey, bool* pbExists) const
 {
   // Initialize the [out] parameter
   if (pbExists)
@@ -236,7 +236,9 @@ ZString ZVersionInfo::GetStringValue(LPCTSTR pszKey, bool* pbExists) const
 
       // Indicate success
       SetLastError(0);
-      return ZString(pszValue);
+	  ZString zValue(pszValue);
+
+	  return ZString(zValue);
     }
   }
 

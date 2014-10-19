@@ -2352,7 +2352,7 @@ IshipIGC*   CreateDrone(ImissionIGC*     pmission,
 
     if (pszName)
     {
-        assert (strlen(pszName) < c_cbName - 4);
+        assert (wcslen(pszName) < c_cbName - 4);
         Strcpy(ds.name, pszName);
 
         //Is the name unique?

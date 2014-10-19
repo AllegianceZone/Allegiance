@@ -1291,7 +1291,7 @@ private:
         //            return DeviceOK(bChanges);
 
         //        default:
-        //            ZError("Unexpected result\n");
+        //            ZError(L"Unexpected result\n");
         //    }
         //}
 

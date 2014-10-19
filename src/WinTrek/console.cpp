@@ -626,7 +626,7 @@ private:
 
 public:
 
-    ConsoleDataImpl(Viewport*   pviewport, const char* pszFileName) :
+    ConsoleDataImpl(Viewport*   pviewport, const wchar_t* pszFileName) :
         m_csComposeState(c_csNotComposing),
         m_rPreviousMissileLock(0.0f),
         m_fTargetChanged(false),
@@ -896,17 +896,17 @@ public:
         }
 
         {
-            static char bfr[100];
+			static wchar_t bfr[100];
             CommandID   cid = trekClient.GetShip()->GetCommandID(c_cmdAccepted);
             if (cid != c_cidNone)
             {
-                strcpy(bfr, c_cdAllCommands[cid].szVerb);
+                Strcpy(bfr, c_cdAllCommands[cid].szVerb);
                 ImodelIGC*  pmodel = trekClient.GetShip()->GetCommandTarget(c_cmdAccepted);
                 if (pmodel)
                 {
-                    int l = strlen(bfr);
+                    int l = wcslen(bfr);
                     bfr[l] = ' ';
-                    strcpy(bfr + l + 1, GetModelName(pmodel));
+                    Strcpy(bfr + l + 1, GetModelName(pmodel));
                 }
             }
             else
@@ -914,17 +914,17 @@ public:
             m_pstringAcceptedOrder->SetValue(bfr);
         }
         {
-            static char bfr[100];
+			static wchar_t bfr[100];
             CommandID   cid = trekClient.GetShip()->GetCommandID(c_cmdQueued);
             if (cid != c_cidNone)
             {
-                strcpy(bfr, c_cdAllCommands[cid].szVerb);
+                Strcpy(bfr, c_cdAllCommands[cid].szVerb);
                 ImodelIGC*  pmodel = trekClient.GetShip()->GetCommandTarget(c_cmdQueued);
                 if (pmodel)
                 {
-                    int l = strlen(bfr);
+                    int l = wcslen(bfr);
                     bfr[l] = ' ';
-                    strcpy(bfr + l + 1, GetModelName(pmodel));
+                    Strcpy(bfr + l + 1, GetModelName(pmodel));
                 }
             }
             else
@@ -963,12 +963,12 @@ public:
         ZString str = GetKeyName(TK_FireMissile);
         if (rMissileLock > 0.0f && rMissileLock < 1.0f && 
                 !(m_rPreviousMissileLock > 0.0f && m_rPreviousMissileLock < 1.0f))
-            trekClient.PostText(false, "Partial missile lock - center the target on screen to improve the lock.");
+            trekClient.PostText(false, L"Partial missile lock - center the target on screen to improve the lock.");
         else if (rMissileLock == 1.0f && m_rPreviousMissileLock != 1.0f)
-            trekClient.PostText(false, "%s", (const char*)(ZString("Missile lock acquired - press ["+str+"] to fire a ")
+			trekClient.PostText(false, L"%s", (const wchar_t*)(ZString("Missile lock acquired - press [" + str + "] to fire a ")
                 + magazine->GetMissileType()->GetName() + " missile at the target."));
         else if (rMissileLock == 0.0f && m_rPreviousMissileLock != 0.0f && !m_fTargetChanged)
-            trekClient.PostText(false, "Missile lock lost.");
+            trekClient.PostText(false, L"Missile lock lost.");
 
         m_rPreviousMissileLock = rMissileLock;
 
@@ -1321,15 +1321,15 @@ public:
                     if (m_pmodelTarget)
                     {
                         //Fill in the rest of the chat text with the remainder of the picked name
-                        char    bfr[c_cbName];
+						wchar_t    bfr[c_cbName];
                         int lenText = m_strTypedText.GetLength();
-                        strcpy(bfr, (m_pmodelTarget == trekClient.GetShip()) &&
+                        Strcpy(bfr, (m_pmodelTarget == trekClient.GetShip()) &&
                                     (lenText <= 2) &&
-                                    (_strnicmp(m_strTypedText, "me", lenText) == 0)
-                                    ? "me"
+                                    (_wcsnicmp(m_strTypedText, L"me", lenText) == 0)
+                                    ? L"me"
                                     : GetModelName(m_pmodelTarget));
 
-                        int lenName = strlen(bfr);
+                        int lenName = wcslen(bfr);
 
                         if (lenText < lenName)
                         {
@@ -1348,15 +1348,15 @@ public:
             if (m_csComposeState != c_csComposeShell)
             {
                 //Fill in the recipient
-                static const char*  pszEveryone = "All";
-				static const char*  pszAllies = "Allies";
-                static const char*  pszLeaders = "Leaders";
-                static const char*  pszShip  = "ship";
-                static const char*  pszGroup = "Group";
-                static const char*  pszAdmin = "Admin";
-                static const char*  pszNone = "None";
+				static const wchar_t*  pszEveryone = L"All";
+				static const wchar_t*  pszAllies = L"Allies";
+				static const wchar_t*  pszLeaders = L"Leaders";
+				static const wchar_t*  pszShip = L"ship";
+				static const wchar_t*  pszGroup = L"Group";
+				static const wchar_t*  pszAdmin = L"Admin";
+				static const wchar_t*  pszNone = L"None";
 
-                const char* pszRecipient;
+				const wchar_t* pszRecipient;
                 switch (m_pchsCurrent->m_ctRecipient)
                 {
 					//OutputDebugString("In UpdateComposedChat() switch m_pchsCurrent->m_ctRecipient="+ZString(m_pchsCurrent->m_ctRecipient)+"\n");
@@ -1449,7 +1449,7 @@ public:
                             if (pcluster)
                                 pszRecipient = pcluster->GetName();
                             else
-                                pszRecipient = "<unknown>";
+                                pszRecipient = L"<unknown>";
                         }
                         else
                             pszRecipient = ((IclusterIGC*)((IbaseIGC*)m_pchsCurrent->m_pbaseRecipient))->GetName();
@@ -1465,7 +1465,7 @@ public:
     {
     }
 
-    void SendChatInternal(const char* pszText,
+	void SendChatInternal(const wchar_t* pszText,
                           int         idSonicChat,
                           CommandID   cid,
                           ImodelIGC*  pmodel)
@@ -2315,7 +2315,7 @@ public:
                 }
 
                 //Is the mouse over a legitimate target
-                const char* pszCursor = AWF_CURSOR_DEFAULT;
+				const wchar_t* pszCursor = AWF_CURSOR_DEFAULT;
 
                 {
                     ImodelIGC*  pmodelPick = ResolvePick(pcluster, m_pointMouseStop, -1);
@@ -2519,7 +2519,7 @@ public:
         UpdateComposedChat();
     }
 
-    int MatchName(const char*   pszText, const char* pszName)
+	int MatchName(const wchar_t*   pszText, const wchar_t* pszName)
     {
         assert (*pszText != '\0');
 
@@ -2529,7 +2529,7 @@ public:
             {
                 //Ran out of typed text ... return the number of unmatched characters
                 //in pszName
-                return strlen(pszName);
+                return wcslen(pszName);
             }
             else if (tolower(*pszText) != tolower(*pszName))
             {
@@ -2557,7 +2557,7 @@ public:
     {
         SetChatObject(NULL);
 
-        const char* pszText = m_strTypedText;
+		const wchar_t* pszText = m_strTypedText;
         if (*pszText == '\0')
             return;
 
@@ -2643,7 +2643,7 @@ public:
                     //Fourth ... try me
                     if (m_pchsCurrent->LegalCommand(m_cidVerb, trekClient.GetShip()))
                     {
-                        int score = MatchName(pszText, "me");
+                        int score = MatchName(pszText, L"me");
                         if (score < scoreBest)
                         {
                             pmodelBest = trekClient.GetShip();
@@ -2832,7 +2832,7 @@ public:
     void OnTab()
     {
         assert (m_csComposeState > c_csComposeMouseCommand);
-        const char* pcc = m_strTypedText;
+		const wchar_t* pcc = m_strTypedText;
 
         if ((*pcc == '\0') || (*pcc == ' '))
         {
@@ -2841,7 +2841,7 @@ public:
         else
         {
             //Try to match the typed text against a recipient
-            if (MatchName(pcc, "admin") == 0)
+            if (MatchName(pcc, L"admin") == 0)
             {
                 SetChatObject(NULL);
                 m_strTypedText.SetEmpty();
@@ -2910,7 +2910,7 @@ public:
 
                         if (scoreBest > 0)
                         {
-                            int score = MatchName(pcc, "me");
+                            int score = MatchName(pcc, L"me");
                             if (score < scoreBest)
                             {
                                 scoreBest = score;
@@ -2921,7 +2921,7 @@ public:
                             }
                             if (scoreBest > 0)
                             {
-                                int score = MatchName(pcc, "all");
+                                int score = MatchName(pcc, L"all");
 								ZString allstr = ZString(pcc).RightOf("all");
                                 if (score < scoreBest)
                                 {
@@ -2936,7 +2936,7 @@ public:
                                 {
                                     if (trekClient.GetShip()->GetSourceShip()->GetChildShips()->n() != 0)
                                     {
-                                        int score = MatchName(pcc, "ship");
+                                        int score = MatchName(pcc, L"ship");
                                         if (score < scoreBest)
                                         {
                                             scoreBest = score;
@@ -2949,7 +2949,7 @@ public:
 		                            if (scoreBest > 0)  //imago ALLY 7/4/09
 		                            {
 										if (trekClient.GetSide()->GetAllies() != NA) {
-		                               		int score = MatchName(pcc, "allies");
+		                               		int score = MatchName(pcc, L"allies");
 			                                if (score < scoreBest)
 			                                {
 			                                    scoreBest = score;
@@ -3296,7 +3296,7 @@ private:
     TRef<ButtonPane>             m_pbuttonBack;
     TRef<ConsolePickImage>              m_pickimage;
 
-    char                         m_szFileName[c_cbFileName];
+	wchar_t                         m_szFileName[c_cbFileName];
 	int							 m_nStyleHud;				// #294
     
 
@@ -3306,7 +3306,7 @@ public:
     {
         m_szFileName[0] = '\0';
 		m_nStyleHud = NA;
-        SetDisplayMDL("dialog");
+        SetDisplayMDL(L"dialog");
     }
 
     ~ConsoleImageImpl(void)
@@ -3431,15 +3431,15 @@ public:
         m_pconsoleData->SetInRange(bInRange);
     }
 
-    void SetDisplayMDL(const char* pszFileName)
+    void SetDisplayMDL(const wchar_t* pszFileName)
     {
 		int styleHud = GetModeler()->GetStyleHud();
 
-        if (strcmp(pszFileName, m_szFileName) == 0 && styleHud == m_nStyleHud)
+        if (wcscmp(pszFileName, m_szFileName) == 0 && styleHud == m_nStyleHud)
             return;
 
-        assert (strlen(pszFileName) < c_cbFileName);
-        strcpy(m_szFileName, pszFileName);
+        assert (wcslen(pszFileName) < c_cbFileName);
+        Strcpy(m_szFileName, pszFileName);
 		m_nStyleHud = styleHud;
 
         OverlayMask om = GetOverlayFlags();

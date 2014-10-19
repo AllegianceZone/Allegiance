@@ -113,7 +113,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		{
 			//Imago - start the mission in this thread as usual 
 			FedSrvSite * psiteFedSrv = new FedSrvSite();
-			CFSMission * pfsMissionNew = new CFSMission(mp, "", psiteFedSrv, psiteFedSrv, NULL, NULL);
+			CFSMission * pfsMissionNew = new CFSMission(mp, L"", psiteFedSrv, psiteFedSrv, NULL, NULL);
 			pfsMissionNew->SetCookie(pfmCreateMissionReq->dwCookie);
 		}
 		else

@@ -70,9 +70,9 @@ BOOL CDlgAbout::OnInitDialog()
 
   // Read the description, version and copyright from VersionInfo resource
   ZVersionInfo vi;
-  m_strDescription = vi.GetFileDescription();
+  //m_strDescription = (LPCWSTR)vi.GetFileDescription();
   m_strVersion     = vi.GetFileVersionString();
-  m_strCopyright   = vi.GetLegalCopyright();
+  //m_strCopyright   = vi.GetLegalCopyright();
 
   // Read the Product ID from the registry
   CRegKey key;

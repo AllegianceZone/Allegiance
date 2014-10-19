@@ -97,7 +97,7 @@ public:
         if (lengthSquared == 1) {
             return *this;
         } else if (lengthSquared == 0) {
-            ZError("divide by zero");
+            ZError(L"divide by zero");
             return *this;
         } else {
             return *this / sqrt(lengthSquared);

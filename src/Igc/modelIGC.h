@@ -273,7 +273,7 @@ class   CmodelIGC
         }
 		void                SetSecondaryName(const wchar_t* newVal)
         {
-            assert (strlen(newVal) < c_cbName-1);
+            assert (wcslen(newVal) < c_cbName-1);
             m_name[0] = '\0';
 
             Strcpy(m_name+1, newVal);

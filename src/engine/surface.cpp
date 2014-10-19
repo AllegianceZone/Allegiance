@@ -896,8 +896,8 @@ public:
 						CVRAMManager::Get()->ReleaseHandle( hOld );
 
 #ifdef _DEBUG
-						char szBuffer[256];
-						sprintf_s( szBuffer, 256, "Resized to %d x %d: %s\n",
+						wchar_t szBuffer[256];
+						swprintf_s( szBuffer, 256, L"Resized to %d x %d: %s\n",
 							m_size.x, m_size.y, szTemp );
 						OutputDebugString( szBuffer );
 #endif // _DEBUG

@@ -21,6 +21,6 @@ enum LogonType
 };
 
 TRef<IPopup> CreateLogonPopup(Modeler* pmodeler, LogonSite* psite, LogonType lt, 
-                              LPCSTR szPrompt, LPCSTR szName, LPCSTR szPW, BOOL fRememberPW);
+                              LPCWSTR szPrompt, LPCWSTR szName, LPCWSTR szPW, BOOL fRememberPW);
 
 #endif

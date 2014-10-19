@@ -280,7 +280,7 @@ HRESULT CAGCEvent::WriteStringToStream(IStream* pStm, BSTR bstr)
       break;
     }
     default:
-      ZError("bad switch case in WriteStringToStream");
+      ZError(L"bad switch case in WriteStringToStream");
   }
 
   // Allocate the buffer for conversion
@@ -356,7 +356,7 @@ HRESULT CAGCEvent::ReadStringFromStream(IStream* pStm, BSTR* pbstr, BYTE bIndica
       break;
     }
     default:
-      ZError("bad switch case in ReadStringFromStream");
+      ZError(L"bad switch case in ReadStringFromStream");
   }
 
   if (cchAnsi)

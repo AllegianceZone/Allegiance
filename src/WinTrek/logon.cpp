@@ -27,7 +27,7 @@ private:
 
 public:
     LogonPopup(Modeler* pmodeler, LogonSite* psite, LogonType lt,
-               LPCSTR szPrompt, LPCSTR szName, LPCSTR szPW, BOOL fRememberPW) :
+               LPCWSTR szPrompt, LPCWSTR szName, LPCWSTR szPW, BOOL fRememberPW) :
         m_psite(psite),
         m_lt(lt)
     {
@@ -149,7 +149,7 @@ public:
     bool OnButtonSignUp()
     {
 		// KGJV - Alleg.net registration
-        GetWindow()->ShowWebPage("http://forum.allegiancezone.com/signup");
+        GetWindow()->ShowWebPage(L"http://forum.allegiancezone.com/signup");
         return true;
     }
 
@@ -266,7 +266,7 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////////
 
-TRef<IPopup> CreateLogonPopup(Modeler* pmodeler, LogonSite* psite, LogonType lt, LPCSTR szPrompt, LPCSTR szName, LPCSTR szPW, BOOL fRememberPW)
+TRef<IPopup> CreateLogonPopup(Modeler* pmodeler, LogonSite* psite, LogonType lt, LPCWSTR szPrompt, LPCWSTR szName, LPCWSTR szPW, BOOL fRememberPW)
 {
     return new LogonPopup(pmodeler, psite, lt, szPrompt, szName, szPW, fRememberPW);
 }

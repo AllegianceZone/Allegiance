@@ -11,7 +11,7 @@
 // LoadRegString<T>
 //
 template <class T>
-HRESULT LoadRegString(HKEY hkey, LPCTSTR pszValueName, T& strOut)
+HRESULT LoadRegString(HKEY hkey, LPCWSTR pszValueName, T& strOut)
 {
   // Initialize the [out] parameter
   strOut = TEXT("");

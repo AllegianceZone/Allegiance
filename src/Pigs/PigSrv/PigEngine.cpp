@@ -255,9 +255,9 @@ void CPigEngine::ScriptDirMonitor(HANDLE hevtExit)
       {
         #ifdef _DEBUG
           DWORD dwLastError = ::GetLastError();
-          debugf("\nCPigEngine::ScriptDirMonitor(): "
-            "FindNextChangeNotification Failed : "
-            "GetLastError() = 0x%08X, m_hDirChange = 0x%08X\n",
+          debugf(L"\nCPigEngine::ScriptDirMonitor(): "
+            L"FindNextChangeNotification Failed : "
+            L"GetLastError() = 0x%08X, m_hDirChange = 0x%08X\n",
             dwLastError, m_hDirChange);
         #endif // _DEBUG
         Sleep(1000);
@@ -318,12 +318,10 @@ HRESULT CPigEngine::EnsureScriptsAreLoaded()
     return HRESULT_FROM_WIN32(lr);
   UTL::SetArtPath(szArtPath);
 
-  // Convert the directory name to ANSI
-  USES_CONVERSION;
-  LPSTR pszScriptDir = OLE2A(m_bstrScriptDir);
+  LPWSTR pszScriptDir = OLE2W(m_bstrScriptDir);
 
   // Remove the whack at the end of the string
-  cch = strlen(pszScriptDir);
+  cch = wcslen(pszScriptDir);
   assert('\\' == pszScriptDir[cch - 1]);
   pszScriptDir[cch - 1] = '\0';
 
@@ -368,8 +366,7 @@ void CPigEngine::ProcessScriptDirChanges()
 
   // Loop thru the "*.pig" files in the script directory
   WIN32_FIND_DATA ffd;
-  USES_CONVERSION;
-  LPSTR pszScriptDirPatt = OLE2A(m_bstrScriptDir + "*.pig");
+  LPWSTR pszScriptDirPatt = OLE2W(m_bstrScriptDir + "*.pig");
   TCFileFindHandle hff = FindFirstFile(pszScriptDirPatt, &ffd);
   bool bContinue = !hff.IsNull() && INVALID_HANDLE_VALUE != hff;
   while (bContinue)
@@ -418,7 +415,7 @@ void CPigEngine::ProcessScriptDirChanges()
     for (XBehaviorMapIt itCmd = mapCommands.begin(); itCmd != mapCommands.end(); ++itCmd)
     {
       mapGoodBadUgly.insert(*itCmd);
-      debugf("inv command: %s\n", itCmd->first.c_str());
+      debugf(L"inv command: %s\n", itCmd->first.c_str());
     }
   }
 
@@ -735,7 +732,6 @@ HRESULT CPigEngine::put_ArtPath(BSTR bstrArtPath)
   RETURN_FAILED(_Module.OpenAppIDRegKey(key));
 
   // Save the specified value
-  USES_CONVERSION;
   _bstr_t bstrValue(bstrArtPath);
   long lr = key.SetValue(OLE2CT(bstrValue), TEXT("ArtPath"));
   if (ERROR_SUCCESS != lr)
@@ -743,7 +739,7 @@ HRESULT CPigEngine::put_ArtPath(BSTR bstrArtPath)
 
   // Set the art path in the Allegiance stuff
   //USES_CONVERSION;
-  UTL::SetArtPath(OLE2CA(bstrValue));
+  UTL::SetArtPath(OLE2CW(bstrValue));
 
   // Indicate success
   return S_OK;

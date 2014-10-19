@@ -419,7 +419,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 
     default:
-      ZError("unknown message\n");
+      ZError(L"unknown message\n");
   }
   return S_OK;
 }

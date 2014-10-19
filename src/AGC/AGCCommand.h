@@ -64,7 +64,7 @@ public:
 
 // IAGCCommandPrivate Interface Methods
 public:
-  STDMETHODIMP_(void) Init(LPCSTR pszTarget, LPCSTR pszVerb);
+  STDMETHODIMP_(void) Init(LPCWSTR pszTarget, LPCWSTR pszVerb);
 
 // IPersist Interface Methods
 public:

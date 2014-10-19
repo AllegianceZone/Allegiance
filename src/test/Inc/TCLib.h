@@ -225,8 +225,7 @@ do                                    \
     TCHAR szInit[] = TEXT(" Initialized\n");
     TCHAR szTerm[sizeofArray(szInit)] = TEXT(" Terminated\n");
     CopyMemory(szModule + cch, bInit ? szInit : szTerm, sizeof(szInit));
-    USES_CONVERSION;
-    ZDebugOutputImpl(T2CA(pszBackSlash + 1));
+    ZDebugOutputImpl(pszBackSlash + 1);
   }
 
 #else // _DEBUG
@@ -474,8 +473,8 @@ inline DWORD FileTimeToMs(const FILETIME& ft)
         _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1,p2,p3,p4,p5)
 
   #define _TRACE_END                                                        \
-      USES_CONVERSION;                                                      \
-      ZDebugOutputImpl(T2CA(_trace_szMsg));                                 \
+                                                \
+      ZDebugOutputImpl(_trace_szMsg);                                 \
     }
 
   #ifndef UNUSED

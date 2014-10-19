@@ -111,8 +111,8 @@ END_FEDMSG
 
 struct StaticMapInfo
 {
-    char    cbIGCFile[c_cbFileName];
-    char    cbFriendlyName[c_cbName]; 
+	wchar_t    cbIGCFile[c_cbFileName];
+	wchar_t    cbFriendlyName[c_cbName];
     int     nNumTeams;
 };
 
@@ -441,7 +441,7 @@ END_FEDMSG
 
 struct SideEndgameInfo
 {
-  char  sideName[c_cbName];
+	wchar_t  sideName[c_cbName];
   CivID civID;
   Color color;
   short cKills;
@@ -495,8 +495,8 @@ struct BucketData
 {
   BucketItemType  bucketitemtype;
   Money           cost;
-  char            szName[c_cbName];
-  char            szDescription[c_cbDescription];
+  wchar_t            szName[c_cbName];
+  wchar_t            szDescription[c_cbDescription];
   union
   {
     // BIT_ShipType

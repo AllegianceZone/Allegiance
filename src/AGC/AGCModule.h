@@ -195,7 +195,7 @@ extern "C" const CLSID CLSID_AGCGlobal;
   {
     #ifdef _DEBUG
       if (NULL == m_spGlobal)
-        debugf("CAGCModule::GetAGCGlobal(): Init not successfully called!\n");
+        debugf(L"CAGCModule::GetAGCGlobal(): Init not successfully called!\n");
       assert(NULL != m_spGlobal);
     #endif // _DEBUG
     return m_spGlobal;

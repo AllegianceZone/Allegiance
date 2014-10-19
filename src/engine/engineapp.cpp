@@ -109,7 +109,7 @@ int EngineApp::OnException(DWORD code, ExceptionData* pdata)
 }
 
 #ifdef _DEBUG
-    bool EngineApp::OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule)
+bool EngineApp::OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
     {
         OnException(0, NULL);
         return Win32App::OnAssert(psz, pszFile, line, pszModule);

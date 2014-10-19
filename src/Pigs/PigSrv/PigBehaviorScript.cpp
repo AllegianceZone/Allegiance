@@ -158,7 +158,7 @@ void CPigBehaviorScript::Term()
 /////////////////////////////////////////////////////////////////////////////
 // Operations
 
-HRESULT CPigBehaviorScript::Eval(const char* pszExpression, VARIANT* pvResult)
+HRESULT CPigBehaviorScript::Eval(const wchar_t* pszExpression, VARIANT* pvResult)
 {
   // Do nothing with an empty string
   assert(pvResult);
@@ -170,8 +170,7 @@ HRESULT CPigBehaviorScript::Eval(const char* pszExpression, VARIANT* pvResult)
 
   // Evaluate the event expression
   TCEXCEPINFO ei;
-  USES_CONVERSION;
-  HRESULT hr = m_spAsp->ParseScriptText(A2COLE(pszExpression), NULL, NULL,
+  HRESULT hr = m_spAsp->ParseScriptText(W2COLE(pszExpression), NULL, NULL,
     NULL, 0, 0, SCRIPTTEXT_ISEXPRESSION, pvResult, &ei);
   if (FAILED(hr))
   {
@@ -207,7 +206,7 @@ void CPigBehaviorScript::OnExpiration(CPigEvent* pEvent)
   {
     // Save the current script file name
     tstring strSave = IActiveScriptSiteImplBase::GetScriptFileName();
-    IActiveScriptSiteImplBase::SetScriptFileName(tstring("(Internal Script Text)"));
+    IActiveScriptSiteImplBase::SetScriptFileName(tstring(L"(Internal Script Text)"));
 
     // Evaluate the completion expression
     TCEXCEPINFO ei;
@@ -253,7 +252,7 @@ void CPigBehaviorScript::OnInterruption(CPigEvent* pEvent)
   {
     // Save the current script file name
     tstring strSave = IActiveScriptSiteImplBase::GetScriptFileName();
-    IActiveScriptSiteImplBase::SetScriptFileName(tstring("(Internal Script Text)"));
+    IActiveScriptSiteImplBase::SetScriptFileName(tstring(L"(Internal Script Text)"));
 
     // Evaluate the completion expression
     TCEXCEPINFO ei;
