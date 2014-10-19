@@ -812,7 +812,7 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
         {
             CachedLink*         pcl = new CachedLink;
             CachedMultiHull&    cmh = pcl->data();
-            assert (strlen(pszFileName) < c_cbName);
+            assert (wcslen(pszFileName) < c_cbName);
             Strcpy(cmh.m_name, pszFileName);
             cmh.m_pMultiHull = pMultiHull;
 

@@ -2793,7 +2793,7 @@ class ImissionIGC : public IstaticIGC
 		//Imago added
 		virtual ZString					BitsToTechsList(TechTreeBitMask & ttbm) = 0;
 		virtual void					TechsListToBits(const wchar_t * szTechs, TechTreeBitMask & ttbm) = 0;
-
+		virtual int						TechBitFromToken(const wchar_t * szToken) = 0;
 		virtual ZString					BitsToPartsList(PartMask & pm, EquipmentType et) = 0;
 		virtual PartMask				PartMaskFromToken(const wchar_t * szToken, EquipmentType et) = 0;
 		virtual PartMask				PartsListToMask(const wchar_t * szParts, EquipmentType et) = 0;
