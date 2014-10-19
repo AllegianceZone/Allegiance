@@ -3717,7 +3717,7 @@ void                        CmissionIGC::UpdateSides(Time now,
         ds.color.SetRGBA(sideColors[sid][0],
                          sideColors[sid][1],
                          sideColors[sid][2]);
-        memset(ds.name, 0x00, sizeof(ds.name));
+        wmemset(ds.name, 0x00, sizeof(ds.name));
         Strcpy(ds.name, sideNames[sid]);
         ds.ttbmDevelopmentTechs.ClearAll();
         ds.ttbmInitialTechs.ClearAll();

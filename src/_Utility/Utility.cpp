@@ -288,7 +288,7 @@ int UTL::SearchAndReplace(wchar_t * szDest, const wchar_t * szSource, const wcha
     Strcpy(szUpperOldWord, szOldWord);
     _wcsupr(szUpperSource);
 	_wcsupr(szUpperOldWord);
-    memset(szDest, 0, cbDest);
+    wmemset(szDest, 0, cbDest);
 	wchar_t * pszCurrent = szUpperSource;
 	wchar_t * pszPrev = szUpperSource;
     int nSourceOffset = 0;

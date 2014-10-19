@@ -202,6 +202,7 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>..\src\test\TCObj\TCObj.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>..\src\Test\TCObj;..\src\test\Inc;..\src\Inc;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
