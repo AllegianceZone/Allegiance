@@ -56,16 +56,16 @@ class       ChullTypeIGC : public IhullTypeIGC
         }
 
     // IbuyableIGC
-		virtual const wchar_t*          GetModelName(void) const
+        virtual const char*          GetModelName(void) const
         {
             return m_data->modelName;
         }
 
-		virtual const wchar_t*          GetName(void) const
+        virtual const char*          GetName(void) const
         {
             return m_data->name;
         }
-		virtual const wchar_t*          GetDescription(void) const
+        virtual const char*          GetDescription(void) const
         {
             return m_data->description;
         }
@@ -224,12 +224,12 @@ class       ChullTypeIGC : public IhullTypeIGC
             return ((HardpointData*)(((char*)m_data) + m_data->hardpointOffset))[hardpointID];
         }
 
-		virtual const wchar_t*          GetTextureName(void) const
+        virtual const char*          GetTextureName(void) const
         {
             return m_data->textureName;
         }
 
-		virtual const wchar_t*          GetIconName(void) const
+        virtual const char*          GetIconName(void) const
         {
             return m_data->iconName;
         }

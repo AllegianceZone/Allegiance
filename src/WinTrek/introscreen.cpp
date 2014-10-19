@@ -954,7 +954,7 @@ public:
         }
 
         // then construct the full path name of the config file
-        PathString  pathEXE(PathString::ZGetCurrentDirectory());
+        PathString  pathEXE(PathString::GetCurrentDirectory());
         PathString  pathConfig(pathEXE + PathString(PathString(config_file_name).GetFilename()));
 
         // load the config data

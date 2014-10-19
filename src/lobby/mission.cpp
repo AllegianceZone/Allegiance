@@ -21,14 +21,14 @@ CFLMission::CFLMission(CFLServer * pServer, CFLClient * pClientCreator) :
   m_fNotifiedCreator(false)
 {
   assert(m_pServer);
-  wchar_t szRemote[16];
+  char szRemote[16];
   g_pLobbyApp->GetFMServers().GetIPAddress(*m_pServer->GetConnection(), szRemote);
   
   g_pLobbyApp->GetSite()->LogEvent(
         EVENTLOG_INFORMATION_TYPE, LE_MissionCreated, 
         GetCookie(), m_pServer->GetConnection()->GetName(), szRemote,
         m_pServer->GetPlayerCount(), 
-        pClientCreator ? pClientCreator->GetConnection()->GetName() : L"<ops>");
+        pClientCreator ? pClientCreator->GetConnection()->GetName() : "<ops>");
 }
 
 CFLMission::~CFLMission()
@@ -63,7 +63,7 @@ void CFLMission::SetLobbyInfo(FMD_LS_LOBBYMISSIONINFO * plmi)
   CFLMission * pMission = CFLMission::FromCookie(plmi->dwCookie);
   if (pMission)
   {
-    debugf(L"!!! Got FMD_LS_LOBBYMISSIONINFO for mission (cookie=%x) that I don't know about\n", plmi->dwCookie);
+    debugf("!!! Got FMD_LS_LOBBYMISSIONINFO for mission (cookie=%x) that I don't know about\n", plmi->dwCookie);
     // we could just pass the server in to this function, but this seems like a reasonable and cheap check & balance to make sure the mission maps back to the server
     CFLServer * pServer = pMission->GetServer();  
     assert(pServer);
@@ -108,7 +108,7 @@ void CFLMission::NotifyCreator()
     // Tell the creator so they auto-join
     BEGIN_PFM_CREATE(g_pLobbyApp->GetFMClients(), pfmJoinMission, L, JOIN_MISSION)
     END_PFM_CREATE
-	wchar_t szServer[16];
+    char szServer[16];
     g_pLobbyApp->GetFMServers().GetIPAddress(*GetServer()->GetConnection(), szServer);
     assert(lstrlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
     Strcpy(pfmJoinMission->szServer, szServer);

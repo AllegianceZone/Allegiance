@@ -192,7 +192,7 @@ public:
     {
       Sleep(1000); // give the debug output thread a chance to write the error to the file
       *(DWORD*)0 = 0; // we can't assert from any thread, so let's just hard break
-      debugf(L"!!DBERR: retry not attempted !!!!\n");
+      debugf("!!DBERR: retry not attempted !!!!\n");
     }
 
     m_cs.Unlock();
@@ -459,7 +459,7 @@ public:
     // NOT the size of the whole m_cmd, since we can't stomp on atl data members--atl also doesn't support copying accessors
     CQuery * pqueryDestT = static_cast<CQuery *>(pqueryDest);
     CopyMemory(&pqueryDestT->m_cmd, &m_cmd, sizeof(TQueryData));
-	debugf(L"CSQLQuery->Copy: size = %d\n",sizeof(TQueryData));
+	debugf("CSQLQuery->Copy: size = %d\n",sizeof(TQueryData));
     pqueryDestT->m_cRowsAlloc = m_cRowsAlloc; 
     pqueryDestT->m_pargQueryData = m_pargQueryData; 
     pqueryDestT->m_cRows = m_cRows;
@@ -544,7 +544,7 @@ struct N##Data \
 { \
   TCHAR * GetStrQuery() \
   { \
-    return Q; \
+    return TEXT(Q); \
   } 
 
 #define END_QUERY(N, R) \

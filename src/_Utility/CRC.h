@@ -18,5 +18,5 @@ Parameters:		szFileName:   file to get CRC from
 Returns:        Checksum of the file, returns 0 on error
 Example:		CRC = FileCRC("autoexec.bat", 0, 0);
 ****************************************************************************/
-int FileCRC(const wchar_t *szFilename, wchar_t * szErrorMsg);
-int FileCRC(HANDLE hFile, wchar_t * szErrorMsg);
+int FileCRC(const char *szFilename, char * szErrorMsg);
+int FileCRC(HANDLE hFile,           char * szErrorMsg);

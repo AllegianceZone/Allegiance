@@ -136,10 +136,10 @@ private:
 		char chGUID[39];
 		StringFromGUID2(pddoi->guidType,szGUID,39);
 		WideCharToMultiByte( CP_ACP, 0, szGUID, -1, chGUID, 39, 0, 0 );
-		m_pLogFile->OutputStringV(L"\t\tpddoi->guidType: %s\n",chGUID);
-		m_pLogFile->OutputStringV(L"\t\tpddoi->tszName: %s\n", pddoi->tszName);
-		m_pLogFile->OutputStringV(L"\t\tpddoi->dwType: %x (instance: %x)\n", DIDFT_GETTYPE(pddoi->dwType), DIDFT_GETINSTANCE(pddoi->dwType));
-		m_pLogFile->OutputStringV(L"\t\tpddoi->wUsage: %x (page: %x)\n", pddoi->wUsage, pddoi->wUsagePage);
+		m_pLogFile->OutputStringV("\t\tpddoi->guidType: %s\n",chGUID);
+		m_pLogFile->OutputStringV("\t\tpddoi->tszName: %s\n",pddoi->tszName);
+		m_pLogFile->OutputStringV("\t\tpddoi->dwType: %x (instance: %x)\n",DIDFT_GETTYPE(pddoi->dwType), DIDFT_GETINSTANCE(pddoi->dwType));
+		m_pLogFile->OutputStringV("\t\tpddoi->wUsage: %x (page: %x)\n",pddoi->wUsage,pddoi->wUsagePage);
 
         if (
                pddoi->dwType & DIDFT_AXIS
@@ -194,7 +194,7 @@ private:
         LPVOID                    pvRef
     ) {
         MouseInputStreamImpl* pthis = (MouseInputStreamImpl*)pvRef;
-		pthis->m_pLogFile->OutputString(L"\tStaticEnumObjectsCallback:\n");
+		pthis->m_pLogFile->OutputString("\tStaticEnumObjectsCallback:\n");
         return pthis->EnumObjectsCallback(lpddoi);
     }
  
@@ -247,7 +247,7 @@ public:
 
         DDCall(m_pdid->GetCapabilities(&m_didc));
 
-		m_pLogFile->OutputStringV(L"\tInitialized mouse stream - Axes: %d, Buttons: %d, POVs: %d\n",
+		m_pLogFile->OutputStringV("\tInitialized mouse stream - Axes: %d, Buttons: %d, POVs: %d\n",
 			m_didc.dwAxes,m_didc.dwButtons,m_didc.dwPOVs);
 
         //
@@ -296,20 +296,20 @@ public:
 		//Imago #215 8/10 - fixed 10/14
         HKEY hKey;
         DWORD dwType;
-		wchar_t  szValue[20] = { '\0' };
+		char  szValue[20] = {'\0'};
         DWORD cbValue = sizeof(szValue);
 		DWORD dwValue = -1;
 		DWORD cwValue = sizeof(dwValue);
 
 		if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
-            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"MouseSensitivity", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
-				m_sensitivity = _wtof(szValue);
+            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "MouseSensitivity", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
+				m_sensitivity = atof(szValue);
 			else
 				m_sensitivity = 1.0f;
 
 
-            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"MouseAcceleration", NULL, &dwType, (unsigned char*)&dwValue, &cwValue))
+            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "MouseAcceleration", NULL, &dwType, (unsigned char*)&dwValue, &cwValue))
 				m_acceleration = dwValue;
 			else
 				m_acceleration = 0;
@@ -747,16 +747,18 @@ public:
     ) {
 		
 		if (!pddoi) {
-			m_pLogFile->OutputString(L"\t\tLPCDIDEVICEOBJECTINSTANCE=NULL Skipping.\n");
+			m_pLogFile->OutputString("\t\tLPCDIDEVICEOBJECTINSTANCE=NULL Skipping.\n");
 			return DIENUM_CONTINUE;
 		}
 
 		LPOLESTR szGUID = new WCHAR [39];
+		char chGUID[39];
 		StringFromGUID2(pddoi->guidType,szGUID,39);
-		m_pLogFile->OutputStringV(L"\t\tpddoi->guidType: %s\n", szGUID);
-		m_pLogFile->OutputStringV(L"\t\tpddoi->tszName: %s\n", pddoi->tszName);
-		m_pLogFile->OutputStringV(L"\t\tpddoi->dwType: %x (instance: %x)\n", DIDFT_GETTYPE(pddoi->dwType), DIDFT_GETINSTANCE(pddoi->dwType));
-		m_pLogFile->OutputStringV(L"\t\tpddoi->wUsage: %x (page: %x)\n", pddoi->wUsage, pddoi->wUsagePage);
+		WideCharToMultiByte( CP_ACP, 0, szGUID, -1, chGUID, 39, 0, 0 );
+		m_pLogFile->OutputStringV("\t\tpddoi->guidType: %s\n",chGUID);
+		m_pLogFile->OutputStringV("\t\tpddoi->tszName: %s\n",pddoi->tszName);
+		m_pLogFile->OutputStringV("\t\tpddoi->dwType: %x (instance: %x)\n",DIDFT_GETTYPE(pddoi->dwType), DIDFT_GETINSTANCE(pddoi->dwType));
+		m_pLogFile->OutputStringV("\t\tpddoi->wUsage: %x (page: %x)\n",pddoi->wUsage,pddoi->wUsagePage);
 
         if (
                pddoi->dwType & DIDFT_AXIS
@@ -788,7 +790,7 @@ public:
 				
 			//Imago 7/10
 			if( ( pddoi->dwFlags & DIDOI_FFACTUATOR ) != 0 )
-				m_pLogFile->OutputStringV(L"\t\t\tHas Forcefeedback!\n",pddoi->wUsage,pddoi->wUsagePage);
+				m_pLogFile->OutputStringV("\t\t\tHas Forcefeedback!\n",pddoi->wUsage,pddoi->wUsagePage);
 
             if (index == -1) {
                 m_vvalueObject.PushEnd(pobject);
@@ -820,7 +822,7 @@ public:
         LPVOID                    pvRef
     ) {
         JoystickInputStreamImpl* pthis = (JoystickInputStreamImpl*)pvRef;
-		pthis->m_pLogFile->OutputString(L"\tStaticEnumObjectsCallback:\n");
+		pthis->m_pLogFile->OutputString("\tStaticEnumObjectsCallback:\n");
         return pthis->EnumObjectsCallback(lpddoi);
     }
  
@@ -848,7 +850,7 @@ public:
         DDCall(m_pdid->GetCapabilities(&m_didc));
         DDCall(m_pdid->GetDeviceInfo(&m_didi));
 
-		m_pLogFile->OutputStringV(L"\tInitialized joystick stream - Axes: %d, Buttons: %d, POVs: %d\n",
+		m_pLogFile->OutputStringV("\tInitialized joystick stream - Axes: %d, Buttons: %d, POVs: %d\n",
 			m_didc.dwAxes,m_didc.dwButtons,m_didc.dwPOVs);
 
         //
@@ -1001,12 +1003,12 @@ public:
 				if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
 				{
 					 cbValue = sizeof(dwAC);
-					 ::RegQueryValueEx(hKey, L"FFAutoCenter", NULL, &dwType, (unsigned char*)&dwAC, &cbValue);
+					::RegQueryValueEx(hKey, "FFAutoCenter", NULL, &dwType, (unsigned char*)&dwAC, &cbValue);
 
 					 cbValue = sizeof(dwAC);
-					 ::RegQueryValueEx(hKey, L"FFGain", NULL, &dwType, (unsigned char*)&dwGain, &cbValue);
+					::RegQueryValueEx(hKey, "FFGain", NULL, &dwType, (unsigned char*)&dwGain, &cbValue);
 
-					 LoadRegString(hKey, L"ArtPAth", m_zArt);
+					LoadRegString(hKey, "ArtPAth", m_zArt);
 					RegCloseKey(hKey);
 				}
 				DIPROPDWORD dipdw5;
@@ -1554,14 +1556,14 @@ private:
     bool EnumDeviceCallback(LPDIDEVICEINSTANCE pdidi)
     {
 		if (!pdidi)  {
-			m_joylog.OutputString(L"\tLPDIDEVICEINSTANCE=NULL Skipping.\n");
+			m_joylog.OutputString("\tLPDIDEVICEINSTANCE=NULL Skipping.\n");
 			 return DIENUM_CONTINUE;
 		}
 		
 		// Imago 8/18/09
 		ZString strName = pdidi->tszProductName;
-		if (strName.ReverseFind(L"Keyboard") != -1) {
-			m_joylog.OutputString(L"\tSkipping keyboard as input.\n");
+		if (strName.ReverseFind("Keyboard") != -1) {
+			m_joylog.OutputString("\tSkipping keyboard as input.\n");
 			return DIENUM_CONTINUE;
 		}
 
@@ -1572,8 +1574,8 @@ private:
         DDCall(m_pdi->CreateDevice( pdidi->guidInstance, &pdid, NULL));
 //        DDCall(pdid->QueryInterface(IID_IDirectInputDevice2, (void**)&pdid2));
 		DDCall(pdid->QueryInterface(IID_IDirectInputDevice8, (void**)&pdid2));
-		m_joylog.OutputStringV(L"\tpdidi->dwDevType: %x (subtype: %x)\n", GET_DIDEVICE_TYPE(pdidi->dwDevType), GET_DIDEVICE_SUBTYPE(pdidi->dwDevType));
-		m_joylog.OutputStringV(L"\tpdidi->tszProductName: %s\n", pdidi->tszProductName);
+        m_joylog.OutputStringV("\tpdidi->dwDevType: %x (subtype: %x)\n",GET_DIDEVICE_TYPE(pdidi->dwDevType),GET_DIDEVICE_SUBTYPE(pdidi->dwDevType));
+        m_joylog.OutputStringV("\tpdidi->tszProductName: %s\n",pdidi->tszProductName);
         
 
         switch (pdidi->dwDevType & 0xff) {
@@ -1610,7 +1612,7 @@ private:
     static BOOL CALLBACK StaticEnumDeviceCallback(LPDIDEVICEINSTANCE pdidi, LPVOID pv)
     {
         InputEngineImpl* pthis = (InputEngineImpl*)pv;
-		pthis->m_joylog.OutputString(L"StaticEnumDeviceCallback:\n");
+        pthis->m_joylog.OutputString("StaticEnumDeviceCallback:\n");
 
         return pthis->EnumDeviceCallback(pdidi);
     }
@@ -1641,7 +1643,7 @@ public:
     InputEngineImpl(HWND hwnd) :
         m_hwnd(hwnd),
         m_bFocus(false),
-		m_joylog(L"DirectInput.log")
+        m_joylog("DirectInput.log")
     {
         //
         // Create the direct input object
@@ -1686,7 +1688,7 @@ public:
         //
 
         if (m_pdi == NULL) {
-			::MessageBox(NULL, L"Error initializing DirectInput.  Check your installation", L"Error", MB_OK);
+            ::MessageBox(NULL, "Error initializing DirectInput.  Check your installation", "Error", MB_OK);
             _exit(0);
         }
 
@@ -1694,7 +1696,7 @@ public:
         // Enumerate the devices
         //
 
-		m_joylog.OutputString(L"Initialized DirectInput\n");
+        m_joylog.OutputString("Initialized DirectInput\n");
         EnumerateJoysticks();
         m_joylog.CloseLogFile();
     }

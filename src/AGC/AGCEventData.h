@@ -23,7 +23,7 @@ private:
   CAGCEventData(const CAGCEventData&); // Disable copy constructor
 public:
   CAGCEventData(UINT cbData, BYTE* pbData);
-  CAGCEventData(AGCEventID idEvent, LPCWSTR pszContext, LPCWSTR pszSubject,
+  CAGCEventData(AGCEventID idEvent, LPCSTR pszContext, LPCOLESTR pszSubject,
     long idSubject, long cArgTriplets, va_list argptr);
   ~CAGCEventData();
   void Attach(UINT cbData, BYTE* pbData);
@@ -40,9 +40,9 @@ public:
 
 // Implementation
 protected:
-  static UINT ComputeVariableDataSize(LPCWSTR pszContext,
-    LPCWSTR pszSubject, long cArgTriplets, va_list argptr);
-  void CopyVariableData(LPCWSTR pszContext, LPCWSTR pszSubject,
+  static UINT ComputeVariableDataSize(LPCSTR pszContext,
+    LPCOLESTR pszSubject, long cArgTriplets, va_list argptr);
+  void CopyVariableData(LPCSTR pszContext, LPCOLESTR pszSubject,
     long cArgTriplets, va_list argptr);
   static UINT CreateVARIANTFromData(BYTE* pbData, CComVariant& var);
   static UINT CreateBSTRFromData(BYTE* pbData, BSTR* pbstr);
@@ -83,8 +83,8 @@ inline CAGCEventData::CAGCEventData(UINT cbData, BYTE* pbData) :
 
 /////////////////////////////////////////////////////////////////////////////
 //
-inline CAGCEventData::CAGCEventData(AGCEventID idEvent, LPCWSTR pszContext,
-  LPCWSTR pszSubject, long idSubject, long cArgTriplets, va_list argptr) :
+inline CAGCEventData::CAGCEventData(AGCEventID idEvent, LPCSTR pszContext,
+  LPCOLESTR pszSubject, long idSubject, long cArgTriplets, va_list argptr) :
   m_cbData(0),
   m_pbData(NULL)
 {

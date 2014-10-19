@@ -74,7 +74,7 @@ Quaternion::Quaternion(const Orientation& o)
     }
 	
 	if (!(m_a >= 0.0f)) {
-		debugf(L"mmf Zlib quaternion.cpp:85 commented out assert(m_a >= 0.0f)");
+		debugf("mmf Zlib quaternion.cpp:85 commented out assert(m_a >= 0.0f)");
 	}
     //assert (m_a >= 0.0f);
 }

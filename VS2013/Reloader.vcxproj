@@ -62,7 +62,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -177,7 +176,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>..\src\Inc;..\src\igc;..\src\_Utility;..\src\ZLib;..\src\clintlib;..\src\Zone;..\src\training;..\src\lobby;..\src\guids;..\src\Allelgiance;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x0502;UNICODE;_UNICODE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0502</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>

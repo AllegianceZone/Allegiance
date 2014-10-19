@@ -528,7 +528,7 @@ void CPageGameCreate::OnGameCreate()
     {
       hr = spPersist->Save(spStm, true);
       if (SUCCEEDED(hr))
-        hr = SaveRegStream(key, L"GameParameters", spStm);
+        hr = SaveRegStream(key, "GameParameters", spStm);
     }
     else
     {

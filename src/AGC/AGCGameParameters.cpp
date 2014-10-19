@@ -206,7 +206,7 @@ STDMETHODIMP CAGCGameParameters::Validate()
 {
   // Validate the parameters
   XLock lock(this);
-  const wchar_t * szInvalid = m_mp.Invalid();
+  const char * szInvalid = m_mp.Invalid();
   if (szInvalid) 
     return Error(szInvalid);
 
@@ -305,7 +305,8 @@ STDMETHODIMP CAGCGameParameters::put_GameName(BSTR Val)
   XLock lock(this);
   if (BSTRLen(Val))
   {
-    lstrcpyn(m_mp.strGameName, OLE2CW(Val), sizeof(m_mp.strGameName));
+    USES_CONVERSION;
+    lstrcpynA(m_mp.strGameName, OLE2CA(Val), sizeof(m_mp.strGameName));
   }
   else
   {
@@ -1757,7 +1758,8 @@ STDMETHODIMP CAGCGameParameters::put_IGCStaticFile(BSTR Val)
   XLock lock(this);
   if (BSTRLen(Val))
   {
-    lstrcpyn(m_mp.szIGCStaticFile, OLE2CW(Val), sizeof(m_mp.szIGCStaticFile));
+    USES_CONVERSION;
+    lstrcpynA(m_mp.szIGCStaticFile, OLE2CA(Val), sizeof(m_mp.szIGCStaticFile));
   }
   else
   {
@@ -1792,7 +1794,8 @@ STDMETHODIMP CAGCGameParameters::put_GamePassword(BSTR Val)
   XLock lock(this);
   if (BSTRLen(Val))
   {
-    lstrcpyn(m_mp.strGamePassword, OLE2CW(Val), sizeof(m_mp.strGamePassword));
+    USES_CONVERSION;
+    lstrcpynA(m_mp.strGamePassword, OLE2CA(Val), sizeof(m_mp.strGamePassword));
   }
   else
   {
@@ -2272,7 +2275,8 @@ STDMETHODIMP CAGCGameParameters::put_CustomMap(BSTR Val)
   XLock lock(this);
   if (BSTRLen(Val))
   {
-    lstrcpyn(m_mp.szCustomMapFile, OLE2CW(Val), sizeof(m_mp.szCustomMapFile));
+    USES_CONVERSION;
+    lstrcpynA(m_mp.szCustomMapFile, OLE2CA(Val), sizeof(m_mp.szCustomMapFile));
   }
   else
   {

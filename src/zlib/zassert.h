@@ -24,12 +24,12 @@
 // Asserts
 //
 //////////////////////////////////////////////////////////////////////////////
-void ZAssertImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
-#define ZRetailAssert(bCond)    ZAssertImpl((bCond) ? true : false, TEXT(#bCond), TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
+void ZAssertImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule);
+#define ZRetailAssert(bCond)    ZAssertImpl((bCond) ? true : false, #bCond, __FILE__, __LINE__, __MODULE__)
 
-void logchat(const wchar_t*);  // mmf log chat, stuck it here, the code is in Win32app.cpp
+void logchat(const char*);  // mmf log chat, stuck it here, the code is in Win32app.cpp
 
-void retailf(const wchar_t*, ...);
+void retailf(const char* , ...);
 
 extern int g_outputdebugstring; // mmf added to support Radar's -debug command line
 extern bool g_bOutput;
@@ -79,15 +79,15 @@ extern bool g_bOutput;
 #endif
 
 #ifdef SRVLOG // mmf changed this from _DEBUG
-void debugf(const wchar_t*, ...);
-void ZDebugOutputImpl(const wchar_t* psz);
+   void debugf(const char* , ...);
+   void ZDebugOutputImpl(const char* psz);
    #define ZDebugOutput(str) ZDebugOutputImpl(str)
 #else
    inline void debugf(...) {}
    #define ZDebugOutput(str)
 #endif
 
-#define ZUnimplemented()  ZError(L"Unimplemented member called")
+#define ZUnimplemented()  ZError("Unimplemented member called")
 
 #define assert(exp)   ZAssert(exp)
 #define ShouldBe(exp) ZWarning(exp)

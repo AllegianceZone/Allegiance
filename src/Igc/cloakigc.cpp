@@ -74,7 +74,7 @@ void        CcloakIGC::Update(Time now)
 
         IIgcSite*   pigc = GetMission()->GetIgcSite();
         pigc->PlayNotificationSound(mountedSound, m_ship);
-        pigc->PostNotificationText(m_ship, false, L"%s ready.", GetPartType()->GetName());
+        pigc->PostNotificationText(m_ship, false, "%s ready.", GetPartType()->GetName());
         m_mountedFraction = 1.0f;
     }
 

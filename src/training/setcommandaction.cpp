@@ -89,7 +89,7 @@ namespace Training
                     strOrder = strOrder + " " + GetModelName (pTarget);
                 pWindow->SetQueuedCommand (pCommander, m_commandID, pTarget);
 				ZString str = GetKeyName(TK_AcceptCommand);
-                trekClient.PostText(true, L"New orders from %s to %s: %s. Press [" + str + L"] to accept.", (const char*)GetModelName (pCommander), GetModelName (pShip), (PCC)strOrder);
+                trekClient.PostText(true, "New orders from %s to %s: %s. Press [" + str + "] to accept.", (const char*)GetModelName (pCommander), GetModelName (pShip), (const char*) strOrder);
             }
             else
                 pShip->SetCommand (m_command, pTarget, m_commandID);

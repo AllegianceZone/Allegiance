@@ -58,7 +58,7 @@ const IID* CAGCGlobal::InterpretIID(const void* pvIgc, REFIID iid)
         case OT_buoy:        return &IID_IAGCModel   ;  // TODO: Implement specific object type in AGC
         case OT_chaff:       return &IID_IAGCModel   ;  // TODO: Implement specific object type in AGC
         default:
-          ZError(L"CAGCGlobal::InterpretIID(): non-model type specified\n");
+          ZError("CAGCGlobal::InterpretIID(): non-model type specified\n");
       }
     }
   }
@@ -546,7 +546,7 @@ STDMETHODIMP_(HAGCLISTENERS) CAGCGlobal::EventListeners(AGCEventID idEvent,
 // occurred
 //
 STDMETHODIMP_(void) CAGCGlobal::TriggerEvent(HAGCLISTENERS hListeners,
-  AGCEventID idEvent, LPCWSTR pszContext, LPCWSTR pszSubject,
+  AGCEventID idEvent, LPCSTR pszContext, LPCOLESTR pszSubject,
   AGCUniqueID idSubject, AGCUniqueID idObject1, AGCUniqueID idObject2,
   long cArgTriplets, void* pvArgs)
 {
@@ -559,7 +559,7 @@ STDMETHODIMP_(void) CAGCGlobal::TriggerEvent(HAGCLISTENERS hListeners,
   assert(m_pthEvents);
 
   // Initialize the timer
-  static CTempTimer timerTriggerEvent(L"in TriggerEvent", .01f);
+  static CTempTimer timerTriggerEvent("in TriggerEvent", .01f);
 
   // Start the timer
   timerTriggerEvent.Start();
@@ -592,7 +592,7 @@ stopTimer:
 // occurred
 //
 STDMETHODIMP_(void) CAGCGlobal::TriggerEventSynchronous(HAGCLISTENERS hListeners,
-  AGCEventID idEvent, LPCWSTR pszContext, LPCWSTR pszSubject,
+  AGCEventID idEvent, LPCSTR pszContext, LPCOLESTR pszSubject,
   AGCUniqueID idSubject, AGCUniqueID idObject1, AGCUniqueID idObject2,
   long cArgTriplets, void* pvArgs)
 {
@@ -658,7 +658,7 @@ STDMETHODIMP_(boolean) CAGCGlobal::IsRegistered(AGCEventID eventID,
 // Description: Creates an event object.
 //
 STDMETHODIMP CAGCGlobal::MakeAGCEvent(AGCEventID idEvent,
-  LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+  LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
   long cArgTriplets, void* pvArgs, IAGCEvent** ppEvent)
 {
   // Create an event object

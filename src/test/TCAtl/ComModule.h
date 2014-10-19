@@ -23,8 +23,8 @@ protected:
   typedef HRESULT (T::*XOptionProc)(int, TCHAR*[], int*);
   struct  XCmdLineOption
   {
-    LPCWSTR      m_pszOption;
-    LPCWSTR      m_pszOptionDesc;
+    LPCSTR      m_pszOption;
+    LPCSTR      m_pszOptionDesc;
     XOptionProc m_pfn;
     int         m_cMinParams;
     int         m_cMaxParams;
@@ -1286,9 +1286,6 @@ void TCComModule<T>::MonitorProc()
 
 /////////////////////////////////////////////////////////////////////////////
 // Command Line Option Map Macros
-
-#define L0 NULL
-
 
 #define BEGIN_CMDLINE_OPTION_MAP()                                          \
   static UINT GetCmdLineOptionMap(const XCmdLineOption** ppMap)             \

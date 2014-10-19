@@ -35,35 +35,28 @@ extern "C" const CLSID CLSID_AGCGlobal;
   // Operations
   public:
     void TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCOLESTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	/*
-	void TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszSubject, AGCUniqueID idSubject,
+    void TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
+      LPCSTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
- */
-	void TriggerContextEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
-      AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	/*
     void TriggerContextEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	*/
+    void TriggerContextEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
+      LPCSTR pszContext, LPCSTR pszSubject, AGCUniqueID idSubject,
+      AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
     HRESULT MakeAGCEvent(AGCEventID idEvent, IAGCEvent** ppEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
       long cArgTriplets, ...);
-
-	/*
     HRESULT MakeAGCEvent(AGCEventID idEvent, IAGCEvent** ppEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCSTR pszSubject, AGCUniqueID idSubject,
       long cArgTriplets, ...);
-	  */
 
   // Implementation
   protected:
     void DoTriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2,
       long cArgTriplets, void* pvArgs)
     {
@@ -140,37 +133,29 @@ extern "C" const CLSID CLSID_AGCGlobal;
 
   // Operations
   public:
-	  /*
-	  void TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
+    void TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
       LPCOLESTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	  */
-
     void TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	/*
-	void TriggerContextEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
+    void TriggerContextEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
       LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	  */
-
     void TriggerContextEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCSTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...);
-	/*
     HRESULT MakeAGCEvent(AGCEventID idEvent, IAGCEvent** ppEvent,
       LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
       long cArgTriplets, ...);
-	*/
     HRESULT MakeAGCEvent(AGCEventID idEvent, IAGCEvent** ppEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCSTR pszSubject, AGCUniqueID idSubject,
       long cArgTriplets, ...);
 
   // Implementation
   protected:
     void DoTriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-      LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
+      LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
       AGCUniqueID idObject1, AGCUniqueID idObject2,
       long cArgTriplets, void* pvArgs);
 
@@ -323,8 +308,8 @@ extern "C" const CLSID CLSID_AGCGlobal;
   ///////////////////////////////////////////////////////////////////////////
   // Implementation
   inline void CAGCModule::DoTriggerEvent(HAGCLISTENERS hListeners,
-    AGCEventID idEvent, LPCWSTR pszContext,
-    LPCWSTR pszSubject, AGCUniqueID idSubject,
+    AGCEventID idEvent, LPCSTR pszContext,
+    LPCOLESTR pszSubject, AGCUniqueID idSubject,
     AGCUniqueID idObject1, AGCUniqueID idObject2,
     long cArgTriplets, void* pvArgs)
   {
@@ -381,7 +366,7 @@ extern "C" const CLSID CLSID_AGCGlobal;
 // Operations
 
 inline void CAGCModule::TriggerEvent(HAGCLISTENERS hListeners,
-  AGCEventID idEvent, LPCWSTR pszSubject, AGCUniqueID idSubject,
+  AGCEventID idEvent, LPCOLESTR pszSubject, AGCUniqueID idSubject,
   AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...)
 {
   va_list argptr;
@@ -391,22 +376,22 @@ inline void CAGCModule::TriggerEvent(HAGCLISTENERS hListeners,
   va_end(argptr);
 }
 
-/*
 inline void CAGCModule::TriggerEvent(HAGCLISTENERS hListeners,
-  AGCEventID idEvent, LPCWSTR pszSubject, AGCUniqueID idSubject,
+  AGCEventID idEvent, LPCSTR pszSubject, AGCUniqueID idSubject,
   AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...)
 {
-   va_list argptr;
+  USES_CONVERSION;
+  va_list argptr;
   va_start(argptr, cArgTriplets);
-  DoTriggerEvent(hListeners, idEvent, NULL, pszSubject, idSubject,
+  DoTriggerEvent(hListeners, idEvent, NULL, A2COLE(pszSubject), idSubject,
     idObject1, idObject2, cArgTriplets, argptr);
   va_end(argptr);
 }
-*/
+
 
 inline void CAGCModule::TriggerContextEvent(HAGCLISTENERS hListeners,
-  AGCEventID idEvent, LPCWSTR pszContext,
-  LPCWSTR pszSubject, AGCUniqueID idSubject,
+  AGCEventID idEvent, LPCSTR pszContext,
+  LPCOLESTR pszSubject, AGCUniqueID idSubject,
   AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...)
 {
   va_list argptr;
@@ -416,24 +401,24 @@ inline void CAGCModule::TriggerContextEvent(HAGCLISTENERS hListeners,
   va_end(argptr);
 }
 
-/*
 inline void CAGCModule::TriggerContextEvent(HAGCLISTENERS hListeners,
-  AGCEventID idEvent, LPCWSTR pszContext,
-  LPCWSTR pszSubject, AGCUniqueID idSubject,
+  AGCEventID idEvent, LPCSTR pszContext,
+  LPCSTR pszSubject, AGCUniqueID idSubject,
   AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, ...)
 {
+  USES_CONVERSION;
   va_list argptr;
   va_start(argptr, cArgTriplets);
-  DoTriggerEvent(hListeners, idEvent, pszContext, pszSubject, idSubject,
+  DoTriggerEvent(hListeners, idEvent, pszContext, A2COLE(pszSubject), idSubject,
     idObject1, idObject2, cArgTriplets, argptr);
   va_end(argptr);
 }
-*/
+
 
 
 inline HRESULT CAGCModule::MakeAGCEvent(AGCEventID idEvent,
-  IAGCEvent** ppEvent, LPCWSTR pszContext,
-  LPCWSTR pszSubject, AGCUniqueID idSubject, long cArgTriplets, ...)
+  IAGCEvent** ppEvent, LPCSTR pszContext,
+  LPCOLESTR pszSubject, AGCUniqueID idSubject, long cArgTriplets, ...)
 {
   va_list argptr;
   va_start(argptr, cArgTriplets);
@@ -443,19 +428,19 @@ inline HRESULT CAGCModule::MakeAGCEvent(AGCEventID idEvent,
   return hr;
 }
 
-/*
 inline HRESULT CAGCModule::MakeAGCEvent(AGCEventID idEvent,
-	IAGCEvent** ppEvent, LPCWSTR pszContext,
-  LPCWSTR pszSubject, AGCUniqueID idSubject, long cArgTriplets, ...)
+  IAGCEvent** ppEvent, LPCSTR pszContext,
+  LPCSTR pszSubject, AGCUniqueID idSubject, long cArgTriplets, ...)
 {
+  USES_CONVERSION;
   va_list argptr;
   va_start(argptr, cArgTriplets);
   HRESULT hr = GetAGCGlobal()->MakeAGCEvent(idEvent, pszContext,
-    pszSubject, idSubject, cArgTriplets, argptr, ppEvent);
+    A2COLE(pszSubject), idSubject, cArgTriplets, argptr, ppEvent);
   va_end(argptr);
   return hr;
 }
-*/
+
 
 
 /////////////////////////////////////////////////////////////////////////////

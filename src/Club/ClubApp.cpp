@@ -18,15 +18,15 @@
 
 CSQLSiteImpl g_SQLSite;  // needs to be global cause SQL stuff is globally initialized
 
-int CSQLSiteImpl::OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType)
+int CSQLSiteImpl::OnMessageBox(const char * strText, const char * strCaption, UINT nType)
 {
-	wchar_t szMsg[256];
-  swprintf(szMsg, L"%0.55s : %0.190s", strCaption, strText);
+  char szMsg[256]; 
+  sprintf(szMsg, "%0.55s : %0.190s", strCaption, strText);
 
   if (g_pClubApp)
     g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, szMsg);
   else
-    wprintf(szMsg);
+    printf(szMsg);
 
   return 0;
 }
@@ -41,7 +41,7 @@ CClubApp::CClubApp(IClubSite * plas) :
   //$ ASYNCCLUB
   // ,m_sql(this)
 {
-  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, L"Creating AllClub");
+  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, "Creating AllClub");
  // g_pStaticData = CreateStaticData(); //Imago 9/14
   assert(m_plas);
   g_pClubApp = this;
@@ -75,7 +75,7 @@ CClubApp::~CClubApp()
   m_cRankInfo = 0;
   //m_pzas = NULL; // Imago 9/14
 
-  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, L"Shutting down AllClub");
+  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, "Shutting down AllClub");
   //if(g_pStaticData) KGJV - obsolete
   //  delete g_pStaticData;
   m_perfshare.FreeCounters(m_pCounters);
@@ -90,7 +90,7 @@ HRESULT CClubApp::Init()
   m_cRankInfo = 0;
   m_vRankInfo = NULL;
 
-  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, L"Initializing AllClub");
+  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, "Initializing AllClub");
   ZVerify(m_perfshare.Initialize());
   m_pCounters = (CLUB_COUNTERS *)m_perfshare.AllocateCounters(
                       "AllClub", "0",    // if there are ever multiple lobbies running, change this
@@ -108,7 +108,7 @@ HRESULT CClubApp::Init()
 
   // TODO: Make keep-alives an option
   if (FAILED(hr = m_fmClients.HostSession(FEDCLUB_GUID, true, 0, true)))
-    m_plas->LogEvent(EVENTLOG_ERROR_TYPE, L"Could not host dplay session. Check for correct dplay installation");
+    m_plas->LogEvent(EVENTLOG_ERROR_TYPE, "Could not host dplay session. Check for correct dplay installation");
 
   return hr;
 }
@@ -118,13 +118,13 @@ int CClubApp::Run()
   MSG msg;
   DWORD dwWait = WAIT_TIMEOUT;
 
-  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, L"Running AllClub");
-  _putts(L"---------Press Q to exit---------");
-   wprintf(L"Ready for clients.\n");
-  CTempTimer timerIterations(L"between iterations", .25f);
+  m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, "Running AllClub");
+  _putts("---------Press Q to exit---------");
+   printf("Ready for clients.\n");
+  CTempTimer timerIterations("between iterations", .25f);
   timerIterations.Start();
-  CTempTimer timerReceiveClientsMessages(L"in clients ReceiveMessages()", .05f);
-  CTempTimer timerPerfCounters(L"assembling perf info", .05f);
+  CTempTimer timerReceiveClientsMessages("in clients ReceiveMessages()", .05f);
+  CTempTimer timerPerfCounters("assembling perf info", .05f);
 
   Time timeLastQueueCheck = Time::Now();
   while (true)
@@ -163,34 +163,34 @@ int CClubApp::Run()
   return 0;
 }
 
-int CClubApp::OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType)
+int CClubApp::OnMessageBox(const char * strText, const char * strCaption, UINT nType)
 {
-	wchar_t sz[256];
+  char sz[256];
   if (strCaption && *strCaption)
   {
     lstrcpy(sz, strCaption);
-    lstrcat(sz, L": ");
+    lstrcat(sz, ": ");
   }
   lstrcat(sz, strText);
   return m_plas->LogEvent(EVENTLOG_ERROR_TYPE, strText);
 }
 
-bool CClubApp::OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+bool CClubApp::OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule)
 {
-  m_plas->LogEvent(EVENTLOG_ERROR_TYPE, ZString(L"assertion failed: '")
+  m_plas->LogEvent(EVENTLOG_ERROR_TYPE, ZString("assertion failed: '")
             + psz
-            + L"' ("
+            + "' ("
             + pszFile
-            + L":"
+            + ":"
             + ZString(line)
-            + L")\n"
+            + ")\n"
   );
   return true;
 }
 
-void CClubApp::DebugOutput(const wchar_t *psz)
+void CClubApp::DebugOutput(const char *psz)
 {
-  ::OutputDebugString(L"AllClub: ");
+  ::OutputDebugString("AllClub: ");
   #ifdef _DEBUG
     Win32App::DebugOutput(psz);
   #endif

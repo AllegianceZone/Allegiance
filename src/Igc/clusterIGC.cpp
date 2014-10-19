@@ -582,7 +582,7 @@ void        CclusterIGC::DeleteModel(ImodelIGC* modelOld)
     DeleteIbaseIGC((BaseListIGC*)&m_models, modelOld);
 }
 
-ImodelIGC*  CclusterIGC::GetModel(const wchar_t* name) const
+ImodelIGC*  CclusterIGC::GetModel(const char* name) const
 {
     assert (name);
     for (ModelLinkIGC*     l = m_models.first();
@@ -590,7 +590,7 @@ ImodelIGC*  CclusterIGC::GetModel(const wchar_t* name) const
          l = l->next())
     {
         ImodelIGC*  m = l->data();
-        if (_wcsicmp(m->GetName(), name) == 0)
+        if (_stricmp(m->GetName(), name) == 0)
         {
             return m;
         }

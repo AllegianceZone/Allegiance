@@ -36,8 +36,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             CASTPFM(pfmLogonAck, S, LOGONACK, pfm);
             if (pfmLogonAck->fValidated)
             {
-                debugf(L"I am ship %s, shipid=%d\n", FM_VAR_REF(pfmLogonAck, CharName_OR_FailureReason), pfmLogonAck->shipID);
-                Strcpy(m_szCharName, FM_VAR_REF(pfmLogonAck, CharName_OR_FailureReason)); // remember who we are
+                debugf("I am ship %s, shipid=%d\n", FM_VAR_REF(pfmLogonAck, CharName_OR_FailureReason), pfmLogonAck->shipID);
+                lstrcpy(m_szCharName, FM_VAR_REF(pfmLogonAck, CharName_OR_FailureReason)); // remember who we are
                 m_fLoggedOn = true;
                 SetCookie(pfmLogonAck->cookie);
 
@@ -64,7 +64,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             // don't ack logon until done
             //
 
-			wchar_t * szFailureReason = pfmLogonAck->fValidated ? NULL : FM_VAR_REF(pfmLogonAck, CharName_OR_FailureReason);
+            char * szFailureReason = pfmLogonAck->fValidated ? NULL : FM_VAR_REF(pfmLogonAck, CharName_OR_FailureReason);
 
             OnLogonAck(pfmLogonAck->fValidated, pfmLogonAck->fRetry, szFailureReason);
         }
@@ -312,9 +312,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                     IshipIGC*   pshipDonate = m_ship->GetAutoDonate();
                     if (pshipDonate)
-                        PostText(false, L"You donated your reward of $%d to %s.", pfmTreasure->amount, pshipDonate->GetName());
+                        PostText(false, "You donated your reward of $%d to %s.", pfmTreasure->amount, pshipDonate->GetName());
                     else
-                        PostText(false, L"You received a reward of $%d.", pfmTreasure->amount);
+                        PostText(false, "You received a reward of $%d.", pfmTreasure->amount);
 
                 }
                 break;
@@ -341,7 +341,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                     break;
                 }
 
-                PostText(false, L"You rescued %s.", pplayerRescuee->CharacterName());
+                PostText(false, "You rescued %s.", pplayerRescuee->CharacterName());
                 PlaySoundEffect(rescuePlayerSound, GetShip());
             }
             else if (pfmPlayerRescued->shipIDRescuee == sid)
@@ -355,7 +355,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                     break;
                 }
 
-                PostText(true, L"%s rescued you.", pplayerRescuer->CharacterName());
+                PostText(true, "%s rescued you.", pplayerRescuer->CharacterName());
                 PlaySoundEffect(jumpSound);
             }
         }
@@ -520,7 +520,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         PlayerInfo* pPlayerInfo = &(l->data());
                         assert (pPlayerInfo);
 
-                        debugf(L"Logging off ship for %s, ID=%d\n",
+                        debugf("Logging off ship for %s, ID=%d\n",
                             pPlayerInfo->CharacterName(), pPlayerInfo->ShipID());
 
                         RemovePlayerFromSide(pPlayerInfo, QSR_Quit);
@@ -549,9 +549,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 if (pfmStation->launcher != NA)
                 {
                     IshipIGC * pship = GetCore()->GetShip(pfmStation->launcher);
-                    PostText(true, START_COLOR_STRING L"%s" END_COLOR_STRING L" destroyed " START_COLOR_STRING L"%s's %s" END_COLOR_STRING L" in %s.",
+                    PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " destroyed " START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s.",
                         (PCC) ConvertColorToString (pship ? pship->GetSide ()->GetColor () : Color::White ()),
-                        (pship ? pship->GetName() : L"Unknown ship"),
+                        (pship ? pship->GetName() : "Unknown ship"),
                         (PCC) ConvertColorToString (station->GetSide ()->GetColor ()),
                         station->GetSide()->GetName(),
                         station->GetName(),
@@ -559,7 +559,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         );
                 }
                 else
-                    PostText(true, START_COLOR_STRING L"%s's %s" END_COLOR_STRING L" in %s was destroyed.",
+                    PostText(true, START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s was destroyed.",
                         (PCC) ConvertColorToString (station->GetSide()->GetColor ()),
                         station->GetSide()->GetName(),
                         station->GetName(),
@@ -682,7 +682,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                 IsideIGC*   psideNew = m_pCoreIGC->GetSide(pfmStationCapture->sidNew);
 
-                PostText(true, START_COLOR_STRING L"%s" END_COLOR_STRING L" captured " START_COLOR_STRING L"%s's %s" END_COLOR_STRING L" in %s.",
+                PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " captured " START_COLOR_STRING "%s's %s" END_COLOR_STRING " in %s.",
                     (PCC) ConvertColorToString (GetCore()->GetShip(pfmStationCapture->shipIDCredit)->GetSide ()->GetColor ()),
                     GetCore()->GetShip(pfmStationCapture->shipIDCredit)->GetName(),
                     (PCC) ConvertColorToString (station->GetSide()->GetColor ()),
@@ -860,9 +860,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 m_pClientEventSource->OnBoardShip(pshipParent, pship);
 
                 if (pshipParent == m_ship)
-                    PostText(true, L"You have been demoted to a turret gunner");
+                    PostText(true, "You have been demoted to a turret gunner");
                 else if (pship == m_ship)
-                    PostText(true, L"You have been promoted to pilot");
+                    PostText(true, "You have been promoted to pilot");
             }
         }
         break;
@@ -886,7 +886,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 IclusterIGC*    pc1 = pwarp->GetCluster();
                 IclusterIGC*    pc2 = pwarp->GetDestination()->GetCluster();
                 if ((pclusterMe == pc1) || (pclusterMe == pc2))
-                    PostText(true, L"Aleph to %s destabilized\n", (pclusterMe == pc1) ? pc2->GetName() : pc1->GetName());
+                    PostText(true, "Aleph to %s destabilized\n", (pclusterMe == pc1) ? pc2->GetName() : pc1->GetName());
 
                 /*
                 DamageTypeID    dtid = pmt->GetDamageType();
@@ -946,14 +946,14 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
    	                assert (pclusterRipcord);
                 }
 
-				const wchar_t*     name = pclusterRipcord->GetName();
+                const char*     name = pclusterRipcord->GetName();
 
-				wchar_t    bfr[100];
+                char    bfr[100];
                 if (pclusterRipcord != pclusterDesired)
-                    swprintf(bfr, L"Ripcording to %s, which is closest to %s",
+                    sprintf(bfr, "Ripcording to %s, which is closest to %s",
                             name, pclusterDesired->GetName());
                 else
-                    swprintf(bfr, L"Ripcording to %s", name);
+                    sprintf(bfr, "Ripcording to %s", name);
 
                 PostText(true, bfr);
 
@@ -1180,7 +1180,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         if (ship->GetCluster() == NULL)
                         {
                             // The ship has moved to the same cluster as the player
-                            debugf(L"Moving %s/%d to %s\n",
+                            debugf("Moving %s/%d to %s\n",
                                    ship->GetName(), ship->GetObjectID(),
                                    pcluster->GetName());
 
@@ -1227,19 +1227,19 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 {
                     if (pshipTo)
                     {
-						wchar_t    bfr[100];
-                        swprintf(bfr, L"You have started donating your income to %s", pshipTo->GetName());
+                        char    bfr[100];
+                        sprintf(bfr, "You have started donating your income to %s", pshipTo->GetName());
                         PostText(true, bfr);
                     }
                     else
                     {
-                        PostText(true, L"You have stopped donating your income to %s", pshipOld->GetName());
+                        PostText(true, "You have stopped donating your income to %s", pshipOld->GetName());
                     }
                 }
                 else if (pshipTo == GetShip())
                 {
-					wchar_t    bfr[100];
-                    swprintf(bfr, L"%s is now donating to you", pshipBy->GetName());
+                    char    bfr[100];
+                    sprintf(bfr, "%s is now donating to you", pshipBy->GetName());
 
                     PostText(true, bfr);
 
@@ -1258,8 +1258,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 }
                 else if (pshipOld == GetShip())
                 {
-					wchar_t    bfr[100];
-                    swprintf(bfr, L"%s has stopped donating to you", pshipBy->GetName());
+                    char    bfr[100];
+                    sprintf(bfr, "%s has stopped donating to you", pshipBy->GetName());
                     PostText(true, bfr);
                 }
             }
@@ -1333,11 +1333,11 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
                 IshipIGC*   pshipDonate = m_ship->GetAutoDonate();
                 if (pshipDonate)
-                    PostText(false, L"You donated your payday of $%d to %s.", pfmPayday->dMoney, pshipDonate->GetName());
+                    PostText(false, "You donated your payday of $%d to %s.", pfmPayday->dMoney, pshipDonate->GetName());
                 else if (moneyReceived == 0)
-                    PostText(false, L"You received a payday of $%d.", pfmPayday->dMoney);
+                    PostText(false, "You received a payday of $%d.", pfmPayday->dMoney);
                 else
-                    PostText(false, L"You received $%d in pay and donations.", pfmPayday->dMoney + moneyReceived);
+                    PostText(false, "You received $%d in pay and donations.", pfmPayday->dMoney + moneyReceived);
             }
         }
         break;
@@ -1373,7 +1373,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                         m_pClientEventSource->OnMoneyChange(ppiFrom);
 
 						if (pfmMoney->sidTo == sid) {
-                            PostText(false, L"%s gave you $%d. You now have $%d.",
+                            PostText(false, "%s gave you $%d. You now have $%d.",
                                      ppiFrom->CharacterName(), pfmMoney->dMoney, MyPlayerInfo()->GetMoney());
 
 						}
@@ -1949,7 +1949,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 m_bLaunchAfterDisembark = false;
             }
             else if (pshipChild->GetParentShip() == m_ship)
-                PostText(true, L"%s has left your ship.", pshipChild->GetName());
+                PostText(true, "%s has left your ship.", pshipChild->GetName());
         }
         break;
 
@@ -2075,9 +2075,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                     if (pship == m_ship && m_ship->GetCluster() == NULL)
                     {
                         if (ppd->turretID != NA)
-                            PostText(true, L"%s has boarded your ship as a turret.", pshipChild->GetName());
+                            PostText(true, "%s has boarded your ship as a turret.", pshipChild->GetName());
                         else
-                            PostText(true, L"%s has boarded your ship as an observer.", pshipChild->GetName());
+                            PostText(true, "%s has boarded your ship as an observer.", pshipChild->GetName());
 
                         PlaySoundEffect(boardSound);
                     }
@@ -2151,7 +2151,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
                 pship->SetWingID(pfmSW->wingID);
                 if (pfmSW->bCommanded && (pship == m_ship))
-                    PostText(true, L"You have been assigned to wing %s", c_pszWingName[pfmSW->wingID]);
+                    PostText(true, "You have been assigned to wing %s", c_pszWingName[pfmSW->wingID]);
             }
 
             m_pMissionInfo->GetSideInfo(pship->GetSide()->GetObjectID())->GetMembers().GetSink()();
@@ -2167,7 +2167,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             // make sure this was what we intended to join if we were joining from the lobby
             assert(m_dwCookieToJoin == pfmJoinedMission->dwCookie || !m_fmLobby.IsConnected());
 
-            debugf(L"I am ship %d\n", pfmJoinedMission->shipID);
+            debugf("I am ship %d\n", pfmJoinedMission->shipID);
 
             // Make sure we have the right static core
             if (lstrcmp(m_pMissionInfo->GetIGCStaticFile(), m_szIGCStaticFile) != 0
@@ -2180,8 +2180,8 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 delete m_pMissionInfo;
                 m_pMissionInfo = NULL;
 
-                OnLogonAck(false, false, L"The client and server data files are out of sync. Please restart and go to a games list to auto-update "
-                  L"the latest files. If this doesn't work, try deleting the file 'FileList.txt' from the install directory and restarting the application.");
+                OnLogonAck(false, false, "The client and server data files are out of sync. Please restart and go to a games list to auto-update "
+                  "the latest files. If this doesn't work, try deleting the file 'FileList.txt' from the install directory and restarting the application.");
             }
             else
             {
@@ -2198,7 +2198,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                 FMD_S_PLAYERINFO fmPlayerInfo;
                 memset(&fmPlayerInfo, 0, sizeof(fmPlayerInfo));
-                Strcpy(fmPlayerInfo.CharacterName, L"<error>");
+                strcpy(fmPlayerInfo.CharacterName, "<error>");
                 fmPlayerInfo.shipID = pfmJoinedMission->shipID;
                 fmPlayerInfo.iSide = NA;
                 pPlayerInfo->Set(&fmPlayerInfo);
@@ -2228,7 +2228,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             CASTPFM(pfmPlayerInfo, S, PLAYERINFO, pfm);
             PlayerLink* l = FindPlayerLink(pfmPlayerInfo->shipID);
-            debugf(L"Got Player Info for %s\n", pfmPlayerInfo->CharacterName);
+            debugf("Got Player Info for %s\n", pfmPlayerInfo->CharacterName);
             // start with the player not on a side
             SideID sideID = pfmPlayerInfo->iSide;
             bool bReady = pfmPlayerInfo->fReady;
@@ -2263,7 +2263,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 ds.abmOrders = pfmPlayerInfo->abmOrders;
                 ds.baseObjectID = pfmPlayerInfo->baseObjectID;
 
-                Strcpy(ds.name, pfmPlayerInfo->CharacterName);
+                strcpy(ds.name, pfmPlayerInfo->CharacterName);
 
                 IshipIGC*   pship = (IshipIGC*)(m_pCoreIGC->CreateObject(m_lastSend, OT_ship, &ds, sizeof(ds)));
                 if (pship != NULL)
@@ -2293,7 +2293,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 // pPlayerInfo->SetReady(bReady); Imago commented out so afk not reset
             }
 
-            debugf(L"PlayerInfo for %s, ship=%d, side=%d\n", pPlayerInfo->CharacterName(),
+            debugf("PlayerInfo for %s, ship=%d, side=%d\n", pPlayerInfo->CharacterName(),
                 pPlayerInfo->ShipID(), pPlayerInfo->SideID());
             break;
         }
@@ -2480,7 +2480,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             m_pClientEventSource->OnAddRequest(m_pMissionInfo, pfmPosReq->iSide, ppi);
 
             if (MyPlayerInfo()->IsTeamLeader() && (pfmPosReq->iSide == GetSideID()))
-                PostText(true, L"%s wishes to join your team", ppi->CharacterName());
+                PostText(true, "%s wishes to join your team", ppi->CharacterName());
 
             PlaySoundEffect(salPlayerWaitingSound);
 
@@ -2584,7 +2584,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         case FM_CS_SIDE_INACTIVE: //KGJV #62 - changed to CS
         {
             CASTPFM(pfmSideInactive, CS, SIDE_INACTIVE, pfm); // KGJV #62 - changed to CS
-            debugf(L"Side inactive, side=%d\n", pfmSideInactive->sideID);
+            debugf("Side inactive, side=%d\n", pfmSideInactive->sideID);
             m_pMissionInfo->SetSideActive(pfmSideInactive->sideID, pfmSideInactive->bActive); // KGJV #62 was false
 			// update the AET bit
 			if (pfmSideInactive->bChangeAET)
@@ -2777,7 +2777,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
             MyMission()->GetSideInfo(pPlayerInfo->SideID())->GetMembers().GetSink()();
 
-			const wchar_t* pszVictim = pPlayerInfo->CharacterName();
+            const char* pszVictim = pPlayerInfo->CharacterName();
             bool bConstructorOrMiner;
             {
                 PilotType pt = pship->GetPilotType();
@@ -2798,15 +2798,15 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 }
 
                 if (pfmKillShip->shipID == shipID)
-                    PostText(true, pfmKillShip->bDeathCredit ? L"You were killed" : L"You ejected");
+                    PostText(true, pfmKillShip->bDeathCredit ? "You were killed" : "You ejected");
                 else if (bConstructorOrMiner)
-                    PostText(pPlayerInfo->SideID() == GetSideID(), START_COLOR_STRING L"%s" END_COLOR_STRING L" was killed", (PCC) ConvertColorToString (m_pCoreIGC->GetSide(pPlayerInfo->SideID())->GetColor ()), pszVictim);
+                    PostText(pPlayerInfo->SideID() == GetSideID(), START_COLOR_STRING "%s" END_COLOR_STRING " was killed", (PCC) ConvertColorToString (m_pCoreIGC->GetSide(pPlayerInfo->SideID())->GetColor ()), pszVictim);
                 else
-                    PostText(false, pfmKillShip->bDeathCredit ? START_COLOR_STRING L"%s" END_COLOR_STRING L" was killed" : START_COLOR_STRING L"%s" END_COLOR_STRING L" ejected", (PCC) ConvertColorToString (m_pCoreIGC->GetSide(pPlayerInfo->SideID())->GetColor ()), pszVictim);
+                    PostText(false, pfmKillShip->bDeathCredit ? START_COLOR_STRING "%s" END_COLOR_STRING " was killed" : START_COLOR_STRING "%s" END_COLOR_STRING " ejected", (PCC) ConvertColorToString (m_pCoreIGC->GetSide(pPlayerInfo->SideID())->GetColor ()), pszVictim);
             }
             else
             {
-				const wchar_t* pszLauncher = pLauncherInfo->CharacterName();
+                const char* pszLauncher = pLauncherInfo->CharacterName();
 
                 if (pfmKillShip->bKillCredit)
                 {
@@ -2822,30 +2822,30 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 if (pfmKillShip->shipID == shipID)
                     PostText(true,
                              pfmKillShip->bDeathCredit
-                             ? L"You were killed by " START_COLOR_STRING L"%s" END_COLOR_STRING
-                             : L"You were forced to eject by " START_COLOR_STRING L"%s" END_COLOR_STRING,
+                             ? "You were killed by " START_COLOR_STRING "%s" END_COLOR_STRING
+                             : "You were forced to eject by " START_COLOR_STRING "%s" END_COLOR_STRING,
                              (PCC) ConvertColorToString (pLauncherInfo->GetShip()->GetSide()->GetColor ()), pszLauncher);
                 else if (pmodelKiller == m_ship)
                     PostText(true,
                              pfmKillShip->bDeathCredit
-                             ? L"You killed " START_COLOR_STRING L"%s"  END_COLOR_STRING
-                             : L"You forced " START_COLOR_STRING L"%s"  END_COLOR_STRING L" to eject",
+                             ? "You killed " START_COLOR_STRING "%s"  END_COLOR_STRING
+                             : "You forced " START_COLOR_STRING "%s"  END_COLOR_STRING " to eject",
                              (PCC) ConvertColorToString (pPlayerInfo->GetShip()->GetSide()->GetColor ()), pszVictim);
                 else
                 {
                     if (bConstructorOrMiner && pPlayerInfo->SideID() != GetSideID())
                         PostText(bConstructorOrMiner,
                                  pfmKillShip->bDeathCredit
-                                 ? (START_COLOR_STRING L"%s %s" END_COLOR_STRING L" was killed by %s")
-                                 : (START_COLOR_STRING L"%s %s" END_COLOR_STRING L" was forced to eject by %s"),
+                                 ? (START_COLOR_STRING "%s %s" END_COLOR_STRING " was killed by %s")
+                                 : (START_COLOR_STRING "%s %s" END_COLOR_STRING " was forced to eject by %s"),
                                  (PCC) ConvertColorToString (pPlayerInfo->GetShip()->GetSide()->GetColor ()),
                                  pPlayerInfo->GetShip()->GetSide()->GetName(),
                                  pszVictim, pszLauncher);
                     else
                         PostText(bConstructorOrMiner,
                                  pfmKillShip->bDeathCredit
-                                 ? L"%s was killed by %s"
-                                 : L"%s was forced to eject by %s", pszVictim, pszLauncher);
+                                 ? "%s was killed by %s"
+                                 : "%s was forced to eject by %s", pszVictim, pszLauncher);
                 }
             }
 
@@ -2956,11 +2956,11 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             {
                 //Leader on our team has switched
                 if (pplayer == MyPlayerInfo())
-                    PostText(true, L"You have become the team leader");
+                    PostText(true, "You have become the team leader");
                 else
                 {
-					wchar_t    bfr[100];
-                    swprintf(bfr, L"%s has become the team leader", pplayer->CharacterName());
+                    char    bfr[100];
+                    sprintf(bfr, "%s has become the team leader", pplayer->CharacterName());
                     PostText(true, bfr);
                 }
             }
@@ -3137,7 +3137,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 				if (pship->GetSide() != GetSide()) break;
 				IpartTypeIGC *ppartType = GetCore()->GetPartType(pfmGain->parttypeidDocked);
 				if (ppartType)
-					PostText(true, L"%s has secured %s",
+					PostText(true, "%s has secured %s",
 						pship->GetName(),
 						ppartType->GetName()
 					);
@@ -3154,7 +3154,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 					{
 						if (pfmGain->sideidFlag != SIDE_TEAMLOBBY)
 						{
-							PostText(true, L"%s has stolen " START_COLOR_STRING L"%s's" END_COLOR_STRING L" flag.",
+							PostText(true, "%s has stolen " START_COLOR_STRING "%s's" END_COLOR_STRING " flag.",
 								pship->GetName(),
 								(PCC) ConvertColorToString (GetCore()->GetSide(pfmGain->sideidFlag)->GetColor ()),
 								GetCore()->GetSide(pfmGain->sideidFlag)->GetName()
@@ -3164,7 +3164,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 						}
 						else
 						{
-							PostText(true, L"%s has found an artifact.",
+							PostText(true, "%s has found an artifact.",
 								pship->GetName());
 
 							PlaySoundEffect(artifactFoundSound);
@@ -3173,7 +3173,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 					else if (pfmGain->sideidFlag > 0 && pfmGain->sideidFlag == GetSideID())
 					{
 						ZString color = ConvertColorToString (pship->GetSide()->GetColor ());
-						PostText(true, START_COLOR_STRING L"%s" END_COLOR_STRING L" of " START_COLOR_STRING L"%s" END_COLOR_STRING L" has stolen our flag.",
+						PostText(true, START_COLOR_STRING "%s" END_COLOR_STRING " of " START_COLOR_STRING "%s" END_COLOR_STRING " has stolen our flag.",
 							(PCC) color,
 							pship->GetName(),
 							(PCC) color,
@@ -3226,7 +3226,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 
                     pfmDocked->stationID = m_sidTeleportAfterDisembark;
 
-                    StartLockDown(L"Teleporting to " + ZString(pstation->GetName()) + L"....", lockdownTeleporting);
+                    StartLockDown("Teleporting to " + ZString(pstation->GetName()) + "....", lockdownTeleporting);
                 }
 
                 m_sidTeleportAfterDisembark = NA;
@@ -3252,42 +3252,42 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 				if (GetCore()->GetStation(pfmObjectSpotted->oidSpotter)->GetSide() != myside) {
 
 
- 					strAllies = L"\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + L"Allied" + END_COLOR_STRING + L" " ;
+ 					strAllies = "\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + "Allied" + END_COLOR_STRING + " " ;
 				} else {
-					strAllies = L"Your ";
+					strAllies = "Your ";
 				}
                 strSpotterName = strAllies
                     + GetCore()->GetStation(pfmObjectSpotted->oidSpotter)->GetName()
-                    + L" has";
+                    + " has";
                 break;
 
             case OT_probe:
 				if (GetCore()->GetProbe(pfmObjectSpotted->oidSpotter)->GetSide() != myside) {
 
- 					strAllies = L"\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + L"ally's" + END_COLOR_STRING+L" " ;
+ 					strAllies = "\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + "ally's" + END_COLOR_STRING+" " ;
 				} else {
-					strAllies = L"team's";
+					strAllies = "team's";
 				}
-                strSpotterName = L"One of your "+ZString(strAllies)+L" probes has";
+                strSpotterName = "One of your "+ZString(strAllies)+" probes has";
                 break;
 
             case OT_ship:
 				if (GetCore()->GetShip(pfmObjectSpotted->oidSpotter)->GetSide() != myside) {
 
- 					strAllies = L"\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + L" (Ally)" + END_COLOR_STRING +L" has" ;
+ 					strAllies = "\x81 " + ConvertColorToString(AllianceColors[myside->GetAllies()]*0.75) + " (Ally)" + END_COLOR_STRING +" has" ;
 				} else {
-					strAllies = L" has";
+					strAllies = " has";
 				}
 
                 if (pfmObjectSpotted->oidSpotter == GetShipID())
-                    strSpotterName = L"You've";
+                    strSpotterName = "You've";
                 else
                     strSpotterName = GetCore()->GetShip(pfmObjectSpotted->oidSpotter)->GetName() + ZString(strAllies);
                 break;
 
             default:
                 assert(false);
-                strSpotterName = L"<bug> has";
+                strSpotterName = "<bug> has";
                 break;
             }
 
@@ -3299,9 +3299,9 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
 					IsideIGC* myside = GetSide();
                     assert(pstation);
 					if (myside->AlliedSides(myside,pstation->GetSide())) { //ALLY imago for when VIS is OFF
-						PostText(false, strSpotterName + L" discovered an allied " + pstation->GetName() + L" in sector " + pstation->GetCluster()->GetName()); //#ALLY imago changed enemy to friendly if allied 7/3/09
+						PostText(false, strSpotterName + " discovered an allied " + pstation->GetName() + " in sector " + pstation->GetCluster()->GetName()); //#ALLY imago changed enemy to friendly if allied 7/3/09
 					} else {
-                    	PostText(GetShip()->GetWingID() == 0, strSpotterName + L" discovered an enemy " + pstation->GetName() + L" in sector " + pstation->GetCluster()->GetName());
+                    	PostText(GetShip()->GetWingID() == 0, strSpotterName + " discovered an enemy " + pstation->GetName() + " in sector " + pstation->GetCluster()->GetName());
 					}
                 }
                 break;
@@ -3310,7 +3310,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 {
                     IasteroidIGC* pasteroid = GetCore()->GetAsteroid(pfmObjectSpotted->oidObject);
                     assert(pasteroid);
-                    PostText(GetShip()->GetWingID() == 0, strSpotterName + L" discovered a " + IasteroidIGC::GetTypeName(pasteroid->GetCapabilities()) + L" asteroid in sector " + pasteroid->GetCluster()->GetName());
+                    PostText(GetShip()->GetWingID() == 0, strSpotterName + " discovered a " + IasteroidIGC::GetTypeName(pasteroid->GetCapabilities()) + " asteroid in sector " + pasteroid->GetCluster()->GetName());
                 }
                 break;
 
@@ -3318,7 +3318,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
                 {
                     IwarpIGC* paleph = GetCore()->GetWarp(pfmObjectSpotted->oidObject);
                     assert(paleph);
-                    PostText(GetShip()->GetWingID() == 0, strSpotterName + L" discovered an aleph from sector " + paleph->GetCluster()->GetName() + L" to sector " + paleph->GetDestination()->GetCluster()->GetName());
+                    PostText(GetShip()->GetWingID() == 0, strSpotterName + " discovered an aleph from sector " + paleph->GetCluster()->GetName() + " to sector " + paleph->GetDestination()->GetCluster()->GetName());
                 }
                 break;
 
@@ -3336,7 +3336,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             IdevelopmentIGC* pdevelopment = GetCore()->GetDevelopment(pfmDevelopmentCompleted->devId);
             assert(pdevelopment);
 
-            PostText(true, L"%s research completed", pdevelopment->GetName());
+            PostText(true, "%s research completed", pdevelopment->GetName());
             PlaySoundEffect(pdevelopment->GetCompletionSound());
         }
         break;
@@ -3487,20 +3487,20 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
             }
             else
             {
-                OnLogonAck(false, false, L"<bug>: Received a spurious join request.");
+                OnLogonAck(false, false, "<bug>: Received a spurious join request.");
             }
             break;
         }
 
         case FM_L_CREATE_MISSION_NACK:
         {
-          OnLogonAck(false, false, L"There are no available servers on which to create a game.");
+          OnLogonAck(false, false, "There are no available servers on which to create a game.");
         }
         break;
 
         case FM_L_JOIN_GAME_NACK:
         {
-          OnLogonAck(false, false, L"There is no more room on this server.");
+          OnLogonAck(false, false, "There is no more room on this server.");
         }
         break;
 

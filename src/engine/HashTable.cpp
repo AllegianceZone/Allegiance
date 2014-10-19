@@ -150,11 +150,11 @@ DWORD CHashTable::GetNumChildren( CHashEntry * pEntry )
 // GenerateHashValue()
 //
 ////////////////////////////////////////////////////////////////////////////////////
-DWORD CHashTable::GenerateHashValue(const wchar_t * szString)
+DWORD CHashTable::GenerateHashValue( const char * szString )
 {
 	DWORD dwHashValue = 0, dwChar;
 
-	if( wcslen( szString ) == 0 )
+	if( strlen( szString ) == 0 )
 	{
 		return 0;
 	}

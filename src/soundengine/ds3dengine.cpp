@@ -92,36 +92,36 @@ public:
 void DS3DSoundEngine::DumpCaps()
 {
     debugf(
-        L"Directsound driver is %scertified by Microsoft "
-            L"and is %semulated.\n", 
-        (m_dscaps.dwFlags & DSCAPS_CERTIFIED) ? L"" : L"not ",
-        (m_dscaps.dwFlags & DSCAPS_EMULDRIVER) ? L"" : L"not "
+        "Directsound driver is %scertified by Microsoft "
+            "and is %semulated.\n", 
+        (m_dscaps.dwFlags & DSCAPS_CERTIFIED) ? "" : "not ",
+        (m_dscaps.dwFlags & DSCAPS_EMULDRIVER) ? "" : "not "
         );
     debugf(
-        L"  The primary buffer can be%s%s%s%s.\n",
-        (m_dscaps.dwFlags & DSCAPS_PRIMARY8BIT) ? L" 8 bit" : L"",
-        (m_dscaps.dwFlags & DSCAPS_PRIMARY16BIT) ? L" 16 bit" : L"",
-        (m_dscaps.dwFlags & DSCAPS_PRIMARYMONO) ? L" mono" : L"",
-        (m_dscaps.dwFlags & DSCAPS_PRIMARYSTEREO) ? L" stereo" : L""
+        "  The primary buffer can be%s%s%s%s.\n",
+        (m_dscaps.dwFlags & DSCAPS_PRIMARY8BIT) ? " 8 bit" : "",
+        (m_dscaps.dwFlags & DSCAPS_PRIMARY16BIT) ? " 16 bit" : "",
+        (m_dscaps.dwFlags & DSCAPS_PRIMARYMONO) ? " mono" : "",
+        (m_dscaps.dwFlags & DSCAPS_PRIMARYSTEREO) ? " stereo" : ""
         );
     debugf(
-        L"  The secondary buffers can range %s from %d Hz to %d Hz, and can be %s%s%s%s.\n",
-        (m_dscaps.dwFlags & DSCAPS_CONTINUOUSRATE) ? L"continuously" : L"in steps",
+        "  The secondary buffers can range %s from %d Hz to %d Hz, and can be %s%s%s%s.\n",
+        (m_dscaps.dwFlags & DSCAPS_CONTINUOUSRATE) ? "continuously" : "in steps",
         m_dscaps.dwMinSecondarySampleRate,
         m_dscaps.dwMaxSecondarySampleRate,
-        (m_dscaps.dwFlags & DSCAPS_SECONDARY8BIT) ? L" 8 bit" : L"",
-        (m_dscaps.dwFlags & DSCAPS_SECONDARY16BIT) ? L" 16 bit" : L"",
-        (m_dscaps.dwFlags & DSCAPS_SECONDARYMONO) ? L" mono" : L"",
-        (m_dscaps.dwFlags & DSCAPS_SECONDARYSTEREO) ? L" stereo" : L""
+        (m_dscaps.dwFlags & DSCAPS_SECONDARY8BIT) ? " 8 bit" : "",
+        (m_dscaps.dwFlags & DSCAPS_SECONDARY16BIT) ? " 16 bit" : "",
+        (m_dscaps.dwFlags & DSCAPS_SECONDARYMONO) ? " mono" : "",
+        (m_dscaps.dwFlags & DSCAPS_SECONDARYSTEREO) ? " stereo" : ""
         );
     debugf(
-        L"  There is hardware support for mixing %d buffers, including %d static and %d streaming buffers.\n",
+        "  There is hardware support for mixing %d buffers, including %d static and %d streaming buffers.\n",
         m_dscaps.dwMaxHwMixingAllBuffers,
         m_dscaps.dwMaxHwMixingStaticBuffers,
         m_dscaps.dwMaxHwMixingStreamingBuffers
         );
     debugf(
-       L"  There is hardware support for %d 3D buffers, including %d static 3D and %d streaming 3D buffers.\n",
+        "  There is hardware support for %d 3D buffers, including %d static 3D and %d streaming 3D buffers.\n",
         m_dscaps.dwMaxHw3DAllBuffers,
         m_dscaps.dwMaxHw3DStaticBuffers,
         m_dscaps.dwMaxHw3DStreamingBuffers
@@ -214,11 +214,11 @@ bool DS3DSoundEngine::IsSeriousError(HRESULT hr)
         return false;
 
     case DSERR_BUFFERLOST:
-        debugf(L"Sound buffer lost.\n");
+        debugf("Sound buffer lost.\n");
         return false;
 
     case DSERR_OUTOFMEMORY:
-        debugf(L"Out of sound memory.\n");
+        debugf("Out of sound memory.\n");
         return false;
     
     default:
@@ -287,7 +287,7 @@ HRESULT DS3DSoundEngine::Init(HWND hwnd, bool bUseDSound8)
 		hr = m_pDirectSound->SetCooperativeLevel(hwnd, DSSCL_PRIORITY);
     if (hr == DSERR_ALLOCATED) 
     {
-        debugf(L"Failure: unable to get DSSCL_PRIORITY access to DSound.  Failing over to DSSCL_NORMAL.\n");
+        debugf("Failure: unable to get DSSCL_PRIORITY access to DSound.  Failing over to DSSCL_NORMAL.\n");
 		if(bUseDSound8)
 			hr = m_pDirectSound->SetCooperativeLevel(hwnd, DSSCL_NORMAL);
 		else
@@ -456,7 +456,7 @@ HRESULT DS3DSoundEngine::Update()
                 if (IsSeriousError(hr))
                 {
                     // Silently fail
-                    debugf(L"Serious error during update while starting sound: %X\n", hr);
+                    debugf("Serious error during update while starting sound: %X\n", hr);
                 }
             }
         };

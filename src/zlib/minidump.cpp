@@ -12,11 +12,11 @@ static ISzAlloc g_Alloc = { SzAlloc, SzFree };
 #define OUT_BUF_SIZE (1 << 16)
 
 ZString GetAppDir() {
-	wchar_t szPathName[MAX_PATH + 48] = TEXT("");
+	char szPathName[MAX_PATH+48] = "";
 	GetModuleFileName(NULL, szPathName, MAX_PATH);
-	wchar_t*   p = wcsrchr(szPathName, '\\');
+	char*   p = strrchr(szPathName, '\\');
 	p = (!p) ? szPathName : p+1;
-	wcscpy(p, TEXT(""));
+	strcpy(p,"");
 	return ZString(szPathName);
 }
 
@@ -210,11 +210,11 @@ FileList FindDumps() {
 	WIN32_FIND_DATA finddata;
 	ZeroMemory(&finddata,sizeof(WIN32_FIND_DATA));
 
-	wchar_t szPathName[MAX_PATH+48] = L"";
-	wchar_t szName[MAX_PATH + 48] = L"";
-	wcscpy(szPathName,(PCC)GetAppDir());
-	wcscpy(szName, szPathName);
-	wcscpy(szPathName, L"*.dmp");
+	char szPathName[MAX_PATH+48] = "";
+	char szName[MAX_PATH+48] = "";	
+	strcpy(szPathName,(PCC)GetAppDir());
+	strcpy(szName,szPathName);
+    strcat(szPathName, "*.dmp");
 	
 	HANDLE hsearchFiles = 0;
 	FILETIME ftTime = {0,0};
@@ -226,10 +226,10 @@ FileList FindDumps() {
 	int iKBytes = 0;
 	while (INVALID_HANDLE_VALUE != hsearchFiles) {
 		if (finddata.cFileName[0] != '.') {
-			wchar_t*   p = wcsrchr(szName, '\\');
+			char*   p = strrchr(szName, '\\');
 			p = (!p) ? szName : p+1;
-			wcscpy(p, L"");
-			wcscat(szName, finddata.cFileName);
+			strcpy(p, "");
+			strcat(szName, finddata.cFileName);
 			tlFiles.InsertSorted(finddata);
 			iKBytes += (finddata.nFileSizeHigh > 0) ? MAXINT : (finddata.nFileSizeLow / 1024);
 			if (iKBytes >= MAXINT)
@@ -245,8 +245,8 @@ FileList FindDumps() {
 
 void DeleteDumps(bool bDelete) {
 	FileList tlFiles = FindDumps();
-	wchar_t szDir[MAX_PATH+52] = L"";
-	wcscpy(szDir,(PCC)GetAppDir());
+	char szDir[MAX_PATH+52] = "";
+	strcpy(szDir,(PCC)GetAppDir());
 	if (!tlFiles.IsEmpty()) {
 		for (FileList::Iterator iterFile(tlFiles);
 			!iterFile.End(); iterFile.Next())
@@ -257,7 +257,7 @@ void DeleteDumps(bool bDelete) {
 				continue;
 			}
 			else {
-				debugf(L"**** Deleting %s\n",(PCC)zFile);
+				debugf("**** Deleting %s\n",(PCC)zFile);
 				DeleteFile(zFile);
 			}
 		}

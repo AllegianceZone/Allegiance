@@ -229,7 +229,7 @@ public:
         return 0;
     }
 
-    bool IsSymbolChar(wchar_t ch)
+    bool IsSymbolChar(char ch)
     {
         return TextTokenImpl::IsSymbolChar(ch) || ch == '-' || ch == '.';
     }

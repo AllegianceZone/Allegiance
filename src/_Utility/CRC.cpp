@@ -179,7 +179,7 @@ int MemoryCRC(const void *_data, unsigned size)
 //////////////////////////////////////////////////////////////////////////////
 
 
-int FileCRC(HANDLE hFile, wchar_t * szErrorMsg)
+int FileCRC(HANDLE hFile, char * szErrorMsg) 
 {
    unsigned size = GetFileSize(hFile, 0);
 
@@ -191,7 +191,7 @@ int FileCRC(HANDLE hFile, wchar_t * szErrorMsg)
    if (buffer == NULL)
    {
       if(szErrorMsg)
-        swprintf(szErrorMsg, L"Memory error before reading file; Error Code: %d; ", GetLastError());
+        sprintf(szErrorMsg, "Memory error before reading file; Error Code: %d; ", GetLastError());
 
       return 0;
    }
@@ -201,7 +201,7 @@ int FileCRC(HANDLE hFile, wchar_t * szErrorMsg)
    if (!ReadFile(hFile, buffer, size, &cBytesRead, NULL))
    {
       if(szErrorMsg)
-        swprintf(szErrorMsg, L"Failed read file; Error Code: %d; ", GetLastError());
+        sprintf(szErrorMsg, "Failed read file; Error Code: %d; ", GetLastError());
       return 0;
    }
 
@@ -222,7 +222,7 @@ Parameters:		szFileName:   file to get CRC from
 Returns:        Checksum of the file, returns 0 on error
 Example:		CRC = FileCRC("autoexec.bat", 0, 0);
 ****************************************************************************/
-int FileCRC(const wchar_t *szFilename, wchar_t * szErrorMsg)
+int FileCRC(const char *szFilename, char * szErrorMsg) 
 {
    HANDLE hFile = CreateFile(szFilename, 
                              GENERIC_READ, 
@@ -235,7 +235,7 @@ int FileCRC(const wchar_t *szFilename, wchar_t * szErrorMsg)
    if (hFile == INVALID_HANDLE_VALUE)
    {
       if(szErrorMsg)
-        swprintf(szErrorMsg, L"Failed open file (%s); Error Code: %d ", szFilename, GetLastError());
+        sprintf(szErrorMsg, "Failed open file (%s); Error Code: %d ", szFilename, GetLastError());
       return 0;
    }
 
@@ -244,14 +244,14 @@ int FileCRC(const wchar_t *szFilename, wchar_t * szErrorMsg)
    if (nCRC == 0)
    {
       if(szErrorMsg)
-          Strcat(szErrorMsg, szFilename);
+          strcat(szErrorMsg, szFilename);
    }
    else
    {
        if (!::CloseHandle(hFile))
        {
           if(szErrorMsg)
-              swprintf(szErrorMsg, L"Couldn't close file (%s); Error Code: %d ", szFilename, GetLastError());
+              sprintf(szErrorMsg, "Couldn't close file (%s); Error Code: %d ", szFilename, GetLastError());
           return 0;
        }
    }

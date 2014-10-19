@@ -17,7 +17,7 @@ HRESULT DDVideo::Play(ZString& strPath, bool bWindowed)
 	m_bWindowed = bWindowed;
     HRESULT hr;  
 	if( FAILED( hr = InitDirectDraw() ) ) {
-		ZDebugOutput(L"InitDirectDraw() failed\n");
+		ZDebugOutput("InitDirectDraw() failed\n");
 		return hr;
 	}
 
@@ -31,7 +31,7 @@ HRESULT DDVideo::Play(ZString& strPath, bool bWindowed)
 	
 		// remember to destroy DShow (pVideo) object to clean up after us.
 		// Return FALSE to let caller know we failed.
-			ZDebugOutput(L"m_pVideo->Open failed\n");
+			ZDebugOutput("m_pVideo->Open failed\n");
 		return FALSE;
 		}			
 	else
@@ -51,7 +51,7 @@ HRESULT DDVideo::InitDirectDraw()
 
 	HINSTANCE hInstDDraw;
     LPDIRECTDRAWCREATE pDDCreate = NULL;
-    hInstDDraw = LoadLibrary(L"ddraw.dll");
+    hInstDDraw = LoadLibrary("ddraw.dll");
 	pDDCreate = ( LPDIRECTDRAWCREATE )GetProcAddress( hInstDDraw, "DirectDrawCreate" );
     pDDCreate( NULL, &pDD, NULL );
 	//hRet = DirectDrawCreate(NULL,&pDD, NULL);

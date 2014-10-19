@@ -117,11 +117,11 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
             }
         }
 
-		static const wchar_t*  cName = L"acs14";
+        static const char*  cName = "acs14";
 
-		const wchar_t* name;
-		const wchar_t* texture = NULL;
-		const wchar_t* icon;
+        const char* name;
+        const char* texture = NULL;
+        const char* icon;
         if (m_buyable)
         {
             name = m_buyable->GetModelName();
@@ -132,19 +132,19 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
             if (m_data.treasureID != SIDE_TEAMLOBBY)
             {
                 name = NULL;
-                texture = L"biosflag";
-                icon = L"flag";
+                texture = "biosflag";
+                icon = "flag";
 
-                SetName(L"Flag");
+                SetName("Flag");
                 IsideIGC*   pside = pMission->GetSide(m_data.treasureID);
                 assert (pside);
                 SetSide(pside);
             }
             else
             {
-                name = L"artifact";
-                icon = L"articon";
-                SetName(L"Artifact");
+                name = "artifact";
+                icon = "articon";
+                SetName("Artifact");
             }
 
             SetSignature(1.5f);
@@ -153,7 +153,7 @@ HRESULT     CtreasureIGC::Initialize(ImissionIGC* pMission, Time now, const void
         {
             assert ((m_data.treasureCode == c_tcCash) || (m_data.treasureCode == c_tcPowerup));
             name = cName;
-            icon = (m_data.treasureCode == c_tcCash) ? L"cashicon" : L"iconpu";
+            icon = (m_data.treasureCode == c_tcCash) ? "cashicon" : "iconpu";
         }
 
         if (texture)

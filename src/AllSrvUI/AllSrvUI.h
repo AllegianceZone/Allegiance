@@ -39,7 +39,7 @@ public:
 
 // Attributes
 public:
-  static void GetArtPath(wchar_t * szArtPath);
+  static void GetArtPath(char * szArtPath);
 
 // Overrides
 public:

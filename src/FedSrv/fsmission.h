@@ -66,7 +66,7 @@ class OldPlayerInfo
         PlayerScoreObject           pso;
         int                         characterID;
         SideID                      sideID;         //Simply using this as a cookie
-		wchar_t                        name[c_cbName];
+        char                        name[c_cbName];
         IclusterIGC*                pclusterLifepod;
         Vector                      positionLifepod;
         unsigned char               bannedSideMask;
@@ -227,7 +227,7 @@ public:
       IMissionSite * psiteMission,
       IIgcSite * psiteIGC,
       CAdditionalAGCParamData * paagcParamData,
-      const wchar_t* pszStoryText
+      const char* pszStoryText
       );
   virtual ~CFSMission();
   static const ListFSMission * GetMissions()
@@ -274,7 +274,7 @@ public:
   }
   void                  SetStage(STAGE stage);
 
-  void                  SetSideName(SideID sid, const wchar_t* szName);
+  void                  SetSideName(SideID sid, const char* szName);
   void                  SetSideSquad(SideID sid, SquadID squadID);
   CFSPlayer *           GetLeader(SideID sid);
   void                  SetLeader(CFSPlayer * pfsPlayer);
@@ -287,11 +287,11 @@ public:
       return GetLeader(m_misdef.iSideMissionOwner);
   }
   void                  AddPlayerToMission(CFSPlayer * pfsPlayer);
-  void                  RemovePlayerFromMission(CFSPlayer * pfsPlayer, QuitSideReason reason, const wchar_t* szMessageParam = NULL);
+  void                  RemovePlayerFromMission(CFSPlayer * pfsPlayer, QuitSideReason reason, const char* szMessageParam = NULL);
   void                  AddPlayerToSide(CFSPlayer * pfsPlayer, IsideIGC * pside);
-  void                  RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reason, const wchar_t* szMessageParam = NULL);
-  bool                  RemovePlayerByName(const wchar_t* szCharacterName, QuitSideReason reason, const wchar_t* szMessageParam = NULL);
-  bool                  RemovePlayerByCDKey(const wchar_t* szCDKey, QuitSideReason reason, const wchar_t* szMessageParam = NULL);
+  void                  RemovePlayerFromSide(CFSPlayer * pfsPlayer, QuitSideReason reason, const char* szMessageParam = NULL);
+  bool                  RemovePlayerByName(const char* szCharacterName, QuitSideReason reason, const char* szMessageParam = NULL);
+  bool                  RemovePlayerByCDKey(const char* szCDKey, QuitSideReason reason, const char* szMessageParam = NULL);
   int                   GetCountOfPlayers(IsideIGC * pside, bool bCountGhosts);
   int                   GetSideRankSum(IsideIGC * pside, bool bCountGhosts);	// TE: Added for balancing
   int                   GetRankThreshold();	// TE: Added for balancing
@@ -304,7 +304,7 @@ public:
   }
   void                  RecordGameResults();
   void                  RecordTeamResults(IsideIGC* pside);
-  void                  RecordPlayerResults(const wchar_t* pszName, PlayerScoreObject* ppso, SideID sid);
+  void                  RecordPlayerResults(const char* pszName, PlayerScoreObject* ppso, SideID sid);
   void                  QueueGameoverMessage();
 
   IsideIGC*             CheckForVictoryByStationBuild(IsideIGC* pside);
@@ -408,11 +408,11 @@ public:
 
   float GetGameDuration() {return m_flGameDuration;}
 
-  OldPlayerLink*    GetOldPlayerLink(const wchar_t* name)
+  OldPlayerLink*    GetOldPlayerLink(const char* name)
   {
     for (OldPlayerLink* popl = m_oldPlayers.first(); (popl != NULL); popl = popl->next())
     {
-        if (_wcsicmp(popl->data().name, name) == 0)
+        if (_stricmp(popl->data().name, name) == 0)
             return popl;
     }
     return NULL;
@@ -460,7 +460,7 @@ public:
 
   IsideIGC*             GetSideWon(void) const { return m_psideWon; }
 
-  const wchar_t*           GetStoryText() const {return m_strStoryText;}
+  const char*           GetStoryText() const {return m_strStoryText;}
   
   //Spunky #276
   CFSPlayer*			GetLastBallotInitiator() { return m_lastBallotBy; }

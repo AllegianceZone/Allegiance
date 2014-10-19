@@ -68,11 +68,11 @@ void CAGCEventData::GetVarData(BSTR* pbstrContext, BSTR* pbstrSubject,
 
 /////////////////////////////////////////////////////////////////////////////
 //
-UINT CAGCEventData::ComputeVariableDataSize(LPCWSTR pszContext,
-  LPCWSTR pszSubject, long cArgTriplets, va_list argptr)
+UINT CAGCEventData::ComputeVariableDataSize(LPCSTR pszContext,
+  LPCOLESTR pszSubject, long cArgTriplets, va_list argptr)
 {
   // Start with the string length of the specified context string, if any
-  UINT cbTotal = pszContext ? wcslen(pszContext) : 0;
+  UINT cbTotal = pszContext ? strlen(pszContext) : 0;
   cbTotal += sizeof(cbTotal);
 
   // Next is the string length of the specified subject string, if any
@@ -201,7 +201,7 @@ UINT CAGCEventData::ComputeVariableDataSize(LPCWSTR pszContext,
 
 /////////////////////////////////////////////////////////////////////////////
 //
-void CAGCEventData::CopyVariableData(LPCWSTR pszContext, LPCWSTR pszSubject,
+void CAGCEventData::CopyVariableData(LPCSTR pszContext, LPCOLESTR pszSubject,
   long cArgTriplets, va_list argptr)
 {
   // Get initial pointers and byte count
@@ -209,7 +209,7 @@ void CAGCEventData::CopyVariableData(LPCWSTR pszContext, LPCWSTR pszSubject,
   BYTE* pbData = m_pbData + sizeof(XData);
 
   // Start with the specified context string, if any
-  UINT cb = pszContext ? wcslen(pszContext) : 0;
+  UINT cb = pszContext ? strlen(pszContext) : 0;
   COPY_VAR(cb);
   COPY_DATA(pszContext, cb);
 
@@ -291,7 +291,7 @@ void CAGCEventData::CopyVariableData(LPCWSTR pszContext, LPCWSTR pszSubject,
       }
       case VT_VARIANT:
         // TODO: Could recurse here to support VT_VARIANT
-        ZError(L"Unsupported Variant Type");
+        ZError("Unsupported Variant Type");
         break;
       case VT_LPSTR:
       {
@@ -310,7 +310,7 @@ void CAGCEventData::CopyVariableData(LPCWSTR pszContext, LPCWSTR pszSubject,
         break;
       }
       default:
-        ZError(L"Unsupported Variant Type");
+        ZError("Unsupported Variant Type");
     }
   }
 }
@@ -367,7 +367,7 @@ UINT CAGCEventData::CreateVARIANTFromData(BYTE* pbData, CComVariant& var)
       break;
     case VT_VARIANT:
       // TODO: Could recurse here to support VT_VARIANT
-      ZError(L"Unsupported Variant Type");
+      ZError("Unsupported Variant Type");
       break;
     case VT_LPSTR:
       cbData = CreateBSTRFromData_LPSTR(pbData, &V_BSTR(&var));
@@ -378,7 +378,7 @@ UINT CAGCEventData::CreateVARIANTFromData(BYTE* pbData, CComVariant& var)
       V_VT(&var) = VT_BSTR;
       break;
     default:
-      ZError(L"Unsupported Variant Type");
+      ZError("Unsupported Variant Type");
   }
 
   // Return the number of bytes consumed from the buffer
