@@ -640,7 +640,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	*((ObjectType*)pData) = OT_constants;
 	*((int*)(pData + sizeof(ObjectType))) = size;
 	iDatasize += sizeof(int) + sizeof(ObjectType) + size;
-	memcpy(pData + sizeof(int) + sizeof(ObjectType), pConstants, iDatasize);
+	wmemcpy(pData + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pConstants, iDatasize);
 
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Expendables.csv";
 	std::wfstream file10((PCC)strFile, std::ios::in);
@@ -709,7 +709,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_projectileType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pProj, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pProj, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -869,7 +869,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_missileType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pMissile, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pMissile, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1007,7 +1007,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_probeType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pProbe, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pProbe, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1137,7 +1137,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_chaffType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pChaff, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pChaff, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1272,7 +1272,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_mineType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pMine, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pMine, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1344,7 +1344,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pPart->equipmentType = ET_Afterburner;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPart, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPart, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1422,7 +1422,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pPart->equipmentType = ET_Weapon;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPart, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPart, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1487,7 +1487,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pPack->equipmentType = ET_Pack;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPack, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPack, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1557,7 +1557,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pShield->equipmentType = ET_Shield;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pShield, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pShield, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1629,7 +1629,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pCloak->equipmentType = ET_Cloak;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pCloak, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pCloak, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1667,7 +1667,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPart, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPart, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1877,7 +1877,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						
 			*((ObjectType*)(pData + iDatasize)) = OT_hullType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size + (sizeof(HardpointData) * iHardpoints);
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pHull, size + (sizeof(HardpointData) * iHardpoints));
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pHull, size + (sizeof(HardpointData) * iHardpoints));
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size + (sizeof(HardpointData) * iHardpoints);
 			iLines++;
@@ -1962,7 +1962,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			}
 			*((ObjectType*)(pData + iDatasize)) = OT_development;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pDev, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pDev, size);
 			if(i != csvData.end())
 				iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -2023,7 +2023,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			}
 			*((ObjectType*)(pData + iDatasize)) = OT_droneType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pDrone, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pDrone, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -2158,7 +2158,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_stationType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pStation, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pStation, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -2223,7 +2223,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_treasureSet;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size + (sizeof(TreasureData) * iTreasures);
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pSet, size + (sizeof(TreasureData) * iTreasures));
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pSet, size + (sizeof(TreasureData) * iTreasures));
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size + (sizeof(TreasureData) * iTreasures);
 			iLines++;
@@ -2295,7 +2295,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pCiv->gasBaseAttributes.Set(fgas);
 			*((ObjectType*)(pData + iDatasize)) = OT_civilization;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pCiv, size);
+			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pCiv, size);
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
 		}
@@ -3187,7 +3187,7 @@ int                 CmissionIGC::Export(__int64  maskTypes,
         {
             *((ObjectType*)pdata) = OT_constants;
             *((int*)(pdata + sizeof(ObjectType))) = size;
-            memcpy(pdata + sizeof(int) + sizeof(ObjectType), GetConstants(), size);
+			wmemcpy(pdata + sizeof(int) + sizeof(ObjectType), (const wchar_t*)GetConstants(), size);
 
             pdata += sizeof(int) + sizeof(ObjectType) + size;
         }
@@ -5357,7 +5357,7 @@ void CmissionIGC::ExportStaticIGCObjs()
   {
 	int size = pMission->GetSizeOfConstants();
 	Constants* pdata = (Constants*)(new wchar_t [size]);
-	memcpy(pdata, pMission->GetConstants(), pMission->GetSizeOfConstants()); //whatever
+	wmemcpy((wchar_t*)pdata, (const wchar_t*)pMission->GetConstants(), pMission->GetSizeOfConstants()); //whatever
 
 	ZString strLine = L"GLOBALID OR DEFENSE CONSTANTIDS\tGLOBAL VALUE OR DAMAGE CONSTANTID\tCOMMENT\r\n";
 	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Constants";

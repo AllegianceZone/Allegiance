@@ -111,7 +111,7 @@ int         CasteroidIGC::Export(void* data) const
         
 		const wchar_t* pszName = GetName();
         if (*pszName == '\0')
-            memcpy(dataAsteroid->name, GetName(), sizeof(dataAsteroid->name));
+            wmemcpy(dataAsteroid->name, GetName(), sizeof(dataAsteroid->name));
         else
             UTL::putName(dataAsteroid->name, GetName());
     }

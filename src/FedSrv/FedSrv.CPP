@@ -7712,7 +7712,7 @@ bool IsCFGFileValid(const wchar_t * szFileName)
     if (n != -1 && n != 0)
     {
 		wchar_t* pData = new wchar_t[n + 1];
-        memcpy(pData, file.GetPointer(), n);
+		wmemcpy(pData, (const wchar_t*)file.GetPointer(), n);
         pData[n] = 0;
 
         bool bValid = wcsstr(pData, c_szValidCfg) != NULL;
@@ -9533,7 +9533,7 @@ void UnregisterAllSrv(wchar_t *szServerName)
 // selected mode of operation.  When running as an executable, blocking
 // keyboard input is used to prevent the program from exiting prematurely.
 //
-int __cdecl main(int argc, wchar_t *argv[])
+int __cdecl wmain(int argc, wchar_t *argv[])
 {
     // Load the global settings from the registry
     LoadSettings();
@@ -13238,7 +13238,7 @@ IshipIGC*   PickNewLeader(const ShipListIGC*    pships,
       //_strtime((char*)(pov + 1));
       //((char*)(pov + 1))[8] = ' ';
 
-	  memcpy(((wchar_t*)(pov + 1)) + c_cbPrefix, psz, l);
+	  wmemcpy(((wchar_t*)(pov + 1)) + c_cbPrefix, psz, l);
       pov->Offset = ::InterlockedExchangeAdd(&m_nOffset, cbLine);
       WriteFileEx(m_hFile, pov + 1, cbLine, pov, FileIOCompletionRoutine);
     }

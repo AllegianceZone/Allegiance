@@ -2712,7 +2712,7 @@ static void    GetAsteroidName(const wchar_t* pszPrefix,
     int l = wcslen(pszPrefix);
     if (l == 0)
         l = 2;      //Allow for asteroids with no default name
-    memcpy(bfr, pszPrefix, l);
+    wmemcpy(bfr, pszPrefix, l);
     _itow(c_iPlus + ((id + c_iOffset) * c_iMultiplier) % c_iModulo,
           &bfr[l], 10);
 }

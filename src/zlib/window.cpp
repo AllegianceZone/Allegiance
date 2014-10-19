@@ -1044,7 +1044,7 @@ HRESULT Window::StaticInitialize()
     // See if TrackMouseEvent exists
     //
     s_pfnTrackMouseEvent = 
-        (PFNTrackMouseEvent)GetProcAddress(
+		(PFNTrackMouseEvent)GetProcAddress(
             GetModuleHandle(L"user32"),
             "TrackMouseEvent"
         );

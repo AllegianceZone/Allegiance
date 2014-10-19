@@ -11,7 +11,7 @@ ZString::ZStringData::ZStringData(PCC pcc)
 	m_length = pcc ? wcslen(pcc) : 0;
 	m_pch = new wchar_t[m_length + 1]; //Fix memory leak -Imago 8/2/09
     m_pcc    = m_pch;
-    memcpy(m_pch, pcc ? pcc : TEXT(""), m_length + 1);
+    wmemcpy(m_pch, pcc ? pcc : TEXT(""), m_length + 1);
 }
 
 ZString::ZStringData::ZStringData(PCC pcc, bool bStatic)
@@ -28,7 +28,7 @@ ZString::ZStringData::ZStringData(PCC pcc, int length)
     m_length = length;
 	m_pch = new wchar_t[m_length + 1];
     m_pcc    = m_pch;
-    memcpy(m_pch, pcc, m_length);
+    wmemcpy(m_pch, pcc, m_length);
     m_pch[m_length] = 0;
 }
 
@@ -37,7 +37,7 @@ ZString::ZStringData::ZStringData(wchar_t ch, int length)
     m_length = length;
 	m_pch = new wchar_t[m_length + 1];
     m_pcc    = m_pch;
-    memset(m_pch, ch, m_length);
+    wmemset(m_pch, ch, m_length);
     m_pch[m_length] = 0;
 }
 
@@ -46,8 +46,8 @@ ZString::ZStringData::ZStringData(const ZStringData* pdata1, const ZStringData* 
 {
 	m_pch = new wchar_t[m_length + 1];
     m_pcc = m_pch;
-    memcpy(m_pch, pdata1->m_pcc, pdata1->GetLength());
-    memcpy(m_pch + pdata1->m_length, pdata2->m_pcc, pdata2->GetLength() + 1);
+    wmemcpy(m_pch, pdata1->m_pcc, pdata1->GetLength());
+    wmemcpy(m_pch + pdata1->m_length, pdata2->m_pcc, pdata2->GetLength() + 1);
 }
 
 ZString::ZStringData::~ZStringData()
@@ -958,7 +958,7 @@ void ZScramble(wchar_t* szDest, PCC szSource, PCC szKey)
 	int length = wcslen(szSource);
 	int lengthKey = wcslen(szKey);
 
-    memcpy(szDest, szSource, length + 1);
+    wmemcpy(szDest, szSource, length + 1);
 
     for (int nRound = 0; nRound < c_cScrambleRounds; nRound++)
     {
@@ -986,7 +986,7 @@ void ZUnscramble(wchar_t* szDest, PCC szSource, PCC szKey)
 	int length = wcslen(szSource);
 	int lengthKey = wcslen(szKey);
 
-    memcpy(szDest, szSource, length + 1);
+    wmemcpy(szDest, szSource, length + 1);
 
     for (int nRound = c_cScrambleRounds - 1; nRound >= 0; nRound--)
     {

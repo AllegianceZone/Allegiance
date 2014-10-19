@@ -163,7 +163,7 @@ void CLobbyApp::SendGameInfo()
 			while (!iterMission.End()){
 				CFLMission* mission = iterMission.Value();
 				FMD_LS_LOBBYMISSIONINFO *info = mission->GetMissionInfo();
-				memcpy(PostData + offset,info,info->cbmsg);
+				wmemcpy(PostData + offset, (const wchar_t*)info, info->cbmsg);
 				offset += info->cbmsg;
 				iterMission.Next();
 			}
@@ -176,7 +176,7 @@ void CLobbyApp::SendGameInfo()
 			 Strcpy(settings.uri,L"/lobbyinfo.ashx");
 			 Strcpy(settings.host,L"allegiancezone.com");
 			 ZeroMemory(settings.data,BUFFSIZE);
-			 memcpy(settings.data,PostData,offset);
+			 wmemcpy(settings.data,PostData,offset);
 			 settings.size = offset;
 			 DWORD lpExitCode;
 			 GetExitCodeThread(m_threadPost,&lpExitCode);

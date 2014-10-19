@@ -8,6 +8,7 @@
 #define _alloc_H_
 
 #define _DUMP_LEAKS_
+#define _ATL_DISABLE_NOTHROW_NEW //imago found workaround 10/14
 
 // VS.Net 2003 port: problem with 'new' been redefined. disable this still workaround found 
 #if _MSC_VER >= 1310

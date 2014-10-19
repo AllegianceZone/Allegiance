@@ -81,7 +81,7 @@ class CtreasureSetIGC : public ItreasureSetIGC
                 m_maxTreasureData += c_increment;
 
 				DataTreasureSetIGC*    newData = (DataTreasureSetIGC*)(new wchar_t[newSize]);
-                memcpy(newData, m_data, oldSize);
+				wmemcpy((wchar_t*)newData, (const wchar_t*)m_data, oldSize);
 				delete[] (wchar_t*)m_data;
 
                 m_data = newData;

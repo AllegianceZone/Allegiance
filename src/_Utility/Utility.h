@@ -1352,8 +1352,8 @@ class MMF
 			return m_szBuffer;
 		}
 
-		void PutBuffer(char * data, int size) {
-			memcpy(m_szBuffer+m_uBuffer,data,size);
+		void PutBuffer(wchar_t * data, int size) {
+			wmemcpy(m_szBuffer+m_uBuffer,data,size);
 			m_uBuffer += size;
 		}
 
