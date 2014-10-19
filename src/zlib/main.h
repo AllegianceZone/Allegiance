@@ -4,9 +4,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow);
+int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpszCmdLine, int nCmdShow);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpszCmdLine, int nCmdShow)
 {
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
 
@@ -25,23 +25,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
     return result;
 }
 
-int main( int argc, char *argv[ ])
+int wmain( int argc, wchar_t *argv[ ])
 {
     ZString strCommandLine;
 
-    for(int index = 1; index < argc; index++) {
+	for(int index = 1; index < argc; index++) {
         ZString str = argv[index];
 
         if (str.Find(' ') == -1) {
             strCommandLine += ZString(argv[index]);
         } else {
-            strCommandLine += "\"" + ZString(argv[index]) + "\"";
+            strCommandLine += L"\"" + ZString(argv[index]) + L"\"";
         }
 
         if (index < argc - 1) {
-            strCommandLine += " ";
+            strCommandLine += L" ";
         }
     }
-
-    return WinMain(GetModuleHandle(NULL), NULL, (char*)(PCC)strCommandLine, SW_SHOW);
+	return wWinMain(GetModuleHandle(NULL), NULL, (wchar_t*)(PCC)strCommandLine, SW_SHOW);
 }

@@ -53,8 +53,8 @@ void CAllSrvUIApp::GetArtPath(wchar_t * szArtPath)
   CRegKey key;
   if (ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv, KEY_READ))
   {
-    CString strArtPath;
-    if (SUCCEEDED(LoadRegString(key, L"Artpath",strArtPath)))
+    ZString strArtPath;
+    if (SUCCEEDED(LoadRegString(key, L"Artpath", strArtPath)))
     {
       // if reg value exists copy over default
       wcsncpy(szArtPath, PCC(strArtPath), MAX_PATH);

@@ -14,18 +14,18 @@ class IAutoUpdate
 public:
 
     virtual void     LoadSettings(HKEY hk)           = 0;
-    virtual void     LoadCRC(char * szFileName)      = 0;
+	virtual void     LoadCRC(wchar_t * szFileName) = 0;
         
-    virtual char *   GetFTPServer()      = 0;
-    virtual char *   GetFTPInitialDir()  = 0;
-    virtual char *   GetFTPAccount()     = 0;
-    virtual char *   GetFTPPassword()    = 0;
+	virtual wchar_t *   GetFTPServer() = 0;
+	virtual wchar_t *   GetFTPInitialDir() = 0;
+	virtual wchar_t *   GetFTPAccount() = 0;
+	virtual wchar_t *   GetFTPPassword() = 0;
 
     virtual int      GetFileListCRC()    = 0;
     virtual unsigned GetFileListSize()   = 0;
 };
 
-void CreateAutoUpdate(HKEY hk, char * szFileName);
+void CreateAutoUpdate(HKEY hk, wchar_t * szFileName);
 
 extern IAutoUpdate * g_pAutoUpdate; // this is NULL is g_pAutoUpdate is not enabled
 

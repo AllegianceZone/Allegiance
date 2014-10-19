@@ -187,8 +187,8 @@ public:
     BOOL Create(
             Window*     pwindowParent,
             const WinRect& rect = WinRect(0, 0, -1, -1),
-            LPCSTR      szTitle = NULL,
-            LPCSTR      szClass = NULL,
+            LPCWSTR      szTitle = NULL,
+            LPCWSTR      szClass = NULL,
             Style       style   = Style(),
             HMENU       hmenu   = 0,
             UINT        nID     = 0,

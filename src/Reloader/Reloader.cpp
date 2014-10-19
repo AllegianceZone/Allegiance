@@ -26,12 +26,14 @@
 // safe strcpy
 static wchar_t * Strcpy(wchar_t * szDst, const wchar_t * szSrc)
 {
+	assert(szDst);
 	return wcscpy(szDst, szSrc ? szSrc : L"");
 }
 
 // safe strncpy
 static wchar_t * Strncpy(wchar_t * szDst, const wchar_t * szSrc, size_t cb)
 {
+	assert(szDst);
 	return wcsncpy(szDst, szSrc ? szSrc : L"", cb);
 }
 

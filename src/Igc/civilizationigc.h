@@ -43,12 +43,12 @@ class       CcivilizationIGC : public IcivilizationIGC
         }
 
     // IcivilizationIGC
-        virtual const char*                 GetName(void) const
+		virtual const wchar_t*                 GetName(void) const
         {
             return m_data.name;
         }
 
-        virtual const char*                 GetIconName(void) const
+		virtual const wchar_t*                 GetIconName(void) const
         {
             return m_data.iconName;
         }
@@ -74,7 +74,7 @@ class       CcivilizationIGC : public IcivilizationIGC
         {
             return m_pstInitial;
         }
-        virtual const char*                 GetHUDName(void) const
+        virtual const wchar_t*                 GetHUDName(void) const
         {
             return m_data.hudName;
         }

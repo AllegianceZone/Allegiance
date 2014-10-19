@@ -263,7 +263,7 @@ HRESULT CVRAMManager::CreateTexture(	TEXHANDLE	texHandle,
 										DWORD		dwWidth,
 										DWORD		dwHeight,
 										bool		bSystemMemory,
-										char *		szTextureName /*= NULL*/,
+										wchar_t *		szTextureName /*= NULL*/,
 										DWORD		dwUsageFlags /*= 0*/,
 										D3DPOOL		texPool /*= D3DPOOL_MANAGED*/ )
 {
@@ -279,7 +279,7 @@ HRESULT CVRAMManager::CreateTexture(	TEXHANDLE	texHandle,
 	// Store texture name if one was supplied.
 	if( szTextureName != NULL )
 	{
-		strcpy_s( pTexture->szTextureName, 32, szTextureName );
+		wcscpy_s( pTexture->szTextureName, 32, szTextureName );
 	}
 	
 	if( bSystemMemory == true )
@@ -334,7 +334,7 @@ HRESULT CVRAMManager::CreateTexture(	TEXHANDLE	texHandle,
 				pTexture->bMipMappedTexture = true;
 			}
 		} else {
-			debugf("Failed to create texture!\n"); //OUTOFMEMORY imago 9/14
+			debugf(L"Failed to create texture!\n"); //OUTOFMEMORY imago 9/14
 		}
 	}
 
@@ -363,7 +363,7 @@ HRESULT CVRAMManager::CreateTextureD3DX(	TEXHANDLE				texHandle,
 											IObject *				pobjectMemory, 
 											const bool				bColorKey,
 											const Color &			cColorKey, 
-											char *					szTextureName /*= NULL*/ )
+											wchar_t *					szTextureName /*= NULL*/)
 {
 	HRESULT hr;
 	UINT uiNumLevels = 1;
@@ -375,7 +375,7 @@ HRESULT CVRAMManager::CreateTextureD3DX(	TEXHANDLE				texHandle,
 	if( szTextureName != NULL )
 	{
 		// Store texture name if one was supplied.
-		strcpy_s( pTexture->szTextureName, 32, szTextureName );
+		wcscpy_s( pTexture->szTextureName, 32, szTextureName );
 	}
 
 	// Mipping? //imago 7/10 #14

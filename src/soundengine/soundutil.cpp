@@ -241,19 +241,19 @@ private:
 		BYTE* writePtr;
 		FILE* OggFile = NULL;
 #if _MSC_VER >= 1400		// mdvalley: Makes '05 happy
-		fopen_s(&OggFile, strFilename, "rb");
+		_wfopen_s(&OggFile, strFilename, L"rb");
 #else
 		OggFile = fopen(strFilename, "rb");
 #endif
 		if(OggFile == NULL)
 		{
-			debugf("%s: File not found.\n", strFilename);
+			debugf(L"%s: File not found.\n", strFilename);
 			return E_FAIL;
 		}
 		
 		if(ov_open(OggFile, &vf, NULL, 0) < 0)
 		{
-			debugf("%s is not a valid Ogg bitstream.\n", strFilename);
+			debugf(L"%s is not a valid Ogg bitstream.\n", strFilename);
 			fclose(OggFile);
 			return E_FAIL;
 		}
@@ -312,7 +312,7 @@ void ToMono()
 		if(m_uChannels == 1)
 			return;
 
-		ZDebugOutput("ToMono() called on stereo sound file.\n");
+		ZDebugOutput(L"ToMono() called on stereo sound file.\n");
 
 		BYTE bytePerSample = m_uBitsPerSample / 8;
 		unsigned int monoSize = m_uSize / m_uChannels;

@@ -334,7 +334,7 @@ ZString Value::GetChildString(int indent)
 
 ZString Value::Indent(int indent)
 {
-    static char* pchSpaces = "                                                                ";
+	static wchar_t* pchSpaces = L"                                                                ";
 
     ZAssert(indent * 2 < 64);
 
@@ -997,19 +997,19 @@ ZString GetString(int indent, float value)
 
 ZString GetString(int indent, bool value)
 {
-    return value ? "true" : "false";
+    return value ? L"true" : L"false";
 }
 
 ZString GetString(int indent, const Matrix& mat)
 {
     ZString str;
 
-    str = "Matrix(\n";
-    str += Value::Indent(indent + 1) + ZString(mat[0][0]) + ", "+ ZString(mat[0][1]) + ", "+ ZString(mat[0][2]) + ", "+ ZString(mat[0][3]) + ",\n";
-    str += Value::Indent(indent + 1) + ZString(mat[1][0]) + ", "+ ZString(mat[1][1]) + ", "+ ZString(mat[1][2]) + ", "+ ZString(mat[1][3]) + ",\n";
-    str += Value::Indent(indent + 1) + ZString(mat[2][0]) + ", "+ ZString(mat[2][1]) + ", "+ ZString(mat[2][2]) + ", "+ ZString(mat[2][3]) + ",\n";
-    str += Value::Indent(indent + 1) + ZString(mat[3][0]) + ", "+ ZString(mat[3][1]) + ", "+ ZString(mat[3][2]) + ", "+ ZString(mat[3][3]) + "\n";
-    str += Value::Indent(indent) + ")";
+    str = L"Matrix(\n";
+	str += Value::Indent(indent + 1) + ZString(mat[0][0]) + L", " + ZString(mat[0][1]) + L", " + ZString(mat[0][2]) + L", " + ZString(mat[0][3]) + L",\n";
+	str += Value::Indent(indent + 1) + ZString(mat[1][0]) + L", " + ZString(mat[1][1]) + L", " + ZString(mat[1][2]) + L", " + ZString(mat[1][3]) + L",\n";
+	str += Value::Indent(indent + 1) + ZString(mat[2][0]) + L", " + ZString(mat[2][1]) + L", " + ZString(mat[2][2]) + L", " + ZString(mat[2][3]) + L",\n";
+	str += Value::Indent(indent + 1) + ZString(mat[3][0]) + L", " + ZString(mat[3][1]) + L", " + ZString(mat[3][2]) + L", " + ZString(mat[3][3]) + L"\n";
+    str += Value::Indent(indent) + L")";
 
     return str;
 }
@@ -1017,11 +1017,11 @@ ZString GetString(int indent, const Matrix& mat)
 ZString GetString(int indent, const Matrix2& mat)
 {
     return
-          "Matrix2(\n"
-        + Value::Indent(indent + 1) + ZString(mat[0][0]) + ", "+ ZString(mat[0][1]) + ", "+ ZString(mat[0][2]) + ",\n"
-        + Value::Indent(indent + 1) + ZString(mat[1][0]) + ", "+ ZString(mat[1][1]) + ", "+ ZString(mat[1][2]) + ",\n"
-        + Value::Indent(indent + 1) + ZString(mat[2][0]) + ", "+ ZString(mat[2][1]) + ", "+ ZString(mat[2][2]) + "\n"
-        + Value::Indent(indent) + ")";
+          L"Matrix2(\n"
+		  + Value::Indent(indent + 1) + ZString(mat[0][0]) + L", " + ZString(mat[0][1]) + L", " + ZString(mat[0][2]) + L",\n"
+		  + Value::Indent(indent + 1) + ZString(mat[1][0]) + L", " + ZString(mat[1][1]) + L", " + ZString(mat[1][2]) + L",\n"
+		  + Value::Indent(indent + 1) + ZString(mat[2][0]) + L", " + ZString(mat[2][1]) + L", " + ZString(mat[2][2]) + L"\n"
+        + Value::Indent(indent) + L")";
 }
 
 //////////////////////////////////////////////////////////////////////////////

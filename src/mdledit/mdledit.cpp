@@ -95,7 +95,7 @@ public:
     void Error(const ZString& str)
     {
         ZError(str);
-        MessageBox(NULL, str, "Error", MB_OK);
+        MessageBox(NULL, str, L"Error", MB_OK);
         _exit(0);
     }
 };
@@ -757,7 +757,7 @@ public:
     {
         //TRef<Surface> psurface = GetModeler()->LoadSurface("fxminebmp", true);
 
-		TRef<ZFile> zf = m_pmodeler->GetFile("fxmine.png","",true);
+		TRef<ZFile> zf = m_pmodeler->GetFile(L"fxmine.png","",true);
 
 	ZFile * pFile = (ZFile*) zf;
 		
@@ -1639,31 +1639,31 @@ public:
 		PathString pathStr;
         HKEY hKey;
         DWORD dwType;
-        char  szValue[MAX_PATH];
+        wchar_t  szValue[MAX_PATH];
         DWORD cbValue = MAX_PATH;
 
         if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
             // Get the art path from the registry
-            if (ERROR_SUCCESS != ::RegQueryValueEx(hKey, "ArtPath", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
+            if (ERROR_SUCCESS != ::RegQueryValueEx(hKey, L"ArtPath", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
             {
                 // Set ArtPath to be relative to the application path
-                GetModuleFileNameA(NULL, szValue, MAX_PATH);
-                char*   p = strrchr(szValue, '\\');
+                GetModuleFileName(NULL, szValue, MAX_PATH);
+				wchar_t*   p = wcsrchr(szValue, '\\');
                 if (!p)
                     p = szValue;
                 else
                     p++;
 
-                strcpy(p, "artwork");
+                wcscpy(p, L"artwork");
 
                 //Create a subdirectory for the artwork (nothing will happen if it already there)
-                CreateDirectoryA(szValue, NULL);
+                CreateDirectory(szValue, NULL);
             }
             pathStr = szValue;
 		}
 		// Ask the user for video settings.
-		if( PromptUserForVideoSettings(false, true, 0, GetModuleHandle(NULL), pathStr, ALLEGIANCE_REGISTRY_KEY_ROOT "\\MDLEdit3DSettings") == false )
+		if( PromptUserForVideoSettings(false, true, 0, GetModuleHandle(NULL), pathStr, ALLEGIANCE_REGISTRY_KEY_ROOT L"\\MDLEdit3DSettings") == false )
 		{
 			return E_FAIL;
 		}

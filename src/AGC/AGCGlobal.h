@@ -76,15 +76,15 @@ public:
     AGCUniqueID idSubject = -1,
     AGCUniqueID idObject1 = -1, AGCUniqueID idObject2 = -1);
   STDMETHODIMP_(void) TriggerEvent(HAGCLISTENERS hListeners, AGCEventID idEvent,
-    LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
+    LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
     AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, void* pvArgs);
   STDMETHODIMP_(void) TriggerEventSynchronous(HAGCLISTENERS hListeners, AGCEventID idEvent,
-    LPCSTR pszContext, LPCOLESTR pszSubject, AGCUniqueID idSubject,
+    LPCWSTR pszContext, LPCWSTR pszSubject, AGCUniqueID idSubject,
     AGCUniqueID idObject1, AGCUniqueID idObject2, long cArgTriplets, void* pvArgs);
   STDMETHODIMP_(void) FreeListeners(HAGCLISTENERS hListeners);
   STDMETHODIMP_(boolean) IsRegistered(AGCEventID eventID, AGCUniqueID uniqueID, 
     IAGCEventSink* pEventSink);
-  STDMETHODIMP MakeAGCEvent(AGCEventID idEvent, LPCSTR pszContext, LPCOLESTR pszSubject,
+  STDMETHODIMP MakeAGCEvent(AGCEventID idEvent, LPCWSTR pszContext, LPCWSTR pszSubject,
     AGCUniqueID idSubject, long cArgTriplets, void* pvArgs, IAGCEvent** ppEvent);
   STDMETHODIMP_(void) SetAvailableEventIDRanges(IAGCEventIDRanges* pRanges);
   STDMETHODIMP_(void) GetAvailableEventIDRanges(IAGCEventIDRanges** ppRanges);

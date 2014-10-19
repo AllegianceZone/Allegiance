@@ -626,7 +626,7 @@ TRef<PrivateSurface> CreatePrivateSurface(
 					IObject*			pobjectMemory,
 					const bool			bColorKey,
 					const Color &		cColourKey,
-					const ZString &		szTextureName = "",
+					const ZString &		szTextureName = L"",
 					const bool			bSystemMemory = false );
 
 TRef<PrivateSurface> CreatePrivateSurface(	
@@ -636,7 +636,7 @@ TRef<PrivateSurface> CreatePrivateSurface(
 					IObject *				pobjectMemory,
 					const bool				bColorKey,
 					const Color &			cColorKey,
-					const ZString &			szTextureName = "",
+					const ZString &			szTextureName = L"",
 					const bool				bSystemMemory = false );
 
 /*TRef<PrivateSurface> CreatePrivateSurface(
@@ -648,7 +648,7 @@ TRef<PrivateSurface> CreatePrivateSurface(
 TRef<PrivateSurface> CreatePrivateSurface(	D3DFORMAT	texFormat,
 											DWORD		dwWidth,
 											DWORD		dwHeight,
-											char *		szTexName = NULL );
+											wchar_t *		szTexName = NULL );
 
 
 //////////////////////////////////////////////////////////////////////////////

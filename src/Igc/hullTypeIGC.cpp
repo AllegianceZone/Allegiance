@@ -78,12 +78,12 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
             }
 
             {
-                const FrameDataUTL*   pfd = pmhb->GetFrame("cockpt");
+                const FrameDataUTL*   pfd = pmhb->GetFrame(L"cockpt");
                 m_cockpit = pfd ? (pfd->position * m_scale) : z;
             }
 			{
 				// TurkeyXIII 11/09 #94
-				const FrameDataUTL*   pfd = pmhb->GetFrame("chaff");
+				const FrameDataUTL*   pfd = pmhb->GetFrame(L"chaff");
 				m_chaff = pfd ? (pfd->position * m_scale) : Vector::GetZero();
 			}
 
@@ -156,7 +156,7 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
 
             {
                 //Get the stations launch slots
-                static char    bfrLaunch[] = "launchX";
+				static wchar_t    bfrLaunch[] = L"launchX";
 
                 while (true)
                 {
@@ -176,7 +176,7 @@ HRESULT         ChullTypeIGC::Initialize(ImissionIGC* pMission,
             {
                 //debugf("Station %s/%s\n", GetName(), m_data.modelName);
                 //Refigure the stations launch slots
-                static char    bfrLand[] = "garageXA";
+				static wchar_t    bfrLand[] = L"garageXA";
 
                 while (true)
                 {

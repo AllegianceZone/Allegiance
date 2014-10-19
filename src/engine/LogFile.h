@@ -4,16 +4,16 @@ class CLogFile
 {
 private:
 	HANDLE m_hLogFile;
-	char m_szFilePath[ MAX_PATH ];
-	char m_szFileName[ MAX_PATH ];
-	char m_szTimeStamp[256];
+	wchar_t m_szFilePath[MAX_PATH];
+	wchar_t m_szFileName[MAX_PATH];
+	wchar_t m_szTimeStamp[256];
 
 public:
-	CLogFile( char * szLogName );
+	CLogFile(wchar_t * szLogName);
 	~CLogFile(void);
 
 	void CloseLogFile();
-	void OutputString( const char * szString );
-	void OutputStringV( const char * szFormat, ... );
-	char * GetTimeStampString();
+	void OutputString(wchar_t * szString);
+	void OutputStringV(wchar_t * szFormat, ...);
+	wchar_t * GetTimeStampString();
 };

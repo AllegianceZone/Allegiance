@@ -74,12 +74,12 @@ class SquadMembership
 {
 public:
     SquadID m_squadID;
-    char  m_szSquadName[c_cbName];
+	wchar_t  m_szSquadName[c_cbName];
     bool  m_fIsLeader           : 1;
     bool  m_fIsAssistantLeader  : 1;
 
     SquadMembership() {} // creator beware--uninitialized values (but this is intentional for performance in allocating arrays that will be filled in)
-    SquadMembership(SquadID squadID, const char *szSquadName, bool  fIsLeader, bool  fIsAssistantLeader) :
+	SquadMembership(SquadID squadID, const wchar_t *szSquadName, bool  fIsLeader, bool  fIsAssistantLeader) :
         m_squadID(squadID),
         m_fIsLeader(fIsLeader),
         m_fIsAssistantLeader(fIsAssistantLeader)
@@ -90,7 +90,7 @@ public:
     };
     
     const SquadID GetID() const         { return m_squadID; };
-    const char* GetName() const         { return m_szSquadName; };
+	const wchar_t* GetName() const         { return m_szSquadName; };
     bool  GetIsLeader() const           { return m_fIsLeader; };
     bool  GetIsAssistantLeader() const  { return m_fIsAssistantLeader; };
 };
@@ -107,7 +107,7 @@ END_FEDMSG
 // only core file name atm, but in a struct for futur extensibility 
 struct StaticCoreInfo
 {
-    char    cbIGCFile[c_cbFileName];
+    wchar_t    cbIGCFile[c_cbFileName];
 };
 
 

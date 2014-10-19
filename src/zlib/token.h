@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-int TranslateCharacter(const char*& pcc);
-int ReadHexNumber(const char*& pcc, int max = -1);
+int TranslateCharacter(const wchar_t*& pcc);
+int ReadHexNumber(const wchar_t*& pcc, int max = -1);
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -43,7 +43,7 @@ private:
 
     bool ReadNumber(bool bExponent = false);
     bool ReadExponent();
-    bool ReadString(char);
+	bool ReadString(wchar_t);
     bool ReadSymbol();
     bool SkipWhite();
 
@@ -57,7 +57,7 @@ protected:
     int AddSymbol(const ZString& str);
     int AddToken(const ZString& str);
 
-    virtual bool IsSymbolChar(char ch);
+    virtual bool IsSymbolChar(wchar_t ch);
     virtual int ParseToken(PCC& pcc);
 
 public:

@@ -148,7 +148,7 @@ void    CollisionQueue::addCollision(float          tCollision,
     if (m_nCollisions == m_maxCollisions)
     {
         m_maxCollisions = (m_maxCollisions << 1);
-        debugf("Extending collision queue from %d to %d entries\n", m_nCollisions, m_maxCollisions);
+        debugf(L"Extending collision queue from %d to %d entries\n", m_nCollisions, m_maxCollisions);
 
         CollisionEntry* p = new CollisionEntry[m_maxCollisions];
         assert (p);

@@ -14,21 +14,20 @@
 #include "allegdb.h"
 
 // Stuff we need to logon
-BEGIN_QUERY(CQLogonStats, true, 
-  TEXT("{call GetLogonStats(?, ?, ?)}"))
+BEGIN_QUERY(CQLogonStats, true, TEXT("{call GetLogonStats(?, ?, ?)}"))
 
   // Stuff to remember when precessing results
   DWORD dwConnectionID;                 // Remember who this is using a SAFE mechanism
   DWORD dwCookie;                       // Remember what mission they want to join
   bool  fValid;                         // If false we just go straight to the handler
   bool  fRetry;                         // Remember whether the client should retry the logon
-  char  szReason[256];                  // if !fValid
-  char  szPassword[c_cbGamePassword];   // password entered by user
-  char  szCDKey[c_cbCDKey];             // Remember the CD Key that they entered.
+  wchar_t  szReason[256];                  // if !fValid
+  wchar_t  szPassword[c_cbGamePassword];   // password entered by user
+  wchar_t  szCDKey[c_cbCDKey];             // Remember the CD Key that they entered.
 
-  char  szCharacterName[c_cbName];
+  wchar_t  szCharacterName[c_cbName];
   int   characterID;
-  char  fCanCheat;
+  wchar_t  fCanCheat;
 
   // CharStats
   CivID   civID;
@@ -75,19 +74,18 @@ BEGIN_QUERY(CQLogonStats, true,
 END_QUERY(CQLogonStats, true)
   
 // Player squads
-BEGIN_QUERY(CQCharSquads, true,
-  TEXT("{call GetCharSquads(?)}"))
+BEGIN_QUERY(CQCharSquads, true,TEXT("{call GetCharSquads(?)}"))
 
   // Remember who this is using a SAFE mechanism
   DWORD dwConnectionID;
   DWORD dwCookie;       // Remember what mission they want to join
   bool  fJoin;          // Whether we've held up the join for this info
-  char  szPassword[32]; // password entered by user (TODO: is this limit actually enforced anywhere?)
+  wchar_t  szPassword[32]; // password entered by user (TODO: is this limit actually enforced anywhere?)
 
   int   characterID;
 
   //squad stuff
-  char szSquadName[31]; // constant??? Please???
+  wchar_t szSquadName[31]; // constant??? Please???
   int  status;
   int  squadID;
   int  detailedStatus;
@@ -106,8 +104,7 @@ END_QUERY(CQCharSquads, true)
 
   
 // Character Stats - KGJV - set type to bool instead of char for b* params
-BEGIN_QUERY(CQCharStats, false, 
-  TEXT("{Call SetCharacterStats (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}"))
+BEGIN_QUERY(CQCharStats, false, TEXT("{Call SetCharacterStats (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}"))
 
   float Score;
   bool  bScoresCount;
@@ -164,8 +161,7 @@ BEGIN_QUERY(CQCharStats, false,
 END_QUERY(CQCharStats, false)
 
 
-BEGIN_QUERY(CQReportSquadGame, false,
-  TEXT("{Call SquadReportGame(?, ?, ?, ?, ?, ?)}"))
+BEGIN_QUERY(CQReportSquadGame, false, TEXT("{Call SquadReportGame(?, ?, ?, ?, ?, ?)}"))
 
   int squadIDWon;
   int squadIDLost1;
@@ -174,7 +170,7 @@ BEGIN_QUERY(CQReportSquadGame, false,
   int squadIDLost4;
   int squadIDLost5;
 #if _MSC_VER >= 1310
-  char dummy[100]; // -KGJV : workaround till big bug found
+  wchar_t dummy[100]; // -KGJV : workaround till big bug found
 #endif
 
   BEGIN_PARAM_MAP(CQReportSquadGameData)
@@ -191,32 +187,13 @@ END_QUERY(CQReportSquadGame, false)
 /////////////////////////////////////////////////////////////////////////////
 // Game Results
 //
-BEGIN_QUERY(CQGameResults, false, 
-  TEXT("insert into GameResults")
-  TEXT("(")
-  TEXT("  GameID,")
-  TEXT("  Name,")
-  TEXT("  WinningTeam,")
-  TEXT("  WinningTeamID,")
-  TEXT("  IsGoalConquest,")
-  TEXT("  IsGoalCountdown,")
-  TEXT("  IsGoalTeamKills,")
-  TEXT("  IsGoalProsperity,")
-  TEXT("  IsGoalArtifacts,")
-  TEXT("  IsGoalFlags,")
-  TEXT("  GoalConquest,")
-  TEXT("  GoalCountdown,")
-  TEXT("  GoalTeamKills,")
-  TEXT("  GoalProsperity,")
-  TEXT("  GoalArtifacts,")
-  TEXT("  GoalFlags,")
-  TEXT("  Duration")
-  TEXT(")")
-  TEXT("values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"))
+BEGIN_QUERY(CQGameResults, false, TEXT("insert into GameResults (GameID, Name, WinningTeamID, IsGoalConquest, IsGoalCountdown, IsGoalTeamKills, IsGoalProsperity, \
+	IsGoalArtifacts, IsGoalFlags, GoalConquest, GoalCountdown, GoalTeamKills ,GoalProsperity, GoalArtifacts, GoalFlags, Duration \
+	values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
 
-  char  szGameID      [18];
-  char  szName        [65];
-  char  szWinningTeam [21];
+wchar_t  szGameID[18];
+wchar_t  szName[65];
+wchar_t  szWinningTeam[21];
   short nWinningTeamID;
   bool  bIsGoalConquest;
   bool  bIsGoalCountdown;
@@ -232,7 +209,7 @@ BEGIN_QUERY(CQGameResults, false,
   short nGoalFlags;
   long  nDuration;
 #if _MSC_VER >= 1310
-  char dummy[100]; // -KGJV : workaround till big bug found
+  wchar_t dummy[100]; // -KGJV : workaround till big bug found
 #endif
 
   BEGIN_PARAM_MAP(CQGameResultsData)
@@ -282,11 +259,11 @@ BEGIN_QUERY(CQTeamResults, false,
   TEXT(")\n")
   TEXT("values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n"))
 
-  char  szGameID[18];
+  wchar_t  szGameID[18];
   short nTeamID;
-  char  szName[c_cbName];
+  wchar_t  szName[c_cbName];
   short nCivID;
-  char  szTechs[(c_ttbMax + 7) / 8 * 2]; // KGJV: warning could overflow the db / sp
+  wchar_t  szTechs[(c_ttbMax + 7) / 8 * 2]; // KGJV: warning could overflow the db / sp
   short cPlayerKills;
   short cBaseKills;
   short cBaseCaptures;
@@ -299,7 +276,7 @@ BEGIN_QUERY(CQTeamResults, false,
   short nProsperityPercentComplete;
   long  nTimeEndured;
 #if _MSC_VER >= 1310
-  char dummy[100]; // -KGJV : workaround till big bug found
+  wchar_t dummy[100]; // -KGJV : workaround till big bug found
 #endif
 
   BEGIN_PARAM_MAP(CQTeamResultsData)
@@ -362,9 +339,9 @@ BEGIN_QUERY(CQPlayerResults, false,
   TEXT("  ?, ?\n")
   TEXT(")"))
 
-  char  szGameID[18];
+  wchar_t  szGameID[18];
   short nTeamID;
-  char  szName[c_cbName];
+  wchar_t  szName[c_cbName];
   short cPlayerKills;
   short cBuilderKills;
   short cLayerKills;
@@ -385,7 +362,7 @@ BEGIN_QUERY(CQPlayerResults, false,
   float fScore;
   long  nTimePlayed;
 #if _MSC_VER >= 1310
-  char dummy[100]; // -KGJV : workaround till big bug found
+  wchar_t dummy[100]; // -KGJV : workaround till big bug found
 #endif
 
   BEGIN_PARAM_MAP(CQPlayerResultsData)
@@ -425,8 +402,8 @@ BEGIN_QUERY(CQGetInvitationList, true,
   long listid;
   
   // OUT
-  char iTeam;
-  char szSubject[c_cbName];  
+wchar_t iTeam;
+wchar_t szSubject[c_cbName];
 
   // Baggage
   MissionID missionID;
@@ -464,11 +441,11 @@ BEGIN_QUERY(CQLogEvent, false,
 
   // IN
 	long nEvent;
-	char szComputerName[15   + 1];
+wchar_t szComputerName[15 + 1];
 	long nSubject;
-	char szSubjectName [32   + 1];
-  char szContext     [24   + 1];
-	char szObjectRef   [4000 + 1];
+	wchar_t szSubjectName[32 + 1];
+	wchar_t szContext[24 + 1];
+	wchar_t szObjectRef[4000 + 1];
 
   // Baggage
   HANDLE hevt;

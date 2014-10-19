@@ -569,7 +569,7 @@ const int   c_cbFrameName = 20;
 class   FrameDataUTL
 {
     public:
-        char    szName[c_cbFrameName];
+		wchar_t    szName[c_cbFrameName];
         Vector  position;
         Vector  forward;
 
@@ -677,7 +677,7 @@ class   Transform44
         bool            m_modifiedF;
 };
 
-typedef char   HitTestShape;
+typedef wchar_t   HitTestShape;
 
 //These do not depend on orientation
 const HitTestShape  c_htsPoint      = -4;
@@ -706,13 +706,13 @@ class   MultiHullBase
         {
         }
 
-        const Vector&  GetFrameOffset(const char*  pszFrameName) const
+		const Vector&  GetFrameOffset(const wchar_t*  pszFrameName) const
         {
             const FrameDataUTL*    pfd = GetFrame(pszFrameName);
             return pfd ? pfd->position : Vector::GetZero();
         }
 
-        const Vector&  GetFrameForward(const char* pszFrameName) const
+		const Vector&  GetFrameForward(const wchar_t* pszFrameName) const
         {
             static const Vector z(0.0f, 0.0f, 1.0f);
             const FrameDataUTL*    pfd = GetFrame(pszFrameName);
@@ -720,14 +720,14 @@ class   MultiHullBase
             return pfd ? pfd->forward : z;
         }
 
-        const FrameDataUTL*    GetFrame(const char* pszFrameName) const
+		const FrameDataUTL*    GetFrame(const wchar_t* pszFrameName) const
         {
             for (FrameLink* pfl = m_frames.first();
                  (pfl != NULL);
                  pfl = pfl->next())
             {
                 const FrameDataUTL&    fd = pfl->data();
-                if (strcmp(pszFrameName, fd.szName) == 0)
+                if (wcscmp(pszFrameName, fd.szName) == 0)
                 {
                     return &fd;
                 }
@@ -755,9 +755,9 @@ class   MultiHullBase
 class   HitTest : public Transform44
 {
     public:
-        static MultiHullBase*   Load(const char*    pszFileName);
+		static MultiHullBase*   Load(const wchar_t*    pszFileName);
 
-        static HitTest*         Create(const char*    pszFileName,
+		static HitTest*         Create(const wchar_t*    pszFileName,
                                        IObject*       data,
                                        bool           staticF,
                                        HitTestShape   htsDefault = c_htsSphere);
@@ -979,14 +979,14 @@ class   HitTest : public Transform44
         {
 			// mmf replaced asserts with log msg, rewrite to zero
 			if (!(v.LengthSquared() < (100000.0f * 100000.0f))) {
-				debugf("mmf Utility.h SetVelocity: v.LengthSquared debug build would have called assert and exited, commented out and set to zero for now\n");   
+				debugf(L"mmf Utility.h SetVelocity: v.LengthSquared debug build would have called assert and exited, commented out and set to zero for now\n");   
 				m_velocity.x = 0.0f; m_velocity.y = 0.0f; m_velocity.z = 0.0f;
 			} else {
 			    m_velocity = v;
 			}
 
 		    if (!(v * v >= 0.0f)) {
-				debugf("mmf Utility.h SetVelocity: v^2 debug build would have called assert and exited, commented out and set to zero for now\n");   
+				debugf(L"mmf Utility.h SetVelocity: v^2 debug build would have called assert and exited, commented out and set to zero for now\n");   
 			    m_velocity.x = 0.0f; m_velocity.y = 0.0f; m_velocity.z = 0.0f;
 			} else {
 			    m_velocity = v;
@@ -1083,17 +1083,17 @@ class   HitTest : public Transform44
             return m_pkdrRoot;
         }
 
-        virtual const Vector   GetFrameOffset(const char*  pszFrameName) const
+		virtual const Vector   GetFrameOffset(const wchar_t*  pszFrameName) const
         {
             return Vector::GetZero();
         }
-        virtual const Vector&  GetFrameForward(const char* pszFrameName) const
+		virtual const Vector&  GetFrameForward(const wchar_t* pszFrameName) const
         {
             static const Vector z(0.0f, 0.0f, 1.0f);
 
             return z;
         }
-        virtual const FrameDataUTL* GetFrame(const char* pszFrameName) const
+		virtual const FrameDataUTL* GetFrame(const wchar_t* pszFrameName) const
         {
             return NULL;
         }
@@ -1243,61 +1243,61 @@ class UTL
 {
     public:
 		//Imago 7/10 #62
-		static void SetServerVersion(const char * szVersion, DWORD dwCookie);
+		static void SetServerVersion(const wchar_t * szVersion, DWORD dwCookie);
 		static ZString GetServerVersion(DWORD dwCookie);
 		//Imago 6/10 #2
-		static void SetPrivilegedUsers(const char * szPrivilegedUsers, DWORD dwCookie);
+		static void SetPrivilegedUsers(const wchar_t * szPrivilegedUsers, DWORD dwCookie);
 		static ZString GetPrivilegedUsers(DWORD dwCookie);
-		static bool PrivilegedUser(const char* szName, DWORD dwCookie); 
+		static bool PrivilegedUser(const wchar_t* szName, DWORD dwCookie);
 
         //Get an artwork file, downloading if needed
         //  S_OK    ... file exists and has a non-zero length
         //  S_FALSE ... file exists, but has a length of zero
         //  E_FAIL  ... file does not exist.
-        static void SetArtPath(const char* szArtwork);
-        static HRESULT getFile(    const char*    name,
-                                   const char*    extension,
-                               OUT char*          artwork,
+		static void SetArtPath(const wchar_t* szArtwork);
+		static HRESULT getFile(const wchar_t*    name,
+                                   const wchar_t*    extension,
+								   OUT wchar_t*          artwork,
                                    bool           downloadF,
                                    bool           createF);
 
         //  Writes a blob to disk; returns true iff successful
-        static bool SaveFile(      const char * szFilename, 
+		static bool SaveFile(const wchar_t * szFilename,
                                    const void *pData, 
                                    unsigned cLen, 
-                             OUT   char * szErrorMsg, 
+                             OUT   wchar_t * szErrorMsg, 
                                    bool bCreateAsTemp);
 
-        static bool AppendFile(const char * szFileName, const void * data, unsigned bytes);
+		static bool AppendFile(const wchar_t * szFileName, const void * data, unsigned bytes);
 
-        static int SearchAndReplace(char * szDest, const char * szSource, const char * szNewWord, const char * szOldWord);
+		static int SearchAndReplace(wchar_t * szDest, const wchar_t * szSource, const wchar_t * szNewWord, const wchar_t * szOldWord);
 
-        static void SetUrlRoot(const char * szUrlRoot);
+		static void SetUrlRoot(const wchar_t * szUrlRoot);
 
         //Like the stock strdup() except uses new [] and handles NULL
-        static char*                strdup(const char*  s);
+		static wchar_t*                strdup(const wchar_t*  s);
 
         //set allocated on demand strings, file names or names
-        static void  putFileName(char*       name, const char*   newVal);
-        static void  putName(char*           name, const char*   newVal);
+		static void  putFileName(wchar_t*       name, const wchar_t*   newVal);
+		static void  putName(wchar_t*           name, const wchar_t*   newVal);
 
-        static const char*  artworkPath(void)
+		static const wchar_t*  artworkPath(void)
         {
             return s_artworkPath;
         }
         static LONG GetPathFromReg(IN  HKEY hkey,
-                                   IN  const char * szSubKey, 
-                                   OUT char * szPath);
+                                   IN  const wchar_t * szSubKey, 
+								   OUT wchar_t * szPath);
 
         // converts char * of hex to int.  Assumes uppercase for 'A' to 'F'.
-        static int hextoi(const char * pHex);
+		static int hextoi(const wchar_t * pHex);
 
 		//imago 9/14
-		static ZString DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, char * PostData, int PostLength, bool bSecure = false);
+		static ZString DoHTTP(wchar_t * szHdrs, wchar_t * szHost, wchar_t * szVerb, wchar_t * szUri, wchar_t * PostData, int PostLength, bool bSecure = false);
 
     private:
-        static char     s_artworkPath[MAX_PATH];
-        static char     s_szUrlRoot[MAX_PATH];
+		static wchar_t     s_artworkPath[MAX_PATH];
+		static wchar_t     s_szUrlRoot[MAX_PATH];
 		static TMap<DWORD,ZString> m_PrivilegedUsersMap; //Imago 6/10
 		static TMap<DWORD,ZString> m_ServerVersionMap; //Imago 7/10
 };
@@ -1307,27 +1307,27 @@ class MMF;
 class MMF 
 {
 	public:
-		MMF(const char* szMapName, int iBuffer, bool bCreate = true) : 
-			m_szMapName(new char[strlen(szMapName)+1]), 
+		MMF(const wchar_t* szMapName, int iBuffer, bool bCreate = true) :
+			m_szMapName(new wchar_t[lstrlen(szMapName) + 1]),
 			m_szBuffer(NULL),
 			m_iBuffer(iBuffer),
 			m_MapHandle(NULL),
 			m_bCreate(bCreate),
 			m_uBuffer(0)
 		{
-			strcpy(m_szMapName, szMapName);
+			lstrcpy(m_szMapName, szMapName);
 			if (bCreate)
 			{
 				m_MapHandle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, m_iBuffer, m_szMapName);
 				if (m_MapHandle != INVALID_HANDLE_VALUE)
-					m_szBuffer = (char*)MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_iBuffer);
+					m_szBuffer = (wchar_t*)MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_iBuffer);
 				else m_MapHandle = NULL;
 			}
 			else
 			{
 				m_MapHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, m_szMapName);
 				if (m_MapHandle != INVALID_HANDLE_VALUE)
-					m_szBuffer = (char*)MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_iBuffer);
+					m_szBuffer = (wchar_t*)MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_iBuffer);
 				else m_MapHandle = NULL;
 			}
 		}
@@ -1342,11 +1342,11 @@ class MMF
 			}
 		}
 
-		char* GetBuffer() {
+		wchar_t* GetBuffer() {
 			if (m_MapHandle == NULL || m_MapHandle == INVALID_HANDLE_VALUE) {
 				m_MapHandle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, m_iBuffer, m_szMapName);
 				if (m_MapHandle != INVALID_HANDLE_VALUE)
-					m_szBuffer = (char*)MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_iBuffer);
+					m_szBuffer = (wchar_t*)MapViewOfFile(m_MapHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_iBuffer);
 					return m_szBuffer;
 			}
 			return m_szBuffer;
@@ -1366,8 +1366,8 @@ class MMF
 		int Size() { return m_uBuffer; }
 
 	private:
-		char* m_szMapName;
-		char* m_szBuffer;
+		wchar_t* m_szMapName;
+		wchar_t* m_szBuffer;
 		const int m_iBuffer; //inital (max)
 		bool m_bCreate;
 		int	  m_uBuffer; //used
@@ -1433,29 +1433,29 @@ extern const Rotation      c_rotationZero;
 #undef  _exposed
 
 // safe strcpy
-static char * Strcpy(char * szDst, const char * szSrc)
+static wchar_t * Strcpy(wchar_t * szDst, const wchar_t * szSrc)
 {
   assert(szDst);
-  return lstrcpyA(szDst, szSrc ? szSrc : "");
+  return wcscpy(szDst, szSrc ? szSrc : L"");
 }
         
 // safe strncpy
-static char * Strncpy(char * szDst, const char * szSrc, size_t cb)
+static wchar_t * Strncpy(wchar_t * szDst, const wchar_t * szSrc, size_t cb)
 {
   assert(szDst);
-  return strncpy(szDst, szSrc ? szSrc : "", cb);
+  return wcsncpy(szDst, szSrc ? szSrc : L"", cb);
 }
         
 // safe strcmp
-static int Strcmp(const char * szDst, const char * szSrc)
+static int Strcmp(const wchar_t * szDst, const wchar_t * szSrc)
 {
-  return lstrcmpA(szDst ? szDst : "", szSrc ? szSrc : "");
+  return wcscmp(szDst ? szDst : L"", szSrc ? szSrc : L"");
 }
 
 // safe strcat //Imago 7/15/09
-static char * Strcat(const char * szDst, const char * szSrc)
+static wchar_t * Strcat(const wchar_t * szDst, const wchar_t * szSrc)
 {
-  return lstrcatA(szDst ? szDst : "", szSrc ? szSrc : "");
+  return wcscat(szDst ? szDst : L"", szSrc ? szSrc : L"");
 }
 
 #define IMPLIES(x, y) (!(x) || (y))
@@ -1468,7 +1468,7 @@ template <class Func> // signature of function to get, so that Proc can be used 
 class CTempFuncDll
 {
 public:
-  CTempFuncDll(LPSTR szDLL, LPSTR szFunc)
+  CTempFuncDll(LPWSTR szDLL, LPWSTR szFunc)
   {
     hmod = LoadLibrary(szDLL);
     pfunc = (Func) ((hmod) ? GetProcAddress(hmod, szFunc) : 0);
@@ -1493,9 +1493,9 @@ private:
 class CTempTimer_OptimizedOut // timers do nothing in optimized builds
 {
 public:
-  CTempTimer_OptimizedOut(const char * szName, float dtWarning) {}
+	CTempTimer_OptimizedOut(const wchar_t * szName, float dtWarning) {}
   void Start() {}
-  bool Stop(const char* format = NULL, ...) {return false;}
+  bool Stop(const wchar_t* format = NULL, ...) { return false; }
   DWORD LastInterval() {return 0;}
 };
 
@@ -1503,7 +1503,7 @@ public:
 class CTimer
 {
 public:
-  CTimer(const char * szName, float dtWarning) : 
+	CTimer(const wchar_t * szName, float dtWarning) :
     m_szname(szName),
     m_time(0),
     m_dtWarning((DWORD)(1000.0f * dtWarning)),
@@ -1517,7 +1517,7 @@ public:
     m_time = Time::Now();
   }
 
-  bool Stop(const char* format = NULL, ...) // returns whether this previous interval was a new record
+  bool Stop(const wchar_t* format = NULL, ...) // returns whether this previous interval was a new record
   {
     m_dtimelast = Time::Now().clock() - m_time.clock();
     m_dtTotal += m_dtimelast;
@@ -1525,26 +1525,26 @@ public:
     bool fRecord = false;
     if (m_dtimelast > m_dtimemax)
     {
-      debugf("Timer: %fs spent %s, %fs total (longest so far)\n", (float) m_dtimelast / 1000.f, m_szname, (float)m_dtTotal / 1000.f);
+      debugf(L"Timer: %fs spent %s, %fs total (longest so far)\n", (float) m_dtimelast / 1000.f, m_szname, (float)m_dtTotal / 1000.f);
       m_dtimemax = m_dtimelast;
       fRecord = true;
       fExtra = true;
     }
     else if (m_dtimelast >= m_dtWarning)
     {
-      debugf("Timer: %fs spent %s, %fs total\n", (float) m_dtimelast / 1000.0f, m_szname, (float)m_dtTotal / 1000.f);
+      debugf(L"Timer: %fs spent %s, %fs total\n", (float) m_dtimelast / 1000.0f, m_szname, (float)m_dtTotal / 1000.f);
       fExtra = true;
     }
 
     if (fExtra && format)
     {
       const size_t size = 256;
-      char         bfr[size];
+	  wchar_t         bfr[size];
       va_list vl;
       va_start(vl, format);
-      _vsnprintf(bfr, size, format, vl);
+	  _vsnwprintf(bfr, size, format, vl);
       va_end(vl);
-      debugf("^--%s\n", bfr);
+      debugf(L"^--%s\n", bfr);
     }
     return fRecord;
   }
@@ -1555,7 +1555,7 @@ public:
   }
 
 private:
-  const char * m_szname;
+	const wchar_t * m_szname;
   Time   m_time;
   DWORD  m_dtimelast;
   DWORD  m_dtimemax;

@@ -8,22 +8,22 @@
 
 bool IsWindows9x()
 {
-    static bool bChecked = false;
-    static bool bIs9x;
+	static bool bChecked = false;
+	static bool bIs9x;
 
-    if (!bChecked)
-    {
-        OSVERSIONINFO osversioninfo;
+	if (!bChecked)
+	{
+		OSVERSIONINFO osversioninfo;
 
-        osversioninfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		osversioninfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-        ZVerify(GetVersionEx(&osversioninfo));
+		ZVerify(GetVersionEx(&osversioninfo));
 
-        bIs9x = osversioninfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
-        bChecked = true;
-    }
+		bIs9x = osversioninfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
+		bChecked = true;
+	}
 
-    return bIs9x;
+	return bIs9x;
 }
 
 
@@ -34,159 +34,171 @@ bool IsWindows9x()
 ////////////////////////////////////////////////////////////////////////////////
 
 // BUILD_DX9: added for DX9 but can stay for DX7 as well
-ZFile::ZFile( )
+ZFile::ZFile()
 {
 	m_p = NULL;
 	m_handle = INVALID_HANDLE_VALUE;
 }
 
-
-ZFile::ZFile(const PathString& strPath, DWORD how) : 
-    m_p(NULL)
+//BT 12/11 - Imago 10/14
+ZFile::ZFile(const PathString& strPath, DWORD how) :
+m_p(NULL)
 {
-    OFSTRUCT rob;
-    m_handle = (HANDLE)OpenFile(strPath, &rob, how);
+	DWORD dwDesiredAccess = GENERIC_READ;
+	DWORD dwShareMode = FILE_SHARE_WRITE;
+	DWORD dwCreationDisposition = OPEN_EXISTING;
+
+	if ((how & OF_WRITE) == OF_WRITE)
+		dwDesiredAccess = GENERIC_WRITE;
+
+	if ((how & OF_SHARE_DENY_WRITE) == OF_SHARE_DENY_WRITE)
+		dwShareMode = FILE_SHARE_READ;
+
+	if ((how & OF_CREATE) == OF_CREATE)
+		dwCreationDisposition = CREATE_ALWAYS;
+	
+	m_handle = CreateFile(strPath, dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL);
 }
 
 ZFile::~ZFile()
 {
-    if (m_p) {
-        UnmapViewOfFile(m_p);
-        CloseHandle(m_hfileMapping);
-    }
+	if (m_p) {
+		UnmapViewOfFile(m_p);
+		CloseHandle(m_hfileMapping);
+	}
 }
 
 bool ZFile::IsValid()
 {
-     return m_handle != (HANDLE)HFILE_ERROR;
+	return m_handle != (HANDLE)HFILE_ERROR;
 }
 
 DWORD ZFile::Read(void* p, DWORD length)
 {
-    DWORD cbActual;
+	DWORD cbActual;
 
-    ReadFile(m_handle, p, length, (LPDWORD)&cbActual, NULL);
-    return cbActual;
+	ReadFile(m_handle, p, length, (LPDWORD)&cbActual, NULL);
+	return cbActual;
 }
 
 DWORD ZFile::Write(void* p, DWORD length)
 {
-    DWORD cbActual;
+	DWORD cbActual;
 
-    WriteFile(m_handle, p, length, (LPDWORD)&cbActual, NULL);
+	WriteFile(m_handle, p, length, (LPDWORD)&cbActual, NULL);
 
-    ZAssert(cbActual == length);
+	ZAssert(cbActual == length);
 
-    return cbActual;
+	return cbActual;
 }
 
 bool ZFile::Write(const ZString& str)
 {
-    return (Write((void*)(PCC)str, str.GetLength()) != 0);
+	return (Write((void*)(PCC)str, str.GetLength()) != 0);
 }
 
 bool  ZFile::WriteString(const ZString& str)
 {
-    return (Write((void*)(PCC)str, str.GetLength() + 1) != 0);
+	return (Write((void*)(PCC)str, str.GetLength() + 1) != 0);
 }
 
 bool  ZFile::WriteAlignedString(const ZString& str)
 {
-    int length = str.GetLength() + 1;
+	int length = str.GetLength() + 1;
 
-    if (Write((void*)(PCC)str, str.GetLength() + 1) != 0) {
-        return WritePad(length);
-    }
+	if (Write((void*)(PCC)str, str.GetLength() + 1) != 0) {
+		return WritePad(length);
+	}
 
-    return false;
+	return false;
 }
 
 bool ZFile::WritePad(int length)
 {
-    static BYTE zeros[] = { 0, 0, 0 };
-    int pad = 4 - (length & 3);
+	static BYTE zeros[] = { 0, 0, 0 };
+	int pad = 4 - (length & 3);
 
-    if (pad != 4) {
-        return (Write(zeros, pad) != 0);
-    }
+	if (pad != 4) {
+		return (Write(zeros, pad) != 0);
+	}
 
-    return true;
+	return true;
 }
 
 bool ZFile::Write(DWORD value)
 {
-    return (Write(&value, 4) != 0);
+	return (Write(&value, 4) != 0);
 }
 
 bool ZFile::Write(int value)
 {
-    return (Write(&value, 4) != 0);
+	return (Write(&value, 4) != 0);
 }
 
 bool ZFile::Write(float value)
 {
-    return (Write(&value, 4) != 0);
+	return (Write(&value, 4) != 0);
 }
 
 int ZFile::GetLength()
 {
-    return GetFileSize(m_handle, NULL);
+	return GetFileSize(m_handle, NULL);
 }
 
 BYTE* ZFile::GetPointer(bool bWrite, bool bCopyOnWrite)
 {
-    ZAssert(!bWrite || !bCopyOnWrite);
+	ZAssert(!bWrite || !bCopyOnWrite);
 
-    if (m_p == NULL) {
-        m_hfileMapping = 
-            CreateFileMapping(
-                m_handle,
-                0,
-                bWrite
-                    ? PAGE_READWRITE
-                    : PAGE_READONLY,
-                0,
-                0,
-                NULL
-            );
+	if (m_p == NULL) {
+		m_hfileMapping =
+			CreateFileMapping(
+			m_handle,
+			0,
+			bWrite
+			? PAGE_READWRITE
+			: PAGE_READONLY,
+			0,
+			0,
+			NULL
+			);
 
-        ZAssert(m_hfileMapping != NULL);
+		ZAssert(m_hfileMapping != NULL);
 
-        m_p = 
-            (BYTE*)MapViewOfFile(
-                m_hfileMapping, 
-                bWrite
-                    ? FILE_MAP_WRITE
-                    : (bCopyOnWrite
-                        ? FILE_MAP_COPY
-                        : FILE_MAP_READ), 
-                0, 
-                0, 
-                0
-            );
+		m_p =
+			(BYTE*)MapViewOfFile(
+			m_hfileMapping,
+			bWrite
+			? FILE_MAP_WRITE
+			: (bCopyOnWrite
+			? FILE_MAP_COPY
+			: FILE_MAP_READ),
+			0,
+			0,
+			0
+			);
 
-        ZAssert(m_p != NULL);
-    }
+		ZAssert(m_p != NULL);
+	}
 
-    return m_p;
+	return m_p;
 }
 
 ZWriteFile::ZWriteFile(const PathString& strPath) :
-    ZFile(strPath, OF_CREATE | OF_WRITE | OF_SHARE_EXCLUSIVE)
+ZFile(strPath, OF_CREATE | OF_WRITE | OF_SHARE_EXCLUSIVE)
 {
 }
 
 // KGJV 32B - added Tell and Seek
 long   ZFile::Tell()
 {
-    DWORD dwPtr = SetFilePointer(m_handle,0,NULL,FILE_CURRENT);
-    if (dwPtr != INVALID_SET_FILE_POINTER)
-        return (long) dwPtr;
-    else
-        return -1;
+	DWORD dwPtr = SetFilePointer(m_handle, 0, NULL, FILE_CURRENT);
+	if (dwPtr != INVALID_SET_FILE_POINTER)
+		return (long)dwPtr;
+	else
+		return -1;
 }
 int   ZFile::Seek(long offset, int origin)
 {
-    DWORD dwPtr = SetFilePointer(m_handle,offset,NULL,origin);
-    return (dwPtr != INVALID_SET_FILE_POINTER);
+	DWORD dwPtr = SetFilePointer(m_handle, offset, NULL, origin);
+	return (dwPtr != INVALID_SET_FILE_POINTER);
 }

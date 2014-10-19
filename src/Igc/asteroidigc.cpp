@@ -109,7 +109,7 @@ int         CasteroidIGC::Export(void* data) const
 
         dataAsteroid->fraction = m_fraction;
         
-        const char* pszName = GetName();
+		const wchar_t* pszName = GetName();
         if (*pszName == '\0')
             memcpy(dataAsteroid->name, GetName(), sizeof(dataAsteroid->name));
         else
@@ -125,22 +125,22 @@ int         CasteroidIGC::Export(void* data) const
 
 struct AsteroidTypeRow
 {
-    const char* name;
-    const char* prefix;
+	const wchar_t* name;
+	const wchar_t* prefix;
     AsteroidDef def;
 };
 
 static const AsteroidTypeRow asteroidTypes[] = 
 {
-    { "asteroid",       "\0a",  { 0.0f, 0,        0,                      0, 25000, 400,  "bgrnd03", "", "meteoricon" } },
-    { "asteroid",       "\0a",  { 0.0f, 0,        0,                      0, 25000, 400,  "bgrnd05", "", "meteoricon" } },
-    { "asteroid",       "\0a",  { 0.0f, 0,        c_aabmBuildable,        0, 10000, 200,  "bgrnd03", "", "meteoricon" } },
-    { "asteroid",       "\0a",  { 0.0f, 0,        c_aabmBuildable,        0, 10000, 200,  "bgrnd05", "", "meteoricon" } },
-    { "Helium 3",       "He",   { 1.0f, 1.0f,     c_aabmMineHe3,          0, 25000, 100,  "bgrnd55", "", "heliumrock" } }, //new he rock #92
-    { "Helium 3",       "He",   { 1.0f, 1.0f,     c_aabmMineHe3,          0, 25000, 100,  "bgrnd56", "", "heliumrock" } },
-    { "Uranium",        "U",    { 0.0f, 0,        (c_aabmSpecial << 0),   0, 25000, 200,  "bgrnd51", "", "hotrock"    } },
-    { "Silicon",        "Si",   { 0.0f, 0,        (c_aabmSpecial << 1),   0, 25000, 200,  "bgrnd52", "", "copperrock" } },
-    { "Carbonaceous",   "C",    { 0.0f, 0,        (c_aabmSpecial << 2),   0, 25000, 200,  "bgrnd53", "", "carbonrock" } }
+    { L"asteroid",       L"\0a",  { 0.0f, 0,        0,                      0, 25000, 400,  L"bgrnd03", L"", L"meteoricon" } },
+    { L"asteroid",       L"\0a",  { 0.0f, 0,        0,                      0, 25000, 400,  L"bgrnd05", L"", L"meteoricon" } },
+    { L"asteroid",       L"\0a",  { 0.0f, 0,        c_aabmBuildable,        0, 10000, 200,  L"bgrnd03", L"", L"meteoricon" } },
+    { L"asteroid",       L"\0a",  { 0.0f, 0,        c_aabmBuildable,        0, 10000, 200,  L"bgrnd05", L"", L"meteoricon" } },
+    { L"Helium 3",       L"He",   { 1.0f, 1.0f,     c_aabmMineHe3,          0, 25000, 100,  L"bgrnd55", L"", L"heliumrock" } }, //new he rock #92
+    { L"Helium 3",       L"He",   { 1.0f, 1.0f,     c_aabmMineHe3,          0, 25000, 100,  L"bgrnd56", L"", L"heliumrock" } },
+    { L"Uranium",        L"U",    { 0.0f, 0,        (c_aabmSpecial << 0),   0, 25000, 200,  L"bgrnd51", L"", L"hotrock"    } },
+    { L"Silicon",        L"Si",   { 0.0f, 0,        (c_aabmSpecial << 1),   0, 25000, 200,  L"bgrnd52", L"", L"copperrock" } },
+    { L"Carbonaceous",   L"C",    { 0.0f, 0,        (c_aabmSpecial << 2),   0, 25000, 200,  L"bgrnd53", L"", L"carbonrock" } }
 };
 
 // Change number of asteroids below and within functions GetSpecialAsterioid and GetRandomType #92
@@ -168,12 +168,12 @@ static const AsteroidTypeRow& FindAsteroidRow(AsteroidAbilityBitMask aabm)
     return asteroidTypes[0];
 }
 
-const char*              IasteroidIGC::GetTypeName(AsteroidAbilityBitMask aabm)
+const wchar_t*              IasteroidIGC::GetTypeName(AsteroidAbilityBitMask aabm)
 {
     return FindAsteroidRow(aabm).name;
 }
 
-const char*              IasteroidIGC::GetTypePrefix(int    index)
+const wchar_t*              IasteroidIGC::GetTypePrefix(int    index)
 {
     return asteroidTypes[index].prefix;
 }

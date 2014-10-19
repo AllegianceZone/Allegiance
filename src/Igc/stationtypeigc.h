@@ -67,16 +67,16 @@ class       CstationTypeIGC : public IstationTypeIGC
         }
 
     // IbuyableIGC
-        virtual const char*          GetModelName(void) const
+		virtual const wchar_t*          GetModelName(void) const
         {
             return m_data.modelName;
         }
 
-        virtual const char*          GetName(void) const
+		virtual const wchar_t*          GetName(void) const
         {
             return m_data.name;
         }
-        virtual const char*          GetDescription(void) const
+		virtual const wchar_t*          GetDescription(void) const
         {
             return m_data.description;
         }
@@ -168,15 +168,15 @@ class       CstationTypeIGC : public IstationTypeIGC
         {
             return (m_data.sabmCapabilities & sabm) != 0;
         }
-        virtual const char*             GetTextureName(void) const
+		virtual const wchar_t*             GetTextureName(void) const
         {
             return m_data.textureName;
         }
-        virtual const char*             GetBuilderName(void) const
+		virtual const wchar_t*             GetBuilderName(void) const
         {
             return m_data.builderName;
         }
-        virtual const char*             GetIconName(void) const
+		virtual const wchar_t*             GetIconName(void) const
         {
             return m_data.iconName;
         }

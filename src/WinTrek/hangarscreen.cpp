@@ -160,14 +160,14 @@ public:
         {
             if (pshipParent)
             {
-                trekClient.PostText(false, "You have boarded %s's ship as %s.",
+                trekClient.PostText(false, L"You have boarded %s's ship as %s.",
                         pshipParent->GetName(),
                         ((pshipChild->GetTurretID() == NA) ? "an observer" : "a turret gunner"));
                 g_pnumberInTurretNumber->SetValue (1);
             }
             else
             {
-                trekClient.PostText(false, "You have disembarked.");
+				trekClient.PostText(false, L"You have disembarked.");
                 g_pnumberInTurretNumber->SetValue (0);
             }
         }

@@ -30,7 +30,7 @@ LPCTSTR FindOneOf(LPCTSTR p1, LPCTSTR p2)
 
 // Although some of these functions are big they are declared inline since they are only used once
 
-inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, char * szAccount, char * szPassword)
+inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, wchar_t * szAccount, wchar_t * szPassword)
 {
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr))
@@ -80,15 +80,15 @@ inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, c
  * Returns:
  *    path of AllClub.exe
  */
-const char * CServiceModule::GetModulePath()
+const wchar_t * CServiceModule::GetModulePath()
 {
-    static char * pszLast = NULL;
+	static wchar_t * pszLast = NULL;
 
     if (pszLast == NULL)
     {
-        static char szFileName[MAX_PATH + 16];
+		static wchar_t szFileName[MAX_PATH + 16];
         GetModuleFileName(NULL, szFileName, MAX_PATH);
-        char*   p = strrchr(szFileName, '\\');
+		wchar_t*   p = wcsrchr(szFileName, '\\');
         if (p)
             *(p+1) = 0;
         else 
@@ -120,7 +120,7 @@ const char * CServiceModule::GetModulePath()
  * Returns:
  *    true: iff pValue was set
  */
-bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault)
+bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t * szItem, void * pValue, DWORD dwDefault)
 {
     char psz[MAX_PATH] = {""};
     DWORD dwSize = (bIsString ? sizeof(psz): sizeof(DWORD));
@@ -257,11 +257,11 @@ inline BOOL CServiceModule::Install()
 //
 //
 
-BOOL CServiceModule::InstallService(char * szAccount, char * szPassword)
+BOOL CServiceModule::InstallService(wchar_t * szAccount, wchar_t * szPassword)
 {
     SC_HANDLE schMgr;
     SC_HANDLE schSvc;
-    char szPath[512];
+	wchar_t szPath[512];
 
     schMgr = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
 
@@ -357,7 +357,7 @@ int CServiceModule::LogEvent(WORD wType, LPCTSTR pFormat, ...)
     va_list pArg;
 
     va_start(pArg, pFormat);
-    _vsnprintf(chMsg, sizeof(chMsg), pFormat, pArg);
+    _vsnwprintf(chMsg, sizeof(chMsg), pFormat, pArg);
     va_end(pArg);
 
     lpszStrings[0] = chMsg;
@@ -425,7 +425,7 @@ inline void CServiceModule::ServiceMain(DWORD /* dwArgc */, LPTSTR* /* lpszArgv 
 
 void CServiceModule::ExeMain()
 {
-    _putts("Running as an executable.");
+    _putts(L"Running as an executable.");
     Run();
 }
 
@@ -507,11 +507,11 @@ void CServiceModule::Run()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-int __cdecl main(int argc, char *argv[])
+int __cdecl wmain(int argc, wchar_t *argv[])
 { 
     HINSTANCE hInstance = GetModuleHandle(NULL);
   
-    LPSTR lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
+    LPWSTR lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
 
     // {30DA68CA-2156-4964-BD6F-EF2CE0E41C3C}
     static const GUID LIBID_CLUB = 

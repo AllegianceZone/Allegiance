@@ -46,12 +46,12 @@ public:
       m_eventDownloadTerminated = CreateEvent(NULL, TRUE, FALSE, NULL);
       m_eventFileCompleted = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-      debugf("Creating download thread.\n");
+      debugf(L"Creating download thread.\n");
       DWORD dum;
       m_threadDownload = CreateThread(NULL, 0, DownloadThread, (void*)this, 0, &dum);
 
       if (m_pUpdateSink && m_threadDownload == NULL)
-          debugf("Failed to create thread.\n");
+          debugf(L"Failed to create thread.\n");
     }
 
     virtual ~CInternetSessionImpl() 
@@ -69,7 +69,7 @@ public:
 
         if (m_pszFileList)
         {
-            char * * psz = m_pszFileListData + 1; // first one is 0xFFFFFFFF, so skip it
+			wchar_t * * psz = m_pszFileListData + 1; // first one is 0xFFFFFFFF, so skip it
 
             while (psz && *psz)
                 free(*(psz++));
@@ -86,8 +86,8 @@ public:
     }
 
 
-    bool InitiateDownload(const char * const * pszFileList, 
-                          const char * szDestFolder, 
+	bool InitiateDownload(const wchar_t * const * pszFileList,
+                          const wchar_t * szDestFolder, 
                           bool bDisconnectWhenDone,
                           int nMaxBufferSize)
     {
@@ -96,23 +96,23 @@ public:
         //
         {
             // iterate once to find number of entries
-            char * * psz = const_cast<char * *>(pszFileList);
+			wchar_t * * psz = const_cast<wchar_t * *>(pszFileList);
             int i = 0;
             while (psz && *psz)
             {
                 i++;
                 psz++;
             }
-            m_pszFileListData = new char*[i+2];
-            m_pszFileListData[0] = (char*)-1; // means not started yet;
-            // StartNextFile() increments first thing; so (char*)-1 is not downloaded, (I chose -1 because it's different than NULL)
+			m_pszFileListData = new wchar_t*[i + 2];
+			m_pszFileListData[0] = (wchar_t*)-1; // means not started yet;
+            // StartNextFile() increments first thing; so (wchar_t*)-1 is not downloaded, (I chose -1 because it's different than NULL)
 
             // iterate again and allocate memory for each entry
-            psz = const_cast<char * *>(pszFileList);
+			psz = const_cast<wchar_t * *>(pszFileList);
             i = 1;
             while (psz && *psz)
             {
-                m_pszFileListData[i] = _strdup(*psz);
+                m_pszFileListData[i] = _wcsdup(*psz);
                 i++;
                 psz++;
             }
@@ -120,11 +120,11 @@ public:
             m_pszFileList = m_pszFileListData;
         }
 
-        strcpy_s(m_szDestFolder, _MAX_PATH, szDestFolder);
+        wcscpy_s(m_szDestFolder, _MAX_PATH, szDestFolder);
         if (m_szDestFolder[0] == '\0' ||  // prevent access of not our memory        
-           m_szDestFolder[strlen(m_szDestFolder)-1] != '\\')
+           m_szDestFolder[wcslen(m_szDestFolder)-1] != '\\')
         {
-           strcat_s(m_szDestFolder, _MAX_PATH, "\\");
+           wcscat_s(m_szDestFolder, _MAX_PATH, L"\\");
         }
 
         m_bAutoDisconnect = bDisconnectWhenDone;
@@ -132,7 +132,7 @@ public:
         m_nBufferSize = nMaxBufferSize;
 
         if(m_buffer == NULL)
-            m_buffer = (char*)::VirtualAlloc(NULL, m_nBufferSize, MEM_COMMIT, PAGE_READWRITE);
+			m_buffer = (wchar_t*)::VirtualAlloc(NULL, m_nBufferSize, MEM_COMMIT, PAGE_READWRITE);
 
         assert(m_buffer);
 
@@ -157,7 +157,7 @@ public:
         {
             if (!InternetCloseHandle(m_hInternetSession))
             {    
-                DoError("Disconnect Failed");
+                DoError(L"Disconnect Failed");
                 return false;
             }
             m_hInternetSession = NULL;
@@ -172,12 +172,12 @@ public:
         return true;
     }
 
-    const char* GetDownloadPath()
+	const wchar_t* GetDownloadPath()
     {
         return m_szDestFolder;
     }
 
-    const char* GetLastErrorMessage() 
+	const wchar_t* GetLastErrorMessage()
     {
         if (m_szLastError[0] != '\0')
         {
@@ -275,7 +275,7 @@ protected:
 
      static DWORD WINAPI DownloadThread(LPVOID pThreadParameter)
     {
-		debugf("DownloadThread(): thread started.\r\n");
+		debugf(L"DownloadThread(): thread started.\r\n");
 
         CInternetSessionImpl * pSession = (CInternetSessionImpl *) pThreadParameter;
 
@@ -284,65 +284,65 @@ protected:
         //
         // Wait for file download to resume or for abort
         //
-		debugf("DownloadThread(): beginning wait cycle.\r\n");
+		debugf(L"DownloadThread(): beginning wait cycle.\r\n");
         while (WaitForMultipleObjects(2, pHandles, FALSE, INFINITE) != WAIT_OBJECT_0)
         {
-			debugf("DownloadThread(): Checking for pSession->m_hFile: %ld\r\n", pSession->m_hFile);
+			debugf(L"DownloadThread(): Checking for pSession->m_hFile: %ld\r\n", pSession->m_hFile);
 
             if (pSession->m_hFile == NULL)
             {
-				debugf("DownloadThread(): pSession->m_hFile was null, calling start next file.\r\n");
+				debugf(L"DownloadThread(): pSession->m_hFile was null, calling start next file.\r\n");
 
                 if (!pSession->StartNextFile())
                 {
-					debugf("DownloadThread(): pSession->StartNextFile() failed, killing download.\r\n");
+					debugf(L"DownloadThread(): pSession->StartNextFile() failed, killing download.\r\n");
                     SetEvent(pSession->m_eventKillDownload);
                     break;
                 }
             }
 
-			debugf("DownloadThread(): checking pSession->m_hFile: %ld\r\n", pSession->m_hFile);
+			debugf(L"DownloadThread(): checking pSession->m_hFile: %ld\r\n", pSession->m_hFile);
 
             if (pSession->m_hFile != NULL) 
             {
-				debugf("DownloadThread(): pSession->m_hFile was not null, downloading file block.\r\n");
+				debugf(L"DownloadThread(): pSession->m_hFile was not null, downloading file block.\r\n");
 
                 DOWNLOAD_RESULT result = DOWNLOAD_ERROR; // default to error, until we know better
                 __try
                 {
                     result = pSession->DownloadFileBlock();
-					debugf("DownloadThread(): pSession->DownloadFileBlock() result: %ld.\r\n", result);
+					debugf(L"DownloadThread(): pSession->DownloadFileBlock() result: %ld.\r\n", result);
                 }
                 __except(1)
                 {
                     result = DOWNLOAD_ERROR;
-					debugf("DownloadThread(): pSession->DownloadFileBlock() = threw exception, DOWNLOAD_ERROR.\r\n");
+					debugf(L"DownloadThread(): pSession->DownloadFileBlock() = threw exception, DOWNLOAD_ERROR.\r\n");
                 }
 
                 if (result == DOWNLOAD_PROGRESS)
                 {
-					debugf("DownloadThread(): pSession->DownloadFileBlock() returned: DOWNLOAD_PROGRESS\r\n");
+					debugf(L"DownloadThread(): pSession->DownloadFileBlock() returned: DOWNLOAD_PROGRESS\r\n");
                     SetEvent(pSession->m_eventProgress);
-					debugf("DownloadThread(): pSession->m_eventProgress - event set.\r\n");
+					debugf(L"DownloadThread(): pSession->m_eventProgress - event set.\r\n");
                 }
                 else
                 if (result == FILE_COMPLETED)
                 {
-					debugf("DownloadThread(): pSession->DownloadFileBlock() returned: FILE_COMPLETED\r\n");
+					debugf(L"DownloadThread(): pSession->DownloadFileBlock() returned: FILE_COMPLETED\r\n");
                     SetEvent(pSession->m_eventFileCompleted);
-					debugf("DownloadThread(): pSession->m_eventFileCompleted - event set.\r\n");
+					debugf(L"DownloadThread(): pSession->m_eventFileCompleted - event set.\r\n");
                 }
                 else
                 if (result == DOWNLOAD_ERROR)
                 {
-					debugf("DownloadThread(): pSession->DownloadFileBlock() returned: DOWNLOAD_ERROR\r\n");
+					debugf(L"DownloadThread(): pSession->DownloadFileBlock() returned: DOWNLOAD_ERROR\r\n");
                     SetEvent(pSession->m_eventKillDownload);
-					debugf("DownloadThread(): pSession->m_eventKillDownload - event set.\r\n");
+					debugf(L"DownloadThread(): pSession->m_eventKillDownload - event set.\r\n");
                     break;
                 }
             }
         }
-        debugf("Download thread exiting...\n");
+		debugf(L"Download thread exiting...\n");
         SetEvent(pSession->m_eventDownloadTerminated);
         ExitThread(0);
         return 0;
@@ -369,11 +369,11 @@ protected:
                 // few more things just to be sure.
                 //
                 cTries++;
-                debugf("Failed to open file via FTP for download, try #%d; error code: %d\n", cTries, GetLastError());
+                debugf(L"Failed to open file via FTP for download, try #%d; error code: %d\n", cTries, GetLastError());
                 Sleep(500);
                 if(cTries >= 10) // okay, it must be more than a glich--must be an error, like the file not existing
                 {
-                   DoErrorInThread("Failed to open file (%s) for download.", *m_pszFileList);
+                   DoErrorInThread(L"Failed to open file (%s) for download.", *m_pszFileList);
                    return false;
                 }
             }
@@ -390,7 +390,7 @@ protected:
         {
             if (!InternetCloseHandle(m_hFileConnection))
             {    
-                DoError("InternetCloseHandle() Failed for download file");
+				DoError(L"InternetCloseHandle() Failed for download file");
                 return false;
             }
             m_hFileConnection = NULL;
@@ -418,7 +418,7 @@ protected:
 
         if (!InternetQueryDataAvailable(m_hFileConnection, &cBytesAvail, 0, 0))
         {
-            DoErrorInThread("InternetQueryDataAvailable() Failed.");
+			DoErrorInThread(L"InternetQueryDataAvailable() Failed.");
 
             return DOWNLOAD_ERROR;
         }
@@ -438,7 +438,7 @@ protected:
 
         if (!InternetReadFile((void*)m_hFileConnection, (void*)(m_buffer+m_cBytesRead), cBytesAttempted, &cBytesJustRead))
         {
-           DoErrorInThread("InternetReadFile() Failed.");
+			DoErrorInThread(L"InternetReadFile() Failed.");
 
            return DOWNLOAD_ERROR;
         }
@@ -485,9 +485,9 @@ protected:
        //
        // Make Path
        //
-       char szFilename[MAX_PATH+20];
-       strcpy(szFilename, m_szDestFolder);
-       strcat(szFilename, *m_pszFileList);
+       wchar_t szFilename[MAX_PATH+20];
+       wcscpy(szFilename, m_szDestFolder);
+       wcscat(szFilename, *m_pszFileList);
 
        m_hFile = CreateFile(szFilename, 
                                  GENERIC_WRITE, 
@@ -499,7 +499,7 @@ protected:
 
        if (m_hFile == INVALID_HANDLE_VALUE)
        {
-           DoErrorInThread("Failed create file (%s) on local drive.", szFilename);
+           DoErrorInThread(L"Failed create file (%s) on local drive.", szFilename);
            return false;
        }
 
@@ -529,7 +529,7 @@ protected:
 
            if (!WriteFile(m_hFile, (void*)m_buffer, m_cBytesRead, &cBytesWritten, NULL))
            {
-               DoError("Failed to write the file (%s) to local drive : ", *m_pszFileList);
+			   DoError(L"Failed to write the file (%s) to local drive : ", *m_pszFileList);
                return false;
            }
 
@@ -546,7 +546,7 @@ protected:
            return true;
 
        if (!::CloseHandle(m_hFile))
-           DoError("Failed to close file %s", *m_pszFileList);
+		   DoError(L"Failed to close file %s", *m_pszFileList);
 
        m_hFile = NULL;
 
@@ -575,23 +575,23 @@ protected:
      *    dwErrorCode: take a dwErrorCode and print what it means as text    
      * 
      */
-    void FormatErrorMessage(char *szBuffer, DWORD dwErrorCode)
+	void FormatErrorMessage(wchar_t *szBuffer, DWORD dwErrorCode)
     {
 
-      sprintf(szBuffer,"(%d) ", dwErrorCode);
+      swprintf(szBuffer,L"(%d) ", dwErrorCode);
 
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | 
                     FORMAT_MESSAGE_IGNORE_INSERTS, 
                     NULL, 
                     dwErrorCode, 
                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
-                    szBuffer + strlen(szBuffer),
+                    szBuffer + wcslen(szBuffer),
                     128,
                     NULL 
                     );
-      strcat(m_szLastError, "   ");
-      unsigned long dummy, size = sizeof(m_szLastError) - strlen(szBuffer) - 2;
-      InternetGetLastResponseInfo(&dummy, szBuffer + strlen(szBuffer), &size);
+      wcscat(m_szLastError, L"   ");
+      unsigned long dummy, size = sizeof(m_szLastError) - wcslen(szBuffer) - 2;
+      InternetGetLastResponseInfo(&dummy, szBuffer + wcslen(szBuffer), &size);
     }
 
 
@@ -599,21 +599,21 @@ protected:
      * DoError()
      *-------------------------------------------------------------------------
      */
-    void DoError(char * szFormat, ...) 
+	void DoError(wchar_t * szFormat, ...)
     {
         if (m_szLastError[0] != 0) // don't erase over first error which can cause other errors
             return;              
 
         m_nLastErrorCode = GetLastError();
 
-        char szMsg[sizeof(m_szLastError) - 50];
+		wchar_t szMsg[sizeof(m_szLastError) - 50];
         va_list pArg;
         va_start(pArg, szFormat);
-        _vsnprintf_s(szMsg, sizeof(szMsg), sizeof(szMsg), szFormat, pArg);
+		_vsnwprintf_s(szMsg, sizeof(szMsg), sizeof(szMsg), szFormat, pArg);
         va_end(pArg);
 
-        strcpy(m_szLastError, szMsg);
-        FormatErrorMessage(m_szLastError + strlen(m_szLastError), m_nLastErrorCode);
+        wcscpy(m_szLastError, szMsg);
+        FormatErrorMessage(m_szLastError + wcslen(m_szLastError), m_nLastErrorCode);
 
         CloseDownloadFile(false);
 
@@ -625,20 +625,20 @@ protected:
 
     }
 
-    void DoErrorInThread(char * szFormat, ...) 
+	void DoErrorInThread(wchar_t * szFormat, ...)
     {
         if (m_szErrorInThread[0] != 0) // don't erase over first error which can cause other errors
             return;              
 
         m_nLastErrorCodeInThread = GetLastError();
 
-        char szMsg[sizeof(m_szErrorInThread) - 50];
+		wchar_t szMsg[sizeof(m_szErrorInThread) - 50];
         va_list pArg;
         va_start(pArg, szFormat);
-        _vsnprintf(szMsg, sizeof(szMsg), szFormat, pArg);
+        _vsnwprintf(szMsg, sizeof(szMsg), szFormat, pArg);
         va_end(pArg);
 
-        strcpy(m_szErrorInThread, szMsg);
+        wcscpy(m_szErrorInThread, szMsg);
     }
 
     void KillDownload()
@@ -661,9 +661,9 @@ protected:
 
 protected:
 
-    char * *              m_pszFileList;
-    char * *              m_pszFileListData;
-    char                  m_szDestFolder[MAX_PATH];
+	wchar_t * *              m_pszFileList;
+	wchar_t * *              m_pszFileListData;
+	wchar_t                  m_szDestFolder[MAX_PATH];
 
     volatile HINTERNET    m_hInternetSession;
     volatile HINTERNET    m_hFTPSession;
@@ -680,12 +680,12 @@ protected:
 
     HANDLE                m_threadDownload;
 
-    volatile char *       m_buffer;
+	volatile wchar_t *       m_buffer;
     volatile unsigned     m_cBytesRead;  // bytes read into m_buffer for current file
     volatile unsigned     m_nBufferSize; // alloc-ed size of m_buffer for current file
 
-    char                  m_szLastError[1024];
-    char                  m_szErrorInThread[MAX_PATH+100];
+	wchar_t                  m_szLastError[1024];
+	wchar_t                  m_szErrorInThread[MAX_PATH + 100];
     int                   m_nLastErrorCode;
     int                   m_nLastErrorCodeInThread;
     bool                  m_bAutoDisconnect; // if true, auto disconnects after D/L
@@ -712,14 +712,14 @@ public:
     {
     }
 
-    virtual bool ConnectToSite(const char * szFTPSite, const char * szDirectory, const char * szUsername, const char * szPassword) 
+	virtual bool ConnectToSite(const wchar_t * szFTPSite, const wchar_t * szDirectory, const wchar_t * szUsername, const wchar_t * szPassword)
     {
        m_szLastError[0] = '\0';
 
        m_hInternetSession = ::InternetOpen(
-                           "Microsoft Internet Explorer",   // agent
+                           L"Microsoft Internet Explorer",   // agent
                             INTERNET_OPEN_TYPE_PROXY,       // access
-                            "ftp-gw",                       // proxy server
+                            L"ftp-gw",                       // proxy server
                             NULL,                           // defaults
                             0);                             // synchronous
 
@@ -739,13 +739,13 @@ public:
 
         if(m_hFTPSession== NULL)
         {
-            DoError("Failed to log onto FTP site (%s) : ", szFTPSite);
+            DoError(L"Failed to log onto FTP site (%s) : ", szFTPSite);
             return false;
         }
 
         if (!FtpSetCurrentDirectory(m_hFTPSession, szDirectory))
         {
-            DoError("Failed to enter the proper FTP directory (%s) : ", szDirectory);
+            DoError(L"Failed to enter the proper FTP directory (%s) : ", szDirectory);
             return false;
         }
 
@@ -757,8 +757,8 @@ public:
         return 1;
     }
 
-    virtual bool  InitiateDownload(const char * const * pszFileList, 
-                                   const char * szDestFolder, 
+	virtual bool  InitiateDownload(const wchar_t * const * pszFileList,
+                                   const wchar_t * szDestFolder, 
                                    bool bDisconnectWhenDone = true,
                                    int nMaxBufferSize = 1024*1024)
     {
@@ -787,14 +787,14 @@ public:
     {
 
        m_hInternetSession = ::InternetOpen(
-                           "Microsoft Internet Explorer",   // agent
+                           L"Microsoft Internet Explorer",   // agent
                             INTERNET_OPEN_TYPE_PRECONFIG, //INTERNET_OPEN_TYPE_PROXY,       // access
                             NULL,//"ftp-gw",                       // proxy server
                             NULL,                           // defaults
                             0);                             // synchronous  //Fix memory leak -Imago 8/2/09
 
        if (m_hInternetSession == NULL)
-           DoError("Failed to initialize HTTP stuff.");
+           DoError(L"Failed to initialize HTTP stuff.");
     }
 
     virtual ~CHTTPSessionImpl() 
@@ -828,11 +828,11 @@ public:
             while (!(m_hFileConnection = InternetOpenUrl(m_hInternetSession, *m_pszFileList, NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0))) //Fix memory leak -Imago 8/2/09
             {
                 cTries++;
-                debugf("Failed to open URL(%s) for download, try #%d\n", *m_pszFileList, cTries);
+                debugf(L"Failed to open URL(%s) for download, try #%d\n", *m_pszFileList, cTries);
                 Sleep(500);
                 if(cTries >= 5) 
                 {
-                   DoErrorInThread("Failed to open file for download.");
+                   DoErrorInThread(L"Failed to open file for download.");
                    return false;
                 }
             }
@@ -841,7 +841,7 @@ public:
 
             if (*m_pszFileList == NULL) // todo, verify the memory is ours
             {
-                DoErrorInThread("FileList has bad format");
+                DoErrorInThread(L"FileList has bad format");
                 return false;
             }
 
@@ -851,8 +851,8 @@ public:
         return true;
     }
 
-    virtual bool  InitiateDownload(const char * const * pszFileList, 
-                                   const char * szDestFolder, 
+	virtual bool  InitiateDownload(const wchar_t * const * pszFileList,
+                                   const wchar_t * szDestFolder, 
                                    int nMaxBufferSize = 1024*1024)
     {
         bool bRet = CInternetSessionImpl<IHTTPSession>::InitiateDownload(pszFileList, szDestFolder, false, nMaxBufferSize);

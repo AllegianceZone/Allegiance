@@ -148,11 +148,11 @@ protected:
   // Data Members
   public:
     long     m_idEvent;
-    char     m_szComputerName[16];
+	wchar_t     m_szComputerName[16];
     long     m_idSubject;
-    char     m_szSubjectName[32];
-    char     m_szContext[24];
-    char     m_szObjRef[4000];
+	wchar_t     m_szSubjectName[32];
+	wchar_t     m_szContext[24];
+	wchar_t     m_szObjRef[4000];
   };
 
 // Data Members

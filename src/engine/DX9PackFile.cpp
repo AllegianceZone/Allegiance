@@ -18,28 +18,28 @@ CPackExclusion::CPackExclusion()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CPackExclusion::CPackExclusion( const char * szFilter )
+CPackExclusion::CPackExclusion( const wchar_t * szFilter )
 {
 	// Determine filter type from string.
 	ZString szTemp = szFilter;
 	szTemp = szTemp.ToLower();
-	if( szTemp.Find( "*" ) != -1 )
+	if( szTemp.Find( L"*" ) != -1 )
 	{
 		// Substring filter.
 		m_eType = eET_SubString;
 
-		if( szTemp.Left(1) == "*" )
+		if( szTemp.Left(1) == L"*" )
 		{
 			m_szExclusionFilter = &szTemp[1];
 		}
-		else if( szTemp.Right(1) == "*" )
+		else if( szTemp.Right(1) == L"*" )
 		{
 			m_szExclusionFilter = szTemp.Left( szTemp.GetLength() - 1 );
 		}
 		else
 		{
 			m_eType = eET_Undefined;
-			_ASSERT( false && "Not supported, feel free to add..." );
+			_ASSERT( false && L"Not supported, feel free to add..." );
 		}
 	}
 	else
@@ -56,7 +56,7 @@ CPackExclusion::CPackExclusion( const char * szFilter )
 // IsExcluded()
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool CPackExclusion::IsExcluded( const char * szFileName )
+bool CPackExclusion::IsExcluded(const wchar_t * szFileName)
 {
 	ZString test = szFileName;
 	test = test.ToLower();
@@ -86,7 +86,7 @@ bool CPackExclusion::IsExcluded( const char * szFileName )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CDX9PackFile::CDX9PackFile( const char * szDataPath, const char * szFileName )
+CDX9PackFile::CDX9PackFile(const wchar_t * szDataPath, const wchar_t * szFileName)
 {
 	m_pNext				= NULL;
 	m_pFile				= NULL;
@@ -106,8 +106,8 @@ CDX9PackFile::CDX9PackFile( const char * szDataPath, const char * szFileName )
 	m_dwWritePos		= 0;
 	m_szDataPath		= szDataPath;
 	m_szFileName		= szFileName;
-	m_szFileName		+= ".pack";
-	m_szOutputFileName	= m_szDataPath + "/" + m_szFileName;
+	m_szFileName		+= L".pack";
+	m_szOutputFileName	= m_szDataPath + L"/" + m_szFileName;
 }
 
 
@@ -180,19 +180,19 @@ bool CDX9PackFile::Create( PACK_CREATE_CALLBACK pFnCreateCallback )
 	m_pFile->Write( &placeholderHeader, sizeof( SPackFileHeader ) );
 
 	// Add filters for stopping certain files being added.
-	AddExclusionFilter( "bsg_*" );
-	AddExclusionFilter( "hlp*" );
-	AddExclusionFilter( "sw_*" );
-	AddExclusionFilter( "tm_*" );
-	AddExclusionFilter( "vos_*" );
-	AddExclusionFilter( "train*" );
-	AddExclusionFilter( "zone*" );
-	AddExclusionFilter( "lobby*" );
-	AddExclusionFilter( "dialog*" );
-	AddExclusionFilter( "header*" );
-	AddExclusionFilter( "loadout*" );
-	AddExclusionFilter( "screen*" );
-	AddExclusionFilter( "turretHUDbmp.mdl" );
+	AddExclusionFilter( L"bsg_*" );
+	AddExclusionFilter( L"hlp*" );
+	AddExclusionFilter( L"sw_*" );
+	AddExclusionFilter( L"tm_*" );
+	AddExclusionFilter( L"vos_*" );
+	AddExclusionFilter( L"train*" );
+	AddExclusionFilter( L"zone*" );
+	AddExclusionFilter( L"lobby*" );
+	AddExclusionFilter( L"dialog*" );
+	AddExclusionFilter( L"header*" );
+	AddExclusionFilter( L"loadout*" );
+	AddExclusionFilter( L"screen*" );
+	AddExclusionFilter( L"turretHUDbmp.mdl" );
 
 	// Create the new hash table for our data.
 	m_pHashTable = new CHashTable();
@@ -431,7 +431,7 @@ bool CDX9PackFile::AddFiles( ZString szDir, ZString szFilter )
 // AddExclusionFilter()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CDX9PackFile::AddExclusionFilter( const char * szFilter )
+void CDX9PackFile::AddExclusionFilter(const wchar_t * szFilter)
 {
 	CPackExclusion * pExclusion = new CPackExclusion( szFilter );
 
@@ -672,7 +672,7 @@ bool CDX9PackFile::ImportPackFile( )
 // LoadFile()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void * CDX9PackFile::LoadFileInternal( const char * szFileName, DWORD * pdwFileSize )
+void * CDX9PackFile::LoadFileInternal(const wchar_t * szFileName, DWORD * pdwFileSize)
 {
 	void * pFilePtr = NULL;
 	ZString szFile = szFileName;
@@ -735,7 +735,7 @@ void CDX9PackFile::AddToPackFileList( CDX9PackFile * pPackFile )
 // LoadFile()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void * CDX9PackFile::LoadFile( const char * szFileName, DWORD * pdwFileSize )
+void * CDX9PackFile::LoadFile( const wchar_t * szFileName, DWORD * pdwFileSize )
 {
 	void * pFile = NULL;
 	if( m_pPackFileLinkedList == NULL )

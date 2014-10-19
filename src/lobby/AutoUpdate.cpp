@@ -32,10 +32,10 @@ public:
     {
         bool m_bAutoUpdateActive;
 
-        m_bAutoUpdateActive = _Module.ReadFromRegistry(hk, true, "FTPArtServer", m_szFTPServer, NULL);
-        m_bAutoUpdateActive = _Module.ReadFromRegistry(hk, true, "FTPArtRoot", m_szFTPInitialDir, NULL) && m_bAutoUpdateActive;
-        _Module.ReadFromRegistry(hk, true, "FTPAccount", m_szFTPAccount, (DWORD)"Anonymous", false);
-        _Module.ReadFromRegistry(hk, true, "FTPPW", m_szFTPPassword, (DWORD)"Unknown", false);
+        m_bAutoUpdateActive = _Module.ReadFromRegistry(hk, true, L"FTPArtServer", m_szFTPServer, NULL);
+        m_bAutoUpdateActive = _Module.ReadFromRegistry(hk, true, L"FTPArtRoot", m_szFTPInitialDir, NULL) && m_bAutoUpdateActive;
+		_Module.ReadFromRegistry(hk, true, L"FTPAccount", m_szFTPAccount, (wchar_t)"Anonymous", false);
+		_Module.ReadFromRegistry(hk, true, L"FTPPW", m_szFTPPassword, (wchar_t)"Unknown", false);
 
         if (!m_bAutoUpdateActive)
         {
@@ -47,9 +47,9 @@ public:
 
     /////////////////////////////////////////////////////////////////////////
 
-    void   LoadCRC(char * szFileName) 
+	void   LoadCRC(wchar_t * szFileName)
     {
-        char szErrorMsg[200+MAX_PATH];
+		wchar_t szErrorMsg[200 + MAX_PATH];
 
         HANDLE hFile = CreateFile(szFileName, 
                                   GENERIC_READ, 
@@ -61,19 +61,19 @@ public:
 
         if (hFile == INVALID_HANDLE_VALUE)
         {
-           sprintf(szErrorMsg, "Failed open file (%s); Error Code: %d ", szFileName, GetLastError());
+           swprintf(szErrorMsg, L"Failed open file (%s); Error Code: %d ", szFileName, GetLastError());
         }
         else
         {
             m_nFileListSize = GetFileSize(hFile, NULL);
 
-            char szErrorMsgBuffer[100+MAX_PATH];
+			wchar_t szErrorMsgBuffer[100 + MAX_PATH];
 
             m_crcFileList = FileCRC(hFile, szErrorMsgBuffer);
 
             if (m_crcFileList == 0)
             {
-                sprintf(szErrorMsg, "Error while determining CRC; %s", szErrorMsgBuffer);
+                swprintf(szErrorMsg, L"Error while determining CRC; %s", szErrorMsgBuffer);
             }
             else
             {
@@ -90,28 +90,28 @@ public:
 
     /////////////////////////////////////////////////////////////////////////
 
-    char *  GetFTPServer()
+	wchar_t *  GetFTPServer()
     {
         return m_szFTPServer;
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    char *  GetFTPInitialDir()
+	wchar_t *  GetFTPInitialDir()
     {
         return m_szFTPInitialDir;
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    char *  GetFTPAccount()
+	wchar_t *  GetFTPAccount()
     {
         return m_szFTPAccount;
     }
 
     /////////////////////////////////////////////////////////////////////////
 
-    char *  GetFTPPassword()    
+	wchar_t *  GetFTPPassword()
     {
         return m_szFTPPassword;
     }
@@ -134,10 +134,10 @@ public:
 
 private:
 
-  char              m_szFTPServer[MAX_PATH+1];
-  char              m_szFTPInitialDir[MAX_PATH+1];
-  char              m_szFTPAccount[MAX_PATH+1];
-  char              m_szFTPPassword[MAX_PATH+1];
+	wchar_t              m_szFTPServer[MAX_PATH + 1];
+	wchar_t              m_szFTPInitialDir[MAX_PATH + 1];
+	wchar_t              m_szFTPAccount[MAX_PATH + 1];
+  wchar_t              m_szFTPPassword[MAX_PATH + 1];
   int               m_crcFileList;
   unsigned          m_nFileListSize;
 };
@@ -145,7 +145,7 @@ private:
 IAutoUpdate * g_pAutoUpdate = NULL; // NULL if AutoUpdate is disabled
 
 
-void CreateAutoUpdate(HKEY hk, char * szFileName)
+void CreateAutoUpdate(HKEY hk, wchar_t * szFileName)
 {
     g_pAutoUpdate = new CAutoUpdateImpl();
 

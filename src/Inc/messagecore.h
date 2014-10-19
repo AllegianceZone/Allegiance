@@ -211,7 +211,7 @@ public:
   virtual int GetCountConnections() {return m_cPlayers;}
 
 private:
-	CFMGroup(FedMessaging * pfm, const wchar_t * szName);
+	CFMGroup(FedMessaging * pfm, wchar_t * szName);
   ~CFMGroup() {}
   void PlayerAdded(CFMConnection * pcnxn);
   void PlayerDeleted(CFMConnection * pcnxn);
@@ -419,7 +419,7 @@ public:
     return m_pcnxnServer;
   }
 
-  CFMGroup *      CreateGroup(const wchar_t * szName)
+  CFMGroup *      CreateGroup(wchar_t * szName)
   {
     static CTempTimer tt(L"in CreateGroup", .01f);
     tt.Start();

@@ -56,7 +56,7 @@ class       CclusterIGC : public IclusterIGC
         }
 
     // IclusterIGC
-        virtual const char*             GetName(void) const
+		virtual const wchar_t*             GetName(void) const
         {
             return m_data.name;
         }
@@ -74,7 +74,7 @@ class       CclusterIGC : public IclusterIGC
         virtual void                    AddModel(ImodelIGC* modelNew);
         virtual void                    DeleteModel(ImodelIGC* modelOld);
 
-        virtual ImodelIGC*              GetModel(const char* name) const;
+		virtual ImodelIGC*              GetModel(const wchar_t* name) const;
         virtual const ModelListIGC*     GetModels(void) const
         {
             return &m_models;
@@ -373,7 +373,7 @@ class       CclusterIGC : public IclusterIGC
             m_data.activeF = bActive;
         }
 
-        virtual const char*             GetPosterName(void) const
+		virtual const wchar_t*             GetPosterName(void) const
         {
             return m_data.posterName;
         }

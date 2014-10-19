@@ -315,7 +315,7 @@ enum LeaderBoardSort
 };
 
 DEFINE_FEDMSG(C, LEADER_BOARD_QUERY, 365)
-    char            szBasis[c_cbName]; // the character to use as a refrence 
+wchar_t            szBasis[c_cbName]; // the character to use as a refrence 
                                        // point for the location in the list,
                                        // or "" to use idBasis.
     int             idBasis;           // the id of the basis character, or -1 for the top of the list
@@ -325,7 +325,7 @@ END_FEDMSG
 
 struct LeaderBoardEntry
 {
-    char                        CharacterName[c_cbName];
+	wchar_t                        CharacterName[c_cbName];
     int                         idCharacter;
 
     int                         nPosition;
@@ -347,7 +347,7 @@ struct LeaderBoardEntry
 };
 
 DEFINE_FEDMSG(S, LEADER_BOARD_QUERY_FAIL, 366)
-    char            szBasis[c_cbName]; // the character we failed to find
+wchar_t            szBasis[c_cbName]; // the character we failed to find
 END_FEDMSG
 
 DEFINE_FEDMSG(S, LEADER_BOARD_LIST, 367)
@@ -363,7 +363,7 @@ struct RankInfo
     int     requiredRanking;
     CivID   civ;
     RankID  rank;
-    char    RankName[c_cbName];
+	wchar_t    RankName[c_cbName];
 };
 #endif //_MESSAGES_ 
 

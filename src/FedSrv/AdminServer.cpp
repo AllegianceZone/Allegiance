@@ -112,8 +112,7 @@ STDMETHODIMP CAdminServer::SendMsg(BSTR bstrMessage)
   if (plistMission->n())
   {
     // Convert the specified string to ANSI once
-    USES_CONVERSION;
-    LPCSTR pszMessage = OLE2CA(bstrMessage);
+    LPCWSTR pszMessage = OLE2CW(bstrMessage);
 
     // Loop through and send chat to each mission
     for (LinkFSMission* plinkMission = plistMission->first(); plinkMission; plinkMission = plinkMission->next())
@@ -177,10 +176,6 @@ STDMETHODIMP CAdminServer::get_FindUser(BSTR bstrName, IAdminUser** ppUser)
 {
   *ppUser = NULL; // assume not found for now
 
-  USES_CONVERSION;
-                  
-  char * szName = OLE2A(bstrName);
-
   const ListFSMission * plistMission = CFSMission::GetMissions();
   for (LinkFSMission * plinkMission = plistMission->first(); plinkMission; plinkMission = plinkMission->next())
   {
@@ -199,7 +194,7 @@ STDMETHODIMP CAdminServer::get_FindUser(BSTR bstrName, IAdminUser** ppUser)
                   {
                       CFSPlayer * pfsPlayer = pfsShip->GetPlayer();
 
-                      if (_stricmp(szName, pfsShip->GetName()) == 0)
+					  if (_wcsicmp(bstrName, pfsShip->GetName()) == 0)
                       {
                           RETURN_FAILED (pfsPlayer->CAdminSponsor<CAdminUser>::Make(IID_IAdminUser, (void**)ppUser));
 
@@ -341,11 +336,10 @@ STDMETHODIMP CAdminServer::put_LobbyServer(BSTR bstrLobbyServer)
   // Connect to the specified lobby, if any
   if (BSTRLen(bstrLobbyServer))
   {
-    USES_CONVERSION;
-    LPCSTR pszLobbyServer = OLE2CA(bstrLobbyServer);
+    LPCWSTR pszLobbyServer = OLE2CW(bstrLobbyServer);
 
     // Fail if any games are running and bstrLobbyServer is different
-    if (0 != _stricmp(pszLobbyServer, g.strLobbyServer))
+    if (0 != _wcsicmp(pszLobbyServer, g.strLobbyServer))
     {
       const ListFSMission * plistMission = CFSMission::GetMissions();
       if (plistMission->n())

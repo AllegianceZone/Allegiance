@@ -64,14 +64,14 @@ HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* da
 					{
 						ZString name = dataWarp->name;
 						int MassFind = name.Find(':',0); 
-						char* mass = &(dataWarp->name[MassFind+2]); 
-						m_MassLimit = atoi(mass);
+						wchar_t* mass = &(dataWarp->name[MassFind + 2]);
+						m_MassLimit = _wtoi(mass);
 						name.ReplaceAll(":" ,'('); //Replaces the : with a (
-						const char* alephname = &(name[2]); //Removes the leading '*+'
-						char* newAlephName = new char[25];
-						const char* nameSuffix = ")"; //Adds a ) to the end
-						strncpy(newAlephName, alephname, strlen(alephname)+1);
-						strncat(newAlephName, nameSuffix, strlen(nameSuffix)+1);
+						const wchar_t* alephname = &(name[2]); //Removes the leading '*+'
+						wchar_t* newAlephName = new wchar_t[25];
+						const wchar_t* nameSuffix = L")"; //Adds a ) to the end
+						Strncpy(newAlephName, alephname, wcslen(alephname)+1);
+						wcsncat(newAlephName, nameSuffix, wcslen(nameSuffix)+1);
 						SetName(newAlephName);
 					}
 					else
@@ -84,14 +84,14 @@ HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* da
 				{
 					ZString name = dataWarp->name;
 					int MassFind = name.Find(':',0);
-					char* mass = &(dataWarp->name[MassFind+1]);
-					m_MassLimit = atoi(mass);
+					wchar_t* mass = &(dataWarp->name[MassFind + 1]);
+					m_MassLimit = _wtoi(mass);
 					name.ReplaceAll(":" ,'('); //Replaces the : with a (
-					const char* alephname = &(name[1]);//Skip the leading '+'
-					char* newAlephName = new char[25];
-					const char* nameSuffix = ")"; //Adds a ) to the end
-					strncpy(newAlephName, alephname, strlen(alephname)+1);
-					strncat(newAlephName, nameSuffix, strlen(nameSuffix)+1);
+					const wchar_t* alephname = &(name[1]);//Skip the leading '+'
+					wchar_t* newAlephName = new wchar_t[25];
+					const wchar_t* nameSuffix = L")"; //Adds a ) to the end
+					Strncpy(newAlephName, alephname, wcslen(alephname)+1);
+					wcsncat(newAlephName, nameSuffix, wcslen(nameSuffix)+1);
 					SetName(newAlephName);
 				}
 				else

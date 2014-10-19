@@ -51,7 +51,7 @@ void TrekResources::Initialize(Modeler* pmodeler)
 		bool bResult;
 		CDX9PackFile * pPackFile;
 
-		pPackFile = new CDX9PackFile( pmodeler->GetArtPath(), "CommonTextures" );
+		pPackFile = new CDX9PackFile( pmodeler->GetArtPath(), L"CommonTextures" );
 		bResult = pPackFile->ImportPackFile();
 		//_ASSERT( bResult == true ); Imago 8/16/09
         if (bResult)

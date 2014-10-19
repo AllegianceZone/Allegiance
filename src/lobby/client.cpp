@@ -48,12 +48,12 @@ void encodeURL( char * url,char * token) // url = output, token gets append to u
 }
 
 // mdvalley: 2005 needs to specify dword
-static DWORD GetRegDWORD(const char* szKey, DWORD dwDefault)
+static DWORD GetRegDWORD(const wchar_t* szKey, DWORD dwDefault)
 {
   DWORD dwResult = dwDefault;
 
   HKEY  hk;
-  if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllLobby, 0, "", 
+  if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllLobby, 0, L"", 
       REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
   {
     _Module.ReadFromRegistry(hk, false, szKey, &dwResult, dwDefault);
@@ -139,7 +139,7 @@ void GotLogonInfo(CQLobbyLogon * pquery)
 {
   FedMessaging & fm = g_pLobbyApp->GetFMClients();
   CQLobbyLogonData * pqd = pquery->GetData();
-  char * szReason = pqd->szReason;
+  wchar_t * szReason = pqd->szReason;
 
   CFMConnection * pcnxn = fm.GetConnectionFromId(pqd->dwConnectionID);
   if (!pcnxn)
@@ -149,9 +149,9 @@ void GotLogonInfo(CQLobbyLogon * pquery)
   {
     pqd->fValid = false;
     pqd->fRetry = true;
-    szReason = "The CD Key you entered is not valid. Please "
-               "press <CD Key> and re-enter the CD Key from "
-               "the back of your CD case.";
+    szReason = L"The CD Key you entered is not valid. Please "
+               L"press <CD Key> and re-enter the CD Key from "
+               L"the back of your CD case.";
   }
 
   if (pqd->fValid)
@@ -208,14 +208,14 @@ void GotLogonInfo(CQLobbyLogon * pquery)
 	  fm.DeleteConnection(*(pcnxn));
 }
 
-const int c_cMaxPlayers = GetRegDWORD("MaxPlayersPerServer", 350);
+const int c_cMaxPlayers = GetRegDWORD(L"MaxPlayersPerServer", 350);
 
 //imago 9/14
 DWORD WINAPI LogonThread( LPVOID param ) {
 	CSQLQuery * pQuery = (CSQLQuery *)param;  //use the AZ legacy data & callback
 	CQLobbyLogon * pls = (CQLobbyLogon *)param;
 	CQLobbyLogonData * pqd = pls->GetData();
-	char szReason [256];
+	wchar_t szReason[256];
 	int iID = 0;
 	EnterCriticalSection(g_pLobbyApp->GetLogonCS()); 
 #ifdef NOAUTH //imago 1/14
@@ -223,10 +223,10 @@ DWORD WINAPI LogonThread( LPVOID param ) {
 #else
 	bool fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason,iID);
 #endif
-	(fValid) ? debugf("authed!\n") : debugf("not authed!\n");
+	(fValid) ? debugf(L"authed!\n") : debugf(L"not authed!\n");
 	pqd->fValid = fValid;
 	pqd->fRetry = false;
-	pqd->szReason = new char[lstrlen(szReason) + 1];
+	pqd->szReason = new wchar_t[lstrlen(szReason) + 1];
 	pqd->characterID = iID;
 	Strcpy(pqd->szReason,szReason);
 	LeaveCriticalSection(g_pLobbyApp->GetLogonCS()); 
@@ -239,7 +239,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
   CFLClient * pClient = CFLClient::FromConnection(cnxnFrom);
   assert(pClient);
 
-  debugf("Client: %s from <%s> at time %u\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now());
+  debugf(L"Client: %s from <%s> at time %u\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now());
   
   switch (pfm->fmid)
   {
@@ -258,13 +258,13 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       CASTPFM(pfmLogon, C, LOGON_LOBBY, pfm);
       bool fValid = true; // whether we have a valid logon, changed default (FREE Allegiance) -Imago
       bool fRetry = false;
-      char * szReason = NULL; // when fValid==false
+	  wchar_t * szReason = NULL; // when fValid==false
 	  
 	  // Imago make the SQL stuff we're using for asgs happy
 	  pqd->dTime = pfmLogon->dwTime - Time::Now().clock();
-	  const char * strCDKey = (const char*) FM_VAR_REF(pfmLogon, CdKey);
+	  const wchar_t * strCDKey = (const wchar_t*)FM_VAR_REF(pfmLogon, CdKey);
 	  Strcpy(pqd->szCDKey,strCDKey);
-	  char szPWz[c_cbCDKey];
+	  wchar_t szPWz[c_cbCDKey];
 	  Strcpy(szPWz,pfmLogon->szPW);
 	  pqd->fValid = fValid;
 	  pqd->fRetry = fRetry;
@@ -289,8 +289,8 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	  
 	  if(pfmLogon->verLobby != LOBBYVER) {
 		  fValid = false;
-		  szReason = "Your game's version did not get auto-updated properly.  Please try again later.";
-		  pqd->szReason = new char[lstrlen(szReason) + 1];
+		  szReason = L"Your game's version did not get auto-updated properly.  Please try again later.";
+		  pqd->szReason = new wchar_t[lstrlen(szReason) + 1];
 		  Strcpy(pqd->szReason, szReason);
 	  }
 
@@ -318,11 +318,11 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	  
 	  //debugf("!!! Login from %s pw %s\n",pqd->szCharacterName,szPW);
 
-	  char * szPW = (char*)_alloca(c_cbCDKey + 1);
-      ZUnscramble(szPW, szPWz, "Imago2014");
+	  wchar_t * szPW = (wchar_t*)_alloca(c_cbCDKey + 1);
+      ZUnscramble(szPW, szPWz, L"Imago2014");
 	  Strcpy(pqd->szPW,szPW);
 
-	  debugf("Creating logon thread.\n");
+	  debugf(L"Creating logon thread.\n");
 	  DWORD dum;
 	  CreateThread(NULL, 0, LogonThread, (void*) pquery, 0, &dum);
 
@@ -359,9 +359,9 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 				{
 					if (!pServerT->GetPaused() && (pServerT->GetStaticCoreMask() != 0))// server isnt paused and has at least one core
 					{
-						strcpy_s(pSCI[i].szName,sizeof(pSCI[i].szName),iterCnxn.Value()->GetName());
+						wcscpy_s(pSCI[i].szName,sizeof(pSCI[i].szName),iterCnxn.Value()->GetName());
 						g_pLobbyApp->GetFMServers().GetIPAddress(*iterCnxn.Value(), pSCI[i].szRemoteAddress);
-						strcpy_s(pSCI[i].szLocation,sizeof(pSCI[i].szLocation),pServerT->GetLocation());
+						wcscpy_s(pSCI[i].szLocation,sizeof(pSCI[i].szLocation),pServerT->GetLocation());
 						pSCI[i].iCurGames = pServerT->GetCurrentGamesCount();
 						pSCI[i].iMaxGames = pServerT->GetMaxGamesAllowed();
 						pSCI[i].dwCoreMask = pServerT->GetStaticCoreMask();
@@ -395,14 +395,14 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
 	  // KGJV #114
 	  CASTPFM(pfmCreateMissionReq, C, CREATE_MISSION_REQ, pfm);
-	  const char* szServer        = FM_VAR_REF(pfmCreateMissionReq, Server);
-	  const char* szAddr          = FM_VAR_REF(pfmCreateMissionReq, Address);
-	  const char* szIGCStaticFile = FM_VAR_REF(pfmCreateMissionReq, IGCStaticFile);
-	  const char* szGameName      = FM_VAR_REF(pfmCreateMissionReq, GameName);
+	  const wchar_t* szServer = FM_VAR_REF(pfmCreateMissionReq, Server);
+	  const wchar_t* szAddr = FM_VAR_REF(pfmCreateMissionReq, Address);
+	  const wchar_t* szIGCStaticFile = FM_VAR_REF(pfmCreateMissionReq, IGCStaticFile);
+	  const wchar_t* szGameName = FM_VAR_REF(pfmCreateMissionReq, GameName);
 
       // Find the server to host the game on
       CFLServer * pServerMin = NULL;
-	  debugf("Received mission creation request from %s - create %s with %s on %s\n",
+	  debugf(L"Received mission creation request from %s - create %s with %s on %s\n",
 		  cnxnFrom.GetName(),
 		  szGameName,
 		  szIGCStaticFile,
@@ -416,12 +416,12 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		{
 			if (!pServerT->GetPaused()) // not paused
 			{
-				char szRemoteAddress[16];
+				wchar_t szRemoteAddress[16];
 				g_pLobbyApp->GetFMServers().GetIPAddress(*iterCnxn.Value(), szRemoteAddress);
 				//IMAGO REVIEW: Sanity check on szAddr first
-				if (strcmp(szRemoteAddress,szAddr)==0) // IPs match
+				if (Strcmp(szRemoteAddress,szAddr)==0) // IPs match
 				{
-					if (strcmp(iterCnxn.Value()->GetName(),szServer)==0) // names match
+					if (Strcmp(iterCnxn.Value()->GetName(),szServer)==0) // names match
 					{
 						pServerMin = pServerT; // found it
 						break;
@@ -468,7 +468,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       }
       else
       {
-        debugf("Server not found to create the game on\n");
+        debugf(L"Server not found to create the game on\n");
         BEGIN_PFM_CREATE(*pthis, pfmCreateMissionNack, L, CREATE_MISSION_NACK)
         END_PFM_CREATE
       }
@@ -484,7 +484,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       {
         BEGIN_PFM_CREATE(*pthis, pfmJoinMission, L, JOIN_MISSION)
         END_PFM_CREATE
-        char szServer[16];
+		wchar_t szServer[16];
         g_pLobbyApp->GetFMServers().GetIPAddress(*pMission->GetServer()->GetConnection(), szServer);
         assert(lstrlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
         Strcpy(pfmJoinMission->szServer, szServer);
@@ -505,7 +505,7 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     case FM_C_FIND_PLAYER:
     {
       CASTPFM(pfmFindPlayer, C, FIND_PLAYER, pfm);
-      const char* szCharacterName = FM_VAR_REF(pfmFindPlayer, szCharacterName);
+	  const wchar_t* szCharacterName = FM_VAR_REF(pfmFindPlayer, szCharacterName);
       CFLMission * pMissionFound = NULL;
       
       if (szCharacterName == NULL || szCharacterName[pfmFindPlayer->cbszCharacterName-1] != '\0')
@@ -541,14 +541,14 @@ HRESULT LobbyClientSite::OnSysMessage(FedMessaging * pthis)
 
 void LobbyClientSite::OnMessageNAK(FedMessaging * pthis, DWORD dwTime, CFMRecipient * prcp) 
 {
-  debugf("ACK!! A guaranteed message didn't make it through to recipient %s.\n", prcp->GetName());
+  debugf(L"ACK!! A guaranteed message didn't make it through to recipient %s.\n", prcp->GetName());
 }
 
 
 HRESULT LobbyClientSite::OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) 
 {
   CFLClient * pClient = new CFLClient(&cnxn); 
-  debugf("Player %s has connected\n", cnxn.GetName());
+  debugf(L"Player %s has connected\n", cnxn.GetName());
   g_pLobbyApp->GetCounters()->cLogins++;
 
   
@@ -558,7 +558,7 @@ HRESULT LobbyClientSite::OnNewConnection(FedMessaging * pthis, CFMConnection & c
 
 HRESULT LobbyClientSite::OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) 
 {
-  debugf("Player %s has left.\n", cnxn.GetName());
+  debugf(L"Player %s has left.\n", cnxn.GetName());
   g_pLobbyApp->GetCounters()->cLogoffs++;
   delete CFLClient::FromConnection(cnxn);
   return S_OK;
@@ -572,9 +572,9 @@ HRESULT LobbyClientSite::OnSessionLost(FedMessaging * pthis)
 }
 
 
-int LobbyClientSite::OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType)
+int LobbyClientSite::OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType)
 {
-  debugf("LobbyClientSite::OnMessageBox: "); 
+  debugf(L"LobbyClientSite::OnMessageBox: "); 
   return g_pLobbyApp->OnMessageBox(strText, strCaption, nType);
 }
 
@@ -582,7 +582,7 @@ int LobbyClientSite::OnMessageBox(FedMessaging * pthis, const char * strText, co
 #ifndef NO_MSG_CRC
 void LobbyClientSite::OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg)
 {
-  char buf[256];
+	wchar_t buf[256];
   // We don't KNOW it's a logon, but let's assume it is (it's ok if it's not)
   FMD_C_LOGON_LOBBY * pfmLogon = (FMD_C_LOGON_LOBBY *) pMsg;
   if (pfmLogon->fmid == FM_C_LOGON_LOBBY && 
@@ -594,13 +594,13 @@ void LobbyClientSite::OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE 
   }
   else
   {
-    wsprintf(buf, "HEY! We got a corrupt message!\nPlayer=%s(%d), "
-           "cbmsg=%d, fmid=%d, total packet size=%d.\n"
-           "Copy the above line to crashplayers.txt on \\\\zoneagga01. Going to drop player now.\n", 
+    wsprintf(buf, L"HEY! We got a corrupt message!\nPlayer=%s(%d), "
+           L"cbmsg=%d, fmid=%d, total packet size=%d.\n"
+           L"Copy the above line to crashplayers.txt on \\\\zoneagga01. Going to drop player now.\n", 
            cnxn.GetName(), cnxn.GetID(),
            cbMsg >= 2 ? pfmLogon->cbmsg : 0, cbMsg >= 4 ? pfmLogon->fmid : 0, cbMsg);
 
-    OnMessageBox(pthis, buf, "AllLobby", 0);
+    OnMessageBox(pthis, buf, L"AllLobby", 0);
     pthis->DeleteConnection(cnxn); // bye bye now
   }
 }

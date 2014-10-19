@@ -55,21 +55,21 @@ class   CpartTypeIGC : public IpartTypeIGC
         }
 
 // IbuyableIGC
-        virtual const char*             GetModelName(void) const
+		virtual const wchar_t*             GetModelName(void) const
         {
             return m_data->modelName;
         }
 
-        virtual const char*          GetIconName(void) const
+		virtual const wchar_t*          GetIconName(void) const
         {
             return m_data->iconName;
         }
 
-        virtual const char*             GetName(void) const
+		virtual const wchar_t*             GetName(void) const
         {
             return m_data->name;
         }
-        virtual const char*             GetDescription(void) const
+		virtual const wchar_t*             GetDescription(void) const
         {
             return m_data->description;
         }
@@ -123,7 +123,7 @@ class   CpartTypeIGC : public IpartTypeIGC
             return m_pptSuccessor;
         }
 
-        const char*             GetInventoryLineMDLName(void) const
+		const wchar_t*             GetInventoryLineMDLName(void) const
         {
             return m_data->inventoryLineMDL;
         }

@@ -214,11 +214,11 @@ class  WinTrekClient :
         virtual HRESULT   ConnectToLobby(BaseClient::ConnectInfo * pci); // pci is NULL if relogging in
         virtual HRESULT   ConnectToClub(BaseClient::ConnectInfo * pci);
 
-		virtual void      JoinMission(MissionInfo * pMission, const wchar_t* szMissionPassword);
+        virtual void      JoinMission(MissionInfo * pMission, const char* szMissionPassword);
         virtual void      CreateMissionReq();
 		// KGJV #114
 		virtual void      ServerListReq();
-		virtual void      CreateMissionReq(const wchar_t *szServer, const wchar_t *szAddr, const wchar_t *szIGCStaticFile, const wchar_t *szGameName);
+		virtual void      CreateMissionReq(const wchar_t *szServer, const wchar_t *szAddr, const wchar_t *szIGCStaticFile, const char *szGameName);
         
 // IFedMessagingSite
         virtual HRESULT   OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm);
@@ -228,7 +228,7 @@ class  WinTrekClient :
         virtual void      OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
         virtual void      OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
         virtual void      OnLogonClubAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
-		virtual HRESULT   OnSessionLost(wchar_t * szReason, FedMessaging * pthis);
+        virtual HRESULT   OnSessionLost(char * szReason, FedMessaging * pthis);
         void              FlushSessionLostMessage();
         virtual void      Disconnect();
 		virtual void      OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam);
@@ -306,9 +306,9 @@ class  WinTrekClient :
 		void SaveWingAssignment(int wing); // kolie 6/10
         
 		// KGJV : added utility functions for cores & server names
-		ZString           CfgGetCoreName(const wchar_t *s);
-		bool              CfgIsOfficialCore(const wchar_t *s);
-		bool              CfgIsOfficialServer(const wchar_t *name, const wchar_t *addr);
+		ZString           CfgGetCoreName(const char *s);
+		bool              CfgIsOfficialCore(const char *s);
+		bool              CfgIsOfficialServer(const char *name, const char *addr);
 
     private:
 

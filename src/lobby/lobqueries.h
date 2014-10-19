@@ -30,19 +30,19 @@ BEGIN_QUERY(CQLobbyLogon, true,
   DWORD dwConnectionID;                 // Remember who this is using a SAFE mechanism
   bool  fValid : 1;                         // If false we just go straight to the handler
   bool  fRetry : 1;                         // Remember whether the client should retry the logon
-  char * szReason;
+  wchar_t * szReason;
   DWORD dTime;
 
   // query parameters
-  char  szCDKey[c_cbCDKey]; // Imago changed
-  char  szPW[c_cbCDKey]; // Imago changed 9/14
-  char  szCharacterName[c_cbName];
+  wchar_t  szCDKey[c_cbCDKey]; // Imago changed
+  wchar_t  szPW[c_cbCDKey]; // Imago changed 9/14
+  wchar_t  szCharacterName[c_cbName];
   int   characterID;
-  char  fValidCode; // out
-  char  fCanCheat;  // out
+  wchar_t  fValidCode; // out
+  wchar_t  fCanCheat;  // out
 
   //squad stuff
-  char szSquadName[31]; // constant??? Please???
+  wchar_t szSquadName[31]; // constant??? Please???
   int  status;
   int  squadID;
   int  detailedStatus;

@@ -90,7 +90,7 @@ END_FEDMSG
 DEFINE_FEDMSG(S, PLAYERINFO, 10)
   FM_VAR_ITEM(rgPersistPlayerScores); 
   // PersistPlayerScoreObject rgPersistPlayerScores[pfm->cbrgPersistPlayerScores / sizeof(PersistPlayerScoreObject)] = FM_VAR_REF(pfm, rgPersistPlayerScores);
-  char                      CharacterName[c_cbName];
+wchar_t                      CharacterName[c_cbName];
   Money                     money;
   bool                      fReady        : 1;
   bool                      fTeamLeader   : 1;
@@ -132,7 +132,7 @@ struct RankInfo
     int     requiredRanking;
     CivID   civ;
     RankID  rank;
-    char    RankName[c_cbName];
+	wchar_t    RankName[c_cbName];
 };
 
 DEFINE_FEDMSG(S, RANK_INFO, 13)
@@ -147,7 +147,7 @@ END_FEDMSG
 DEFINE_FEDMSG(CS, SET_TEAM_INFO, 15)
   SquadID   squadID;
   SideID    sideID;
-  char      SideName[c_cbName];
+  wchar_t      SideName[c_cbName];
 END_FEDMSG
 
 DEFINE_FEDMSG(S, PLAYER_RESCUED, 16)
@@ -283,28 +283,28 @@ END_FEDMSG
   
 DEFINE_FEDMSG(S, MISSIONDEF, 38) // sent when a mission is created, and when it changes
   MissionParams misparms;
-  char      szDescription[c_cbDescription];
+wchar_t      szDescription[c_cbDescription];
   DWORD     dwCookie;
   SideID    iSideMissionOwner; // mission owner is the team leader on that side
   bool      fAutoAcceptLeaders : 1;
   bool      fInProgress        : 1;
   STAGE     stage;
   // KGJV #114 - added server name & addr
-  char      szServerName[c_cbName];
-  char      szServerAddr[16];
+  wchar_t      szServerName[c_cbName];
+  wchar_t      szServerAddr[16];
   // yes, for missions with fewer than c_cSidesMax sides, the following arrays will waste space,
   // but that allows us to just keep an array of missions
   // $CRC: should probably just make a struct for the per team stuff and have an array of the struct
-  char      rgszName        [c_cSidesMax][c_cbSideName];
+  wchar_t      rgszName[c_cSidesMax][c_cbSideName];
   //CivID     rgCivID         [c_cSidesMax];
   StationID rgStationID     [c_cSidesMax]; // the station the team starts at (1 per team for now)
   ShipID    rgShipIDLeaders [c_cSidesMax];
-  char      rgcPlayers      [c_cSidesMax];
-  char      rgfAutoAccept   [c_cSidesMax];
-  char      rgfReady        [c_cSidesMax];
-  char      rgfForceReady   [c_cSidesMax];
-  char      rgfActive       [c_cSidesMax];
-  char		rgfAllies		[c_cSidesMax]; // #ALLY - ally group - NA is no allies
+  wchar_t      rgcPlayers[c_cSidesMax];
+  wchar_t      rgfAutoAccept[c_cSidesMax];
+  wchar_t      rgfReady[c_cSidesMax];
+  wchar_t      rgfForceReady[c_cSidesMax];
+  wchar_t      rgfActive[c_cSidesMax];
+  wchar_t		rgfAllies[c_cSidesMax]; // #ALLY - ally group - NA is no allies
 END_FEDMSG
 
 DEFINE_FEDMSG(C, POSITIONREQ, 39) // client requests position on a side.
@@ -463,7 +463,7 @@ END_FEDMSG
 
 struct PlayerEndgameInfo
 {
-  char                      characterName[c_cbName];
+	wchar_t                      characterName[c_cbName];
   GameOverScoreObject       scoring;
   PersistPlayerScoreObject  stats;
   SideID                    sideId;

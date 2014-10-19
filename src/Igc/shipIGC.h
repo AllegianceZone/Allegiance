@@ -50,9 +50,9 @@ class       MyHullType : public IhullTypeIGC
         virtual const void*     GetData(void) const;
 
         //IbuyableIGC
-        virtual const char*             GetName(void) const;
-        virtual const char*             GetDescription(void) const;
-        virtual const char*             GetModelName(void) const;
+		virtual const wchar_t*             GetName(void) const;
+		virtual const wchar_t*             GetDescription(void) const;
+		virtual const wchar_t*             GetModelName(void) const;
         virtual const TechTreeBitMask&  GetRequiredTechs(void) const;
         virtual const TechTreeBitMask&  GetEffectTechs(void) const;
 
@@ -82,8 +82,8 @@ class       MyHullType : public IhullTypeIGC
         virtual Mount                GetMaxFixedWeapons(void) const;
         virtual const HardpointData& GetHardpointData(Mount hardpointID) const;                       
 
-        virtual const char*          GetTextureName(void) const;
-        virtual const char*          GetIconName(void) const;
+		virtual const wchar_t*          GetTextureName(void) const;
+		virtual const wchar_t*          GetIconName(void) const;
 
         virtual float                GetMass(void) const;
         virtual float                GetSignature(void) const;
@@ -605,13 +605,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 IIgcSite*   pigc = GetMyMission()->GetIgcSite();
                 if (!pigc->Reload(this, NULL, ET_Weapon))
                 {
-                    pigc->PostNotificationText(this, false, "Ammo depleted.");
+                    pigc->PostNotificationText(this, false, L"Ammo depleted.");
                 }
                 else
                 {
                     pigc->PlayNotificationSound(salReloadingAmmoSound, this);
                     pigc->PlayNotificationSound(startReloadSound, this);
-                    pigc->PostNotificationText(this, false, "Reloading ammo...");
+                    pigc->PostNotificationText(this, false, L"Reloading ammo...");
                 }
             }
         }
@@ -635,13 +635,13 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                 IIgcSite*   pigc = GetMyMission()->GetIgcSite();
                 if (!pigc->Reload(this, NULL, ET_Afterburner))
                 {
-                    pigc->PostNotificationText(this, false, "Fuel depleted.");
+                    pigc->PostNotificationText(this, false, L"Fuel depleted.");
                 }
                 else
                 {
                     pigc->PlayNotificationSound(salReloadingFuelSound, this);
                     pigc->PlayNotificationSound(startReloadSound, this);
-                    pigc->PostNotificationText(this, false, "Reloading fuel...");
+                    pigc->PostNotificationText(this, false, L"Reloading fuel...");
                 }
             }
         }
@@ -1771,7 +1771,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
             return bLegal;
         }
 
-        virtual void    Complain(SoundID    sid, const char* pszMsg)
+		virtual void    Complain(SoundID    sid, const wchar_t* pszMsg)
         {
             if (GetMyLastUpdate() >= m_timeLastComplaint + m_dtTimeBetweenComplaints)
             {
@@ -2382,7 +2382,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                         if (cid == c_cidBuild)
                             GetMyMission()->GetIgcSite()->SendChatf(this, CHAT_TEAM, GetSide()->GetObjectID(),
                                                                     droneInTransitSound,
-                                                                    "Building %s at %s",
+                                                                    L"Building %s at %s",
                                                                     ((IstationTypeIGC*)(IbaseIGC*)m_pbaseData)->GetName(),
                                                                     GetModelName(pmodel));
                     }
@@ -2420,7 +2420,7 @@ class       CshipIGC : public TmodelIGC<IshipIGC>
                         fGaveOrder = true;
                         GetMyMission()->GetIgcSite()->SendChatf(this, CHAT_TEAM, GetSide()->GetObjectID(),
                                                                 droneInTransitSound,
-                                                                "Attacking %s", GetModelName(pmodel));
+                                                                L"Attacking %s", GetModelName(pmodel));
                     }
                 }
                 break;

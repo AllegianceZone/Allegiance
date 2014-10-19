@@ -15,7 +15,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
   HRESULT hr = S_OK;
   assert(&g.fmLobby == pthis);
 
-  static CTempTimer timerOnAppMessage("in FedSrvLobbySite::OnAppMessage", .02f);
+  static CTempTimer timerOnAppMessage(L"in FedSrvLobbySite::OnAppMessage", .02f);
   timerOnAppMessage.Start();
 
   switch(pfm->fmid)
@@ -118,7 +118,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		}
 		else
 		{
-			debugf("Lobby sent invalid core information %s, ignoring message\n", mp.szIGCStaticFile);
+			debugf(L"Lobby sent invalid core information %s, ignoring message\n", mp.szIGCStaticFile);
 		}
 		// pkk end
 #endif
@@ -165,22 +165,22 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmRemovePlayer, L, REMOVE_PLAYER, pfm);
       CFSMission * pfsMission = CFSMission::GetMission(pfmRemovePlayer->dwMissionCookie);
-      const char* szCharacterName = FM_VAR_REF(pfmRemovePlayer, szCharacterName);
-      const char* szMessageParam = FM_VAR_REF(pfmRemovePlayer, szMessageParam);
+      const wchar_t* szCharacterName = FM_VAR_REF(pfmRemovePlayer, szCharacterName);
+	  const wchar_t* szMessageParam = FM_VAR_REF(pfmRemovePlayer, szMessageParam);
       
       // try to find the player in question
       if (!pfsMission)
       {        
-        debugf("Asked to boot character %s from mission %x by lobby, "
-          "but the mission was not found.\n", 
+        debugf(L"Asked to boot character %s from mission %x by lobby, "
+          L"but the mission was not found.\n", 
           szCharacterName, pfmRemovePlayer->dwMissionCookie);
       }
       else if (!pfsMission->RemovePlayerByName(szCharacterName, 
           (pfmRemovePlayer->reason == RPR_duplicateCDKey) ? QSR_DuplicateCDKey : QSR_DuplicateRemoteLogon,
           szMessageParam))
       {
-        debugf("Asked to boot character %s from mission %x by lobby, "
-          "but the character was not found.\n", 
+        debugf(L"Asked to boot character %s from mission %x by lobby, "
+          L"but the character was not found.\n", 
           szCharacterName, pfmRemovePlayer->dwMissionCookie);
       }
     }
@@ -188,13 +188,13 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
     case FM_L_LOGON_SERVER_NACK:
     {
-      char * szReason;
+		wchar_t * szReason;
 
       CASTPFM(pfmLogonNack, L, LOGON_SERVER_NACK, pfm);
       
       szReason = FM_VAR_REF(pfmLogonNack, Reason);
 
-      OnMessageBox(pthis, szReason ? szReason : "Error while try to log onto server.", "Allegiance Server Error", MB_SERVICE_NOTIFICATION);
+      OnMessageBox(pthis, szReason ? szReason : L"Error while try to log onto server.", L"Allegiance Server Error", MB_SERVICE_NOTIFICATION);
       // TODO: consider firing out an event message
       PostQuitMessage(-1);
     }
@@ -233,19 +233,19 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     break;
   }
 
-  timerOnAppMessage.Stop("...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
+  timerOnAppMessage.Stop(L"...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
   return hr;
 }
 
 
-int FedSrvLobbySite::OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType)
+int FedSrvLobbySite::OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType)
 {
   return g.siteFedSrv.OnMessageBox(pthis, strText, strCaption, nType); // don't need a separate handler
 }
 
 HRESULT FedSrvLobbySite::OnSessionLost(FedMessaging * pthis)
 {
-  _AGCModule.TriggerEvent(NULL, AllsrvEventID_LostLobby, "", -1, -1, -1, 0);
+  _AGCModule.TriggerEvent(NULL, AllsrvEventID_LostLobby, L"", -1, -1, -1, 0);
   // KGJV: close the connexion
   if (pthis)
 	pthis->Shutdown();

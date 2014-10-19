@@ -69,7 +69,7 @@ protected:
     // Specifies the verb text used for matching to the beginning of the chat
     // message string, as further specified by m_bToken and m_cchSignificant.
     // The verb text matching is always case-insensitive.
-    LPCSTR m_szVerb;
+    LPCWSTR m_szVerb;
 
     // Indicates whether m_szVerb is to be matched against a token or
     // characters. If *true*, the match is performed against the first
@@ -160,7 +160,7 @@ public:
 public:
   void ReceiveSendAndUpdate();
   bool WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds = INFINITE);
-  void SendChat(ChatTarget chatTarget, const char* psz,
+  void SendChat(ChatTarget chatTarget, const wchar_t* psz,
     IshipIGC* pshipRecipient = NULL, SoundID voiceOver = NA);
 
 // Implementation
@@ -196,10 +196,10 @@ public:
 public:
 	virtual HRESULT OnSessionLost(wchar_t* szReason, FedMessaging * pthis);
   virtual void ModifyShipData(DataShipIGC* pds);
-  virtual void OnQuitMission(QuitSideReason reason, const char* szMessageParam);
-  virtual void OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
-  virtual void OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
-  virtual const char* GetArtPath();
+  virtual void OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam);
+  virtual void OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
+  virtual void OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
+  virtual const wchar_t* GetArtPath();
   virtual IAutoUpdateSink* OnBeginAutoUpdate();
   virtual bool ResetStaticData(wchar_t* szIGCStaticFile,
     ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt);
@@ -212,7 +212,7 @@ protected:
 // IFedMessagingSite Overrides
 public:
   virtual HRESULT OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm);
-  virtual int     OnMessageBox(FedMessaging * pthis, const char* strText, const char* strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t* strText, const wchar_t* strCaption, UINT nType);
   virtual void    OnPreCreate (FedMessaging * pthis);
 // KGJV TODO  virtual void    OnPostCreate(FedMessaging * pthis, IDirectPlayX* pdpIn, IDirectPlayX** pdpOut);
 
@@ -246,7 +246,7 @@ public:
     CommandID cid, ObjectType otTarget, ObjectID oidTarget,
     ImodelIGC* pmodelTarget = NULL, bool bObjectModel = false);
   virtual void SendChat(IshipIGC* pshipSender, ChatTarget chatTarget,
-    ObjectID oidRecipient, SoundID soVoiceOver, const char* szText,
+	  ObjectID oidRecipient, SoundID soVoiceOver, const wchar_t* szText,
     CommandID cid = c_cidNone, ObjectType otTarget = NA,
     ObjectID oidTarget = NA, ImodelIGC* pmodelTarget = NULL);
   virtual void TerminateModelEvent(ImodelIGC * pModel);

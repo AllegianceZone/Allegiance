@@ -566,11 +566,11 @@ typedef void* HAGCLISTENERS;
 interface IAGCDebugHook : IUnknown
 {
   [helpstring("Called to output the specified text to the debug monitor.")]
-  void DebugOutput([in] LPCSTR psz);
+  void DebugOutput([in] LPCWSTR psz);
 
   [helpstring("Called when an assertion fails.")]
-  boolean OnAssert([in] LPCSTR psz, [in] LPCSTR pszFile,
-    [in] int line, [in] LPCSTR pszModule);
+  boolean OnAssert([in] LPCWSTR psz, [in] LPCWSTR pszFile,
+    [in] int line, [in] LPCWSTR pszModule);
 
   [helpstring("Called to break into a debugger after an assertion fails.")]
   void OnAssertBreak();
@@ -639,13 +639,13 @@ interface IAGCGlobal : IUnknown
 
   [helpstring("Notifies registered event sinks that the specified event occurred. Internally calls FreeListeners before returning.")]
   void TriggerEvent([in] HAGCLISTENERS hListeners, [in] AGCEventID idEvent,
-    [in] LPCSTR pszContext, [in] LPCOLESTR pszSubject, [in] AGCUniqueID idSubject,
+    [in] LPCWSTR pszContext, [in] LPCWSTR pszSubject, [in] AGCUniqueID idSubject,
     [in] AGCUniqueID idObject1, [in] AGCUniqueID idObject2,
     [in] long cArgTriplets, [in] void* pvArgs);
 
   [helpstring("Notifies registered event sinks that the specified event occurred. Internally calls FreeListeners before returning. Does not return until the listener thread processes the event.")]
   void TriggerEventSynchronous([in] HAGCLISTENERS hListeners, [in] AGCEventID idEvent,
-    [in] LPCSTR pszContext, [in] LPCOLESTR pszSubject, [in] AGCUniqueID idSubject,
+    [in] LPCWSTR pszContext, [in] LPCWSTR pszSubject, [in] AGCUniqueID idSubject,
     [in] AGCUniqueID idObject1, [in] AGCUniqueID idObject2,
     [in] long cArgTriplets, [in] void* pvArgs);
 
@@ -657,8 +657,8 @@ interface IAGCGlobal : IUnknown
     [in] IAGCEventSink* pEventSink);
 
   [helpstring("Create an AGCEvent object, initialized with the specified arguments.")]
-  HRESULT MakeAGCEvent([in] AGCEventID idEvent, [in] LPCSTR pszContext,
-    [in] LPCOLESTR pszSubject, [in] AGCUniqueID idSubject,
+  HRESULT MakeAGCEvent([in] AGCEventID idEvent, [in] LPCWSTR pszContext,
+    [in] LPCWSTR pszSubject, [in] AGCUniqueID idSubject,
     [in] long cArgTriplets, [in] void* pvArgs,
     [out, retval] IAGCEvent** ppEvent);
 

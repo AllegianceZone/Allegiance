@@ -186,21 +186,21 @@ template<int nBits> class TLargeBitMask
 
             return true;
         }
-		// CHECK THIS, IT MIGHT OVERFLOW ! -KGJV
-        void ToString(char* pszBytes, int cch) const
+		// CHECK THIS, IT MIGHT OVERFLOW ! -KGJV  (only with cores made with your ICE tool... Imago 10/14)
+		void ToString(wchar_t* pszBytes, int cch) const
         {
           int cb = min(cch / 2, sizeof(m_bits));
           for (int i = 0; i < cb; ++i)
           {
-            char szByte[3];
-            sprintf(szByte, "%02X", m_bits[i]);
+			  wchar_t szByte[3];
+            swprintf(szByte, L"%02X", m_bits[i]);
             CopyMemory(pszBytes + (i * 2), szByte, 2);
           }
         }
 
-        bool FromString(const char* pszBits)
+		bool FromString(const wchar_t* pszBits)
         {
-          int cch = strlen(pszBits);
+          int cch = wcslen(pszBits);
           if (cch % 2)
             return false;
           BYTE bits[sizeof(m_bits)];

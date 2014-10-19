@@ -822,7 +822,7 @@ public:
        }
         else
         {
-            assert(_wcsicmp(L"FileList.txt", szCurrentFile) == 0);
+            assert(_wcsicmp("FileList.txt", szCurrentFile) == 0);
 
             m_pSink->OnRetrievingFileListProgress(m_nFileListSize, cCurrentFileBytes);
         }

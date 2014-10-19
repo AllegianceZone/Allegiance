@@ -125,21 +125,21 @@ public:
   void SetCurrentGamesCount(int CurGames) {m_iCurGames = CurGames;}
   int GetMaxGamesAllowed()   { return m_iMaxGames; }
   void SetMaxGamesAllowed(int max) {m_iMaxGames = max;}
-  char *GetLocation() { return m_szLocation; }
-  void SetLocation(char *loc) { 
+  wchar_t *GetLocation() { return m_szLocation; }
+  void SetLocation(wchar_t *loc) {
 	  Strncpy(m_szLocation,loc,sizeof(m_szLocation)); //Imago use Safe string copy 6/10
 	  m_szLocation[sizeof(m_szLocation)-1]='\0';
   };
   
   //Imago 6/10 #2
-  char *GetPrivilegedUsers() {return m_szPrivilegedUsers;} 
-  void SetPrivilegedUsers(char *szPrivilegedUsers) {
+  wchar_t *GetPrivilegedUsers() { return m_szPrivilegedUsers; }
+  void SetPrivilegedUsers(wchar_t *szPrivilegedUsers) {
 	  Strncpy(m_szPrivilegedUsers,szPrivilegedUsers,sizeof(m_szPrivilegedUsers));
 	  m_szPrivilegedUsers[sizeof(m_szPrivilegedUsers)-1]='\0';
   }
   //Imago 7/10 #62
-  char *GetVersion() {return m_szVersion;} 
-  void SetVersion(char *szVersion) {
+  wchar_t *GetVersion() { return m_szVersion; }
+  void SetVersion(wchar_t *szVersion) {
 	  Strncpy(m_szVersion,szVersion,sizeof(m_szVersion));
 	  m_szPrivilegedUsers[sizeof(m_szVersion)-1]='\0';
   }
@@ -165,9 +165,9 @@ private:
   DWORD m_dwStaticCoreMask;
   int  m_iMaxGames;
   int  m_iCurGames;  // Imago
-  char m_szLocation[c_cbFileName]; // it's not a filename but we want it short
-  char m_szPrivilegedUsers[512]; // Imago 6/10 #2
-  char m_szVersion[18]; // Imago 6/10 #62
+  wchar_t m_szLocation[c_cbFileName]; // it's not a filename but we want it short
+  wchar_t m_szPrivilegedUsers[512]; // Imago 6/10 #2
+  wchar_t m_szVersion[18]; // Imago 6/10 #62
 };
 
 #endif

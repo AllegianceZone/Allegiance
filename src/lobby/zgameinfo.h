@@ -84,10 +84,10 @@ typedef struct
     uint32  numGamesServed;  //@field number of games served
     uint16  numTables;       //@field number of tables in lobby
     uint16  numTablesInUse;  //@field number of occupied tables
-    char    gameInternalName[GAMEINFO_INTERNAL_NAME_LEN + 1]; //@field Name of game internal to Zone
-    char    gameFriendlyName[GAMEINFO_FRIENDLY_NAME_LEN + 1]; //@field Name of game for users
-    char    gameRoomDescription[GAMEINFO_ROOM_DESCRIPTION_LEN + 1]; //@field Name of game for users
-    char    setupToken[GAMEINFO_SETUP_TOKEN_LEN + 1]; //@field Token used for controlling setup from lobby
+	wchar_t    gameInternalName[GAMEINFO_INTERNAL_NAME_LEN + 1]; //@field Name of game internal to Zone
+	wchar_t    gameFriendlyName[GAMEINFO_FRIENDLY_NAME_LEN + 1]; //@field Name of game for users
+	wchar_t    gameRoomDescription[GAMEINFO_ROOM_DESCRIPTION_LEN + 1]; //@field Name of game for users
+	wchar_t    setupToken[GAMEINFO_SETUP_TOKEN_LEN + 1]; //@field Token used for controlling setup from lobby
     uint16  blobsize;        //@field  size of opaque data blob immediately following message
     uint32  maxPopulation;   //@field  Maximum room population
     uint32  numNotPlaying;   //@field  Number of people in lobby but not playing

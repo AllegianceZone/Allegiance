@@ -34,7 +34,7 @@ public:
   virtual HRESULT OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnSessionLost(FedMessaging * pthis) ;
-  virtual int     OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType);
 #ifndef NO_MSG_CRC
   virtual void    OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg);
 #endif
@@ -51,7 +51,7 @@ public:
   virtual HRESULT OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnSessionLost(FedMessaging * pthis) ;
-  virtual int     OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType);
 #ifndef NO_MSG_CRC
   virtual void    OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg);
 #endif
@@ -70,8 +70,8 @@ public:
   ~CLobbyApp();
 
   // Win32App
-  virtual bool    OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule);
-  virtual void    DebugOutput(const char *psz);
+  virtual bool    OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
+  virtual void    DebugOutput(const wchar_t *psz);
   
   HRESULT         Init();
   int             Run();
@@ -95,7 +95,7 @@ public:
     return m_fmClients;
   }
 
-  virtual int     OnMessageBox(const char * strText, const char * strCaption, UINT nType);
+  virtual int     OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType);
 
 #ifdef USEAUTH
   TRef<IZoneAuthServer> GetZoneAuthServer()
@@ -104,7 +104,7 @@ public:
   }
 #endif
 
-  PER_SERVER_COUNTERS * AllocatePerServerCounters(const char * szServername);
+  PER_SERVER_COUNTERS * AllocatePerServerCounters(const wchar_t * szServername);
 
   void FreePerServerCounters(PER_SERVER_COUNTERS * pCounters)
   {
@@ -158,11 +158,11 @@ public:
   //bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen);
   //bool CDKeyIsValid(const char* szPlayerName, const char* szCDKey, const char* szAddress, char *resultMessage, int resultMessageLength);
 
-  void SetPlayerMission(const char* szPlayerName, const char* szCDKey, CFLMission* pMission, const char* szAddress);
-  void RemovePlayerFromMission(const char* szPlayerName, CFLMission* pMission);
+  void SetPlayerMission(const wchar_t* szPlayerName, const wchar_t* szCDKey, CFLMission* pMission, const wchar_t* szAddress);
+  void RemovePlayerFromMission(const wchar_t* szPlayerName, CFLMission* pMission);
   void RemoveAllPlayersFromMission(CFLMission* pMission);
   void RemoveAllPlayersFromServer(CFLServer* pServer);
-  CFLMission* FindPlayersMission(const char* szPlayerName);
+  CFLMission* FindPlayersMission(const wchar_t* szPlayerName);
 
   bool BootPlayersByCDKey(const ZString& strCDKey, const ZString& strNameExclude = "", ZString& strOldPlayer = ZString());
 
@@ -188,7 +188,7 @@ public:
 
 
 private:
-  const char *    SzFmMsgHeader(FedMessaging * pthis) {return IsFMServers(pthis) ? "Servers: " : "Clients: ";}
+	const wchar_t *    SzFmMsgHeader(FedMessaging * pthis) { return IsFMServers(pthis) ? L"Servers: " : L"Clients: "; }
   void            SetNow()
   {
     m_timeNow = Time::Now();

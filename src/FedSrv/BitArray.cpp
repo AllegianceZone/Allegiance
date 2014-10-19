@@ -122,26 +122,26 @@ void CBitArray::Dump(int min, int max)
 
   // draw the header
   for (iChar = 0; iChar < nColSize; iChar++)
-    debugf(" ");
-  debugf("|");
+    debugf(L" ");
+  debugf(L"|");
   for (y = min; y <= max; y++)
-    debugf("%*d", nColSize, y);
-  debugf("\n");
+    debugf(L"%*d", nColSize, y);
+  debugf(L"\n");
   for (iChar = 0; iChar < nColSize; iChar++)
-    debugf("-");
-  debugf("+");
+    debugf(L"-");
+  debugf(L"+");
   for (y = min; y <= max * nColSize; y++)
-    debugf("-");
-  debugf("\n");
+    debugf(L"-");
+  debugf(L"\n");
 
   // Draw each row
   for (x = min; x <= max; x++)
   {
-    debugf("%*d", nColSize, x);
-    debugf("|");
+    debugf(L"%*d", nColSize, x);
+    debugf(L"|");
     for (y = min; y <= max; y++)
-      debugf("%*d", nColSize, FIsSet(x, y));
-    debugf("\n");
+      debugf(L"%*d", nColSize, FIsSet(x, y));
+    debugf(L"\n");
   }  
-  debugf("\n");
+  debugf(L"\n");
 }

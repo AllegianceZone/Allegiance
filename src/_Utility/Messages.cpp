@@ -2011,13 +2011,14 @@ void CFMGroup::DeleteConnection(FedMessaging * pfm, CFMConnection * pcnxn)
 }
 
 
-CFMGroup::CFMGroup(FedMessaging * pfm, const wchar_t * szName) : m_cPlayers(0), CFMRecipient(szName, 0) // dplay group hasn't been created yet
+CFMGroup::CFMGroup(FedMessaging * pfm, wchar_t * szName)
+	: m_cPlayers(0), CFMRecipient(szName, 0) // dplay group hasn't been created yet
 {
 	DPN_GROUP_INFO dpn;
 	ZeroMemory( &dpn, sizeof( DPN_GROUP_INFO ) );
 	dpn.dwSize = sizeof( DPN_GROUP_INFO );
 	dpn.dwInfoFlags = DPNINFO_NAME;
-	dpn.pwszName = (PWSTR)szName;
+	dpn.pwszName = szName;
 	ZSucceeded( pfm->GetDPlayServer()->CreateGroup( &dpn, this, NULL, NULL, DPNOP_SYNC ) );
 
 	//debugf("CFMGroup: pfm=%8x dpid=%8x, name=%s, playerdata(this)=%p, ", pfm, GetDPID(), szName, this );
