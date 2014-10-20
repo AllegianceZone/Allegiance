@@ -171,7 +171,7 @@ int ZString::ZStringData::ReverseFindAny(const ZStringData* pdata, int index) co
     return -1;
 }
 
-/*
+
 BSTR ZString::ZStringData::MakeBSTR() const
 {
     if (m_length != 0) {
@@ -184,7 +184,7 @@ BSTR ZString::ZStringData::MakeBSTR() const
         return SysAllocStringLen(L"", 0);
     }
 }
-*/
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -449,12 +449,10 @@ bool operator<(PCC pcc, const ZString& str)
     return strcmp(pcc, str) < 0;
 }
 
-/*
 BSTR ZString::MakeBSTR() const 
 { 
     return m_pdata->MakeBSTR(); 
 }
-*/
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -48,7 +48,7 @@ private:
         int        FindAny(const ZStringData* pdata, int index) const;
         int ReverseFindAny(const ZStringData* pdata, int index) const;
 
-        //BSTR MakeBSTR() const;
+        BSTR MakeBSTR() const;
     };
 
     static TRef<ZStringData> s_pemptyData;

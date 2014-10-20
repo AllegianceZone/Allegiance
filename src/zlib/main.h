@@ -4,9 +4,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow);
+int WINAPI wWin32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpszCmdLine, int nCmdShow);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpszCmdLine, int nCmdShow)
 {
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_WNDW);
 
@@ -17,7 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
     OleInitialize(NULL);
     //CoInitialize(NULL);
 
-    int result = Win32Main(hInstance, hPrevInstance, lpszCmdLine, nCmdShow);
+    int result = wWin32Main(hInstance, hPrevInstance, lpszCmdLine, nCmdShow);
 
     OleUninitialize();
     //CoUninitialize();
@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
     return result;
 }
 
-int main( int argc, char *argv[ ])
+int wmain( int argc, wchar_t *argv[ ])
 {
     ZString strCommandLine;
 
@@ -43,5 +43,5 @@ int main( int argc, char *argv[ ])
         }
     }
 
-    return WinMain(GetModuleHandle(NULL), NULL, (char*)(PCC)strCommandLine, SW_SHOW);
+    return wWinMain(GetModuleHandle(NULL), NULL, strCommandLine.MakeBSTR(), SW_SHOW);
 }

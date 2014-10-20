@@ -708,7 +708,7 @@ bool Win32App::EnforceFilter( bool bEnforce )
 //
 //////////////////////////////////////////////////////////////////////////////
 
-__declspec(dllexport) int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow)
+__declspec(dllexport) int WINAPI wWin32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpszCmdLine, int nCmdShow)
 {
     HRESULT hr;
 

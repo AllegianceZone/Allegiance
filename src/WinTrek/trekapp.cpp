@@ -322,8 +322,9 @@ public:
         AddRef();
     }
 
-    HRESULT Initialize(const ZString& strCommandLine)
+    HRESULT Initialize(const LPWSTR& lpCommandLine)
     {
+		ZString strCommandLine = lpCommandLine;
         _controlfp(_PC_53, _MCW_PC);
 
         //
@@ -603,7 +604,7 @@ public:
         ZString strMap;
 		ZString strAdapter; int iUseAdapter = 0;
 
-        PCC pcc = strCommandLine;
+		PCC pcc = strCommandLine;
         CommandLineToken token(pcc, strCommandLine.GetLength());
 
         while (token.MoreTokens()) {
@@ -711,7 +712,7 @@ public:
         //
         if (bSingleInstance)
         {
-            HWND hOldInstance = FindWindowA(TrekWindow::GetTopLevelWindowClassname(), 
+            HWND hOldInstance = FindWindow(TrekWindow::GetTopLevelWindowClassname(), 
                 TrekWindow::GetWindowTitle());
 
             // if we found another copy of the app
@@ -760,7 +761,7 @@ public:
         TRef<TrekWindow> pwindow = 
             TrekWindow::Create(
                 this, 
-                strCommandLine,
+                lpCommandLine,
 				pathStr,
                 bMovies,
                 bSoftware,

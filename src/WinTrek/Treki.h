@@ -51,7 +51,7 @@ class TrekWindow : public EffectWindow {
 protected:
     TrekWindow(
         EffectApp* papp,
-        const ZString&     strCommandLine,
+        const LPWSTR&     strCommandLine,
               bool         bStartFullscreen,
         const WinRect&     rect,
         const WinPoint&    sizeMin
@@ -70,7 +70,7 @@ protected:
 public:
     static TRef<TrekWindow> Create(
         EffectApp*     papp, 
-        const ZString& strCommandLine, 
+        const LPWSTR& strCommandLine, 
 // BUILD_DX9
 		const ZString& strArtPath,					// Added for DX9 build, due to reordered startup.
 // BUILD_DX9
@@ -81,7 +81,7 @@ public:
         bool           bSecondary
     );
 
-    static LPCSTR          GetWindowTitle() { return "Allegiance"; };
+    static LPWSTR          GetWindowTitle() { return L"Allegiance"; };
 
     virtual TRef<AnimatedImage> LoadAnimatedImage(Number* ptime, const ZString& str) = 0;
 

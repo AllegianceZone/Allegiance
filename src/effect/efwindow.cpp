@@ -14,8 +14,8 @@
 
 EffectWindow::EffectWindow(
           EffectApp*	papp,
-    const ZString&		strCommandLine,
-    const ZString&		strTitle,
+     const LPWSTR&		strCommandLine,
+	 const LPWSTR&		strTitle,
           bool			bStartFullscreen,
     const WinRect&		rect,
     const WinPoint&		sizeMin,

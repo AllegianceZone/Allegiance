@@ -517,7 +517,7 @@ public:
 
     MDLEditWindow(
         EffectApp* papp, 
-        const ZString& strCommandLine, 
+        const LPCWSTR& strCommandLine, 
         bool bImageTest,
         bool bTest, 
         int initialTest,
@@ -526,7 +526,7 @@ public:
         EffectWindow(
             papp,
             strCommandLine,
-            "MDLEdit",
+            L"MDLEdit",
             false,
             WinRect(0 + CD3DDevice9::Get()->GetDeviceSetupParams()->iWindowOffsetX, 
 					0 + CD3DDevice9::Get()->GetDeviceSetupParams()->iWindowOffsetY,

@@ -49,8 +49,8 @@ Window::Window():
 Window::Window(
           Window*  pwindowParent,
     const WinRect& rect,
-    const ZString& strTitle,
-    const ZString& strClass,
+    const LPWSTR& strTitle,
+    const LPWSTR& strClass,
           Style    style,
           HMENU    hmenu,
           StyleEX  styleEX
@@ -89,8 +89,8 @@ Window::Window(
     m_rect = rect;
     AdjustWindowRect(&m_rect, m_style.GetWord(), m_hmenu != NULL);
 
-    if (strClass.IsEmpty()) {
-        m_hwnd = ::CreateWindowExA(
+    if (wcslen(strClass) == 0) {
+        m_hwnd = ::CreateWindowEx(
             m_styleEX.GetWord(),
             GetTopLevelWindowClassname(),
             strTitle,
@@ -106,12 +106,12 @@ Window::Window(
             m_rect.XSize(), m_rect.YSize(),
             pwindowParent ? pwindowParent->GetHWND() : NULL,
             m_hmenu,
-            GetModuleHandleA(NULL),
+            GetModuleHandle(NULL),
             this
         );
 	}
 	else {
-		m_hwnd = ::CreateWindowExA(
+		m_hwnd = ::CreateWindowEx(
 			m_styleEX.GetWord(),
 			strClass,
 			strTitle,
@@ -128,17 +128,17 @@ Window::Window(
 			m_rect.XSize(), m_rect.YSize(),
 			pwindowParent ? pwindowParent->GetHWND() : NULL,
 			m_hmenu,
-			GetModuleHandleA(NULL),
+			GetModuleHandle(NULL),
 			this
 			);
 
 		s_mapWindow.Set(m_hwnd, this);
 
-		m_pfnWndProc = (WNDPROC)::GetWindowLongA(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
-		::SetWindowLongA(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc);  //x64 Imago 6/20/09
+		m_pfnWndProc = (WNDPROC)::GetWindowLong(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
+		::SetWindowLong(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc);  //x64 Imago 6/20/09
 	}
 
-    m_styleEX.SetWord(::GetWindowLongA(m_hwnd, GWL_EXSTYLE));
+    m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
 
     if (m_pwindowParent) {
         m_pwindowParent->AddChild(this);
@@ -149,8 +149,8 @@ Window::Window(
 BOOL Window::Create(
           Window*  pwindowParent,
     const WinRect& rect,
-          LPCSTR   szTitle,
-          LPCSTR   szClass,
+          LPCWSTR   szTitle,
+          LPCWSTR   szClass,
           Style    style,
           HMENU    hmenu,
           UINT     nID,
@@ -171,9 +171,9 @@ BOOL Window::Create(
         m_hcursor = LoadCursor(NULL, IDC_ARROW);
     }
     
-    m_hwnd = ::CreateWindowExA(
+    m_hwnd = ::CreateWindowEx(
             styleEX.GetWord(),
-            szClass ? szClass : "Window",
+            szClass ? szClass : L"Window",
             szTitle,
             m_style.GetWord(),
             m_rect.left, m_rect.top,
@@ -184,15 +184,15 @@ BOOL Window::Create(
             this);
     
     s_mapWindow.Set(m_hwnd, this);
-    m_pfnWndProc = (WNDPROC)::GetWindowLongA(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
+    m_pfnWndProc = (WNDPROC)::GetWindowLong(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
 
     if ((WNDPROC)m_pfnWndProc != (WNDPROC)Win32WndProc) {
-        ::SetWindowLongA(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc); //x64 Imago 6/20/09
+        ::SetWindowLong(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc); //x64 Imago 6/20/09
     } else {
         m_pfnWndProc = DefWindowProcA;
     }
 
-    m_styleEX.SetWord(::GetWindowLongA(m_hwnd, GWL_EXSTYLE));
+    m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
     ::GetClientRect(GetHWND(), &m_rectClient);
 
     return TRUE;
@@ -1037,7 +1037,7 @@ HRESULT Window::StaticInitialize()
 	wc.hbrBackground = NULL; //imago test
 #endif
     wc.lpszMenuName  = NULL;
-    wc.lpszClassName = GetTopLevelWindowClassname();
+    wc.lpszClassName = "MS_ZLib_Window";
 
     RegisterClass(&wc);
 

@@ -2597,7 +2597,7 @@ public:
 
     TrekWindowImpl(
         EffectApp*     papp,
-        const ZString& strCommandLine,
+        const LPWSTR& strCommandLine,
 // BUILD_DX9
 		const ZString& strArtPath,
 // BUILD_DX9
@@ -11350,7 +11350,7 @@ TrekWindowImpl::FlagsWinConditionInfo          TrekWindowImpl::s_flagsWinConditi
 
 TRef<TrekWindow> TrekWindow::Create(
     EffectApp*     papp,
-    const ZString& strCommandLine,
+    const LPWSTR& strCommandLine,
 // BUILD_DX9
 	const ZString& strArtPath,					// Added for DX9 build, due to reordered startup.
 // BUILD_DX9
