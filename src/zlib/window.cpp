@@ -24,7 +24,7 @@ void FillSolidRect(HDC hdc, const WinRect& rect, COLORREF color)
 
 void Window::Construct()
 {
-    m_pfnWndProc    = DefWindowProc;
+    m_pfnWndProc    = DefWindowProcA;
     m_bHit          = false;
     m_bShowMouse    = true;
     m_bMouseInside  = false;
@@ -109,35 +109,36 @@ Window::Window(
             GetModuleHandleA(NULL),
             this
         );
-    } else {
-        m_hwnd = ::CreateWindowExA(
-            m_styleEX.GetWord(),
-            strClass,
-            strTitle,
-            m_style.GetWord(),
+	}
+	else {
+		m_hwnd = ::CreateWindowExA(
+			m_styleEX.GetWord(),
+			strClass,
+			strTitle,
+			m_style.GetWord(),
 
 			//Imago restored original impl in multimon & topmost effort 7/10
-// BUILD_DX9
- //           rect.XMin(), rect.YMin(),
-//#else
-            CW_USEDEFAULT, CW_USEDEFAULT,
-// BUILD_DX9
+			// BUILD_DX9
+			//           rect.XMin(), rect.YMin(),
+			//#else
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			// BUILD_DX9
 
-            //m_rect.XMin(), m_rect.YMin(), 
-            m_rect.XSize(), m_rect.YSize(),
-            pwindowParent ? pwindowParent->GetHWND() : NULL,
-            m_hmenu,
-            GetModuleHandle(NULL),
-            this
-        );
+			//m_rect.XMin(), m_rect.YMin(), 
+			m_rect.XSize(), m_rect.YSize(),
+			pwindowParent ? pwindowParent->GetHWND() : NULL,
+			m_hmenu,
+			GetModuleHandleA(NULL),
+			this
+			);
 
-        s_mapWindow.Set(m_hwnd, this);
+		s_mapWindow.Set(m_hwnd, this);
 
-        m_pfnWndProc = (WNDPROC)::GetWindowLong(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
-        ::SetWindowLong(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc);  //x64 Imago 6/20/09
-    }
+		m_pfnWndProc = (WNDPROC)::GetWindowLongA(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
+		::SetWindowLongA(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc);  //x64 Imago 6/20/09
+	}
 
-    m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
+    m_styleEX.SetWord(::GetWindowLongA(m_hwnd, GWL_EXSTYLE));
 
     if (m_pwindowParent) {
         m_pwindowParent->AddChild(this);
@@ -183,15 +184,15 @@ BOOL Window::Create(
             this);
     
     s_mapWindow.Set(m_hwnd, this);
-    m_pfnWndProc = (WNDPROC)::GetWindowLong(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
+    m_pfnWndProc = (WNDPROC)::GetWindowLongA(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
 
     if ((WNDPROC)m_pfnWndProc != (WNDPROC)Win32WndProc) {
-        ::SetWindowLong(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc); //x64 Imago 6/20/09
+        ::SetWindowLongA(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc); //x64 Imago 6/20/09
     } else {
-        m_pfnWndProc = DefWindowProc;
+        m_pfnWndProc = DefWindowProcA;
     }
 
-    m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
+    m_styleEX.SetWord(::GetWindowLongA(m_hwnd, GWL_EXSTYLE));
     ::GetClientRect(GetHWND(), &m_rectClient);
 
     return TRUE;

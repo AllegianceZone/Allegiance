@@ -137,7 +137,7 @@ private:
 		StringFromGUID2(pddoi->guidType,szGUID,39);
 		WideCharToMultiByte( CP_ACP, 0, szGUID, -1, chGUID, 39, 0, 0 );
 		m_pLogFile->OutputStringV("\t\tpddoi->guidType: %s\n",chGUID);
-		m_pLogFile->OutputStringV("\t\tpddoi->tszName: %s\n",pddoi->tszName);
+		m_pLogFile->OutputStringV("\t\tpddoi->tszName: %s\n",(PCC)ZString(pddoi->tszName));
 		m_pLogFile->OutputStringV("\t\tpddoi->dwType: %x (instance: %x)\n",DIDFT_GETTYPE(pddoi->dwType), DIDFT_GETINSTANCE(pddoi->dwType));
 		m_pLogFile->OutputStringV("\t\tpddoi->wUsage: %x (page: %x)\n",pddoi->wUsage,pddoi->wUsagePage);
 
@@ -756,7 +756,7 @@ public:
 		StringFromGUID2(pddoi->guidType,szGUID,39);
 		WideCharToMultiByte( CP_ACP, 0, szGUID, -1, chGUID, 39, 0, 0 );
 		m_pLogFile->OutputStringV("\t\tpddoi->guidType: %s\n",chGUID);
-		m_pLogFile->OutputStringV("\t\tpddoi->tszName: %s\n",pddoi->tszName);
+		m_pLogFile->OutputStringV("\t\tpddoi->tszName: %s\n",(PCC)ZString(pddoi->tszName));
 		m_pLogFile->OutputStringV("\t\tpddoi->dwType: %x (instance: %x)\n",DIDFT_GETTYPE(pddoi->dwType), DIDFT_GETINSTANCE(pddoi->dwType));
 		m_pLogFile->OutputStringV("\t\tpddoi->wUsage: %x (page: %x)\n",pddoi->wUsage,pddoi->wUsagePage);
 
@@ -1591,7 +1591,7 @@ private:
 //        DDCall(pdid->QueryInterface(IID_IDirectInputDevice2, (void**)&pdid2));
 		DDCall(pdid->QueryInterface(IID_IDirectInputDevice8, (void**)&pdid2));
         m_joylog.OutputStringV("\tpdidi->dwDevType: %x (subtype: %x)\n",GET_DIDEVICE_TYPE(pdidi->dwDevType),GET_DIDEVICE_SUBTYPE(pdidi->dwDevType));
-        m_joylog.OutputStringV("\tpdidi->tszProductName: %s\n",pdidi->tszProductName);
+        m_joylog.OutputStringV("\tpdidi->tszProductName: %s\n",(PCC)ZString(pdidi->tszProductName));
         
 
         switch (pdidi->dwDevType & 0xff) {
