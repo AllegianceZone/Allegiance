@@ -2799,7 +2799,7 @@ public:
 		}*/
 
 		// Imago 9/14 guarded for crash
-        TRef<ZFile> pfile = GetFile(str, "mdl", bError);
+        TRef<ZFile> pfile = GetFile(str, L"mdl", bError);
         if (pfile != NULL) 
 		{
 			if (pfile->IsValid()) {
@@ -2808,12 +2808,12 @@ public:
 				if (fp) {
 					if (*(DWORD*)fp == MDLMagic) {
 						if (g_bMDLLog) {
-							ZDebugOutput("Reading Binary MDL file '" + str + "'\n");
+							ZDebugOutput(L"Reading Binary MDL file '" + str + L"'\n");
 						}
 						pns = CreateBinaryNameSpace(str, this, pfile);
 					} else {
 						if (g_bMDLLog) {
-							ZDebugOutput("Reading Text MDL file '" + str + "'\n");
+							ZDebugOutput(L"Reading Text MDL file '" + str + L"'\n");
 						}
 						pns = ::CreateNameSpace(str, this, pfile);
 					}

@@ -6589,7 +6589,7 @@ public:
 
     void SetViewMode(ViewMode vm, bool bForce = false)
     {
-        ZDebugOutput("SetViewMode(" + ZString((int)vm) + ")\n");
+        ZDebugOutput(L"SetViewMode(" + ZString((int)vm) + L")\n");
 
         //
         // Ignore the set display mode.

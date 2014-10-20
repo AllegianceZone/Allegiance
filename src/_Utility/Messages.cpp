@@ -1336,7 +1336,7 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 	if( m_pDirectPlayServer == 0 )
 	{
 		hr = InitDPlayServer();
-		ZDebugOutput(PCC(ZString("LInitDPlayServer() returned ")+ZString(hr)+ZString(L"\n")));
+		ZDebugOutput(PCC(ZString(L"LInitDPlayServer() returned ")+ZString(hr)+ZString(L"\n")));
 		if ( FAILED(hr) )
 			return hr;
 	}
@@ -1362,7 +1362,7 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 	ZDebugOutput(L"pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP )\n");
 	if( FAILED( hr = pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP ) ) )
 	{
-		ZDebugOutput(PCC(ZString("pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP ) returned ")+ZString(hr)+ZString("\n")));
+		ZDebugOutput(PCC(ZString(L"pDP8AddressLocal->SetSP( &CLSID_DP8SP_TCPIP ) returned ")+ZString(hr)+ZString(L"\n")));
 		m_pfmSite->OnMessageBox( this, L"Failed to create DPlay server local SP", L"Allegiance", MB_OK );
 		return hr;
 	}
@@ -1371,7 +1371,7 @@ HRESULT FedMessaging::HostSession( GUID guidApplication, bool fKeepAlive, HANDLE
 		ZDebugOutput(L"pDP8AddressLocal->AddComponent(DPNA_KEY_PORT ... )\n");
 		if(FAILED(hr = pDP8AddressLocal->AddComponent(DPNA_KEY_PORT, &dwPort, sizeof(DWORD), DPNA_DATATYPE_DWORD)))
 		{
-			ZDebugOutput(PCC(ZString("Failed to set DPlay server port - returned ")+ZString(hr)+ZString("\n")));
+			ZDebugOutput(PCC(ZString(L"Failed to set DPlay server port - returned ")+ZString(hr)+ZString(L"\n")));
 			m_pfmSite->OnMessageBox( this, L"Failed to set DPlay server port", L"Allegiance", MB_OK );
 			return hr;
 		}

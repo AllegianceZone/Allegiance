@@ -755,7 +755,7 @@ public:
 
         if (m_ptoken->IsSymbol(strType, bError)) {
             if (g_bMDLLog) {
-                ZDebugOutput("Reading struct: " + strType + "\n");
+                ZDebugOutput(L"Reading struct: " + strType + L"\n");
             }
             TRef<StructMDLType> pstructType;
 
@@ -767,7 +767,7 @@ public:
                     return false;
                 }
             } else {
-                pstructType = new StructMDLType(strType, "IMDLObject");
+                pstructType = new StructMDLType(strType, L"IMDLObject");
             }
 
             if (m_ptoken->Is(m_ptoken->LeftCurly, true)) {
@@ -1030,7 +1030,7 @@ public:
             return ReadStruct(pns, true);
         } else if (m_ptoken->IsSymbol(strIdentifier, bError)) {
             if (g_bMDLLog) {
-			    ZDebugOutput("Reading identifier: " + strIdentifier + "\n");
+			    ZDebugOutput(L"Reading identifier: " + strIdentifier + L"\n");
             }
             if (m_ptoken->Is(m_ptoken->Equals, true)) {
                 TRef<IObject> pobject;

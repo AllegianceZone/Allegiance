@@ -1712,10 +1712,10 @@ public:
 					 int leftParen = szPlayerName.ReverseFind('(',0);
 					 if (leftParen > 1)
 						szPlayerName = szPlayerName.Left(leftParen);
-	        		 szPlayerName += ZString("'s game"); //reuse exact matches via. kgjv's adaptation
-					 if ( (ZString(game->Name()).Find("newbie") == -1) && 
+	        		 szPlayerName += ZString(L"'s game"); //reuse exact matches via. kgjv's adaptation
+					 if ( (ZString(game->Name()).Find(L"newbie") == -1) && 
 						  (ZString(game->Name()).Find(szPlayerName) == -1) ) {
-						 ZDebugOutput("Insta join: "+ ZString(game->Name()) + "\n");					 
+						 ZDebugOutput(L"Insta join: "+ ZString(game->Name()) + L"\n");					 
 						 g_bQuickstart = false; //we're done with all that!
 						 JoinMission(game);
 					 }
