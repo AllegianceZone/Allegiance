@@ -684,7 +684,7 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
                 Vector  ee;         //ellipse equation
                 float   erm;
                 if (fgetws(line, c_maxLine, fileIn) &&
-                    (wscanf(line, L"%f %f %f %f %f",
+                    (swscanf(line, L"%f %f %f %f %f",
                             &radius, &ee.x, &ee.y, &ee.z, &erm) == 5))
                 {
                     int nHulls;

@@ -8926,8 +8926,8 @@ void LoadSettings()
 		ZString strArtPath;
 		if (SUCCEEDED(LoadRegString(hKey, L"ArtPath", strArtPath)))
         {
-          if (strArtPath.Right(1) != "\\")
-            strArtPath += "\\";
+          if (strArtPath.Right(1) != L"\\")
+            strArtPath += L"\\";
           g.strArtPath = strArtPath;
         }
 

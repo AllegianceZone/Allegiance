@@ -150,8 +150,8 @@ protected:
 inline ZString ZVersionInfo::GetFileVersionString() const
 {
   assert(m_pFixed);
-  ZString szText;
-  _stprintf_s((wchar_t*)(PCC)szText, 32, TEXT("%hu.%02hu.%02hu.%04hu"),
+  wchar_t szText[32];
+  _stprintf_s(szText, 32, TEXT("%hu.%02hu.%02hu.%04hu"),
     GetFileVersionMSHigh(), GetFileVersionMSLow(),
     GetFileVersionLSHigh(), GetFileVersionLSLow());
   return ZString(szText);

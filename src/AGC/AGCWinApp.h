@@ -30,9 +30,12 @@ public:
 		if (NULL != m_spDebugHook) {
 			m_spDebugHook->DebugOutput(psz);
 		} else {
-			char mbstring[4096];
-			wcstombs(mbstring, psz, wcslen(psz));
-			TCWinAppDLL::DebugOutput(mbstring);
+			size_t   i;
+			char      *pMBBuffer = (char *)malloc(2048);
+			wcstombs_s(&i, pMBBuffer, (size_t)2048, psz, (size_t)2048);
+			TCWinAppDLL::DebugOutput(pMBBuffer);
+			if (pMBBuffer)
+				free(pMBBuffer);
 		}
     }
 
@@ -41,13 +44,22 @@ public:
 		if (NULL != m_spDebugHook) {
 			return !!m_spDebugHook->OnAssert(psz, pszFile, line, pszModule);
 		} else {
-			char mbstring[4096];
-			wcstombs(mbstring, psz, wcslen(psz));
-			char mbpath[MAX_PATH+128];
-			wcstombs(mbpath, pszFile, wcslen(pszFile));
-			char mbmodule[MAX_PATH + 128];
-			wcstombs(mbmodule, pszModule, wcslen(pszModule));
-			return TCWinAppDLL::OnAssert(mbstring, mbpath, line, mbmodule);
+			size_t   i1;
+			char      *pMBBuffer1 = (char *)malloc(2048);
+			wcstombs_s(&i1, pMBBuffer1, (size_t)2048, psz, (size_t)2048);
+			size_t   i2;
+			char      *pMBBuffer2 = (char *)malloc(400);
+			wcstombs_s(&i2, pMBBuffer2, (size_t)400, pszFile, (size_t)400);
+			size_t   i3;
+			char      *pMBBuffer3 = (char *)malloc(400);
+			wcstombs_s(&i3, pMBBuffer3, (size_t)400, pszModule, (size_t)400);
+			return TCWinAppDLL::OnAssert(pMBBuffer1, pMBBuffer2, line, pMBBuffer3);
+			if (pMBBuffer1)
+				free(pMBBuffer1);
+			if (pMBBuffer2)
+				free(pMBBuffer2);
+			if (pMBBuffer3)
+				free(pMBBuffer3);
 		}
     }
 

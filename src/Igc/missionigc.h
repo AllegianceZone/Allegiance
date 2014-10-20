@@ -613,7 +613,7 @@ class   CmissionIGC : public ImissionIGC
                                                wchar_t*    pdata) const;
         virtual void                    Import(Time     now,
                                                __int64  maskTypes,
-											   wchar_t*    pdata,
+											   char*    pdata,
                                                int      datasize);
 		
 		// Imago

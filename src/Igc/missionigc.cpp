@@ -85,14 +85,14 @@ void    DumpIGCFile(FILE* file, ImissionIGC* pMission, __int64 iMaskExportTypes,
 }
 
 //------------------------------------------------------------------------------
-void    LoadIGCFile(FILE* file, ImissionIGC* pMission, void(*munge)(int size, wchar_t* data))
+void    LoadIGCFile(FILE* file, ImissionIGC* pMission, void(*munge)(int size, char* data))
 {
     Time            now = pMission->GetLastUpdate();
     int             iDatasize;
     int             iReadCount = fread (&iDatasize, sizeof(iDatasize), 1, file);
     assert (iReadCount == 1);
-	wchar_t*           pData = new wchar_t[iDatasize + 4];      //leave a little extra space for the encryption (which takes dword chunks)
-	iReadCount = fread(pData, sizeof(wchar_t), iDatasize, file);
+	char*           pData = new char[iDatasize + 4];      //leave a little extra space for the encryption (which takes dword chunks)
+	iReadCount = fread(pData, sizeof(char), iDatasize, file);
     assert (iReadCount == iDatasize);
 
     if (munge)
@@ -2303,7 +2303,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 
 	//the beast is now loaded up with IGC, initialize the objects
-    pMission->Import (now, c_maskStaticTypes, pData, iDatasize);
+    //pMission->Import (now, c_maskStaticTypes, pData, iDatasize);
+	//IMAGO 10/14 REVISIT UNICODE
 }
 
 // End Imago
@@ -2325,7 +2326,7 @@ bool    DumpIGCFile (const wchar_t* name, ImissionIGC* pMission, __int64 iMaskEx
 }
 
 //------------------------------------------------------------------------------
-bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int size, wchar_t* data))
+bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int size, char* data))
 {
 	wchar_t        szFilename[MAX_PATH + 1];
     HRESULT     hr = UTL::getFile(name, L".igc", szFilename, true, true);
@@ -2381,7 +2382,7 @@ typedef Slink_utl<CachedStaticCore> CachedLink;
 
 static CachedList   s_cores;
 
-int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, wchar_t* data))
+int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, char* data))
 {
     //See if we've already loaded the static core
     {
@@ -3227,7 +3228,7 @@ int                 CmissionIGC::Export(__int64  maskTypes,
 
 void                CmissionIGC::Import(Time    now,
                                         __int64 maskTypes,
-										wchar_t*   pdata,
+										char*   pdata,
                                         int     datasize)
 {
     while (datasize > 0)

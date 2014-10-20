@@ -4040,7 +4040,7 @@ void BaseClient::AddPlayerToSide(PlayerInfo* pPlayerInfo, SideID sideID)
   Side Effects:
       Old data set is nuked (better not have any references to IGC stuff when calling this)
  */
-static void DoDecrypt(int size, wchar_t* pdata)
+static void DoDecrypt(int size, char* pdata)
 {
     DWORD encrypt = 0;
     for (int i = 0; (i < size); i += 4)

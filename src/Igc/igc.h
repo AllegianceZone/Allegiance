@@ -2788,7 +2788,7 @@ class ImissionIGC : public IstaticIGC
                                                wchar_t*     pdata) const = 0;
         virtual void                    Import(Time      now,
                                                __int64   maskTypes,
-											   wchar_t*     pdata,
+											   char*     pdata,
                                                int       datasize) = 0;
 		//Imago added
 		virtual ZString					BitsToTechsList(TechTreeBitMask & ttbm) = 0;
@@ -6082,7 +6082,7 @@ class GameOverScoreObject
 // functions. They return true if successful.
 //------------------------------------------------------------------------------
 bool    DumpIGCFile(const wchar_t* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void(*munge)(int size, wchar_t* data) = NULL);
-bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int size, wchar_t* data) = NULL);
+bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int size, char* data) = NULL);
 
 //------------------------------------------------------------------------------
 // static data core files are dealt with by these functions. They are
@@ -6091,7 +6091,9 @@ bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int
 // if the load function fails, it returns NA.
 //------------------------------------------------------------------------------
 bool    DumpIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void(*munge)(int size, wchar_t* data) = NULL);
-int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, wchar_t* data) = NULL);
-int     CacheIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, wchar_t* data) = NULL);
+int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, char* data) = NULL);
+int     CacheIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, char* data) = NULL);
+
+//NYI TODO UNICODE VERSIONS OF IMPORT IMAGO 10/14
 
 #endif
