@@ -18,28 +18,28 @@ CPackExclusion::CPackExclusion()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CPackExclusion::CPackExclusion( const wchar_t * szFilter )
+CPackExclusion::CPackExclusion( const char * szFilter )
 {
 	// Determine filter type from string.
 	ZString szTemp = szFilter;
 	szTemp = szTemp.ToLower();
-	if( szTemp.Find( L"*" ) != -1 )
+	if( szTemp.Find( "*" ) != -1 )
 	{
 		// Substring filter.
 		m_eType = eET_SubString;
 
-		if( szTemp.Left(1) == L"*" )
+		if( szTemp.Left(1) == "*" )
 		{
 			m_szExclusionFilter = &szTemp[1];
 		}
-		else if( szTemp.Right(1) == L"*" )
+		else if( szTemp.Right(1) == "*" )
 		{
 			m_szExclusionFilter = szTemp.Left( szTemp.GetLength() - 1 );
 		}
 		else
 		{
 			m_eType = eET_Undefined;
-			_ASSERT( false && L"Not supported, feel free to add..." );
+			_ASSERT( false && "Not supported, feel free to add..." );
 		}
 	}
 	else
@@ -56,7 +56,7 @@ CPackExclusion::CPackExclusion( const wchar_t * szFilter )
 // IsExcluded()
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool CPackExclusion::IsExcluded(const wchar_t * szFileName)
+bool CPackExclusion::IsExcluded( const char * szFileName )
 {
 	ZString test = szFileName;
 	test = test.ToLower();
@@ -86,7 +86,7 @@ bool CPackExclusion::IsExcluded(const wchar_t * szFileName)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CDX9PackFile::CDX9PackFile(const wchar_t * szDataPath, const wchar_t * szFileName)
+CDX9PackFile::CDX9PackFile( const char * szDataPath, const char * szFileName )
 {
 	m_pNext				= NULL;
 	m_pFile				= NULL;
@@ -106,8 +106,8 @@ CDX9PackFile::CDX9PackFile(const wchar_t * szDataPath, const wchar_t * szFileNam
 	m_dwWritePos		= 0;
 	m_szDataPath		= szDataPath;
 	m_szFileName		= szFileName;
-	m_szFileName		+= L".pack";
-	m_szOutputFileName	= m_szDataPath + L"/" + m_szFileName;
+	m_szFileName		+= ".pack";
+	m_szOutputFileName	= m_szDataPath + "/" + m_szFileName;
 }
 
 
@@ -180,19 +180,19 @@ bool CDX9PackFile::Create( PACK_CREATE_CALLBACK pFnCreateCallback )
 	m_pFile->Write( &placeholderHeader, sizeof( SPackFileHeader ) );
 
 	// Add filters for stopping certain files being added.
-	AddExclusionFilter( L"bsg_*" );
-	AddExclusionFilter( L"hlp*" );
-	AddExclusionFilter( L"sw_*" );
-	AddExclusionFilter( L"tm_*" );
-	AddExclusionFilter( L"vos_*" );
-	AddExclusionFilter( L"train*" );
-	AddExclusionFilter( L"zone*" );
-	AddExclusionFilter( L"lobby*" );
-	AddExclusionFilter( L"dialog*" );
-	AddExclusionFilter( L"header*" );
-	AddExclusionFilter( L"loadout*" );
-	AddExclusionFilter( L"screen*" );
-	AddExclusionFilter( L"turretHUDbmp.mdl" );
+	AddExclusionFilter( "bsg_*" );
+	AddExclusionFilter( "hlp*" );
+	AddExclusionFilter( "sw_*" );
+	AddExclusionFilter( "tm_*" );
+	AddExclusionFilter( "vos_*" );
+	AddExclusionFilter( "train*" );
+	AddExclusionFilter( "zone*" );
+	AddExclusionFilter( "lobby*" );
+	AddExclusionFilter( "dialog*" );
+	AddExclusionFilter( "header*" );
+	AddExclusionFilter( "loadout*" );
+	AddExclusionFilter( "screen*" );
+	AddExclusionFilter( "turretHUDbmp.mdl" );
 
 	// Create the new hash table for our data.
 	m_pHashTable = new CHashTable();
@@ -217,7 +217,7 @@ bool CDX9PackFile::Create( PACK_CREATE_CALLBACK pFnCreateCallback )
 		delete m_pHashTable;
 		m_pHashTable = NULL;
 		m_bFinished = true;
-		DeleteFile( &m_szOutputFileName[0] );
+		DeleteFileA( &m_szOutputFileName[0] );
 		return false;
 	}
 	AddFiles( "Textures", "*.png" );
@@ -228,7 +228,7 @@ bool CDX9PackFile::Create( PACK_CREATE_CALLBACK pFnCreateCallback )
 		delete m_pHashTable;
 		m_pHashTable = NULL;
 		m_bFinished = true;
-		DeleteFile( &m_szOutputFileName[0] );
+		DeleteFileA( &m_szOutputFileName[0] );
 		return false;
 	}
 	AddFiles( "", "*bmp.mdl" );
@@ -239,7 +239,7 @@ bool CDX9PackFile::Create( PACK_CREATE_CALLBACK pFnCreateCallback )
 		delete m_pHashTable;
 		m_pHashTable = NULL;
 		m_bFinished = true;
-		DeleteFile( &m_szOutputFileName[0] );
+		DeleteFileA( &m_szOutputFileName[0] );
 		return false;
 	}
 	AddFiles( "", "*.png" );
@@ -250,7 +250,7 @@ bool CDX9PackFile::Create( PACK_CREATE_CALLBACK pFnCreateCallback )
 		delete m_pHashTable;
 		m_pHashTable = NULL;
 		m_bFinished = true;
-		DeleteFile( &m_szOutputFileName[0] );
+		DeleteFileA( &m_szOutputFileName[0] );
 		return false;
 	}
 
@@ -296,16 +296,16 @@ bool CDX9PackFile::AddFiles( ZString szDir, ZString szFilter )
 {
 	DWORD dwRet;
 	BOOL bFoundFile = TRUE, bAddFile;
-	TCHAR szOriginalDir[ MAX_PATH ];//, szSearchDir[ MAX_PATH ];
+	CHAR szOriginalDir[ MAX_PATH ];//, szSearchDir[ MAX_PATH ];
 	ZString szSearchDir, szFile;
 	HANDLE hCurrentFile;
-	WIN32_FIND_DATA findData;
+	WIN32_FIND_DATAA findData;
 	DWORD dwAmountWritten, dwAmountRead, dwHash;
 	CPackFileHashEntry * pTableEntry;
 	CHashTable tempTable;
 	bool bRetVal = true;
 
-	dwRet = GetCurrentDirectory( MAX_PATH, szOriginalDir );
+	dwRet = GetCurrentDirectoryA( MAX_PATH, szOriginalDir );
 	_ASSERT( ( dwRet > 0 ) && ( dwRet < MAX_PATH ) );
 
 	szSearchDir = m_szDataPath;
@@ -314,9 +314,9 @@ bool CDX9PackFile::AddFiles( ZString szDir, ZString szFilter )
 		szSearchDir += "/" + szDir;
 	}
 
-	SetCurrentDirectory( szSearchDir );
+	SetCurrentDirectoryA( szSearchDir );
 
-	hCurrentFile = FindFirstFile( szFilter, &findData );
+	hCurrentFile = FindFirstFileA( szFilter, &findData );
 	if( hCurrentFile == INVALID_HANDLE_VALUE )
 	{
 		bFoundFile = FALSE;
@@ -417,12 +417,12 @@ bool CDX9PackFile::AddFiles( ZString szDir, ZString szFilter )
 			}
 		}
 
-		bFoundFile = FindNextFile( hCurrentFile, &findData );
+		bFoundFile = FindNextFileA( hCurrentFile, &findData );
 	}
 	FindClose( hCurrentFile );
 	
 	// Restore the original directory.
-	SetCurrentDirectory( szOriginalDir );
+	SetCurrentDirectoryA( szOriginalDir );
 	return true;
 }
 
@@ -431,7 +431,7 @@ bool CDX9PackFile::AddFiles( ZString szDir, ZString szFilter )
 // AddExclusionFilter()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CDX9PackFile::AddExclusionFilter(const wchar_t * szFilter)
+void CDX9PackFile::AddExclusionFilter( const char * szFilter )
 {
 	CPackExclusion * pExclusion = new CPackExclusion( szFilter );
 
@@ -468,14 +468,14 @@ int CDX9PackFile::GetFileCount( ZString szDir, ZString szFilter )
 {
 	DWORD dwRet;
 	BOOL bFoundFile = TRUE, bAddFile;
-	TCHAR szOriginalDir[ MAX_PATH ];//, szSearchDir[ MAX_PATH ];
+	CHAR szOriginalDir[ MAX_PATH ];//, szSearchDir[ MAX_PATH ];
 	ZString szSearchDir, szFile;
 	HANDLE hCurrentFile;
-	WIN32_FIND_DATA findData;
+	WIN32_FIND_DATAA findData;
 	DWORD dwHash;
 	CPackFileHashEntry * pTableEntry;
 
-	dwRet = GetCurrentDirectory( MAX_PATH, szOriginalDir );
+	dwRet = GetCurrentDirectoryA( MAX_PATH, szOriginalDir );
 	_ASSERT( ( dwRet > 0 ) && ( dwRet < MAX_PATH ) );
 
 	szSearchDir = m_szDataPath;
@@ -484,10 +484,10 @@ int CDX9PackFile::GetFileCount( ZString szDir, ZString szFilter )
 		szSearchDir += "/" + szDir;
 	}
 
-	SetCurrentDirectory( szSearchDir );
+	SetCurrentDirectoryA( szSearchDir );
 
 	int iMaxFiles = 0;
-	hCurrentFile = FindFirstFile( szFilter, &findData );
+	hCurrentFile = FindFirstFileA( szFilter, &findData );
 	if( hCurrentFile == INVALID_HANDLE_VALUE )
 	{
 		bFoundFile = FALSE;
@@ -537,12 +537,12 @@ int CDX9PackFile::GetFileCount( ZString szDir, ZString szFilter )
 				}
 			}
 		}
-		bFoundFile = FindNextFile( hCurrentFile, &findData );
+		bFoundFile = FindNextFileA( hCurrentFile, &findData );
 	}
 	FindClose( hCurrentFile );
 
 	// Restore the original directory.
-	SetCurrentDirectory( szOriginalDir );
+	SetCurrentDirectoryA( szOriginalDir );
 
 	return iMaxFiles;
 }
@@ -651,7 +651,7 @@ bool CDX9PackFile::ImportPackFile( )
         m_pFile->Release();
         delete m_pFile;
         m_pFile = NULL;
-        DeleteFile((PCC)m_szOutputFileName);
+        DeleteFileA((PCC)m_szOutputFileName);
         g_DX9Settings.mbUseTexturePackFiles = false;
 		memset( &m_header, 0, sizeof( SHashTableEntry ) );
 		delete[] m_pPackFile;
@@ -672,7 +672,7 @@ bool CDX9PackFile::ImportPackFile( )
 // LoadFile()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void * CDX9PackFile::LoadFileInternal(const wchar_t * szFileName, DWORD * pdwFileSize)
+void * CDX9PackFile::LoadFileInternal( const char * szFileName, DWORD * pdwFileSize )
 {
 	void * pFilePtr = NULL;
 	ZString szFile = szFileName;
@@ -735,7 +735,7 @@ void CDX9PackFile::AddToPackFileList( CDX9PackFile * pPackFile )
 // LoadFile()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void * CDX9PackFile::LoadFile( const wchar_t * szFileName, DWORD * pdwFileSize )
+void * CDX9PackFile::LoadFile( const char * szFileName, DWORD * pdwFileSize )
 {
 	void * pFile = NULL;
 	if( m_pPackFileLinkedList == NULL )

@@ -48,7 +48,7 @@ public:
             //
             if (MMSYSERR_NOERROR != mixerOpen((LPHMIXER)&hmixer, uDeviceID, NULL, NULL, MIXER_OBJECTF_MIXER))
             {
-                debugf(L"Failed to open mixer %d\n", uDeviceID);
+                debugf("Failed to open mixer %d\n", uDeviceID);
                 continue;
             }
 
@@ -62,7 +62,7 @@ public:
             if (MMSYSERR_NOERROR != mixerGetLineInfo(hmixer, &mixerline, MIXER_GETLINEINFOF_COMPONENTTYPE)
                 || mixerline.cControls == 0)
             {
-                debugf(L"Failed to find CD line on mixer %d\n", uDeviceID);
+                debugf("Failed to find CD line on mixer %d\n", uDeviceID);
                 mixerClose((HMIXER)hmixer);
                 continue;
             }
@@ -86,7 +86,7 @@ public:
             if (MMSYSERR_NOERROR != 
                 mixerGetLineControls(hmixer, &mixerlinecontrols, MIXER_GETLINECONTROLSF_ONEBYTYPE))
             {
-                debugf(L"Failed to find CD volume fader on mixer %d\n", uDeviceID);
+                debugf("Failed to find CD volume fader on mixer %d\n", uDeviceID);
                 mixerClose((HMIXER)hmixer);
                 continue;
             }
@@ -110,7 +110,7 @@ public:
             if (MMSYSERR_NOERROR !=
                 mixerGetControlDetails(hmixer, &mixercontroldetails, MIXER_GETCONTROLDETAILSF_VALUE))
             {
-                debugf(L"Failed to get previous volume levels for mixer %d\n", uDeviceID);
+                debugf("Failed to get previous volume levels for mixer %d\n", uDeviceID);
                 mixerClose((HMIXER)hmixer);
                 continue;
             }
@@ -228,10 +228,10 @@ public:
         DWORD dwError; 
 
         // try to open the device
-        MCI_OPEN_PARMS mciOpenParms;
+        MCI_OPEN_PARMSA mciOpenParms;
         DWORD dwFlags;
 
-        mciOpenParms.lpstrDeviceType = (LPCWSTR) MCI_DEVTYPE_CD_AUDIO;
+        mciOpenParms.lpstrDeviceType = (LPCSTR) MCI_DEVTYPE_CD_AUDIO;
         dwFlags = MCI_OPEN_TYPE | MCI_OPEN_TYPE_ID;
 
         // translate the device name into an element name, if appropriate
@@ -246,9 +246,9 @@ public:
         dwError = mciSendCommand(NULL, MCI_OPEN, dwFlags, (UINT_PTR)&mciOpenParms);  //Fix memory leak -Imago 8/2/09
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Open failed for CD Audio device '%c': %s\n", (PCC)strDevice, cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Open failed for CD Audio device '%c': %s\n", (const char*)strDevice, cbError);
             return E_FAIL;
         }
         mciSendCommand(mciOpenParms.wDeviceID, MCI_CLOSE, 0, NULL);
@@ -264,11 +264,11 @@ public:
         DWORD dwError; 
 
         // try to open the device
-        MCI_OPEN_PARMS mciOpenParms;
+        MCI_OPEN_PARMSA mciOpenParms;
         DWORD dwFlags;
         ZString strElementName;
 
-        mciOpenParms.lpstrDeviceType = (LPCWSTR) MCI_DEVTYPE_CD_AUDIO;
+        mciOpenParms.lpstrDeviceType = (LPCSTR) MCI_DEVTYPE_CD_AUDIO;
         dwFlags = MCI_OPEN_TYPE | MCI_OPEN_TYPE_ID;
 
         if (!m_strElementName.IsEmpty())
@@ -280,9 +280,9 @@ public:
         dwError = mciSendCommand(NULL, MCI_OPEN, dwFlags, (UINT_PTR)&mciOpenParms);
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Open failed for CD Audio device '%': %s\n", (PCC)m_strElementName, cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Open failed for CD Audio device '%': %s\n", (const char*)m_strElementName, cbError);
         }
         m_idDevice = mciOpenParms.wDeviceID;
 
@@ -294,9 +294,9 @@ public:
         dwError = mciSendCommand(m_idDevice, MCI_SET, MCI_SET_TIME_FORMAT, (UINT_PTR)&mciSetParms);
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Set format failed for CD Audio device: %s\n", cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Set format failed for CD Audio device: %s\n", cbError);
         } 
     }
 
@@ -355,21 +355,21 @@ public:
         else
         {
             // get a list of all of the drives on the system
-			wchar_t cTemp;
-            int nDrivesStringLength = GetLogicalDriveStrings(1, &cTemp);
+            char cTemp;
+            int nDrivesStringLength = GetLogicalDriveStringsA(1, &cTemp);
             if (nDrivesStringLength == 0)
             {
-                ZError(L"Error getting drives list\n");
+                ZError("Error getting drives list\n");
                 return strDevice;
             }
 
-			wchar_t* cbDrives = (wchar_t*)_alloca(nDrivesStringLength);
+            char* cbDrives = (char*)_alloca(nDrivesStringLength);
     
-            nDrivesStringLength = GetLogicalDriveStrings(nDrivesStringLength, cbDrives);
+            nDrivesStringLength = GetLogicalDriveStringsA(nDrivesStringLength, cbDrives);
 
             if (nDrivesStringLength == 0)
             {
-                ZError(L"Error getting drives list\n");
+                ZError("Error getting drives list\n");
                 return strDevice;
             }
 
@@ -378,19 +378,19 @@ public:
             while (cbDrives[0] != '\0')
             {
                 const int c_nVolumeNameLength = 1024;
-				wchar_t cbVolumeName[c_nVolumeNameLength];
+                char cbVolumeName[c_nVolumeNameLength];
                 
-                if (GetDriveType(cbDrives) == DRIVE_CDROM
-                    && GetVolumeInformation(cbDrives, cbVolumeName, 
+                if (GetDriveTypeA(cbDrives) == DRIVE_CDROM
+                    && GetVolumeInformationA(cbDrives, cbVolumeName, 
                         c_nVolumeNameLength, NULL, NULL, NULL, NULL, 0))
                 {
-                    if (_wcsicmp(strDevice, cbVolumeName) == 0)
+                    if (_stricmp(strDevice, cbVolumeName) == 0)
                     {
                         return cbDrives;
                     }
                 }
 
-                cbDrives += wcslen(cbDrives) + 1;
+                cbDrives += strlen(cbDrives) + 1;
             }
 
             return strDevice;
@@ -480,9 +480,9 @@ public:
         // this is the highest track on the CD
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Play track %d failed for CD Audio device: %s\n", nTrack, cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Play track %d failed for CD Audio device: %s\n", nTrack, cbError);
             return E_FAIL;
         }
         return S_OK;
@@ -494,9 +494,9 @@ public:
         DWORD dwError = mciSendCommand(m_idDevice, MCI_STOP, 0, NULL);
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Stop failed for CD Audio device: %s\n", cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Stop failed for CD Audio device: %s\n", cbError);
             return E_FAIL;
         }
         return S_OK;
@@ -508,12 +508,12 @@ public:
         MCI_STATUS_PARMS mciStatusParams;
         mciStatusParams.dwItem = MCI_STATUS_MODE;
 
-        DWORD dwError = mciSendCommand(m_idDevice, MCI_STATUS, MCI_STATUS_ITEM, (UINT_PTR)&mciStatusParams);
+        DWORD dwError = mciSendCommandA(m_idDevice, MCI_STATUS, MCI_STATUS_ITEM, (UINT_PTR)&mciStatusParams);
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Status:Mode failed for CD Audio device: %s\n", cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Status:Mode failed for CD Audio device: %s\n", cbError);
             return E_FAIL;
         }
         return (mciStatusParams.dwReturn == MCI_MODE_PLAY) ? S_OK : S_FALSE;
@@ -528,9 +528,9 @@ public:
         DWORD dwError = mciSendCommand(m_idDevice, MCI_STATUS, MCI_STATUS_ITEM, (UINT_PTR)&mciStatusParams);
         if (dwError)
         {
-			wchar_t cbError[256];
-            mciGetErrorString(dwError, cbError, 256);
-            debugf(L"Status:Track failed for CD Audio device: %s\n", cbError);
+            char cbError[256];
+            mciGetErrorStringA(dwError, cbError, 256);
+            debugf("Status:Track failed for CD Audio device: %s\n", cbError);
             return E_FAIL;
         }
         nTrack = mciStatusParams.dwReturn;
@@ -663,7 +663,7 @@ private:
         // reason)
         virtual IEventSource* GetFinishEventSource()
         {
-            ZError(L"NYI");
+            ZError("NYI");
             return NULL;
         }
 

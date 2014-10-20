@@ -134,28 +134,31 @@ STDMETHODIMP CPigMissionParams::get_TeamKills(short* nGoalTeamKills)
 STDMETHODIMP CPigMissionParams::put_GameName(BSTR bstrGameName)
 {
 	XLock lock(this);
-	lstrcpy(m_mp.strGameName,OLE2W(bstrGameName));
+	USES_CONVERSION;
+	Strcpy(m_mp.strGameName,OLE2A(bstrGameName));
 	return S_OK;
 }
 STDMETHODIMP CPigMissionParams::get_GameName(BSTR* bstrGameName)
 {
   
   XLock lock(this);
-  CLEAROUT(bstrGameName, W2OLE(m_mp.strGameName));
+  USES_CONVERSION;
+  CLEAROUT(bstrGameName, A2OLE(m_mp.strGameName));
   return S_OK;
 }
 
 STDMETHODIMP CPigMissionParams::put_CoreName(BSTR bstrCoreName)
 {
 	XLock lock(this);
-	
-	lstrcpy(m_mp.szIGCStaticFile,OLE2W(bstrCoreName));
+	USES_CONVERSION;
+	Strcpy(m_mp.szIGCStaticFile,OLE2A(bstrCoreName));
 	return S_OK;
 }
 STDMETHODIMP CPigMissionParams::get_CoreName(BSTR* bstrCoreName)
 {
   XLock lock(this);
-  CLEAROUT(bstrCoreName, W2OLE(m_mp.szIGCStaticFile));
+  USES_CONVERSION;
+  CLEAROUT(bstrCoreName, A2OLE(m_mp.szIGCStaticFile));
   return S_OK;
 }
 
@@ -302,8 +305,8 @@ STDMETHODIMP CPigMissionParams::InitNew()
   m_mp.Reset();
 
   // Initialize the Game name
-  Strcpy(m_mp.strGameName, L"Pig Mission");
-  Strcpy(m_mp.szIGCStaticFile, L"PCore006"); //Imago 10/14
+  strcpy(m_mp.strGameName, "Pig Mission");
+  strcpy(m_mp.szIGCStaticFile, "PCore006"); //Imago 10/14
 
   // Perform default processing
   return TCPersistStreamInitImplBase::InitNew();

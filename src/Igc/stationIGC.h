@@ -48,9 +48,9 @@ class       MyStationType : public IstationTypeIGC
         virtual const void*     GetData(void) const;
 
         //IbuyableIGC
-		virtual const wchar_t*             GetName(void) const;
-		virtual const wchar_t*             GetDescription(void) const;
-		virtual const wchar_t*             GetModelName(void) const;
+        virtual const char*             GetName(void) const;
+        virtual const char*             GetDescription(void) const;
+        virtual const char*             GetModelName(void) const;
         virtual const TechTreeBitMask&  GetRequiredTechs(void) const;
         virtual const TechTreeBitMask&  GetEffectTechs(void) const;
 
@@ -72,9 +72,9 @@ class       MyStationType : public IstationTypeIGC
         virtual const TechTreeBitMask&  GetLocalTechs(void) const;
         virtual StationAbilityBitMask   GetCapabilities(void) const;
         virtual bool                    HasCapability(StationAbilityBitMask sabm) const;
-		virtual const wchar_t*             GetTextureName(void) const;
-		virtual const wchar_t*             GetBuilderName(void) const;
-		virtual const wchar_t*             GetIconName(void) const;
+        virtual const char*             GetTextureName(void) const;
+        virtual const char*             GetBuilderName(void) const;
+        virtual const char*             GetIconName(void) const;
         virtual IstationTypeIGC*        GetSuccessorStationType(const IsideIGC*   pside);
 		virtual IstationTypeIGC*		GetDirectSuccessorStationType(void);
         virtual AsteroidAbilityBitMask  GetBuildAABM(void) const;

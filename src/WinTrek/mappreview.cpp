@@ -29,7 +29,7 @@ private:
 	bool					m_bShowDetails;
 	bool					m_bShowSide;
 	bool					m_bValidPreview;
-	const wchar_t *            m_pszReason;
+	const char *            m_pszReason;
 	ImissionPV				m_missionpv;
 	MissionParams			m_mp;
 
@@ -58,7 +58,7 @@ public:
 
 		m_rectMap = WinRect::Cast(m_pimageSectorBkgnd->GetBounds().GetRect());
 
-		m_pszReason = L"1";
+		m_pszReason = "1";
 		if(trekClient.MyMission())
 		{
 			ComputePreview(trekClient.MyMission()->GetMissionParams());
@@ -101,7 +101,7 @@ public:
 		m_pszReason = ImapPVMaker::IsValid(&m_mp);
 		if (m_pszReason != NULL)
 		{
-			m_pszReason = L"1";
+			m_pszReason = "1";
 		}
 
 		if (m_pszReason == NULL)
@@ -281,14 +281,14 @@ public:
 			{
 				int nbsect = m_missionpv.GetClusters()->n();
 				int nbaleph = m_missionpv.GetWarps()->n() / 2;
-				ZString str1 = ZString(nbsect) + (nbsect>1? ZString(L" sectors"): ZString(L" sector"));
-				ZString str2 = ZString(nbaleph) + (nbaleph>1? ZString(L" alephs"): ZString(L" aleph"));
+				ZString str1 = ZString(nbsect) + (nbsect>1? ZString(" sectors"): ZString(" sector"));
+				ZString str2 = ZString(nbaleph) + (nbaleph>1? ZString(" alephs"): ZString(" aleph"));
 
 				Rect r = m_bounds.GetRect();
 				WinPoint p1 = TrekResources::LargeBoldFont()->GetTextExtent(str1);
 				WinPoint p2 = TrekResources::LargeBoldFont()->GetTextExtent(str2);
 
-				debugf(L"show details: %s - %s\n", (const wchar_t *)str1, (const wchar_t *)str2);
+				debugf("show details: %s - %s\n",(const char *)str1,(const char *)str2);
 				int x1 = r.Size().X()-p1.X(); if (x1<0) x1 = 0;
 				int x2 = r.Size().X()-p2.X(); if (x2<0) x2 = 0;
 

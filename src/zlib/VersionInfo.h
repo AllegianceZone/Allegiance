@@ -111,7 +111,7 @@ public:
   LANGID GetLanguageID    () const;
   void   SetCodePage      (WORD wCodePage = -1);
   WORD   GetCodePage      () const;
-  ZString GetStringValue(const wchar_t* pszKey, bool* pbExists = false) const;
+  ZString GetStringValue(LPCSTR pszKey, bool* pbExists = NULL) const;
 
   // Common String Values
   ZString GetCompanyName     (bool* pbExists = NULL) const;
@@ -150,8 +150,8 @@ protected:
 inline ZString ZVersionInfo::GetFileVersionString() const
 {
   assert(m_pFixed);
-  wchar_t szText[32];
-  _stprintf_s(szText, 32, TEXT("%hu.%02hu.%02hu.%04hu"),
+  CHAR szText[32];
+  sprintf_s(szText, 32, "%hu.%02hu.%02hu.%04hu",
     GetFileVersionMSHigh(), GetFileVersionMSLow(),
     GetFileVersionLSHigh(), GetFileVersionLSLow());
   return ZString(szText);
@@ -189,8 +189,8 @@ inline WORD ZVersionInfo::GetFileBuildNumber() const
 inline ZString ZVersionInfo::GetProductVersionString() const
 {
   assert(m_pFixed);
-  TCHAR szText[32];
-  _stprintf_s(szText, 32, TEXT("%hd.%02hd.%02hd.%04hd"),
+  CHAR szText[32];
+  sprintf_s(szText, 32, "%hd.%02hd.%02hd.%04hd",
     GetProductVersionMSHigh(), GetProductVersionMSLow(),
     GetProductVersionLSHigh(), GetProductVersionLSLow());
   return ZString(szText);
@@ -527,52 +527,52 @@ inline WORD ZVersionInfo::GetCodePage() const
 
 inline ZString ZVersionInfo::GetCompanyName(bool* pbExists) const
 {
-  return GetStringValue(TEXT("CompanyName"), pbExists);
+  return GetStringValue("CompanyName", pbExists);
 }
 
 inline ZString ZVersionInfo::GetFileDescription(bool* pbExists) const
 {
-  return GetStringValue(L"FileDescription", pbExists);
+  return GetStringValue("FileDescription", pbExists);
 }
 
 inline ZString ZVersionInfo::GetFileVersion(bool* pbExists) const
 {
-  return GetStringValue(TEXT("FileVersion"), pbExists);
+  return GetStringValue("FileVersion", pbExists);
 }
 
 inline ZString ZVersionInfo::GetInternalName(bool* pbExists) const
 {
-  return GetStringValue(TEXT("InternalName"), pbExists);
+  return GetStringValue("InternalName", pbExists);
 }
 
 inline ZString ZVersionInfo::GetLegalCopyright(bool* pbExists) const
 {
-  return GetStringValue(L"LegalCopyright", pbExists);
+  return GetStringValue("LegalCopyright", pbExists);
 }
 
 inline ZString ZVersionInfo::GetOriginalFilename(bool* pbExists) const
 {
-  return GetStringValue(TEXT("OriginalFilename"), pbExists);
+  return GetStringValue("OriginalFilename", pbExists);
 }
 
 inline ZString ZVersionInfo::GetProductName(bool* pbExists) const
 {
-  return GetStringValue(TEXT("ProductName"), pbExists);
+  return GetStringValue("ProductName", pbExists);
 }
 
 inline ZString ZVersionInfo::GetProductVersion(bool* pbExists) const
 {
-  return GetStringValue(TEXT("ProductVersion"), pbExists);
+  return GetStringValue("ProductVersion", pbExists);
 }
 
 inline ZString ZVersionInfo::GetSpecialBuild(bool* pbExists) const
 {
-  return GetStringValue(TEXT("SpecialBuild"), pbExists);
+  return GetStringValue("SpecialBuild", pbExists);
 }
 
 inline ZString ZVersionInfo::GetOLESelfRegister(bool* pbExists) const
 {
-  return GetStringValue(TEXT("OLESelfRegister"), pbExists);
+  return GetStringValue("OLESelfRegister", pbExists);
 }
 
 

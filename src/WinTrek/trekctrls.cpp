@@ -1004,7 +1004,7 @@ private:
             case ATCenter:      return Point(xhalf, yhalf);
 
             default:
-                ZError(L"Unknown side");
+                ZError("Unknown side");
                 return Point::GetZero();
         }
     }

@@ -70,11 +70,11 @@ class CprojectileTypeIGC : public IprojectileTypeIGC
         {
             return m_data.absoluteF;
         }
-        virtual const wchar_t*     GetModelName(void) const
+        virtual const char*     GetModelName(void) const
         {
             return m_data.modelName;
         }
-		virtual const wchar_t*     GetModelTexture(void) const
+        virtual const char*     GetModelTexture(void) const
         {
             return m_data.textureName;
         }

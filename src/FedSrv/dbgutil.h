@@ -34,9 +34,9 @@ extern "C" {
 
 
 #define DBG_STRING(var, val) \
-	static TCHAR var[] = TEXT(val);
+	static CHAR var[] = val;
 #define DBG_STRING_NL(var, val) \
-	static TCHAR var[] = TEXT(val L"\r\n");
+	static CHAR var[] = val "\r\n";
 
 #ifndef DllExport
 #define DllExport	__declspec ( dllexport )
@@ -108,7 +108,7 @@ DBG_APIV(void)	DbgAssert(LPCTSTR szFileName, int iLine, LPCTSTR szFmt, ...);
 // If you use the utilna.lib version of util (No Assert), you must define
 // the following function
 
-void DoAssert(LPCWSTR szFile, int iLine, LPCWSTR szAssert);
+void DoAssert(LPCSTR szFile, int iLine, LPCSTR szAssert);
 
 #ifdef FDBGFALSE_API
 DBG_API(BOOL)	FDbgFalse(void);
@@ -118,7 +118,7 @@ DBG_API(BOOL)	FDbgFalse(void);
 
 #define Assert(f) \
 	do { DBG_STRING(_sz, #f) \
-		 DBG_STRING(_szFmt, L"%s") \
+		 DBG_STRING(_szFmt, "%s") \
 	if (!(f)) DbgAssert(THIS_FILE, __LINE__,_szFmt,(LPSTR)_sz); } while (FDbgFalse())
 #define Assert0(f, szFmt) \
 	do { DBG_STRING(_sz, szFmt)\
@@ -175,10 +175,10 @@ inline void CDECL DbgTrace(LPTSTR, ...) {}
 
 #else   //!defined(DEBUG) && !defined(DEBUGTRACE)
 
-DBG_API(void)		OutputTrace(LPCWSTR szTrace);
+DBG_API(void)		OutputTrace(LPCSTR szTrace);
 
-DBG_APIV(void)		DbgTrace(LPWSTR szFormat, ...);
-DBG_API(void)		DbgTraceV(LPCWSTR szFormat, wchar_t FAR *pvargs);
+DBG_APIV(void)		DbgTrace(LPSTR szFormat, ...);
+DBG_API(void)		DbgTraceV(LPCSTR szFormat, char FAR *pvargs);
 
 #define ODS(sz)     OutputDebugString(sz)
 
@@ -220,15 +220,10 @@ DBG_API(void)		DbgTraceV(LPCWSTR szFormat, wchar_t FAR *pvargs);
     class DbgProcEntryClass
     {
       public:                                                            
-		  DbgProcEntryClass(LPCWSTR szFunctionName)  { 
-			  m_lpszName = szFunctionName; 
-			  Trace1("> Enter %s", szFunctionName); 
-		  }
-        ~DbgProcEntryClass()                      { 
-			Trace1("< Exit %s", m_lpszName); 
-		}
+        DbgProcEntryClass(LPCSTR szFunctionName)  { m_lpszName = szFunctionName; Trace1("> Enter %s", szFunctionName); }
+        ~DbgProcEntryClass()                      { Trace1("< Exit %s", m_lpszName); }
       private:
-		  LPCWSTR m_lpszName;
+        LPCSTR m_lpszName;
     };
 
     //

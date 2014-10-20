@@ -405,7 +405,7 @@ public:
         // Errors are essentially ignored
         if (m_bLoadingEventList)
         {
-            debugf(L"Error while trying to get the Zone Events list: %s", szErrorMessage);
+            debugf("Error while trying to get the Zone Events list: %s", szErrorMessage);
 
             TRef<IMessageBox> pmessagebox = 
                 CreateMessageBox("Failed to retrieve the Zone Events list.");
@@ -413,7 +413,7 @@ public:
         }
         else
         {
-            debugf(L"Error while trying to get a Zone Events description file: %s", szErrorMessage);
+            debugf("Error while trying to get a Zone Events description file: %s", szErrorMessage);
 
             TRef<IMessageBox> pmessagebox = 
                 CreateMessageBox("Failed to retrieve the event description.");
@@ -424,22 +424,22 @@ public:
         m_peventListingPending = NULL;
     }
 
-    bool IsFileValid(wchar_t * szFileName)
+    bool IsFileValid(char * szFileName)
     {
         ZFile file(szFileName);
 
         int n = file.GetLength(); // -1 means error
         if (n != -1 && n != 0) 
         {
-			wchar_t * pData = new wchar_t[n + 1];
+            char * pData = new char[n+1];
             memcpy(pData, file.GetPointer(), n);
             pData[n] = 0;
 
-            if (wcsstr(pData, L"<html") != NULL
-				|| wcsstr(pData, L"<HTML") != NULL
-				|| wcsstr(pData, L"<Html") != NULL)
+            if (strstr(pData, "<html") != NULL
+                || strstr(pData, "<HTML") != NULL
+                || strstr(pData, "<Html") != NULL)
             {
-                debugf(L"Found '<html' in %s; assumed failure.\n", szFileName);
+                debugf("Found '<html' in %s; assumed failure.\n", szFileName);
                 delete[] pData;
                 return false;
             }
@@ -451,22 +451,22 @@ public:
         }
         else
         {
-            debugf(L"File %s error while trying to load downloaded config file.\n", szFileName);
+            debugf("File %s error while trying to load downloaded config file.\n", szFileName);
             return false;
         }
     }
 
-	bool OnFileCompleted(wchar_t * szFileName)
+    bool OnFileCompleted(char * szFileName)
     {
-        debugf(L"Downloaded file: %s\n", szFileName);
+        debugf("Downloaded file: %s\n", szFileName);
 
-        wchar_t szPath[MAX_PATH+20];
-        Strcpy(szPath, m_pSession->GetDownloadPath());
-        Strcat(szPath, szFileName);
+        char szPath[MAX_PATH+20];
+        strcpy(szPath, m_pSession->GetDownloadPath());
+        strcat(szPath, szFileName);
 
         if (!IsFileValid(szPath))
         {
-            debugf(L"Download failed.");
+            debugf("Download failed.");
 
             if (m_nRetriesLeft)
             {
@@ -507,11 +507,11 @@ public:
 
         m_bLoadingEventList = true;
 
-        debugf(L"Beginning zoneevents download: %s.\n", PCC(trekClient.GetCfgInfo().strZoneEventsURL));
+        debugf("Beginning zoneevents download: %s.\n", PCC(trekClient.GetCfgInfo().strZoneEventsURL));
 
         m_pSession = CreateHTTPSession(this);
 
-		static const wchar_t * szFileList[3] = { NULL, L"zoneevents.mdl", NULL };
+        static const char * szFileList[3] = {NULL, "zoneevents.mdl", NULL };
         szFileList[0] = PCC(trekClient.GetCfgInfo().strZoneEventsURL);
 
         m_pSession->InitiateDownload(szFileList, trekClient.GetArtPath());

@@ -168,7 +168,7 @@ class  WinTrekClient :
         virtual void      ShipWarped(IshipIGC* ship, SectorID sidOld, SectorID sidNew);
         virtual void      ActivateTeleportProbe(IprobeIGC* pprobe);
         virtual void      DestroyTeleportProbe(IprobeIGC* pprobe);
-		virtual void      PostText(bool bCritical, const wchar_t* pszText, ...);
+        virtual void      PostText(bool bCritical, const char* pszText, ...);
         virtual void      PostNotificationText(ImodelIGC* pmodel, bool bCritical, const char* pszText, ...);
         virtual void      OverrideCamera(ImodelIGC*    pmodel);
         virtual void      EjectPlayer(ImodelIGC*    pmodel);
@@ -184,7 +184,7 @@ class  WinTrekClient :
                                       ChatTarget  ctRecipient,
                                       ObjectID    oidRecipient,
                                       SoundID     voiceOver,
-									  const wchar_t* szText,
+                                      const char* szText,
                                       CommandID   cid,
                                       ObjectType  otTarget,
                                       ObjectID    oidTarget,
@@ -210,28 +210,28 @@ class  WinTrekClient :
         virtual void FireMissile(IshipIGC* pship, ImagazineIGC* pmagazine,
                         Time timeFired, ImodelIGC* pTarget, float lock);
 */
-		virtual HRESULT   ConnectToServer(BaseClient::ConnectInfo & ci, DWORD dwCookie, Time now, const wchar_t* szPassword, bool bStandalonePrivate);
+        virtual HRESULT   ConnectToServer(BaseClient::ConnectInfo & ci, DWORD dwCookie, Time now, const char* szPassword, bool bStandalonePrivate);
         virtual HRESULT   ConnectToLobby(BaseClient::ConnectInfo * pci); // pci is NULL if relogging in
         virtual HRESULT   ConnectToClub(BaseClient::ConnectInfo * pci);
 
-		virtual void      JoinMission(MissionInfo * pMission, const wchar_t* szMissionPassword);
+        virtual void      JoinMission(MissionInfo * pMission, const char* szMissionPassword);
         virtual void      CreateMissionReq();
 		// KGJV #114
 		virtual void      ServerListReq();
-		virtual void      CreateMissionReq(const wchar_t *szServer, const wchar_t *szAddr, const wchar_t *szIGCStaticFile, const wchar_t *szGameName);
+		virtual void      CreateMissionReq(const char *szServer, const char *szAddr, const char *szIGCStaticFile, const char *szGameName);
         
 // IFedMessagingSite
         virtual HRESULT   OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm);
 #ifndef NO_MSG_CRC
         virtual void      OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg);
 #endif
-        virtual void      OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
-        virtual void      OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
-        virtual void      OnLogonClubAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
-		virtual HRESULT   OnSessionLost(wchar_t * szReason, FedMessaging * pthis);
+        virtual void      OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
+        virtual void      OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
+        virtual void      OnLogonClubAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
+        virtual HRESULT   OnSessionLost(char * szReason, FedMessaging * pthis);
         void              FlushSessionLostMessage();
         virtual void      Disconnect();
-		virtual void      OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam);
+        virtual void      OnQuitMission(QuitSideReason reason, const char* szMessageParam);
         virtual void      ChangeStation(IshipIGC* s, IstationIGC* pstationOld, IstationIGC* pstationNew);
         virtual void      ChangeCluster(IshipIGC* s, IclusterIGC* pclusterOld, IclusterIGC* pclusterNew);
         virtual void      LoadoutChangeEvent(IshipIGC* pship, IpartIGC* ppart, LoadoutChange lc);
@@ -241,17 +241,17 @@ class  WinTrekClient :
         virtual Mount     GetSelectedCargoMount();
 
         virtual void      OnReload(IpartIGC* ppart, bool bConsumed);
-		virtual void      Preload(const wchar_t* pszModelName, const wchar_t* pszTextureName);
+        virtual void      Preload(const char* pszModelName, const char* pszTextureName);
         virtual void      SetCDKey(const ZString& strCDKey, int processID);
         virtual void      ChangeGameState(void) { GetWindow()->UpdateGameStateContainer(); }
 
         virtual IAutoUpdateSink * OnBeginAutoUpdate(IAutoUpdateSink * pSink, bool bConnectToLobby);
         virtual bool ShouldCheckFiles();
 
-		virtual const wchar_t* GetArtPath()  { return GetModeler()->GetArtPath(); }
+        virtual const char* GetArtPath()  { return GetModeler()->GetArtPath(); }
 
-		const wchar_t*       GetNameLogonClubServer() { return m_szClubCharName; };
-		const wchar_t*       GetNameLogonZoneServer() { return m_szLobbyCharName; };
+        const char*       GetNameLogonClubServer() { return m_szClubCharName; };
+        const char*       GetNameLogonZoneServer() { return m_szLobbyCharName; };
 
         IObject*          LoadRadarIcon(const char* szName);
 
@@ -288,8 +288,8 @@ class  WinTrekClient :
         bool              GetGameCounted() { return m_bGameCounted; };
         bool              GetScoresCounted() { return m_bScoresCounted; };
 
-		virtual void      SaveSquadMemberships(const wchar_t* szCharacterName);
-		virtual void      RestoreSquadMemberships(const wchar_t* szCharacterName);
+        virtual void      SaveSquadMemberships(const char* szCharacterName);
+        virtual void      RestoreSquadMemberships(const char* szCharacterName);
 
         virtual void      StartLockDown(const ZString& strReason, LockdownCriteria criteria);
         virtual void      EndLockDown(LockdownCriteria criteria);
@@ -306,9 +306,9 @@ class  WinTrekClient :
 		void SaveWingAssignment(int wing); // kolie 6/10
         
 		// KGJV : added utility functions for cores & server names
-		ZString           CfgGetCoreName(const wchar_t *s);
-		bool              CfgIsOfficialCore(const wchar_t *s);
-		bool              CfgIsOfficialServer(const wchar_t *name, const wchar_t *addr);
+		ZString           CfgGetCoreName(const char *s);
+		bool              CfgIsOfficialCore(const char *s);
+		bool              CfgIsOfficialServer(const char *name, const char *addr);
 
     private:
 

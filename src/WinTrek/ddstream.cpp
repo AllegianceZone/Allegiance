@@ -70,9 +70,11 @@ BOOL CDShow::Open(ZString& pFileName, IDirectDraw7 *pDD)
 
     // Convert filename to UNICODE.
 	// Notice the safe way to get the actual size of a string.
-	    
+	WCHAR wPath[MAX_PATH];
+    MultiByteToWideChar(CP_ACP, 0, pFileName, -1, wPath, sizeof(wPath)/sizeof(wPath[0]));   
+    
 	// Build the filter graph for our multimedia stream.
-	if (FAILED((pAMStream->OpenFile(pFileName, 0))))
+	if (FAILED((pAMStream->OpenFile(wPath, 0))))
 	{	
 		// Return FALSE to let caller know we failed.		
 		return FALSE; 
@@ -87,8 +89,11 @@ BOOL CDShow::Open(ZString& pFileName, IDirectDraw7 *pDD)
 	unsigned long cFetched;
     while(pEfs->Next(1, &pFilter, &cFetched) == S_OK) {
 		FILTER_INFO FilterInfo;
-		if (pFilter->QueryFilterInfo(&FilterInfo) == S_OK) {
-			if (!wcscmp(L"WMAudio Decoder DMO",FilterInfo.achName)) {
+		pFilter->QueryFilterInfo(&FilterInfo);
+		char szName[MAX_FILTER_NAME];
+		long cch = WideCharToMultiByte(CP_ACP,0,FilterInfo.achName,MAX_FILTER_NAME,szName,MAX_FILTER_NAME,0,0);
+		if (cch > 0) {
+			if (!strcmp("WMAudio Decoder DMO",szName)) {
 				// set the volume to music level
 				FilterInfo.pGraph->QueryInterface(IID_IBasicAudio,(void**)&pBa);
 				HKEY hKey;
@@ -96,7 +101,7 @@ BOOL CDShow::Open(ZString& pFileName, IDirectDraw7 *pDD)
 				if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT,0, KEY_READ, &hKey)) {
 					DWORD dwSize = sizeof(dwResult);
 					DWORD dwType = REG_DWORD;
-					::RegQueryValueEx(hKey, L"MusicGain", NULL, &dwType, (BYTE*)&dwResult, &dwSize);
+					::RegQueryValueExA(hKey, "MusicGain", NULL, &dwType, (BYTE*)&dwResult, &dwSize);
 					::RegCloseKey(hKey);
 					if (dwType != REG_DWORD)
 						dwResult = 0;

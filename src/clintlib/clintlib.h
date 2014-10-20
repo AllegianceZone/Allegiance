@@ -52,7 +52,7 @@ public:
  
     // team events
     virtual void OnAddPlayer(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo) = 0;
-	virtual void OnDelPlayer(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam = NULL) = 0;
+    virtual void OnDelPlayer(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam = NULL) = 0;
     virtual void OnAddRequest(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo) = 0;
     virtual void OnDelRequest(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo, DelPositionReqReason reason) = 0;
     virtual void OnTeamInactive(MissionInfo* pMissionDef, SideID sideID) = 0;
@@ -91,17 +91,17 @@ public:
     virtual void OnChatMessageChange() = 0;
 
     // system events
-	virtual void OnLostConnection(const wchar_t * szReason) = 0;
+    virtual void OnLostConnection(const char * szReason) = 0;
     virtual void OnEnterModalState() = 0;
     virtual void OnLeaveModalState() = 0;
     virtual void OnLogonClub() = 0;
-	virtual void OnLogonClubFailed(bool bRetry, const wchar_t * szReason) = 0;
+    virtual void OnLogonClubFailed(bool bRetry, const char * szReason) = 0;
     virtual void OnLogonLobby() = 0;
-	virtual void OnLogonLobbyFailed(bool bRetry, const wchar_t * szReason) = 0;
+    virtual void OnLogonLobbyFailed(bool bRetry, const char * szReason) = 0;
     virtual void OnLogonGameServer() = 0;
-	virtual void OnLogonGameServerFailed(bool bRetry, const wchar_t * szReason) = 0;
+    virtual void OnLogonGameServerFailed(bool bRetry, const char * szReason) = 0;
 	//KGJV #114 - callback for core and server lists
-	virtual void OnServersList(int cCores, wchar_t *Cores, int cServers, wchar_t *Servers) = 0;
+	virtual void OnServersList(int cCores, char *Cores, int cServers, char *Servers) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ public:
 
     // team events
     virtual void OnAddPlayer(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo) {};
-	virtual void OnDelPlayer(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam = NULL) {};
+    virtual void OnDelPlayer(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam = NULL) {};
     virtual void OnAddRequest(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo) {};
     virtual void OnDelRequest(MissionInfo* pMissionDef, SideID sideID, PlayerInfo* pPlayerInfo, DelPositionReqReason reason) {};
     virtual void OnTeamInactive(MissionInfo* pMissionDef, SideID sideID) {};
@@ -164,17 +164,17 @@ public:
     virtual void OnChatMessageChange() {};
 
     // system events
-	virtual void OnLostConnection(const wchar_t * szReason) {};
+    virtual void OnLostConnection(const char * szReason) {};
     virtual void OnEnterModalState() {};
     virtual void OnLeaveModalState() {};
     virtual void OnLogonClub() {};
-	virtual void OnLogonClubFailed(bool bRetry, const wchar_t * szReason) {};
+    virtual void OnLogonClubFailed(bool bRetry, const char * szReason) {};
     virtual void OnLogonLobby() {};
-	virtual void OnLogonLobbyFailed(bool bRetry, const wchar_t * szReason) {};
+    virtual void OnLogonLobbyFailed(bool bRetry, const char * szReason) {};
     virtual void OnLogonGameServer() {};
-	virtual void OnLogonGameServerFailed(bool bRetry, const wchar_t * szReason) {};
+    virtual void OnLogonGameServerFailed(bool bRetry, const char * szReason) {};
 	//KGJV #114 - callback for core and server lists
-	virtual void OnServersList(int cCores, wchar_t *Cores, int cServers, wchar_t *Servers) {};
+	virtual void OnServersList(int cCores, char *Cores, int cServers, char *Servers) {} ;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -351,7 +351,7 @@ public:
     SideID      SideID() const                      { return m_fmPlayerInfo.iSide; }
     void        SetSideID(::SideID sideID)          { m_fmPlayerInfo.iSide = sideID; };
     ShipID      ShipID() const                      { return m_fmPlayerInfo.shipID; }
-    LPCWSTR      CharacterName() const               { return m_fmPlayerInfo.CharacterName; }
+    LPCSTR      CharacterName() const               { return m_fmPlayerInfo.CharacterName; }
     
     Money       GetMoney() const                    { return m_fmPlayerInfo.money; }
     void        SetMoney(Money money)               { m_fmPlayerInfo.money = money; }
@@ -505,8 +505,8 @@ public:
     SideID          NumSides()              { return m_pfmMissionDef->misparms.nTeams; }
     bool            InProgress()            { return !!m_pfmMissionDef->fInProgress; }
     bool            CountdownStarted()      { return m_fCountdownStarted; }
-    LPCWSTR          Name()                  { return m_pfmMissionDef->misparms.strGameName; }
-    LPCWSTR          Description()           { return m_pfmMissionDef->szDescription; }
+    LPCSTR          Name()                  { return m_pfmMissionDef->misparms.strGameName; }
+    LPCSTR          Description()           { return m_pfmMissionDef->szDescription; }
     DWORD           GetCookie()             { return m_pfmMissionDef->dwCookie; }
     SideID          MissionOwnerSideID()    { return m_pfmMissionDef->iSideMissionOwner; }
     ShipID          MissionOwnerShipID()    { return SideLeaderShipID( MissionOwnerSideID() ); }
@@ -551,7 +551,7 @@ public:
 	void			SetMaxImbalance(short iMaxImbalance) { m_pfmMissionDef->misparms.iMaxImbalance = iMaxImbalance;} // 8/1/09
     
     // Team Accessors
-    LPCWSTR          SideName(SideID sideID)         { return (sideID == SIDE_TEAMLOBBY) ? L"Not on a team" : m_pfmMissionDef->rgszName[sideID]; }
+    LPCSTR          SideName(SideID sideID)         { return (sideID == SIDE_TEAMLOBBY) ? "Not on a team" : m_pfmMissionDef->rgszName[sideID]; }
     //CivID           SideCivID(SideID sideID)        { return (sideID == SIDE_TEAMLOBBY) ? NA : m_pfmMissionDef->rgCivID[sideID]; }
     ShipID          SideLeaderShipID(SideID sideID) { return (sideID == SIDE_TEAMLOBBY) ? NA : m_pfmMissionDef->rgShipIDLeaders[sideID]; }
     bool            SideAutoAccept(SideID sideID)   { return (sideID == SIDE_TEAMLOBBY) ? true : !!m_pfmMissionDef->rgfAutoAccept[sideID]; }
@@ -579,8 +579,8 @@ public:
     /*void            SetSideCivID(SideID sideID, CivID civID) 
                     { assert(sideID != SIDE_TEAMLOBBY); m_pfmMissionDef->rgCivID[sideID] = civID; 
                         GetSideInfo(sideID)->GetMembers().GetSink()(); m_mapSideInfo.GetSink()(); }*/
-	void            SetSideName(SideID sideID, const wchar_t* szName)
-                    { assert(sideID != SIDE_TEAMLOBBY); Strcpy(m_pfmMissionDef->rgszName[sideID], szName); 
+    void            SetSideName(SideID sideID, const char* szName)
+                    { assert(sideID != SIDE_TEAMLOBBY); strcpy(m_pfmMissionDef->rgszName[sideID], szName); 
                         m_mapSideInfo.GetSink()(); }
     void            SetSideSquadID(SideID sideID, SquadID squadID)
                     { assert(sideID != SIDE_TEAMLOBBY); squadIDs[sideID] = squadID; m_mapSideInfo.GetSink()(); }
@@ -588,7 +588,7 @@ public:
     SideInfo*       GetSideInfo(SideID sideID);
     List*           GetSideList();
 
-	const wchar_t *    GetIGCStaticFile()
+    const char *    GetIGCStaticFile()
                     { return m_pfmMissionDef->misparms.szIGCStaticFile; }
     int             GetIGCStaticVer()
                     { return m_pfmMissionDef->misparms.verIGCcore;}
@@ -611,16 +611,16 @@ class CfgInfo
 private:
   ZString m_szConfigFile; //KGJV #114 - last config file name
 public:
-	void SetCfgFile(const wchar_t * szConfig); //KGJV #114
+  void SetCfgFile(const char * szConfig); //KGJV #114
   // KGJV - pigs - added ctor to init some values in case Load is never called
   CfgInfo() :
 	dwLobbyPort(2302),
 	dwClubPort(2304),
-	m_szConfigFile(L"") // KGJV: fix init value for LAN mode
+	m_szConfigFile("") // KGJV: fix init value for LAN mode
   {
   }
-  void Load(const wchar_t * szConfig);
-  DWORD GetCfgProfileString(const wchar_t *c_szCfgApp, const wchar_t *c_szKeyName, const wchar_t *c_szDefaultValue, wchar_t *szStr, DWORD dwSize); // KGJV #114
+  void Load(const char * szConfig);
+  DWORD GetCfgProfileString(const char *c_szCfgApp,const char *c_szKeyName,const char *c_szDefaultValue,char *szStr,DWORD dwSize); // KGJV #114
   ZString strClubLobby;
   ZString strPublicLobby;
   ZString strClub;
@@ -722,8 +722,8 @@ public: //todo: make protected
       }
       FILETIME  ftLastArtUpdate;
       ZString   strServer;
-	  wchar_t      szName[c_cbName];
-	  wchar_t		szPW[c_cbCDKey];
+      char      szName  [c_cbName];
+	  char		szPW [c_cbCDKey];
 	  DWORD     dwPort;				// mdvalley: The port number to connect to
       GUID      guidSession;
     };
@@ -751,10 +751,10 @@ public: //todo: make protected
     float               m_sync;
     Cookie              m_cookie;
     MessageType         m_messageType;
-    wchar_t                m_szCharName[c_cbName]; 
-	wchar_t                m_szClubCharName[c_cbName]; // name specified when logging into Club server
-	wchar_t                m_szLobbyCharName[c_cbName];// name specified when logging into Lobby server
-	wchar_t                m_szIGCStaticFile[30];
+    char                m_szCharName[c_cbName]; 
+    char                m_szClubCharName[c_cbName]; // name specified when logging into Club server
+    char                m_szLobbyCharName[c_cbName];// name specified when logging into Lobby server
+    char                m_szIGCStaticFile[30];
     int                 m_nMemberID; // For Zone Club server
 
     // igc
@@ -763,7 +763,7 @@ public: //todo: make protected
     // client state information
     MissionInfo*        m_pMissionInfo;
     DWORD               m_dwCookieToJoin;
-	wchar_t                m_strPasswordToJoin[c_cbGamePassword];
+    char                m_strPasswordToJoin[c_cbGamePassword];
     Mount               m_selectedWeapon;
     int                 m_oldStateM;
     ZString             m_strBriefingText;
@@ -821,16 +821,16 @@ public:
     virtual void FlushGameState();
     virtual void CreateMissionReq();
 	virtual void ServerListReq(); // KGJV #114
-	virtual void CreateMissionReq(const wchar_t *szServer, const wchar_t *szAddr, const wchar_t *szIGCStaticFile, const wchar_t *szGameName); // KGJV #114
-	virtual void JoinMission(MissionInfo * pMission, const wchar_t* szMissionPassword);
+	virtual void CreateMissionReq(const char *szServer, const char *szAddr, const char *szIGCStaticFile, const char *szGameName); // KGJV #114
+    virtual void JoinMission(MissionInfo * pMission, const char* szMissionPassword);
 
     // AutoDownload functions
     virtual IAutoUpdateSink * OnBeginAutoUpdate(IAutoUpdateSink * pSink, bool bConnectToLobby) { return NULL; }  
     virtual bool ShouldCheckFiles() { return false; }
     void         HandleAutoDownload(DWORD dwTimeAlloted); 
 
-	virtual const wchar_t* GetArtPath() { return NULL; } // This should be overridden in Wintrek/PIGS
-    virtual bool ResetStaticData(const wchar_t * szIGCStaticFile, ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt);
+    virtual const char* GetArtPath() { return NULL; } // This should be overridden in Wintrek/PIGS
+    virtual bool ResetStaticData(const char * szIGCStaticFile, ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt);
 
     virtual Time ServerTimeFromClientTime(Time   timeClient)
     {
@@ -845,9 +845,9 @@ public:
 
     // messaging
     virtual HRESULT     ConnectToLobby(ConnectInfo * pci); // pci is NULL if relogging in
-	virtual HRESULT     ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, const wchar_t* szPassword, bool bStandalonePrivate);
+    virtual HRESULT     ConnectToServer(ConnectInfo & ci, DWORD dwCookie, Time now, const char* szPassword, bool bStandalonePrivate);
     virtual HRESULT     ConnectToClub(ConnectInfo * pci);
-	virtual void        FindStandaloneServersByName(const wchar_t* szName, TList<TRef<LANServerInfo> >& listResults);
+    virtual void        FindStandaloneServersByName(const char* szName, TList<TRef<LANServerInfo> >& listResults);
     bool                LoggedOn()                  
     {
       return m_fLoggedOn; 
@@ -867,9 +867,9 @@ public:
     }
     virtual void        SetCDKey(const ZString& strCDKey, int processID);
 
-    virtual void        OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason) = 0;
-    virtual void        OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason) = 0;
-    virtual void        OnLogonClubAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason) {};
+    virtual void        OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason) = 0;
+    virtual void        OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason) = 0;
+    virtual void        OnLogonClubAck(bool fValidated, bool bRetry, LPCSTR szFailureReason) {};
     virtual void        Disconnect();
     virtual void        DisconnectLobby();
     virtual void        DisconnectClub();
@@ -893,7 +893,7 @@ public:
     }
     virtual HRESULT     ReceiveMessages(void);
 	virtual HRESULT     CheckLauncher(void);
-	virtual HRESULT     OnSessionLost(wchar_t * szReason, FedMessaging * pthis);
+    virtual HRESULT     OnSessionLost(char * szReason, FedMessaging * pthis);
     virtual void        OnSessionFound(FedMessaging * pthis, FMSessionDesc * pSessionDesc);
     virtual HRESULT     HandleMsg(FEDMESSAGE* pfm, Time lastUpdate, Time now);
     bool                GetIsZoneClub()
@@ -947,8 +947,8 @@ public:
     inline IsideIGC*    GetSide(void) const     { return m_ship->GetSide(); }
     inline SideID       GetSideID(void) const   { IsideIGC* s = GetSide(); return s ? s->GetObjectID() : NA; }
     TList<SquadMembership>& GetSquadMemberships() { return m_squadmemberships; } 
-	virtual void        SaveSquadMemberships(const wchar_t* szCharacterName);
-	virtual void        RestoreSquadMemberships(const wchar_t* szCharacterName);
+    virtual void        SaveSquadMemberships(const char* szCharacterName);
+    virtual void        RestoreSquadMemberships(const char* szCharacterName);
     bool                HasPlayerSquad(MissionInfo* pMission);
 
     void                SetPlayerInfo(PlayerInfo*   ppinfo);
@@ -1103,8 +1103,8 @@ public:
     PlayerLink*  FindPlayerLink(ShipID shipID);
     PlayerInfo*  FindAndCreatePlayerLink (ShipID shipID);
     PlayerInfo*  FindPlayer(ShipID shipID);
-	PlayerInfo*  FindPlayer(const wchar_t* szName);
-	PlayerInfo*  FindPlayerByPrefix(const wchar_t* szNamePrefix);
+    PlayerInfo*  FindPlayer(const char* szName);
+    PlayerInfo*  FindPlayerByPrefix(const char* szNamePrefix);
     ZString      LookupRankName(RankID rank, CivID civ = -1);
     const StaticMapInfo& GetStaticMapInfo(int index) { assert(index >= 0 && index < m_cStaticMapInfo); return m_vStaticMapInfo[index]; };
     int          GetNumStaticMaps() { return m_cStaticMapInfo; };
@@ -1126,13 +1126,13 @@ public:
     }
 
     // Chat message handling
-	bool         ParseShellCommand(const wchar_t* pszCommand);
+    bool         ParseShellCommand(const char* pszCommand);
 
     virtual void SendChat(IshipIGC*      pshipSender,
                           ChatTarget     ctRecipient,
                           ObjectID       oidRecipient,
                           SoundID        soundID,
-						  const wchar_t*    pszText,
+                          const char*    pszText,
                           CommandID      cid = c_cidNone,
                           ObjectType     otTarget = NA,
                           ObjectID       oidTarget = NA,
@@ -1143,7 +1143,7 @@ public:
                           ChatTarget  ctRecipient,
                           ObjectID    oidRecipient,
                           SoundID     voiceOver,
-						  const wchar_t* szText,
+                          const char* szText,
                           CommandID   cid,
                           ObjectType  otTarget,
                           ObjectID    oidTarget,
@@ -1455,7 +1455,7 @@ public:
                             }
                         }
                         else
-                            debugf(L"**** successor unable to mount %s/%s\n", phtSuccessor->GetName(), ppt->GetName());
+                            debugf("**** successor unable to mount %s/%s\n", phtSuccessor->GetName(), ppt->GetName());
                     }
                 }
             }
@@ -1562,7 +1562,7 @@ public:
                     if (pht->CanMount(ppt, cpl.mount))
                         BuyPartOnBudget(pship, ppt, cpl.mount, &budget);
                     else
-                        debugf(L"**** successor unable to mount %s/%s\n", pht->GetName(), ppt->GetName());
+                        debugf("**** successor unable to mount %s/%s\n", pht->GetName(), ppt->GetName());
                 }
             }
         }
@@ -1624,11 +1624,11 @@ public:
         // Retrieve the array of CachedLoadoutLists from an external FILE
         // Make sure we are using a different file for each core
 
-        ZString strFilename = ZString(L"loadouts_");
-        strFilename = strFilename + m_pMissionInfo->GetIGCStaticFile() + L".dat";
+        ZString strFilename = ZString("loadouts_");
+        strFilename = strFilename + m_pMissionInfo->GetIGCStaticFile() + ".dat";
 
         FILE* inputFile;
-		    inputFile = _wfopen((PCC)strFilename,L"rb");
+		    inputFile = fopen((PCC)strFilename,"rb");
         if (inputFile)
         {
             fseek (inputFile, 0, SEEK_END);
@@ -1672,11 +1672,11 @@ public:
 
         ExportCachedLoadout(m_customLoadouts, MAX_CUSTOM_LOADOUTS, buffer);
 
-        ZString strFilename = ZString(L"loadouts_");
-        strFilename = strFilename + m_pMissionInfo->GetIGCStaticFile() + L".dat";
+        ZString strFilename = ZString("loadouts_");
+        strFilename = strFilename + m_pMissionInfo->GetIGCStaticFile() + ".dat";
 
         FILE* outputFile;
-		    outputFile = _wfopen((PCC)strFilename,L"wb");
+		    outputFile = fopen((PCC)strFilename,"wb");
         if (outputFile)
         {
             fwrite(buffer, size, 1, outputFile);
@@ -2038,11 +2038,11 @@ public:
     virtual void OnQuitSide();
     virtual void OnJoinSide();
     virtual void OnEnterGame();
-	virtual void OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam = NULL);
+    virtual void OnQuitMission(QuitSideReason reason, const char* szMessageParam = NULL);
     virtual void AddPlayerToMission(PlayerInfo* pPlayer);
     virtual void AddPlayerToSide(PlayerInfo* pPlayerInfo, SideID sideID);
-	virtual void RemovePlayerFromMission(PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam = NULL);
-	virtual void RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason reason, const wchar_t* szMessageParam = NULL);
+    virtual void RemovePlayerFromMission(PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam = NULL);
+    virtual void RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam = NULL);
 
     void         SetZoneClubID(int nMemberID) { m_nMemberID = nMemberID; }
     int          GetZoneClubID() { return m_nMemberID; }

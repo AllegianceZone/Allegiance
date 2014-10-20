@@ -23,8 +23,8 @@ protected:
   typedef HRESULT (T::*XOptionProc)(int, TCHAR*[], int*);
   struct  XCmdLineOption
   {
-    LPCWSTR      m_pszOption;
-    LPCWSTR      m_pszOptionDesc;
+    LPCTSTR      m_pszOption;
+    LPCTSTR      m_pszOptionDesc;
     XOptionProc m_pfn;
     int         m_cMinParams;
     int         m_cMaxParams;
@@ -59,9 +59,9 @@ public:
   HRESULT OnHelp       (int argc, TCHAR* argv[], int* pnArgs);
   HRESULT ReportError(HRESULT hr, LPCTSTR pszDesc);
   void    ReportSuccess(LPCTSTR pszDesc);
-  int     Echo(LPCTSTR pszFmt, ...);
+  int     Echo(LPCWSTR pszFmt, ...);
   int     Echo(UINT idFmt, ...);
-  int     EchoV(LPCTSTR pszFmt, va_list argptr);
+  int     EchoV(LPCWSTR pszFmt, va_list argptr);
   void    EchoFlush();
   void    ClearOutputText();
   HRESULT Syntax();
@@ -554,7 +554,7 @@ void TCComModule<T>::ReportSuccess(LPCTSTR pszDesc)
 }
 
 template <class T>
-inline int TCComModule<T>::Echo(LPCTSTR pszFmt, ...)
+inline int TCComModule<T>::Echo(LPCWSTR pszFmt, ...)
 {
   va_list argptr;
   va_start(argptr, pszFmt);
@@ -579,7 +579,7 @@ inline int TCComModule<T>::Echo(UINT idFmt, ...)
 }
 
 template <class T>
-int TCComModule<T>::EchoV(LPCTSTR pszFmt, va_list argptr)
+int TCComModule<T>::EchoV(LPCWSTR pszFmt, va_list argptr)
 {
   // Format the text
   TCHAR szText[_MAX_PATH * 6];
@@ -1286,9 +1286,7 @@ void TCComModule<T>::MonitorProc()
 
 /////////////////////////////////////////////////////////////////////////////
 // Command Line Option Map Macros
-
-#define L0 NULL
-
+#define L0 NULL;
 
 #define BEGIN_CMDLINE_OPTION_MAP()                                          \
   static UINT GetCmdLineOptionMap(const XCmdLineOption** ppMap)             \
@@ -1297,40 +1295,40 @@ void TCComModule<T>::MonitorProc()
     {                                                                       
 
 #define CMDLINE_OPTION_ENTRY_EX(sz, szDesc, fn, cMin, cMax, cont, reportSuccess, win9x, winNT) \
-      {TEXT(sz), TEXT(szDesc), fn, cMin, cMax, cont, reportSuccess, win9x, winNT},             
+      {sz, szDesc, fn, cMin, cMax, cont, reportSuccess, win9x, winNT},             
 
 #define CMDLINE_OPTION_ENTRY(sz, szDesc, fn, cont, reportSuccess)           \
       CMDLINE_OPTION_ENTRY_EX(sz, szDesc, fn, -1, 0, cont, reportSuccess,   \
         true, true)                                                         
 
 #define CMDLINE_OPTION_Automation()                                         \
-      CMDLINE_OPTION_ENTRY("Automation", NULL, NULL, true, false)           \
-      CMDLINE_OPTION_ENTRY("Embedding", NULL, NULL, true, false)            
+      CMDLINE_OPTION_ENTRY(L"Automation", NULL, NULL, true, false)           \
+      CMDLINE_OPTION_ENTRY(L"Embedding", NULL, NULL, true, false)            
 
 #define CMDLINE_OPTION_RegServer9x(T)                                        \
-      CMDLINE_OPTION_ENTRY_EX("RegServer", "Server Registration",           \
+      CMDLINE_OPTION_ENTRY_EX(L"RegServer", L"Server Registration",           \
         &TCComModule<T>::OnRegServer, 0, 0, false, true, true, false)                        
 
 #define CMDLINE_OPTION_RegServerNT(T)                                        \
-      CMDLINE_OPTION_ENTRY_EX("RegServer", "Server Registration",           \
+      CMDLINE_OPTION_ENTRY_EX(L"RegServer", L"Server Registration",           \
         &TCComModule<T>::OnRegServer, 1, 2, false, true, false, true)                        
 
 #define CMDLINE_OPTION_UnregServer(T)                                        \
-      CMDLINE_OPTION_ENTRY_EX("UnregServer", "Server Unregistration",       \
+      CMDLINE_OPTION_ENTRY_EX(L"UnregServer", L"Server Unregistration",       \
         &TCComModule<T>::OnUnregServer, 0, 0, false, true, true, true)                       
 
 #define CMDLINE_OPTION_NoExit(T)                                             \
-      CMDLINE_OPTION_ENTRY_EX("NoExit", NULL, &TCComModule<T>::OnNoExit, 0, 0, true, false,  \
+      CMDLINE_OPTION_ENTRY_EX(L"NoExit", NULL, &TCComModule<T>::OnNoExit, 0, 0, true, false,  \
         true, false)                                                        
 
 #define CMDLINE_OPTION_Exit(T)                                               \
-      CMDLINE_OPTION_ENTRY_EX("Exit", NULL, &TCComModule<T>::OnExit, 0, 0, false, false,     \
+      CMDLINE_OPTION_ENTRY_EX(L"Exit", NULL, &TCComModule<T>::OnExit, 0, 0, false, false,     \
         true, true)                                                        
 
 #define CMDLINE_OPTION_Help(T)                                               \
-      CMDLINE_OPTION_ENTRY_EX("?", NULL, &TCComModule<T>::OnHelp, 0, 0, false, false,        \
+      CMDLINE_OPTION_ENTRY_EX(L"?", NULL, &TCComModule<T>::OnHelp, 0, 0, false, false,        \
         true, true)                                                         \
-      CMDLINE_OPTION_ENTRY_EX("Help", NULL, &TCComModule<T>::OnHelp, 0, 0, false, false,     \
+      CMDLINE_OPTION_ENTRY_EX(L"Help", NULL, &TCComModule<T>::OnHelp, 0, 0, false, false,     \
         true, true)                                                        
 
 #define END_CMDLINE_OPTION_MAP()                                            \

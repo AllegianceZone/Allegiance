@@ -158,7 +158,7 @@ void CPigBehaviorScript::Term()
 /////////////////////////////////////////////////////////////////////////////
 // Operations
 
-HRESULT CPigBehaviorScript::Eval(const wchar_t* pszExpression, VARIANT* pvResult)
+HRESULT CPigBehaviorScript::Eval(const char* pszExpression, VARIANT* pvResult)
 {
   // Do nothing with an empty string
   assert(pvResult);
@@ -170,7 +170,8 @@ HRESULT CPigBehaviorScript::Eval(const wchar_t* pszExpression, VARIANT* pvResult
 
   // Evaluate the event expression
   TCEXCEPINFO ei;
-  HRESULT hr = m_spAsp->ParseScriptText(W2COLE(pszExpression), NULL, NULL,
+  USES_CONVERSION;
+  HRESULT hr = m_spAsp->ParseScriptText(A2COLE(pszExpression), NULL, NULL,
     NULL, 0, 0, SCRIPTTEXT_ISEXPRESSION, pvResult, &ei);
   if (FAILED(hr))
   {

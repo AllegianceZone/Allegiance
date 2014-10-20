@@ -30,7 +30,7 @@ LPCTSTR FindOneOf(LPCTSTR p1, LPCTSTR p2)
 
 // Although some of these functions are big they are declared inline since they are only used once
 
-inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, wchar_t * szAccount, wchar_t * szPassword)
+inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, char * szAccount, char * szPassword)
 {
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr))
@@ -80,15 +80,15 @@ inline HRESULT CServiceModule::RegisterServer(BOOL bRegTypeLib, BOOL bService, w
  * Returns:
  *    path of AllClub.exe
  */
-const wchar_t * CServiceModule::GetModulePath()
+const char * CServiceModule::GetModulePath()
 {
-	static wchar_t * pszLast = NULL;
+    static char * pszLast = NULL;
 
     if (pszLast == NULL)
     {
-		static wchar_t szFileName[MAX_PATH + 16];
-        GetModuleFileName(NULL, szFileName, MAX_PATH);
-		wchar_t*   p = wcsrchr(szFileName, '\\');
+        static char szFileName[MAX_PATH + 16];
+        GetModuleFileNameA(NULL, szFileName, MAX_PATH);
+        char*   p = strrchr(szFileName, '\\');
         if (p)
             *(p+1) = 0;
         else 
@@ -120,12 +120,12 @@ const wchar_t * CServiceModule::GetModulePath()
  * Returns:
  *    true: iff pValue was set
  */
-bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t * szItem, void * pValue, DWORD dwDefault)
+bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault)
 {
     char psz[MAX_PATH] = {""};
     DWORD dwSize = (bIsString ? sizeof(psz): sizeof(DWORD));
 
-    if (RegQueryValueEx(hk, szItem, NULL, NULL, (BYTE *)psz, &dwSize) != ERROR_SUCCESS ||
+    if (RegQueryValueExA(hk, szItem, NULL, NULL, (BYTE *)psz, &dwSize) != ERROR_SUCCESS ||
         (bIsString && psz[0] == 0)) // if blank like what SrvConfig.exe makes
     {
         if (bIsString)
@@ -133,13 +133,13 @@ bool CServiceModule::ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t *
             if (dwDefault)
             {
                 strcpy((char*)pValue, (char*)dwDefault);
-                LogEvent(EVENTLOG_ERROR_TYPE, _T("Registry String Missing/Invalid: %s; Defaulting to: %s"), szItem, dwDefault);
+                LogEvent(EVENTLOG_ERROR_TYPE, "Registry String Missing/Invalid: %s; Defaulting to: %s", szItem, dwDefault);
                 return true;
             }
-            LogEvent(EVENTLOG_ERROR_TYPE, _T("Registry String Missing/Invalid: %s"), szItem);
+            LogEvent(EVENTLOG_ERROR_TYPE, "Registry String Missing/Invalid: %s", szItem);
             return false;
         }
-        LogEvent(EVENTLOG_ERROR_TYPE, _T("Registry Integer Missing/Invalid: %s; Defaulting to: %d"), szItem, (DWORD)dwDefault);
+        LogEvent(EVENTLOG_ERROR_TYPE, "Registry Integer Missing/Invalid: %s; Defaulting to: %d", szItem, (DWORD)dwDefault);
         *(DWORD*)pValue = dwDefault;
         return true;
     }
@@ -177,8 +177,8 @@ inline void CServiceModule::Init(_ATL_OBJMAP_ENTRY* p, HINSTANCE h, UINT nServic
 
     m_bService = TRUE;
 
-    LoadString(h, nServiceNameID, m_szServiceName, sizeof(m_szServiceName) / sizeof(TCHAR));
-    LoadString(h, nServiceDescID, m_szServiceDesc, sizeof(m_szServiceDesc) / sizeof(TCHAR));
+    LoadStringA(h, nServiceNameID, m_szServiceName, sizeof(m_szServiceName) / sizeof(TCHAR));
+    LoadStringA(h, nServiceDescID, m_szServiceDesc, sizeof(m_szServiceDesc) / sizeof(TCHAR));
 
     // set up the initial service status 
     m_hServiceStatus = NULL;
@@ -207,7 +207,7 @@ BOOL CServiceModule::IsInstalled()
 
     if (hSCM != NULL)
     {
-        SC_HANDLE hService = ::OpenService(hSCM, m_szServiceName, SERVICE_QUERY_CONFIG);
+        SC_HANDLE hService = ::OpenServiceA(hSCM, m_szServiceName, SERVICE_QUERY_CONFIG);
         if (hService != NULL)
         {
             bResult = TRUE;
@@ -226,24 +226,24 @@ inline BOOL CServiceModule::Install()
     SC_HANDLE hSCM = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (hSCM == NULL)
     {
-        MessageBox(NULL, _T("Couldn't open service manager"), m_szServiceName, MB_OK);
+        MessageBoxA(NULL, "Couldn't open service manager", m_szServiceName, MB_OK);
         return FALSE;
     }
 
     // Get the executable file path
-    TCHAR szFilePath[_MAX_PATH];
-    ::GetModuleFileName(NULL, szFilePath, _MAX_PATH);
+    CHAR szFilePath[_MAX_PATH];
+    ::GetModuleFileNameA(NULL, szFilePath, _MAX_PATH);
 
-    SC_HANDLE hService = ::CreateService(
+    SC_HANDLE hService = ::CreateServiceA(
         hSCM, m_szServiceName, m_szServiceDesc,
         SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
         SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-        szFilePath, NULL, NULL, _T("RPCSS\0"), NULL, NULL);
+        szFilePath, NULL, NULL, "RPCSS\0", NULL, NULL);
 
     if (hService == NULL)
     {
         ::CloseServiceHandle(hSCM);
-        MessageBox(NULL, _T("Couldn't create service"), m_szServiceName, MB_OK);
+        MessageBoxA(NULL, "Couldn't create service", m_szServiceName, MB_OK);
         return FALSE;
     }
 
@@ -257,11 +257,11 @@ inline BOOL CServiceModule::Install()
 //
 //
 
-BOOL CServiceModule::InstallService(wchar_t * szAccount, wchar_t * szPassword)
+BOOL CServiceModule::InstallService(char * szAccount, char * szPassword)
 {
     SC_HANDLE schMgr;
     SC_HANDLE schSvc;
-	wchar_t szPath[512];
+    char szPath[512];
 
     schMgr = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
 
@@ -271,9 +271,9 @@ BOOL CServiceModule::InstallService(wchar_t * szAccount, wchar_t * szPassword)
         return FALSE;
     }
 
-    GetModuleFileName(NULL,szPath,sizeof(szPath));
+    GetModuleFileNameA(NULL,szPath,sizeof(szPath));
 
-    schSvc = CreateService(schMgr,
+    schSvc = CreateServiceA(schMgr,
                            m_szServiceName,
                            m_szServiceDesc,
                            SERVICE_ALL_ACCESS,
@@ -283,14 +283,14 @@ BOOL CServiceModule::InstallService(wchar_t * szAccount, wchar_t * szPassword)
                            szPath,
                            NULL,
                            NULL,
-                           _T("RPCSS\0"),
+                           ("RPCSS\0"),
                            szAccount,
                            szPassword);
 
     if (!schSvc)
     {
         ::CloseServiceHandle(schMgr);
-        MessageBox(NULL, _T("Couldn't create service"), m_szServiceName, MB_OK);
+        MessageBoxA(NULL, "Couldn't create service", m_szServiceName, MB_OK);
         return FALSE;
     }
 
@@ -321,16 +321,16 @@ inline BOOL CServiceModule::Uninstall()
 
     if (hSCM == NULL)
     {
-        MessageBox(NULL, _T("Couldn't open service manager"), m_szServiceName, MB_OK);
+        MessageBoxA(NULL, "Couldn't open service manager", m_szServiceName, MB_OK);
         return FALSE;
     }
 
-    SC_HANDLE hService = ::OpenService(hSCM, m_szServiceName, SERVICE_STOP | DELETE);
+    SC_HANDLE hService = ::OpenServiceA(hSCM, m_szServiceName, SERVICE_STOP | DELETE);
 
     if (hService == NULL)
     {
         ::CloseServiceHandle(hSCM);
-        MessageBox(NULL, _T("Couldn't open service"), m_szServiceName, MB_OK);
+        MessageBoxA(NULL, "Couldn't open service", m_szServiceName, MB_OK);
         return FALSE;
     }
     SERVICE_STATUS status;
@@ -343,30 +343,30 @@ inline BOOL CServiceModule::Uninstall()
     if (bDelete)
         return TRUE;
 
-    MessageBox(NULL, _T("Service could not be deleted"), m_szServiceName, MB_OK);
+    MessageBoxA(NULL, "Service could not be deleted", m_szServiceName, MB_OK);
     return FALSE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Logging functions
-int CServiceModule::LogEvent(WORD wType, LPCTSTR pFormat, ...)
+int CServiceModule::LogEvent(WORD wType, LPCSTR pFormat, ...)
 {
-    TCHAR    chMsg[256];
+    CHAR    chMsg[256];
     HANDLE  hEventSource;
-    LPTSTR  lpszStrings[1];
+    LPSTR  lpszStrings[1];
     va_list pArg;
 
     va_start(pArg, pFormat);
-    _vsnwprintf(chMsg, sizeof(chMsg), pFormat, pArg);
+    _vsnprintf(chMsg, sizeof(chMsg), pFormat, pArg);
     va_end(pArg);
 
     lpszStrings[0] = chMsg;
-    debugf(L"%s\n", lpszStrings[0]);
+    debugf("%s\n", lpszStrings[0]);
 
     if (m_bService)
     {
         /* Get a handle to use with ReportEvent(). */
-        hEventSource = RegisterEventSource(NULL, m_szServiceName);
+        hEventSource = RegisterEventSourceA(NULL, m_szServiceName);
         if (hEventSource != NULL)
         {
             /* Write to event log. */
@@ -377,7 +377,7 @@ int CServiceModule::LogEvent(WORD wType, LPCTSTR pFormat, ...)
     else
     {
         // As we are not running as a service, just write the error to the console.
-        _putts(chMsg);
+        puts(chMsg);
     }
     return 0;
 }
@@ -386,12 +386,12 @@ int CServiceModule::LogEvent(WORD wType, LPCTSTR pFormat, ...)
 // Service startup and registration
 inline void CServiceModule::Start()
 {
-    SERVICE_TABLE_ENTRY st[] =
+    SERVICE_TABLE_ENTRYA st[] =
     {
         { m_szServiceName, _ServiceMain },
         { NULL, NULL }
     };
-    if (m_bService && !::StartServiceCtrlDispatcher(st))
+    if (m_bService && !::StartServiceCtrlDispatcherA(st))
     {
         m_bService = FALSE;
     }
@@ -399,14 +399,14 @@ inline void CServiceModule::Start()
         ExeMain();
 }
 
-inline void CServiceModule::ServiceMain(DWORD /* dwArgc */, LPTSTR* /* lpszArgv */)
+inline void CServiceModule::ServiceMain(DWORD /* dwArgc */, LPSTR* /* lpszArgv */)
 {
     // Register the control request handler
     m_status.dwCurrentState = SERVICE_START_PENDING;
-    m_hServiceStatus = RegisterServiceCtrlHandler(m_szServiceName, _Handler);
+    m_hServiceStatus = RegisterServiceCtrlHandlerA(m_szServiceName, _Handler);
     if (m_hServiceStatus == NULL)
     {
-        LogEvent(EVENTLOG_ERROR_TYPE, _T("Allegiance Club Handler not installed"));
+        LogEvent(EVENTLOG_ERROR_TYPE, "Allegiance Club Handler not installed");
         return;
     }
     SetServiceStatus(SERVICE_START_PENDING);
@@ -419,13 +419,13 @@ inline void CServiceModule::ServiceMain(DWORD /* dwArgc */, LPTSTR* /* lpszArgv 
     Run();
 
     SetServiceStatus(SERVICE_STOPPED);
-    LogEvent(EVENTLOG_INFORMATION_TYPE, _T("Allegiance Club Service stopped"));
+    LogEvent(EVENTLOG_INFORMATION_TYPE, "Allegiance Club Service stopped");
 }
 
 
 void CServiceModule::ExeMain()
 {
-    _putts(L"Running as an executable.");
+    puts("Running as an executable.");
     Run();
 }
 
@@ -447,11 +447,11 @@ inline void CServiceModule::Handler(DWORD dwOpcode)
     case SERVICE_CONTROL_SHUTDOWN:
         break;
     default:
-        LogEvent(EVENTLOG_ERROR_TYPE, _T("Bad service request"));
+        LogEvent(EVENTLOG_ERROR_TYPE, "Bad service request");
     }
 }
 
-void WINAPI CServiceModule::_ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
+void WINAPI CServiceModule::_ServiceMain(DWORD dwArgc, LPSTR* lpszArgv)
 {
     _Module.ServiceMain(dwArgc, lpszArgv);
 }
@@ -488,7 +488,7 @@ void CServiceModule::Run()
     hr = _Module.RegisterClassObjects(CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER, REGCLS_MULTIPLEUSE);
     _ASSERTE(SUCCEEDED(hr));
 
-    LogEvent(EVENTLOG_INFORMATION_TYPE, _T("Allegiance Club started"));
+    LogEvent(EVENTLOG_INFORMATION_TYPE, "Allegiance Club started");
     if (m_bService)
         SetServiceStatus(SERVICE_RUNNING);
 
@@ -497,7 +497,7 @@ void CServiceModule::Run()
       if SUCCEEDED(clubapp.Init())
         clubapp.Run();
       else
-        LogEvent(EVENTLOG_ERROR_TYPE, _T("Allegiance Club Initialization failed (hopefully some other more descriptive event has been fired already)."));
+        LogEvent(EVENTLOG_ERROR_TYPE, "Allegiance Club Initialization failed (hopefully some other more descriptive event has been fired already).");
     }
 
     _Module.RevokeClassObjects();
@@ -507,11 +507,11 @@ void CServiceModule::Run()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-int __cdecl wmain(int argc, wchar_t *argv[])
+int __cdecl main(int argc, char *argv[])
 { 
     HINSTANCE hInstance = GetModuleHandle(NULL);
   
-    LPWSTR lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
+    LPSTR lpCmdLine = GetCommandLineA(); //this line necessary for _ATL_MIN_CRT
 
     // {30DA68CA-2156-4964-BD6F-EF2CE0E41C3C}
     static const GUID LIBID_CLUB = 
@@ -520,15 +520,15 @@ int __cdecl wmain(int argc, wchar_t *argv[])
     _Module.Init(ObjectMap, hInstance, IDS_SERVICENAME, IDS_SERVICEDESC, &LIBID_CLUB);
     _Module.m_bService = TRUE;
 
-    if (argc > 1 && lstrcmpi(argv[1], _T("-UnregServer"))==0)
+    if (argc > 1 && strcmpi(argv[1], "-UnregServer")==0)
         return _Module.UnregisterServer();
 
     // Register as Local Server
-    if (argc > 1 && lstrcmpi(argv[1], _T("-RegServer"))==0)
+    if (argc > 1 && strcmpi(argv[1], "-RegServer")==0)
         return _Module.RegisterServer(FALSE, FALSE, NULL, NULL);
     
     // Register as Service
-    if (argc > 1 && lstrcmpi(argv[1], _T("-Service"))==0)
+    if (argc > 1 && strcmpi(argv[1], "-Service")==0)
     {
         if (argc == 4) 
             return _Module.RegisterServer(FALSE, TRUE, argv[2], argv[3]);
@@ -541,7 +541,7 @@ int __cdecl wmain(int argc, wchar_t *argv[])
     LONG lRes = keyAppID.Open(HKEY_CLASSES_ROOT, _T("AppID"), KEY_READ);
     if (lRes != ERROR_SUCCESS)
     {
-        _Module.LogEvent(EVENTLOG_ERROR_TYPE, _T("Uh, where's the HKEY_CLASSES_ROOT/AppID key???"));
+        _Module.LogEvent(EVENTLOG_ERROR_TYPE, "Uh, where's the HKEY_CLASSES_ROOT/AppID key???");
         return lRes;
     }
 
@@ -549,7 +549,7 @@ int __cdecl wmain(int argc, wchar_t *argv[])
     lRes = key.Open(keyAppID, _T("{D0DE3A0E-69B5-4660-937E-97F204ECB7B4}"), KEY_READ);
     if (lRes != ERROR_SUCCESS)
     {
-        _Module.LogEvent(EVENTLOG_ERROR_TYPE, _T("AllClub.exe is not registered. Use \"AllClub -RegServer|Service\" to register Club Server"));
+        _Module.LogEvent(EVENTLOG_ERROR_TYPE, "AllClub.exe is not registered. Use \"AllClub -RegServer|Service\" to register Club Server");
         return lRes;
     }
     

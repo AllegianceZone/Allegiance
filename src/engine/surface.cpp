@@ -116,7 +116,7 @@ public:
     // Surface type no longer needed. SurfaceTypeZ is not supported and the
     // other 3 types are all the same thing now - a d3d9 texture.
     //////////////////////////////////////////////////////////////////////////////
-	void AllocateSurface(wchar_t * szTextureName = NULL, D3DFORMAT d3dOverrideFormat = D3DFMT_UNKNOWN)
+	void AllocateSurface( char * szTextureName = NULL, D3DFORMAT d3dOverrideFormat = D3DFMT_UNKNOWN )
     {
 		HRESULT hr;
 		bool bSystemMemory = m_stype.Test( SurfaceTypeSystemMemory() );
@@ -236,7 +236,7 @@ public:
 	// PrivateSurfaceImpl()
 	//
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	PrivateSurfaceImpl(D3DFORMAT texFormat, DWORD dwWidth, DWORD dwHeight, wchar_t * szTexName /*=NULL*/) :
+	PrivateSurfaceImpl( D3DFORMAT texFormat, DWORD dwWidth, DWORD dwHeight, char * szTexName /*=NULL*/ ) :
 			m_pengine( NULL ),
 			m_bDeviceFormat(false),
 			m_stype( 0 ),
@@ -651,14 +651,14 @@ public:
 		m_pbits = pFile->GetPointer();
 		
 		// Generate the filename data.
-		wchar_t szTemp[32];
+		char szTemp[32];
 		if( szTextureName.GetLength() > 31 ) 
 		{
-			wcscpy_s( szTemp, 32, &szTextureName[ szTextureName.GetLength() - 31 ] );
+			strcpy_s( szTemp, 32, &szTextureName[ szTextureName.GetLength() - 31 ] );
 		}
 		else
 		{
-			wcscpy_s( szTemp, 32, &szTextureName[ 0 ] );
+			strcpy_s( szTemp, 32, &szTextureName[ 0 ] );
 		}
 		if( m_hTexture == INVALID_TEX_HANDLE )
 		{
@@ -715,14 +715,14 @@ public:
 		m_colorKey = cColorKey;
 
 		// Generate the filename data.
-		wchar_t szTemp[32];
+		char szTemp[32];
 		if( szTextureName.GetLength() > 31 ) 
 		{
-			wcscpy_s( szTemp, 32, &szTextureName[ szTextureName.GetLength() - 31 ] );
+			strcpy_s( szTemp, 32, &szTextureName[ szTextureName.GetLength() - 31 ] );
 		}
 		else
 		{
-			wcscpy_s( szTemp, 32, &szTextureName[ 0 ] );
+			strcpy_s( szTemp, 32, &szTextureName[ 0 ] );
 		}
 
 		// Need an alpha texture to implement colour keying.
@@ -896,10 +896,10 @@ public:
 						CVRAMManager::Get()->ReleaseHandle( hOld );
 
 #ifdef _DEBUG
-						wchar_t szBuffer[256];
-						swprintf_s( szBuffer, 256, L"Resized to %d x %d: %s\n",
+						char szBuffer[256];
+						sprintf_s( szBuffer, 256, "Resized to %d x %d: %s\n",
 							m_size.x, m_size.y, szTemp );
-						OutputDebugString( szBuffer );
+						OutputDebugStringA( szBuffer );
 #endif // _DEBUG
 					}
 				}
@@ -2212,7 +2212,7 @@ TRef<PrivateSurface> CreatePrivateSurface(
 TRef<PrivateSurface> CreatePrivateSurface(	D3DFORMAT	texFormat,
 											DWORD		dwWidth,
 											DWORD		dwHeight,
-											wchar_t *		szTexName /*=NULL*/ ) 
+											char *		szTexName /*=NULL*/ ) 
 {
     return new PrivateSurfaceImpl( texFormat, dwWidth, dwHeight, szTexName );
 }

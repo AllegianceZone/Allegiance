@@ -70,14 +70,14 @@ BOOL CDlgAbout::OnInitDialog()
 
   // Read the description, version and copyright from VersionInfo resource
   ZVersionInfo vi;
-  //m_strDescription = (LPCWSTR)vi.GetFileDescription();
+  m_strDescription = vi.GetFileDescription();
   m_strVersion     = vi.GetFileVersionString();
-  //m_strCopyright   = vi.GetLegalCopyright();
+  m_strCopyright   = vi.GetLegalCopyright();
 
   // Read the Product ID from the registry
   CRegKey key;
   if (ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, HKLM_AllSrvUI, KEY_READ))
-    LoadRegString(key, TEXT("PID"), m_strProductID);
+    LoadRegString(key, "PID", m_strProductID);
   if (m_strProductID.IsEmpty())
     m_strProductID.LoadString(IDS_PRODUCT_ID_NONE);
 

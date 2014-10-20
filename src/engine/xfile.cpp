@@ -229,7 +229,7 @@ public:
         return 0;
     }
 
-    bool IsSymbolChar(wchar_t ch)
+    bool IsSymbolChar(char ch)
     {
         return TextTokenImpl::IsSymbolChar(ch) || ch == '-' || ch == '.';
     }
@@ -1047,7 +1047,7 @@ public:
                         return false;
                     }
                 } else if (strType == "AnimationOptions") {
-                    ZError(L"Not Implemented");
+                    ZError("Not Implemented");
                 }
                 m_ptoken->LeaveSection();
             }

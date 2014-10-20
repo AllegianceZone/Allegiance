@@ -769,7 +769,7 @@ public:
 //                return (Value*)new ConstantImage(psurface, ZString());
 //            }
 //        }
-		debugf(L"ImportImageFromFileFactory: error reading file %s\n", (PCC)str);
+        debugf("ImportImageFromFileFactory: error reading file %s\n",(const char *)str);
         return NULL;
     }
 };
@@ -1926,7 +1926,7 @@ public:
         return
             new FontValue(
                 CreateEngineFont(
-                    CreateFont(
+                    CreateFontA(
                         (int)pnumberSize->GetValue(),
                         (int)pnumberStretch->GetValue(),0, 0,
                         pboolBold->GetValue() ? FW_BOLD : FW_DONTCARE, 
@@ -2081,13 +2081,13 @@ public:
 
     void Evaluate()
     {
-		wchar_t cbTemp[80];
-        swprintf_s(cbTemp, 80, L"%.2g", (double)GetNumber()->GetValue());
+        char cbTemp[80];
+        sprintf_s(cbTemp, 80, "%.2g", (double)GetNumber()->GetValue());
 
         GetValueInternal() = cbTemp;
     }
 
-    ZString GetFunctionName() { return L"RealNumberString"; }
+    ZString GetFunctionName() { return "RealNumberString"; }
 };
 
 class RealNumberStringFactory : public IFunction {
@@ -2188,18 +2188,18 @@ public:
 	void BuildHudList()
 	{
 		HANDLE hFind;
-		WIN32_FIND_DATA findFileData;
+		WIN32_FIND_DATAA findFileData;
 
-		m_vStyleHudName.PushEnd(L"Default");
+		m_vStyleHudName.PushEnd("Default");
 
-		ZString hudpath = GetArtPath() + L"/Mods/*";
+		ZString hudpath = GetArtPath() + "/Mods/*";
 
-		hFind = FindFirstFile(hudpath, &findFileData);
+		hFind = FindFirstFileA(hudpath, &findFileData);
 
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
 			//still have the default in the main directory
-			debugf(L"Invalid handle value (%d)\n", GetLastError());
+			debugf("Invalid handle value (%d)\n", GetLastError());
 			return;
 		}
 		do
@@ -2211,7 +2211,7 @@ public:
 				m_vStyleHudName.PushEnd(name);
 			}
 
-		} while (FindNextFile(hFind, &findFileData));
+		} while (FindNextFileA(hFind, &findFileData));
 
 	}
 
@@ -2265,16 +2265,16 @@ public:
         // Types
         //
 
-		pns->AddType(L"Number", new TBaseMDLType<float      >(L"float", ZString()));
-		pns->AddType(L"Boolean", new TBaseMDLType<bool       >(L"bool", L"b"));
-		pns->AddType(L"Color", new TBaseMDLType<Color      >(L"Color", L"color"));
-		pns->AddType(L"Point", new TBaseMDLType<Point      >(L"Point", L"point"));
-		pns->AddType(L"Vector", new TBaseMDLType<Vector     >(L"Vector", L"vec"));
-		pns->AddType(L"Rect", new TBaseMDLType<Rect       >(L"Rect", L"rect"));
-		pns->AddType(L"Orientation", new TBaseMDLType<Orientation>(L"Orientation", L"orient"));
-		pns->AddType(L"String", CreateStringMDLType());
-		pns->AddType(L"Image", CreateIObjectMDLType(L"Image", L"image"));
-		pns->AddType(L"Geo", CreateIObjectMDLType(L"Geo", L"Geo"));
+        pns->AddType("Number"     , new TBaseMDLType<float      >("float"      , ZString()));
+        pns->AddType("Boolean"    , new TBaseMDLType<bool       >("bool"       , "b"      ));
+        pns->AddType("Color"      , new TBaseMDLType<Color      >("Color"      , "color"  ));
+        pns->AddType("Point"      , new TBaseMDLType<Point      >("Point"      , "point"  ));
+        pns->AddType("Vector"     , new TBaseMDLType<Vector     >("Vector"     , "vec"    ));
+        pns->AddType("Rect"       , new TBaseMDLType<Rect       >("Rect"       , "rect"   ));
+        pns->AddType("Orientation", new TBaseMDLType<Orientation>("Orientation", "orient" ));
+        pns->AddType("String"     , CreateStringMDLType()                                  );
+        pns->AddType("Image"      , CreateIObjectMDLType("Image", "image")                 );
+        pns->AddType("Geo"        , CreateIObjectMDLType("Geo"  , "Geo"  )                 );
 
         //
         // built in values
@@ -2282,31 +2282,31 @@ public:
 
         TRef<Number> ptime = new ModifiableNumber(0); //Fix memory leak -Imago 8/2/09
 
-		pns->AddMember(L"emptyGeo", Geo::GetEmpty());
-		pns->AddMember(L"emptyImage", (Value*)Image::GetEmpty());
-		pns->AddMember(L"transparentImage", (Value*)CreateTransparentImage());
-		pns->AddMember(L"emptyString", new StringValue(ZString()));
-		pns->AddMember(L"identityTransform", GetIdentityTransform());
-		pns->AddMember(L"time", ptime);
-		pns->AddMember(L"white", new ColorValue(Color::White()));
-		pns->AddMember(L"black", new ColorValue(Color::Black()));
-		pns->AddMember(L"red", new ColorValue(Color::Red()));
-		pns->AddMember(L"green", new ColorValue(Color::Green()));
-		pns->AddMember(L"blue", new ColorValue(Color::Blue()));
-		pns->AddMember(L"yellow", new ColorValue(Color::Yellow()));
-		pns->AddMember(L"cyan", new ColorValue(Color::Cyan()));
-		pns->AddMember(L"pi", new Number(pi));
+        pns->AddMember("emptyGeo",           Geo::GetEmpty()                 );
+        pns->AddMember("emptyImage",         (Value*)Image::GetEmpty()       );
+        pns->AddMember("transparentImage",   (Value*)CreateTransparentImage());
+        pns->AddMember("emptyString",        new StringValue(ZString())      );
+        pns->AddMember("identityTransform",  GetIdentityTransform()          );
+        pns->AddMember("time",               ptime                           );
+        pns->AddMember("white",              new ColorValue(Color::White() ) );
+        pns->AddMember("black",              new ColorValue(Color::Black() ) );
+        pns->AddMember("red",                new ColorValue(Color::Red()   ) );
+        pns->AddMember("green",              new ColorValue(Color::Green() ) );
+        pns->AddMember("blue",               new ColorValue(Color::Blue()  ) );
+        pns->AddMember("yellow",             new ColorValue(Color::Yellow()) );
+		pns->AddMember("cyan",               new ColorValue(Color::Cyan()  ) );
+        pns->AddMember("pi",                 new Number(pi)                  );
 
-		pns->AddMember(L"defaultFont",
+        pns->AddMember("defaultFont",        
             new FontValue(
                 CreateEngineFont(
-                    CreateFont(
+                    CreateFontA(
                         11,
                         0, 0, 0,
                         FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
                         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                         DEFAULT_QUALITY, DEFAULT_PITCH | FF_MODERN,
-						L"tahoma"
+                        "tahoma"
                     )
                 )
             )
@@ -2316,42 +2316,42 @@ public:
         // Switches
         //
 
-		pns->AddMember(L"SwitchString", new TSwitchFactory<ZString>());
-		pns->AddMember(L"SwitchPoint", new TSwitchFactory<Point>());  // #361
+        pns->AddMember("SwitchString",       new TSwitchFactory<ZString>());
+		pns->AddMember("SwitchPoint",		 new TSwitchFactory<Point>());  // #361
 
         //
         // Data type constructors
         //
 
-		pns->AddMember(L"ModifiableNumber", new ModifiableNumberFactory());
-		pns->AddMember(L"WrapNumber", new WrapNumberFactory());
-		pns->AddMember(L"Color", new RGBColorFactory());
-		pns->AddMember(L"ColorA", new RGBAColorFactory());
-		pns->AddMember(L"Vector", new VectorFactory());
-		pns->AddMember(L"Point", new PointFactory());
-		pns->AddMember(L"Rect", new RectFactory());
-		pns->AddMember(L"Material", new MaterialFactory());
-		pns->AddMember(L"PointV", new PointVFactory());
+        pns->AddMember("ModifiableNumber",   new ModifiableNumberFactory());
+        pns->AddMember("WrapNumber",         new WrapNumberFactory());
+        pns->AddMember("Color",              new RGBColorFactory());
+        pns->AddMember("ColorA",             new RGBAColorFactory());
+        pns->AddMember("Vector",             new VectorFactory());
+        pns->AddMember("Point",              new PointFactory());
+        pns->AddMember("Rect",               new RectFactory());
+        pns->AddMember("Material",           new MaterialFactory());
+        pns->AddMember("PointV",             new PointVFactory());
 
         //
         // Numbers
         //
 
-		pns->AddMember(L"Min", new MinFactory());
-		pns->AddMember(L"Max", new MaxFactory());
-		pns->AddMember(L"Mod", new ModFactory());
-		pns->AddMember(L"Add", new AddFactory());
-		pns->AddMember(L"Subtract", new SubtractFactory());
-		pns->AddMember(L"Multiply", new MultiplyFactory());
-		pns->AddMember(L"Divide", new DivideFactory());
+        pns->AddMember("Min",                new MinFactory());
+        pns->AddMember("Max",                new MaxFactory());
+        pns->AddMember("Mod",                new ModFactory());
+        pns->AddMember("Add",                new AddFactory());
+        pns->AddMember("Subtract",           new SubtractFactory());
+        pns->AddMember("Multiply",           new MultiplyFactory());
+        pns->AddMember("Divide",             new DivideFactory());
 
         //
         // Strings
         //
 
-		pns->AddMember(L"NumberString", new NumberStringFactory());
-		pns->AddMember(L"RealNumberString", new RealNumberStringFactory());
-		pns->AddMember(L"ConcatinatedString", new ConcatinatedStringFactory());
+        pns->AddMember("NumberString",       new NumberStringFactory());
+        pns->AddMember("RealNumberString",   new RealNumberStringFactory());
+        pns->AddMember("ConcatinatedString", new ConcatinatedStringFactory());
 
         //
         // Images
@@ -2359,112 +2359,112 @@ public:
 
 		m_pImageFactory = new ImportImageFactory( this );
 
-		pns->AddMember(L"ImportImage", m_pImageFactory);
-		pns->AddMember(L"ImportImageFromFile", new ImportImageFromFileFactory(this)); // KGJV 32B
-		pns->AddMember(L"ImportImage3D", new ImportImage3DFactory(this));
-		pns->AddMember(L"ImportImageLR", new ImportImageLRFactory(this));
+        pns->AddMember("ImportImage",        m_pImageFactory );
+        pns->AddMember("ImportImageFromFile",new ImportImageFromFileFactory(this)); // KGJV 32B
+        pns->AddMember("ImportImage3D",      new ImportImage3DFactory(this));
+        pns->AddMember("ImportImageLR",      new ImportImageLRFactory(this));
 
-		pns->AddMember(L"FrameImage", CreateFrameImageFactory());
+        pns->AddMember("FrameImage",         CreateFrameImageFactory());
 
-		pns->AddMember(L"GaugeImage", new GaugeImageFactory());
-		pns->AddMember(L"GaugeImageRect", new GaugeImageRectFactory());
-		pns->AddMember(L"GroupImage", new GroupImageFactory());
-		pns->AddMember(L"SwitchImage", new SwitchImageFactory());
-		pns->AddMember(L"GeoImage", new GeoImageFactory());
-		pns->AddMember(L"GeoImage2D", new GeoImage2DFactory());
-		pns->AddMember(L"ClipImage", new ClipImageFactory());
-		pns->AddMember(L"PickImage", new PickImageFactory());
-		pns->AddMember(L"UndetectableImage", new UndetectableImageFactory());
-		pns->AddMember(L"ColorImage", new ColorImageFactory());
-		pns->AddMember(L"ExtentImage", new ExtentImageFactory());
+        pns->AddMember("GaugeImage",         new GaugeImageFactory());
+        pns->AddMember("GaugeImageRect",     new GaugeImageRectFactory());
+        pns->AddMember("GroupImage",         new GroupImageFactory());
+        pns->AddMember("SwitchImage",        new SwitchImageFactory());
+        pns->AddMember("GeoImage",           new GeoImageFactory());
+        pns->AddMember("GeoImage2D",         new GeoImage2DFactory());
+        pns->AddMember("ClipImage",          new ClipImageFactory());
+        pns->AddMember("PickImage",          new PickImageFactory());
+        pns->AddMember("UndetectableImage",  new UndetectableImageFactory());
+        pns->AddMember("ColorImage",         new ColorImageFactory());
+        pns->AddMember("ExtentImage",        new ExtentImageFactory());
         // !!! pns->AddMember("EmptyImage",         new EmptyImageFactory());
 
-		pns->AddMember(L"StringImage", new StringImageFactory());
-		pns->AddMember(L"MDLFileImage", new MDLFileImageFactory(this));
-		pns->AddMember(L"TextFileImage", new TextFileImageFactory());
+        pns->AddMember("StringImage",        new StringImageFactory());
+        pns->AddMember("MDLFileImage",       new MDLFileImageFactory(this));
+        pns->AddMember("TextFileImage",      new TextFileImageFactory());
 
-		pns->AddMember(L"JustifyLeft", new Number((float)JustifyLeft().GetWord()));
-		pns->AddMember(L"JustifyRight", new Number((float)JustifyRight().GetWord()));
-		pns->AddMember(L"JustifyTop", new Number((float)JustifyTop().GetWord()));
-		pns->AddMember(L"JustifyBottom", new Number((float)JustifyBottom().GetWord()));
-		pns->AddMember(L"JustifyXCenter", new Number((float)JustifyXCenter().GetWord()));
-		pns->AddMember(L"JustifyYCenter", new Number((float)JustifyYCenter().GetWord()));
-		pns->AddMember(L"JustifyCenter", new Number((float)JustifyCenter().GetWord()));
+        pns->AddMember("JustifyLeft",        new Number((float)JustifyLeft().GetWord()   ));
+        pns->AddMember("JustifyRight",       new Number((float)JustifyRight().GetWord()  ));
+        pns->AddMember("JustifyTop",         new Number((float)JustifyTop().GetWord()    ));
+        pns->AddMember("JustifyBottom",      new Number((float)JustifyBottom().GetWord() ));
+        pns->AddMember("JustifyXCenter",     new Number((float)JustifyXCenter().GetWord()));
+        pns->AddMember("JustifyYCenter",     new Number((float)JustifyYCenter().GetWord()));
+        pns->AddMember("JustifyCenter",      new Number((float)JustifyCenter().GetWord() ));
 
-		pns->AddMember(L"JustifyImage", new JustifyImageFactory());
-		pns->AddMember(L"VisibleImage", new VisibleImageFactory());
-		pns->AddMember(L"TranslateImage", new TranslateImageFactory());
-		pns->AddMember(L"ScaleImage", new ScaleImageFactory());
-		pns->AddMember(L"RotateImage", new RotateImageFactory());
-		pns->AddMember(L"BlendImage", new BlendImageFactory());
+        pns->AddMember("JustifyImage",       new JustifyImageFactory());
+        pns->AddMember("VisibleImage",       new VisibleImageFactory());
+        pns->AddMember("TranslateImage",     new TranslateImageFactory());
+        pns->AddMember("ScaleImage",         new ScaleImageFactory());
+        pns->AddMember("RotateImage",        new RotateImageFactory());
+        pns->AddMember("BlendImage",         new BlendImageFactory());
 
         //
         // Image Attributes
         //
 
-		pns->AddMember(L"ImageSize", new ImageSizeFactory());
+        pns->AddMember("ImageSize",          new ImageSizeFactory());
 
         //
         // Point Attributes
         //
 
-		pns->AddMember(L"PointY", new PointYFactory());
-		pns->AddMember(L"PointX", new PointXFactory());
+        pns->AddMember("PointY",             new PointYFactory());
+        pns->AddMember("PointX",             new PointXFactory());
 
         //
         // Geos
         //
 
-		pns->AddMember(L"ImportXFile", new ImportXFileFactory(this));
-		pns->AddMember(L"ImportMDL", new ImportMDLFactory(this));
+        pns->AddMember("ImportXFile",          new ImportXFileFactory(this));
+        pns->AddMember("ImportMDL",            new ImportMDLFactory(this));
 
-		pns->AddMember(L"MeshGeo", new MeshGeoFactory());
-		pns->AddMember(L"LODGeo", new LODGeoFactory());
-		pns->AddMember(L"GroupGeo", new GroupGeoFactory());
-		pns->AddMember(L"TransformGeo", new TransformGeoFactory());
-		pns->AddMember(L"MaterialGeo", new MaterialGeoFactory());
-		pns->AddMember(L"TextureGeo", new TextureGeoFactory());
-		pns->AddMember(L"Matrix", new MatrixTransformFactory());
+        pns->AddMember("MeshGeo",              new MeshGeoFactory());
+        pns->AddMember("LODGeo",               new LODGeoFactory());
+        pns->AddMember("GroupGeo",             new GroupGeoFactory());
+        pns->AddMember("TransformGeo",         new TransformGeoFactory());
+        pns->AddMember("MaterialGeo",          new MaterialGeoFactory());
+        pns->AddMember("TextureGeo",           new TextureGeoFactory());
+        pns->AddMember("Matrix",               new MatrixTransformFactory());
 
-		pns->AddMember(L"BlendGeo", new BlendGeoFactory());
+        pns->AddMember("BlendGeo",             new BlendGeoFactory());
         
-		pns->AddMember(L"BlendModeSource", new Number(BlendModeSource));
-		pns->AddMember(L"BlendModeAdd", new Number(BlendModeAdd));
-		pns->AddMember(L"BlendModeSourceAlpha", new Number(BlendModeSourceAlpha));
+        pns->AddMember("BlendModeSource",      new Number(BlendModeSource     ));
+        pns->AddMember("BlendModeAdd",         new Number(BlendModeAdd        ));
+        pns->AddMember("BlendModeSourceAlpha", new Number(BlendModeSourceAlpha));
 		//Imago exposed 7/10
-		pns->AddMember(L"BlendModeSourceAlphaTest", new Number(BlendModeSourceAlphaTest));
-		pns->AddMember(L"BlendModeAlphaStampThrough", new Number(BlendModeAlphaStampThrough));
+		pns->AddMember("BlendModeSourceAlphaTest", new Number(BlendModeSourceAlphaTest));
+		pns->AddMember("BlendModeAlphaStampThrough", new Number(BlendModeAlphaStampThrough));
 
         //
         // Transforms
         //
 
-		pns->AddMember(L"KeyFramedTranslate", new KeyFramedTranslateFactory());
-		pns->AddMember(L"KeyFramedScale", new KeyFramedScaleFactory());
-		pns->AddMember(L"KeyFramedRotate", new KeyFramedRotateFactory());
-		pns->AddMember(L"Scale", new ScaleFactory());
-		pns->AddMember(L"Translate", new TranslateFactory());
-		pns->AddMember(L"Rotate", new RotateFactory());
+        pns->AddMember("KeyFramedTranslate",   new KeyFramedTranslateFactory());
+        pns->AddMember("KeyFramedScale",       new KeyFramedScaleFactory());
+        pns->AddMember("KeyFramedRotate",      new KeyFramedRotateFactory());
+        pns->AddMember("Scale",                new ScaleFactory());
+        pns->AddMember("Translate",            new TranslateFactory());
+        pns->AddMember("Rotate",               new RotateFactory());
 
 		// Camera (KGJV)
 		//  Camera(zclip near,zclip far,FOV in degrees,position_vector)
-		pns->AddMember(L"Camera", new CameraFactory());
+		pns->AddMember("Camera",                new CameraFactory());
 
         //
         // Fonts
         //
 
-		pns->AddMember(L"Win32Font", new Win32FontFactory(m_pengine));
-		pns->AddMember(L"ImportFont", new ImportFontFactory(this));
+        pns->AddMember("Win32Font",          new Win32FontFactory(m_pengine));
+        pns->AddMember("ImportFont",         new ImportFontFactory(this));
 
         //
         // Panes
         //
 
-		pns->AddMember(L"AnimatedImagePane", new AnimatedImagePaneFactory());
-		pns->AddMember(L"AnimatedImagePaneRect", new AnimatedImagePaneRectFactory());
-		pns->AddMember(L"FrameImageButtonPane", new FrameImageButtonPaneFactory(this, ptime));
-		pns->AddMember(L"PaneImage", new PaneImageFactory(this));
+        pns->AddMember("AnimatedImagePane",     new AnimatedImagePaneFactory());
+        pns->AddMember("AnimatedImagePaneRect", new AnimatedImagePaneRectFactory());
+        pns->AddMember("FrameImageButtonPane",  new FrameImageButtonPaneFactory(this, ptime));
+        pns->AddMember("PaneImage",             new PaneImageFactory(this));
 	}
 
     Engine* GetEngine()
@@ -2490,16 +2490,16 @@ public:
             }
 			strPackFile = pathStr;
             strToOpen = m_pathStr + pathStr;
-			strToTryOpenFromDev = m_pathStr + L"dev/" + pathStr;
-			strToTryOpen = m_pathStr + L"Textures/" + pathStr;
-			strToTryOpenFromMods = ZString(m_pathStr + L"Mods/") + m_vStyleHudName[m_nStyle] + L"/" + ZString(pathStr);
+            strToTryOpenFromDev = m_pathStr + "dev/" + pathStr;
+			strToTryOpen = m_pathStr + "Textures/" + pathStr;
+			strToTryOpenFromMods = ZString(m_pathStr + "Mods/") + m_vStyleHudName[m_nStyle] + "/" + ZString(pathStr);
 
         } else {
 			strPackFile = ZString(pathStr) + ( "." + strExtensionArg );
             strToOpen = ZString(m_pathStr + pathStr) + ("." + strExtensionArg);
-			strToTryOpenFromDev = ZString(m_pathStr + L"dev/" + pathStr) + ("." + strExtensionArg);
-			strToTryOpen = ZString(m_pathStr + L"Textures/" + pathStr) + ("." + strExtensionArg);
-			strToTryOpenFromMods = ZString(m_pathStr + L"Mods/") + m_vStyleHudName[m_nStyle] + L"/" + ZString(pathStr) + (L"." + strExtensionArg);
+            strToTryOpenFromDev = ZString(m_pathStr + "dev/" + pathStr) + ("." + strExtensionArg);
+			strToTryOpen = ZString(m_pathStr + "Textures/" + pathStr) + ("." + strExtensionArg);
+			strToTryOpenFromMods = ZString(m_pathStr + "Mods/") + m_vStyleHudName[m_nStyle] + "/" + ZString(pathStr) + ("." + strExtensionArg);
         }
 		DWORD dwFileSize;
 		void * pPackFile;
@@ -2511,7 +2511,7 @@ public:
 
 		// turkey #294
 		if (pfile == NULL && m_nStyle && 
-			(strToTryOpenFromMods.Right(17) != L"newgamescreen.mdl")) //newgamescreen needs to be ACSS-protected, so don't open it from mods
+			(strToTryOpenFromMods.Right(17) != "newgamescreen.mdl")) //newgamescreen needs to be ACSS-protected, so don't open it from mods
 		{
 			pfile = new ZFile(strToTryOpenFromMods, OF_READ | OF_SHARE_DENY_WRITE);
 			if (!pfile->IsValid()) pfile = NULL;
@@ -2519,7 +2519,7 @@ public:
 
 		// yp Your_Persona October 7 2006 : TextureFolder Patch
 		if( ( pfile == NULL ) && 
-			(strToTryOpen.Right(7) == L"bmp.mdl")) // if its a texture, try loading from the strToTryOpen
+			( strToTryOpen.Right(7) == "bmp.mdl" ) ) // if its a texture, try loading from the strToTryOpen
 		{
 			pfile = new ZFile(strToTryOpen, OF_READ | OF_SHARE_DENY_WRITE);
 			// mmf modified Y_P's logic
@@ -2542,22 +2542,22 @@ public:
 			    pfile = new ZFile(strToOpen, OF_READ | OF_SHARE_DENY_WRITE);
 			} else {
 				if (g_bMDLLog) {
-					ZDebugOutput(L"'dev' file found for " + pathStr + L"\n");
+                    ZDebugOutput("'dev' file found for " + pathStr + "\n");
 				}
 			}
 #endif     
 
 			// mmf added debugf but will still have it call assert
 			if (!pfile->IsValid()) {
-				ZDebugOutput(L"Could not open the artwork file " + strToOpen + L"\n");
+				ZDebugOutput("Could not open the artwork file "+ strToOpen + "\n");
 				// this may fail/crash if strToOpen is fubar, but we are about to ZRAssert anyway
 			}
 		}
 
 		//Imago 11/09/09 - Provide a helpful message box for this common error
 		if (bError && !pfile->IsValid() && m_psite) {
-			PostMessage(GetActiveWindow(), WM_SYSCOMMAND, SC_MINIMIZE,0);
-			MessageBox(GetDesktopWindow(), L"Could not open the artwork file " + strToOpen, L"Allegiance: Fatal modeler error", MB_ICONERROR);
+			PostMessageA(GetActiveWindow(), WM_SYSCOMMAND, SC_MINIMIZE,0);
+			MessageBoxA(GetDesktopWindow(), "Could not open the artwork file "+strToOpen, "Allegiance: Fatal modeler error", MB_ICONERROR);
 		}
 		ZRetailAssert(!(bError && !pfile->IsValid() && m_psite));
 
@@ -2638,7 +2638,7 @@ public:
 		}
 		else
 		{
-			debugf(L"Failed to LoadImageDX(%s)",(PCC)str);
+			debugf("Failed to LoadImageDX(%s)",(PCC)str);
 			return NULL;
 		}
 	}
@@ -2706,13 +2706,13 @@ public:
         PathString pathStr = m_pathStr + pathStrArg;
         ZString strExtension = pathStr.GetExtension();
 
-        if (strExtension == L"bmp" || strExtension.IsEmpty()) {
+        if (strExtension == "bmp" || strExtension.IsEmpty()) {
             if (strExtension.IsEmpty()) {
-                pathStr += L".bmp";
+                pathStr += ".bmp";
             }
 
             return
-                (HBITMAP)::LoadImage(
+                (HBITMAP)::LoadImageA(
                     NULL,
                     pathStr,
                     IMAGE_BITMAP,
@@ -2799,7 +2799,7 @@ public:
 		}*/
 
 		// Imago 9/14 guarded for crash
-        TRef<ZFile> pfile = GetFile(str, L"mdl", bError);
+        TRef<ZFile> pfile = GetFile(str, "mdl", bError);
         if (pfile != NULL) 
 		{
 			if (pfile->IsValid()) {
@@ -2808,12 +2808,12 @@ public:
 				if (fp) {
 					if (*(DWORD*)fp == MDLMagic) {
 						if (g_bMDLLog) {
-							ZDebugOutput(L"Reading Binary MDL file '" + str + L"'\n");
+							ZDebugOutput("Reading Binary MDL file '" + str + "'\n");
 						}
 						pns = CreateBinaryNameSpace(str, this, pfile);
 					} else {
 						if (g_bMDLLog) {
-							ZDebugOutput(L"Reading Text MDL file '" + str + L"'\n");
+							ZDebugOutput("Reading Text MDL file '" + str + "'\n");
 						}
 						pns = ::CreateNameSpace(str, this, pfile);
 					}

@@ -1364,12 +1364,12 @@ private:
         }
         else if (trekClient.GetShip()->GetStation()->GetCluster() == pcluster)
         {
-            trekClient.PostText(false, L"You are already in this cluster.");
+            trekClient.PostText(false, "You are already in this cluster.");
             trekClient.PlaySoundEffect(errorSound);
         }
         else if (pstation == NULL)
         {
-            trekClient.PostText(false, L"You do not have an appropriate station in this cluster.");
+            trekClient.PostText(false, "You do not have an appropriate station in this cluster.");
             trekClient.PlaySoundEffect(errorSound);
         }
         else if (trekClient.GetShip()->GetParentShip() != NULL)
@@ -1403,14 +1403,14 @@ private:
             SetVisible((((int)Number::Cast(pvalue)->GetValue()) & m_nMaskModeActive) != 0);
     }
 
-    const wchar_t* GetClusterCursor()
+    const char* GetClusterCursor()
     {
         if (trekClient.GetShip()->fRipcordActive()
                 || (GetWindow()->GetOverlayFlags() & ofTeleportPane))
             return AWF_CURSOR_DEFAULT;
         else if (GetWindow()->GetConsoleImage()->GetConsoleData()->IsComposingCommand()
                 || trekClient.GetShip()->GetCluster() != NULL)
-            return L"goto";
+            return "goto";
         else
             return AWF_CURSOR_DEFAULT;
     }

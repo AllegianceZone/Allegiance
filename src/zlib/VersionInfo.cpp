@@ -183,7 +183,7 @@ void ZVersionInfo::Unload()
 /////////////////////////////////////////////////////////////////////////////
 // String Values
 
-ZString ZVersionInfo::GetStringValue(const wchar_t* pszKey, bool* pbExists) const
+ZString ZVersionInfo::GetStringValue(LPCSTR pszKey, bool* pbExists) const
 {
   // Initialize the [out] parameter
   if (pbExists)
@@ -215,20 +215,20 @@ ZString ZVersionInfo::GetStringValue(const wchar_t* pszKey, bool* pbExists) cons
   }
 
   // Format the base sub-block string
-  TCHAR szBase[32];
-  _stprintf_s(szBase, 32, TEXT("\\StringFileInfo\\%04X"), wLangID);
+  CHAR szBase[32];
+  sprintf_s(szBase, 32, "\\StringFileInfo\\%04X", wLangID);
 
   // Loop thru each code page
   for (int iCP = 0; iCP < cCodePages; ++iCP)
   {
     // Format a sub-block string
-    TCHAR szSubBlock[_MAX_PATH * 2];
-    _stprintf_s(szSubBlock, _MAX_PATH * 2, TEXT("%s%04X\\%s"), szBase, rgwCodePages[iCP], pszKey);
+    CHAR szSubBlock[_MAX_PATH * 2];
+    sprintf_s(szSubBlock, _MAX_PATH * 2, "%s%04X\\%s", szBase, rgwCodePages[iCP], pszKey);
 
     // Query the value
     UINT cbValue = 0;
-    LPCTSTR pszValue = NULL;
-    if (VerQueryValue(m_pVerInfo, szSubBlock, (void**)&pszValue, &cbValue))
+    LPCSTR pszValue = NULL;
+    if (VerQueryValueA(m_pVerInfo, szSubBlock, (void**)&pszValue, &cbValue))
     {
       // Indicate that the key exists
       if (pbExists)
@@ -236,9 +236,7 @@ ZString ZVersionInfo::GetStringValue(const wchar_t* pszKey, bool* pbExists) cons
 
       // Indicate success
       SetLastError(0);
-	  ZString zValue(pszValue);
-
-	  return ZString(zValue);
+      return ZString(pszValue);
     }
   }
 

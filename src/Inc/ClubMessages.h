@@ -315,7 +315,7 @@ enum LeaderBoardSort
 };
 
 DEFINE_FEDMSG(C, LEADER_BOARD_QUERY, 365)
-wchar_t            szBasis[c_cbName]; // the character to use as a refrence 
+    char            szBasis[c_cbName]; // the character to use as a refrence 
                                        // point for the location in the list,
                                        // or "" to use idBasis.
     int             idBasis;           // the id of the basis character, or -1 for the top of the list
@@ -325,7 +325,7 @@ END_FEDMSG
 
 struct LeaderBoardEntry
 {
-	wchar_t                        CharacterName[c_cbName];
+    char                        CharacterName[c_cbName];
     int                         idCharacter;
 
     int                         nPosition;

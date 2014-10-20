@@ -91,27 +91,27 @@ END_OBJECT_MAP()
  *    dwErrorCode: take a dwErrorCode and print what it means as text    
  * 
  */
-void PrintSystemErrorMessage(LPCTSTR szText, DWORD dwErrorCode)
+void PrintSystemErrorMessage(LPCSTR szText, DWORD dwErrorCode)
 {
   LPVOID lpMsgBuf;
 
-  FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | 
+  FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | 
                 FORMAT_MESSAGE_ALLOCATE_BUFFER | 
                 FORMAT_MESSAGE_IGNORE_INSERTS, 
                 NULL, 
                 dwErrorCode, 
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
-                (LPTSTR) &lpMsgBuf,
+                (LPSTR) &lpMsgBuf,
                 0,
                 NULL 
                 );
 
-  wprintf(L"%s", (LPCTSTR)szText);
-  wprintf(L"%s", (LPCTSTR)lpMsgBuf);
+  printf("%s", (LPCSTR)szText);
+  printf("%s", (LPCSTR)lpMsgBuf);
 
-  _AGCModule.TriggerEvent(NULL, AllsrvEventID_SystemError, L"", -1, -1, -1, 2,
-      L"Text", VT_LPSTR, szText,
-      L"Message", VT_LPSTR, lpMsgBuf);
+  _AGCModule.TriggerEvent(NULL, AllsrvEventID_SystemError, "", -1, -1, -1, 2,
+      "Text", VT_LPSTR, szText,
+      "Message", VT_LPSTR, lpMsgBuf);
 
   LocalFree( lpMsgBuf );
 }
@@ -197,7 +197,7 @@ BOOL CServiceModule::IsInServiceControlManager()
 
     if (hSCM != NULL)
     {
-        SC_HANDLE hService = ::OpenService(hSCM, c_szSvcName, SERVICE_QUERY_CONFIG);
+        SC_HANDLE hService = ::OpenServiceA(hSCM, c_szSvcName, SERVICE_QUERY_CONFIG);
         if (hService != NULL)
         {
             bResult = TRUE;
@@ -269,12 +269,12 @@ HRESULT CServiceModule::InitAGC()
   GetAGCGlobal()->SetAvailableEventIDRanges(spRanges);
 
   // Create the event logger object
-  ZSucceeded(hr = m_spEventLogger.CreateInstance(L"AGC.EventLogger"));
+  ZSucceeded(hr = m_spEventLogger.CreateInstance("AGC.EventLogger"));
   RETURN_FAILED(hr);
 
   // Initialize the event logger object
   CComBSTR bstrEventSource(__MODULE__);
-  CComBSTR bstrRegKey(L"HKLM\\" HKLM_FedSrv);
+  CComBSTR bstrRegKey("HKLM\\" HKLM_FedSrvA);
   IAGCEventLoggerPrivatePtr spPrivate(m_spEventLogger);
   hr = spPrivate->Initialize(bstrEventSource, bstrRegKey);
   ZSucceeded(hr);
@@ -427,7 +427,7 @@ void CServiceModule::RegisterCOMObjects()
 
   // Check for failure
   if (FAILED(m_hrMTAKeepAlive))
-    PrintSystemErrorMessage(L"Failed to register COM class objects for Admin Session.", m_hrMTAKeepAlive);
+    PrintSystemErrorMessage("Failed to register COM class objects for Admin Session.", m_hrMTAKeepAlive);
 
   ZSucceeded(m_hrMTAKeepAlive);
 }
@@ -515,7 +515,7 @@ void CServiceModule::RevokeCOMObjects()
  *    argc, argv:   arguments passed via command-line (used by Install Service)
  */
 
-  HRESULT CServiceModule::RegisterServer(BOOL bReRegister, BOOL bRegTypeLib, BOOL bService, int argc, wchar_t * argv[])
+HRESULT CServiceModule::RegisterServer(BOOL bReRegister, BOOL bRegTypeLib, BOOL bService, int argc, char * argv[])
 {
     // Enter the COM MTA
     TCCoInit init(COINIT_MULTITHREADED);
@@ -586,7 +586,7 @@ void CServiceModule::RevokeCOMObjects()
       if (bService)
       {
 		  // mdvalley: I hate my ATL libraries sometimes (SetStringValue)
-          key.SetValue(TEXT(__MODULE__), _T("LocalService"));
+          key.SetValue(_T(__MODULE__), _T("LocalService"));
           key.SetValue(_T("-Service"), _T("ServiceParameters"));
           // Create service
           InstallService(argc, argv);
@@ -657,13 +657,13 @@ HRESULT CServiceModule::UnregisterServer()
 //
 //
 
-BOOL CServiceModule::InstallService(int argc, wchar_t * argv[])
+BOOL CServiceModule::InstallService(int argc, char * argv[])
 {
     SC_HANDLE schMgr;
     SC_HANDLE schSvc;
-	wchar_t szPath[512];
-	wchar_t * szUserName;
-	wchar_t * szPassword;
+    char szPath[512];
+    char * szUserName;
+    char * szPassword;
 
 
     schMgr = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
@@ -674,7 +674,7 @@ BOOL CServiceModule::InstallService(int argc, wchar_t * argv[])
         return FALSE;
     }
 
-    GetModuleFileName(NULL,szPath,sizeof(szPath));
+    GetModuleFileNameA(NULL,szPath,sizeof(szPath));
 
     if (argc > 3)
     {
@@ -686,9 +686,9 @@ BOOL CServiceModule::InstallService(int argc, wchar_t * argv[])
         szPassword = NULL;
     }
 
-    schSvc = CreateService(schMgr,
+    schSvc = CreateServiceA(schMgr,
                            c_szSvcName,
-                           L"MS Allegiance Game Server",
+                           "MS Allegiance Game Server",
                            SERVICE_ALL_ACCESS,
                            SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_AUTO_START,
@@ -696,15 +696,15 @@ BOOL CServiceModule::InstallService(int argc, wchar_t * argv[])
                            szPath,
                            NULL,
                            NULL,
-                           _T("RPCSS\0"),
+                           "RPCSS\0",
                            szUserName,
                            szPassword);
 
     if (!schSvc)
     {
-		wchar_t szBuf[MAX_PATH];
+      char szBuf[MAX_PATH];
       DWORD dwErrorCode(GetLastError());
-      swprintf(szBuf, L"Unable to create service [0x%08x].  Service not installed.\n", dwErrorCode);
+      sprintf(szBuf, "Unable to create service [0x%08x].  Service not installed.\n", dwErrorCode);
       PrintSystemErrorMessage(szBuf, dwErrorCode);
 
       CloseServiceHandle(schMgr);
@@ -739,9 +739,9 @@ BOOL CServiceModule::InstallService(int argc, wchar_t * argv[])
     failureActions.lpCommand = NULL;
     if( !ChangeServiceConfig2(schSvc, SERVICE_CONFIG_FAILURE_ACTIONS,&failureActions) )
     {
-		wchar_t szBuf[MAX_PATH];
+      char szBuf[MAX_PATH];
       DWORD dwErrorCode(GetLastError());
-      swprintf(szBuf, L"Unable to modify service [0x%08x].  Service not installed.\n", dwErrorCode);
+      sprintf(szBuf, "Unable to modify service [0x%08x].  Service not installed.\n", dwErrorCode);
       PrintSystemErrorMessage(szBuf, dwErrorCode);
 
       CloseServiceHandle(schMgr);
@@ -785,7 +785,7 @@ BOOL CServiceModule::RemoveService(void)
         return FALSE;
     }
 
-    schSvc = OpenService(schMgr, c_szSvcName, SERVICE_ALL_ACCESS);
+    schSvc = OpenServiceA(schMgr, c_szSvcName, SERVICE_ALL_ACCESS);
 
     if (!schSvc)
     {
@@ -808,8 +808,8 @@ BOOL CServiceModule::RemoveService(void)
       printf("%s removed (as an NT Service).\n", c_szSvcName);
     else
     {
-      wchar_t szBuf[MAX_PATH];
-      swprintf(szBuf, L"Unable to delete %s service.\n", c_szSvcName);
+      char szBuf[MAX_PATH];
+      sprintf(szBuf, "Unable to delete %s service.\n", c_szSvcName);
 
       DWORD dwErrorCode(GetLastError());
       PrintSystemErrorMessage(szBuf, dwErrorCode);
@@ -830,7 +830,7 @@ BOOL WINAPI HandlerRoutine(
     if (dwCtrlType == CTRL_CLOSE_EVENT || dwCtrlType == CTRL_BREAK_EVENT || dwCtrlType == CTRL_SHUTDOWN_EVENT || dwCtrlType == CTRL_C_EVENT) 
 		//imago added 7/3/08
     {
-		debugf(L"shutting down, got control code:%d\n",dwCtrlType);
+		debugf("shutting down, got control code:%d\n",dwCtrlType);
         SetEvent(g.hKillReceiveEvent);
         return TRUE;
     }
@@ -841,7 +841,7 @@ BOOL WINAPI HandlerRoutine(
 void RunAsWindow()
 {
   // Create an invisible window
-  HWND hwnd = ::CreateWindow(L"static", L"AllSrv", WS_OVERLAPPED,
+  HWND hwnd = ::CreateWindowA("static", "AllSrv", WS_OVERLAPPED,
     0, 0, 0, 0, NULL, NULL, ::GetModuleHandle(NULL), NULL);
 
   // Load the small application icon
@@ -851,9 +851,9 @@ void RunAsWindow()
 
   // Set the taskbar icon
   const UINT wm_ShellNotifyIcon = WM_APP;
-  NOTIFYICONDATA nid = {sizeof(nid), hwnd, 0, NIF_ICON | NIF_MESSAGE | NIF_TIP,
-    wm_ShellNotifyIcon, hIcon, L"Allegiance Server"};
-  Shell_NotifyIcon(NIM_ADD, &nid);
+  NOTIFYICONDATAA nid = {sizeof(nid), hwnd, 0, NIF_ICON | NIF_MESSAGE | NIF_TIP,
+    wm_ShellNotifyIcon, hIcon, "Allegiance Server"};
+  Shell_NotifyIconA(NIM_ADD, &nid);
 
   // Enter a message loop
   while (true)
@@ -879,7 +879,7 @@ void RunAsWindow()
   }
 
   // Remove the taskbar icon
-  Shell_NotifyIcon(NIM_DELETE, &nid);
+  Shell_NotifyIconA(NIM_DELETE, &nid);
 
   // Shutdown the application
   FedSrv_Terminate();
@@ -903,13 +903,13 @@ VOID CServiceModule::RunAsExecutable()
 #if defined(SRV_PARENT)
 	if (g.bRestarting == false) {
 		ZVersionInfo vi;
-		printf("%s\n%s\n\n",(LPCWSTR)vi.GetFileDescription(), (LPCWSTR)vi.GetLegalCopyright());
+		printf("%s\n%s\n\n",(LPCSTR)vi.GetFileDescription(), (LPCSTR)vi.GetLegalCopyright());
 	}
 #else
 #if !defined(SRV_CHILD)
     ZVersionInfo vi;
-    wprintf(L"%s\n%s\n\n",
-      (LPCWSTR)vi.GetFileDescription(), (LPCWSTR)vi.GetLegalCopyright());
+    printf("%s\n%s\n\n",
+      (LPCSTR)vi.GetFileDescription(), (LPCSTR)vi.GetLegalCopyright());
 #endif
 #endif
 
@@ -969,19 +969,19 @@ VOID CServiceModule::RunAsExecutable()
                 if (Key.EventType == KEY_EVENT && 
                     Key.Event.KeyEvent.wVirtualKeyCode == 'Q')
                 {
-                     debugf(L"Q pressed\n");
+                     debugf("Q pressed\n");
                      SetEvent(g.hKillReceiveEvent);
                 }
                 if (Key.EventType == KEY_EVENT && 
                     Key.Event.KeyEvent.wVirtualKeyCode == 'P')
                 {
-                     debugf(L"P pressed\n");
+                     debugf("P pressed\n");
                      FedSrv_Pause();
                 }
                 if (Key.EventType == KEY_EVENT && 
                     Key.Event.KeyEvent.wVirtualKeyCode == 'C')
                 {
-                     debugf(L"C pressed\n");
+                     debugf("C pressed\n");
                      FedSrv_Continue();
                 }
             }
@@ -1127,11 +1127,11 @@ void WINAPI CServiceModule::ServiceControl(DWORD dwCode)
 
 void WINAPI CServiceModule::ServiceMain(
   DWORD dwArgc,
-  LPWSTR *lpszArgv)
+  LPSTR *lpszArgv)
 {
     HRESULT hr;
 
-    g.ssh = RegisterServiceCtrlHandler(c_szSvcName, ServiceControl);
+    g.ssh = RegisterServiceCtrlHandlerA(c_szSvcName, ServiceControl);
 
     if (!g.ssh)
     {
@@ -1277,7 +1277,7 @@ void WINAPI MPServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 
 #else 
-void WINAPI _ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
+void WINAPI _ServiceMain(DWORD dwArgc, LPSTR* lpszArgv)
 {
     _Module.ServiceMain(dwArgc, lpszArgv);
 }

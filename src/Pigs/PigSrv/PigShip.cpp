@@ -95,8 +95,8 @@ bool CPigShip::OnNewChatMessage()
 		return false;
 
 	CommandID idCmd = GetIGC()->GetCommandID(c_cmdQueued);
-	const wchar_t* pszVerb = (0 <= idCmd && idCmd < c_cidMax) ? c_cdAllCommands[idCmd].szVerb : L"";
-	debugf(L"...got a <%s> command to %s!!!\n",pszVerb,pModel->GetName());
+	const char* pszVerb = (0 <= idCmd && idCmd < c_cidMax) ? c_cdAllCommands[idCmd].szVerb : "";
+	debugf("...got a <%s> command to %s!!!\n",pszVerb,pModel->GetName());
 	// Accept the queued command if auto accept is enabled
 	return m_bAutoAcceptCommands ? SUCCEEDED(AcceptCommand(NULL)) : true;
 }
@@ -139,9 +139,9 @@ HRESULT CPigShip::CreateCommandWrapper(Command cmd, IAGCCommand** ppCommand)
 	const CommandID idCmd = GetIGC()->GetCommandID(cmd);
 
 	// Get the strings for the command target and id
-	const wchar_t* pszTarget = pModel ? GetModelName(pModel) : NULL;
-	const wchar_t* pszVerb = (0 <= idCmd && idCmd < c_cidMax) ?
-		c_cdAllCommands[idCmd].szVerb : L"";
+	const char* pszTarget = pModel ? GetModelName(pModel) : NULL;
+	const char* pszVerb = (0 <= idCmd && idCmd < c_cidMax) ?
+		c_cdAllCommands[idCmd].szVerb : "";
 
 	// Initialize the new object
 	spCmd->Init(pszTarget, pszVerb);
@@ -168,13 +168,14 @@ IclusterIGC* CPigShip::FindCluster(BSTR bstrSector)
 	if (!BSTRLen(bstrSector))
 		return NULL;
 
-	LPCWSTR pszSector = OLE2CW(bstrSector);
+	USES_CONVERSION;
+	LPCSTR pszSector = OLE2CA(bstrSector);
 
 	const ClusterListIGC* pClusters = GetIGC()->GetMission()->GetClusters();
 	for (ClusterLinkIGC* it = pClusters->first(); it; it = it->next())
 	{
 		IclusterIGC* pCluster = it->data();
-		if (0 == _wcsicmp(pCluster->GetName(), pszSector))
+		if (0 == _stricmp(pCluster->GetName(), pszSector))
 			return pCluster;
 	}
 	return NULL;
@@ -186,7 +187,8 @@ ImodelIGC* CPigShip::FindModel(BSTR bstrModel)
 	if (!BSTRLen(bstrModel))
 		return NULL;
 
-	LPCWSTR pszModel = OLE2CW(bstrModel);
+	USES_CONVERSION;
+	LPCSTR pszModel = OLE2CA(bstrModel);
 
 	const ClusterListIGC* pClusters = GetIGC()->GetMission()->GetClusters();
 	for (ClusterLinkIGC* itCluster = pClusters->first(); itCluster; itCluster = itCluster->next())
@@ -196,7 +198,7 @@ ImodelIGC* CPigShip::FindModel(BSTR bstrModel)
 		for (ModelLinkIGC* it = pModels->first(); it; it = it->next())
 		{
 			ImodelIGC* pModel = it->data();
-			if (0 == _wcsicmp(GetModelName(pModel), pszModel))
+			if (0 == _stricmp(GetModelName(pModel), pszModel))
 				return pModel;
 		}
 	}

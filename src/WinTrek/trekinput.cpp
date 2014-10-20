@@ -1093,12 +1093,12 @@ TRef<TrekInput> CreateTrekInput(HINSTANCE hInst, HWND hwnd, InputEngine* pinputE
 
 PCC g_ppccAxisDescription[] =
 {
-    L"Yaw",
-    L"Pitch",
-    L"Roll",
-    L"Throttle",
-    L"Hat",
-    L"Hat as Buttons"
+    "Yaw",
+    "Pitch",
+    "Roll",
+    "Throttle",
+    "Hat",
+    "Hat as Buttons"
 };
 
 class KeyInfo {
@@ -1116,59 +1116,59 @@ KeyInfo g_pkeyInfo[] =
     { NULL               }, // 05
     { NULL               }, // 06
     { NULL               }, // 07
-    { L"Backspace"        }, // 08
-    { L"Tab"              }, // 09
+    { "Backspace"        }, // 08
+    { "Tab"              }, // 09
     { NULL               }, // 0a
     { NULL               }, // 0b
     { NULL               }, // 0c
-    { L"Enter"            }, // 0d
+    { "Enter"            }, // 0d
     { NULL               }, // 0e
     { NULL               }, // 0f
 
     { NULL               }, // 10
     { NULL               }, // 11
     { NULL               }, // 12
-    { L"Pause"            }, // 13
-    { L"Caps Lock"        }, // 14
+    { "Pause"            }, // 13
+    { "Caps Lock"        }, // 14
     { NULL               }, // 15
     { NULL               }, // 16
     { NULL               }, // 17
     { NULL               }, // 18
     { NULL               }, // 19
     { NULL               }, // 1a
-    { L"Escape"           }, // 1b
+    { "Escape"           }, // 1b
     { NULL               }, // 1c
     { NULL               }, // 1d
     { NULL               }, // 1e
     { NULL               }, // 1f
 
-    { L"Space"            }, // 20
-    { L"Page Up"          }, // 21
-    { L"Page Down"        }, // 22
-    { L"End"              }, // 23
-    { L"Home"             }, // 24
-    { L"Left"             }, // 25
-    { L"Up"               }, // 26
-    { L"Right"            }, // 27
-    { L"Down"             }, // 28
+    { "Space"            }, // 20
+    { "Page Up"          }, // 21
+    { "Page Down"        }, // 22
+    { "End"              }, // 23
+    { "Home"             }, // 24
+    { "Left"             }, // 25
+    { "Up"               }, // 26
+    { "Right"            }, // 27
+    { "Down"             }, // 28
     { NULL               }, // 29
     { NULL               }, // 2a
     { NULL               }, // 2b
-    { L"PrintScreen"      }, // 2c
-    { L"Insert"           }, // 2d
-    { L"Delete"           }, // 2e
+    { "PrintScreen"      }, // 2c
+    { "Insert"           }, // 2d
+    { "Delete"           }, // 2e
     { NULL               }, // 2f
 
-    { L"0"                }, // 30
-    { L"1"                }, // 31
-    { L"2"                }, // 32
-    { L"3"                }, // 33
-    { L"4"                }, // 34
-    { L"5"                }, // 35
-    { L"6"                }, // 36
-    { L"7"                }, // 37
-    { L"8"                }, // 38
-    { L"9"                }, // 39
+    { "0"                }, // 30
+    { "1"                }, // 31
+    { "2"                }, // 32
+    { "3"                }, // 33
+    { "4"                }, // 34
+    { "5"                }, // 35
+    { "6"                }, // 36
+    { "7"                }, // 37
+    { "8"                }, // 38
+    { "9"                }, // 39
     { NULL               }, // 3a
     { NULL               }, // 3b
     { NULL               }, // 3c
@@ -1177,68 +1177,68 @@ KeyInfo g_pkeyInfo[] =
     { NULL               }, // 3f
 
     { NULL               }, // 40
-    { L"A"                }, // 41
-    { L"B"                }, // 42
-    { L"C"                }, // 43
-    { L"D"                }, // 44
-    { L"E"                }, // 45
-    { L"F"                }, // 46
-    { L"G"                }, // 47
-    { L"H"                }, // 48
-    { L"I"                }, // 49
-    { L"J"                }, // 4a
-    { L"K"                }, // 4b
-    { L"L"                }, // 4c
-    { L"M"                }, // 4d
-    { L"N"                }, // 4e
-    { L"O"                }, // 4f
+    { "A"                }, // 41
+    { "B"                }, // 42
+    { "C"                }, // 43
+    { "D"                }, // 44
+    { "E"                }, // 45
+    { "F"                }, // 46
+    { "G"                }, // 47
+    { "H"                }, // 48
+    { "I"                }, // 49
+    { "J"                }, // 4a
+    { "K"                }, // 4b
+    { "L"                }, // 4c
+    { "M"                }, // 4d
+    { "N"                }, // 4e
+    { "O"                }, // 4f
 
-    { L"P"                }, // 50
-    { L"Q"                }, // 51
-    { L"R"                }, // 52
-    { L"S"                }, // 53
-    { L"T"                }, // 54
-    { L"U"                }, // 55
-    { L"V"                }, // 56
-    { L"W"                }, // 57
-    { L"X"                }, // 58
-    { L"Y"                }, // 59
-    { L"Z"                }, // 5a
+    { "P"                }, // 50
+    { "Q"                }, // 51
+    { "R"                }, // 52
+    { "S"                }, // 53
+    { "T"                }, // 54
+    { "U"                }, // 55
+    { "V"                }, // 56
+    { "W"                }, // 57
+    { "X"                }, // 58
+    { "Y"                }, // 59
+    { "Z"                }, // 5a
     { NULL               }, // 5b
     { NULL               }, // 5c
     { NULL               }, // 5d
     { NULL               }, // 5e
     { NULL               }, // 5f
 
-    { L"Num Pad 0"        }, // 60
-    { L"Num Pad 1"        }, // 61
-    { L"Num Pad 2"        }, // 62
-    { L"Num Pad 3"        }, // 63
-    { L"Num Pad 4"        }, // 64
-    { L"Num Pad 5"        }, // 65
-    { L"Num Pad 6"        }, // 66
-    { L"Num Pad 7"        }, // 67
-    { L"Num Pad 8"        }, // 68
-    { L"Num Pad 9"        }, // 69
-    { L"Num Pad Multiply" }, // 6a
-    { L"Num Pad Plus"     }, // 6b
-    { L"Num Pad Enter"    }, // 6c
-    { L"Num Pad Minus"    }, // 6d
-    { L"Num Pad Decimal"  }, // 6e
-    { L"Num Pad Divide"   }, // 6f
+    { "Num Pad 0"        }, // 60
+    { "Num Pad 1"        }, // 61
+    { "Num Pad 2"        }, // 62
+    { "Num Pad 3"        }, // 63
+    { "Num Pad 4"        }, // 64
+    { "Num Pad 5"        }, // 65
+    { "Num Pad 6"        }, // 66
+    { "Num Pad 7"        }, // 67
+    { "Num Pad 8"        }, // 68
+    { "Num Pad 9"        }, // 69
+    { "Num Pad Multiply" }, // 6a
+    { "Num Pad Plus"     }, // 6b
+    { "Num Pad Enter"    }, // 6c
+    { "Num Pad Minus"    }, // 6d
+    { "Num Pad Decimal"  }, // 6e
+    { "Num Pad Divide"   }, // 6f
 
-    { L"F1"               }, // 70
-    { L"F2"               }, // 71
-    { L"F3"               }, // 72
-    { L"F4"               }, // 73
-    { L"F5"               }, // 74
-    { L"F6"               }, // 75
-    { L"F7"               }, // 76
-    { L"F8"               }, // 77
-    { L"F9"               }, // 78
-    { L"F10"              }, // 79
-    { L"F11"              }, // 7a
-    { L"F12"              }, // 7b
+    { "F1"               }, // 70
+    { "F2"               }, // 71
+    { "F3"               }, // 72
+    { "F4"               }, // 73
+    { "F5"               }, // 74
+    { "F6"               }, // 75
+    { "F7"               }, // 76
+    { "F8"               }, // 77
+    { "F9"               }, // 78
+    { "F10"              }, // 79
+    { "F11"              }, // 7a
+    { "F12"              }, // 7b
     { NULL               }, // 7c
     { NULL               }, // 7d
     { NULL               }, // 7e
@@ -1261,8 +1261,8 @@ KeyInfo g_pkeyInfo[] =
     { NULL               }, // 8e
     { NULL               }, // 8f
 
-    { L"Num Lock"         }, // 90
-    { L"Scroll Lock"      }, // 91
+    { "Num Lock"         }, // 90
+    { "Scroll Lock"      }, // 91
     { NULL               }, // 92
     { NULL               }, // 93
     { NULL               }, // 94
@@ -1305,14 +1305,14 @@ KeyInfo g_pkeyInfo[] =
     { NULL               }, // b7
     { NULL               }, // b8
     { NULL               }, // b9
-    { L"SemiColon"        }, // ba
-    { L"Equals"           }, // bb
-    { L"Comma"            }, // bc
-    { L"Minus"            }, // bd
-    { L"Period"           }, // be
-    { L"Forward Slash"    }, // bf
+    { "SemiColon"        }, // ba
+    { "Equals"           }, // bb
+    { "Comma"            }, // bc
+    { "Minus"            }, // bd
+    { "Period"           }, // be
+    { "Forward Slash"    }, // bf
 
-    { L"Tilde"            }, // c0
+    { "Tilde"            }, // c0
     { NULL               }, // c1
     { NULL               }, // c2
     { NULL               }, // c3
@@ -1340,10 +1340,10 @@ KeyInfo g_pkeyInfo[] =
     { NULL               }, // d8
     { NULL               }, // d9
     { NULL               }, // da
-    { L"Left Square"      }, // db
-    { L"Back Slash"       }, // dc
-    { L"Right Square"     }, // dd
-    { L"Quote"            }, // de
+    { "Left Square"      }, // db
+    { "Back Slash"       }, // dc
+    { "Right Square"     }, // dd
+    { "Quote"            }, // de
     { NULL               }, // df
 
     { NULL               }, // e0
@@ -1389,234 +1389,234 @@ public:
 
 CommandInfo g_pCommandInfo[] =
 {
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Chat"                                  },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Chat"                                  },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_QuickChatMenu                   , L"Quick Chat Menu"                       },
-    { TK_StartChat                       , L"Start Chat"                            },
-    { TK_ChatPageUp                      , L"Chat Page Up"                          },
-    { TK_ChatPageDown                    , L"Chat Page Down"                        },
+    { TK_QuickChatMenu                   , "Quick Chat Menu"                       },
+    { TK_StartChat                       , "Start Chat"                            },
+    { TK_ChatPageUp                      , "Chat Page Up"                          },
+    { TK_ChatPageDown                    , "Chat Page Down"                        },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Commands"                              },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Commands"                              },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_AcceptCommand                   , L"Accept Command"                        },
-    { TK_ClearCommand                    , L"Clear Command"                         },
-    { TK_RejectCommand                   , L"Reject Command"                        },
-    { TK_ExecuteCommand                  , L"Execute Command"                       },
+    { TK_AcceptCommand                   , "Accept Command"                        },
+    { TK_ClearCommand                    , "Clear Command"                         },
+    { TK_RejectCommand                   , "Reject Command"                        },
+    { TK_ExecuteCommand                  , "Execute Command"                       },
 
-    { TK_VoteYes                         , L"Vote Yes"                              },
-    { TK_VoteNo                          , L"Vote No"                               },
+    { TK_VoteYes                         , "Vote Yes"                              },
+    { TK_VoteNo                          , "Vote No"                               },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Weapons"                               },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Weapons"                               },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_FireWeapon                      , L"Fire Weapon"                           },
-    { TK_FireMissile                     , L"Fire Missile"                          },
-    { TK_PrevWeapon                      , L"Previous Weapon"                       },
-    { TK_NextWeapon                      , L"Next Weapon"                           },
-    { TK_ToggleGroupFire                 , L"Toggle Group Fire"                     },
-    { TK_Reload                          , L"Reload"                                },
-    { TK_DropMine                        , L"Drop Mine or Probe"                    },// yp - Your_Persona fix bug65 (rewording) Aug-04-2006
-    { TK_DropChaff                       , L"Drop Chaff"                            },
+    { TK_FireWeapon                      , "Fire Weapon"                           },
+    { TK_FireMissile                     , "Fire Missile"                          },
+    { TK_PrevWeapon                      , "Previous Weapon"                       },
+    { TK_NextWeapon                      , "Next Weapon"                           },
+    { TK_ToggleGroupFire                 , "Toggle Group Fire"                     },
+    { TK_Reload                          , "Reload"                                },
+    { TK_DropMine                        , "Drop Mine or Probe"                    },// yp - Your_Persona fix bug65 (rewording) Aug-04-2006
+    { TK_DropChaff                       , "Drop Chaff"                            },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Turning"                               },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Turning"                               },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_PitchUp                         , L"Pitch Up"                              },
-    { TK_PitchDown                       , L"Pitch Down"                            },
-    { TK_YawLeft                         , L"Yaw Left"                              },
-    { TK_YawRight                        , L"Yaw Right"                             },
-    { TK_RollLeft                        , L"Roll Left"                             },
-    { TK_RollRight                       , L"Roll Right"                            },
-    { TK_RollModifier                    , L"Roll Modifier"                         },
-    { TK_ToggleMouse                     , L"Toggle Mouse Control"                  },
+    { TK_PitchUp                         , "Pitch Up"                              },
+    { TK_PitchDown                       , "Pitch Down"                            },
+    { TK_YawLeft                         , "Yaw Left"                              },
+    { TK_YawRight                        , "Yaw Right"                             },
+    { TK_RollLeft                        , "Roll Left"                             },
+    { TK_RollRight                       , "Roll Right"                            },
+    { TK_RollModifier                    , "Roll Modifier"                         },
+    { TK_ToggleMouse                     , "Toggle Mouse Control"                  },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Thrust"                                },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Thrust"                                },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_ThrustLeft                      , L"Thrust Left"                           },
-    { TK_ThrustRight                     , L"Thrust Right"                          },
-    { TK_ThrustUp                        , L"Thrust Up"                             },
-    { TK_ThrustDown                      , L"Thrust Down"                           },
-    { TK_ThrustForward                   , L"Thrust Forward"                        },
-    { TK_ThrustBackward                  , L"Thrust Backward"                       },
-    { TK_FireBooster                     , L"Fire Booster"                          },
-    { TK_ThrottleUp                      , L"Throttle Up"                           },
-    { TK_ThrottleDown                    , L"Throttle Down"                         },
-    { TK_ThrottleZero                    , L"Throttle Zero"                         },
-    { TK_Throttle33                      , L"Throttle 33%"                          },
-    { TK_Throttle66                      , L"Throttle 66%"                          },
-    { TK_ThrottleFull                    , L"Throttle Full"                         },
-    { TK_LockVector                      , L"Lock Vector"                           },
-    { TK_ToggleAutoPilot                 , L"Toggle AutoPilot"                      },
-    { TK_MatchSpeed                      , L"Match Speed"                           },
+    { TK_ThrustLeft                      , "Thrust Left"                           },
+    { TK_ThrustRight                     , "Thrust Right"                          },
+    { TK_ThrustUp                        , "Thrust Up"                             },
+    { TK_ThrustDown                      , "Thrust Down"                           },
+    { TK_ThrustForward                   , "Thrust Forward"                        },
+    { TK_ThrustBackward                  , "Thrust Backward"                       },
+    { TK_FireBooster                     , "Fire Booster"                          },
+    { TK_ThrottleUp                      , "Throttle Up"                           },
+    { TK_ThrottleDown                    , "Throttle Down"                         },
+    { TK_ThrottleZero                    , "Throttle Zero"                         },
+    { TK_Throttle33                      , "Throttle 33%"                          },
+    { TK_Throttle66                      , "Throttle 66%"                          },
+    { TK_ThrottleFull                    , "Throttle Full"                         },
+    { TK_LockVector                      , "Lock Vector"                           },
+    { TK_ToggleAutoPilot                 , "Toggle AutoPilot"                      },
+    { TK_MatchSpeed                      , "Match Speed"                           },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Camera"                                },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Camera"                                },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_ZoomOut                         , L"Zoom Out"                              },
-    { TK_ZoomIn                          , L"Zoom In"                               },
-    { TK_ViewFrontLeft                   , L"View Front Left"                       },
-    { TK_ViewFrontRight                  , L"View Front Right"                      },
-    { TK_ViewLeft                        , L"View Left"                             },
-    { TK_ViewRight                       , L"View Right"                            },
-    { TK_ViewExternal                    , L"View External"                         },
-    { TK_ViewFlyby                       , L"View Flyby"                            },
-    { TK_ViewMissile                     , L"View Missile"                          },
-    { TK_ViewTarget                      , L"View Target"                           },
-    { TK_ViewChase                       , L"View Chase"                            },
-//    { TK_ViewTurret                      , L"View Turret"                           },
-    { TK_ViewBase                        , L"View Base"                             },
-    { TK_ViewSector                      , L"View Sector"                           },
-    { TK_ViewCommand                     , L"View Command"                          },
-    { TK_ViewRear                        , L"View Rear"                             },
-    { TK_ViewRearLeft                    , L"View Rear Left"                        },
-    { TK_ViewRearRight                   , L"View Rear Right"                       },
-    { TK_ViewExternalOrbit               , L"View External Orbit"                   },
-    { TK_ViewExternalStation             , L"View External Target"                  },
+    { TK_ZoomOut                         , "Zoom Out"                              },
+    { TK_ZoomIn                          , "Zoom In"                               },
+    { TK_ViewFrontLeft                   , "View Front Left"                       },
+    { TK_ViewFrontRight                  , "View Front Right"                      },
+    { TK_ViewLeft                        , "View Left"                             },
+    { TK_ViewRight                       , "View Right"                            },
+    { TK_ViewExternal                    , "View External"                         },
+    { TK_ViewFlyby                       , "View Flyby"                            },
+    { TK_ViewMissile                     , "View Missile"                          },
+    { TK_ViewTarget                      , "View Target"                           },
+    { TK_ViewChase                       , "View Chase"                            },
+//    { TK_ViewTurret                      , "View Turret"                           },
+    { TK_ViewBase                        , "View Base"                             },
+    { TK_ViewSector                      , "View Sector"                           },
+    { TK_ViewCommand                     , "View Command"                          },
+    { TK_ViewRear                        , "View Rear"                             },
+    { TK_ViewRearLeft                    , "View Rear Left"                        },
+    { TK_ViewRearRight                   , "View Rear Right"                       },
+    { TK_ViewExternalOrbit               , "View External Orbit"                   },
+    { TK_ViewExternalStation             , "View External Target"                  },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"UI Toggles"                            },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "UI Toggles"                            },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_ConModeGameState                , L"Switch To Game State"                  },
-    { TK_ConModeCombat                   , L"Switch To Combat"                      },
-    { TK_ConModeCommand                  , L"Switch To Command"                     },
-    { TK_ConModeInventory                , L"Switch To Inventory"                   },
-    { TK_ConModeInvest                   , L"Switch To Invest"                      },
-    { TK_ConModeTeam                     , L"Switch To Team"                        },
-    { TK_ConModeNav                      , L"Switch To Nav"                         },
-    { TK_ConModeMiniTeam                 , L"Switch To Mini Team"                   },
-    { TK_ConModeTeleport                 , L"Switch To Teleport"                    },
-    { TK_ToggleGrid                      , L"Toggle Grid"                           },
-    { TK_CycleRadar                      , L"Cycle Radar Modes"                     },
+    { TK_ConModeGameState                , "Switch To Game State"                  },
+    { TK_ConModeCombat                   , "Switch To Combat"                      },
+    { TK_ConModeCommand                  , "Switch To Command"                     },
+    { TK_ConModeInventory                , "Switch To Inventory"                   },
+    { TK_ConModeInvest                   , "Switch To Invest"                      },
+    { TK_ConModeTeam                     , "Switch To Team"                        },
+    { TK_ConModeNav                      , "Switch To Nav"                         },
+    { TK_ConModeMiniTeam                 , "Switch To Mini Team"                   },
+    { TK_ConModeTeleport                 , "Switch To Teleport"                    },
+    { TK_ToggleGrid                      , "Toggle Grid"                           },
+    { TK_CycleRadar                      , "Cycle Radar Modes"                     },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Inventory"                             },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Inventory"                             },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_SwapWeapon1                     , L"Swap Weapon1"                          },
-    { TK_SwapWeapon2                     , L"Swap Weapon2"                          },
-    { TK_SwapWeapon3                     , L"Swap Weapon3"                          },
-    { TK_SwapWeapon4                     , L"Swap Weapon4"                          },
-    { TK_SwapTurret1                     , L"Swap Turret1"                          },
-    { TK_SwapTurret2                     , L"Swap Turret2"                          },
-    { TK_SwapTurret3                     , L"Swap Turret3"                          },
-    { TK_SwapTurret4                     , L"Swap Turret4"                          },
-    { TK_PromoteTurret1                  , L"Promote Turret1"                       },
-    { TK_PromoteTurret2                  , L"Promote Turret2"                       },
-    { TK_PromoteTurret3                  , L"Promote Turret3"                       },
-    { TK_PromoteTurret4                  , L"Promote Turret4"                       },
-    { TK_SwapMissile                     , L"Swap Missile"                          },
-    { TK_SwapChaff                       , L"Swap Chaff"                            },
-    { TK_SwapShield                      , L"Swap Shield"                           },
-    { TK_SwapCloak                       , L"Swap Cloak"                            },
-    { TK_SwapAfterburner                 , L"Swap Afterburner"                      },
-    { TK_SwapMine                        , L"Swap Mine"                             },
-    { TK_NextCargo                       , L"Next Cargo"                            },
-    { TK_ToggleWeapon1                   , L"Toggle Weapon1"                        },
-    { TK_ToggleWeapon2                   , L"Toggle Weapon2"                        },
-    { TK_ToggleWeapon3                   , L"Toggle Weapon3"                        },
-    { TK_ToggleWeapon4                   , L"Toggle Weapon4"                        },
-    { TK_DropCargo                       , L"Drop Cargo"                            },
+    { TK_SwapWeapon1                     , "Swap Weapon1"                          },
+    { TK_SwapWeapon2                     , "Swap Weapon2"                          },
+    { TK_SwapWeapon3                     , "Swap Weapon3"                          },
+    { TK_SwapWeapon4                     , "Swap Weapon4"                          },
+    { TK_SwapTurret1                     , "Swap Turret1"                          },
+    { TK_SwapTurret2                     , "Swap Turret2"                          },
+    { TK_SwapTurret3                     , "Swap Turret3"                          },
+    { TK_SwapTurret4                     , "Swap Turret4"                          },
+    { TK_PromoteTurret1                  , "Promote Turret1"                       },
+    { TK_PromoteTurret2                  , "Promote Turret2"                       },
+    { TK_PromoteTurret3                  , "Promote Turret3"                       },
+    { TK_PromoteTurret4                  , "Promote Turret4"                       },
+    { TK_SwapMissile                     , "Swap Missile"                          },
+    { TK_SwapChaff                       , "Swap Chaff"                            },
+    { TK_SwapShield                      , "Swap Shield"                           },
+    { TK_SwapCloak                       , "Swap Cloak"                            },
+    { TK_SwapAfterburner                 , "Swap Afterburner"                      },
+    { TK_SwapMine                        , "Swap Mine"                             },
+    { TK_NextCargo                       , "Next Cargo"                            },
+    { TK_ToggleWeapon1                   , "Toggle Weapon1"                        },
+    { TK_ToggleWeapon2                   , "Toggle Weapon2"                        },
+    { TK_ToggleWeapon3                   , "Toggle Weapon3"                        },
+    { TK_ToggleWeapon4                   , "Toggle Weapon4"                        },
+    { TK_DropCargo                       , "Drop Cargo"                            },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Targeting"                             },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Targeting"                             },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_Target                          , L"Target"                                },
-    { TK_TargetNothing                   , L"Target Nothing"                        },
-    { TK_TargetSelf                      , L"Target Self"                           },
-    { TK_TargetNearest                   , L"Target Nearest"                        },
-    { TK_TargetPrev                      , L"Target Previous"                       },
-    { TK_TargetCommand                   , L"Target Command"                        },
-    { TK_TargetCenter                    , L"Target Center"                         },
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_TargetFlag                      , L"Target Flag"                           },
-    { TK_TargetFlagNearest               , L"Target Nearest flag"                   },
-    { TK_TargetFlagPrev                  , L"Target Previous flag"                  },
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_TargetArtifact                  , L"Target Artifact"                       },
-    { TK_TargetArtifactNearest           , L"Target Nearest artifact"               },
-    { TK_TargetArtifactPrev              , L"Target Previous artifact"              },
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_TargetWarp                      , L"Target Aleph"                          },
-    { TK_TargetWarpNearest               , L"Target Nearest Aleph"                  },
-    { TK_TargetWarpPrev                  , L"Target Previous Alpeh"                 },
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_TargetHostile                   , L"Target Hostile"                        },
-    { TK_TargetEnemy                     , L"Target Enemy"                          },
-    { TK_TargetEnemyNearest              , L"Target Enemy Nearest"                  },
-    { TK_TargetEnemyPrev                 , L"Target Enemy Previous"                 },
-    { TK_TargetEnemyBase                 , L"Target Enemy Base"                     },
-    { TK_TargetEnemyBaseNearest          , L"Target Enemy Base Nearest"             },
-    { TK_TargetEnemyBasePrev             , L"Target Enemy Base Previous"            },
-    { TK_TargetEnemyBomber               , L"Target Enemy Bomber"                   },
-    { TK_TargetEnemyFighter              , L"Target Enemy Fighter"                  },
-    { TK_TargetEnemyConstructor          , L"Target Enemy Constructor"              },
-    { TK_TargetEnemyMiner                , L"Target Enemy Miner"                    },
-    { TK_TargetEnemyMajorBase            , L"Target Enemy Major Base"               },
-    { TK_TargetEnemyBomberNearest        , L"Target Nearest Enemy Bomber"           },
-    { TK_TargetEnemyFighterNearest       , L"Target Nearest Enemy Fighter"          },
-    { TK_TargetEnemyConstructorNearest   , L"Target Nearest Enemy Constructor"      },
-    { TK_TargetEnemyMinerNearest         , L"Target Nearest Enemy Miner"            },
-    { TK_TargetEnemyMajorBaseNearest     , L"Target Nearest Enemy Major Base"       },
-    { TK_TargetEnemyBomberPrev           , L"Target Previous Enemy Bomber"          },
-    { TK_TargetEnemyFighterPrev          , L"Target Previous Enemy Fighter"         },
-    { TK_TargetEnemyConstructorPrev      , L"Target Previous Enemy Constructor"     },
-    { TK_TargetEnemyMinerPrev            , L"Target Previous Enemy Miner"           },
-    { TK_TargetEnemyMajorBasePrev        , L"Target Previous Enemy Major Base"      },
-    { TK_NoKeyMapping                    , L""                                      },
- 	{ TK_TargetAlliedBase                , L"Target Allied Base"                    }, //Imago 8/1/09
-    { TK_TargetAlliedBaseNearest         , L"Target Allied Base Nearest"            },
-    { TK_TargetAlliedBasePrev            , L"Target Allied Base Previous"           },
-    { TK_TargetFriendly                  , L"Target Friendly"                       },
-    { TK_TargetFriendlyNearest           , L"Target Friendly Nearest"               },
-    { TK_TargetFriendlyPrev              , L"Target Friendly Previous"              },
-    { TK_TargetFriendlyBase              , L"Target Friendly Base"                  },
-    { TK_TargetFriendlyBaseNearest       , L"Target Friendly Base Nearest"          },
-    { TK_TargetFriendlyBasePrev          , L"Target Friendly Base Previous"         },
-    { TK_TargetFriendlyBomber            , L"Target Friendly Bomber"                },
-    { TK_TargetFriendlyFighter           , L"Target Friendly Fighter"               },
-    { TK_TargetFriendlyConstructor       , L"Target Friendly Constructor"           },
-    { TK_TargetFriendlyMiner             , L"Target Friendly Miner"                 },
-    { TK_TargetFriendlyLifepod           , L"Target Friendly Lifepod"               },
-    { TK_TargetFriendlyMajorBase         , L"Target Friendly Major Base"            },
-    { TK_TargetFriendlyBomberNearest     , L"Target Nearest Friendly Bomber"        },
-    { TK_TargetFriendlyFighterNearest    , L"Target Nearest Friendly Fighter"       },
-    { TK_TargetFriendlyConstructorNearest, L"Target Nearest Friendly Constructor"   },
-    { TK_TargetFriendlyMinerNearest      , L"Target Nearest Friendly Miner"         },
-    { TK_TargetFriendlyLifepodNearest    , L"Target Nearest Friendly Lifepod"       },
-    { TK_TargetFriendlyMajorBaseNearest  , L"Target Nearest Friendly Major Base"    },
-    { TK_TargetFriendlyBomberPrev        , L"Target Previous Friendly Bomber"       },
-    { TK_TargetFriendlyFighterPrev       , L"Target Previous Friendly Fighter"      },
-    { TK_TargetFriendlyConstructorPrev   , L"Target Previous Friendly Constructor"  },
-    { TK_TargetFriendlyMinerPrev         , L"Target Previous Friendly Miner"        },
-    { TK_TargetFriendlyLifepodPrev       , L"Target Previous Friendly Lifepod"      },
-    { TK_TargetFriendlyMajorBasePrev     , L"Target Previous Friendly Major Base"   },
+    { TK_Target                          , "Target"                                },
+    { TK_TargetNothing                   , "Target Nothing"                        },
+    { TK_TargetSelf                      , "Target Self"                           },
+    { TK_TargetNearest                   , "Target Nearest"                        },
+    { TK_TargetPrev                      , "Target Previous"                       },
+    { TK_TargetCommand                   , "Target Command"                        },
+    { TK_TargetCenter                    , "Target Center"                         },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_TargetFlag                      , "Target Flag"                           },
+    { TK_TargetFlagNearest               , "Target Nearest flag"                   },
+    { TK_TargetFlagPrev                  , "Target Previous flag"                  },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_TargetArtifact                  , "Target Artifact"                       },
+    { TK_TargetArtifactNearest           , "Target Nearest artifact"               },
+    { TK_TargetArtifactPrev              , "Target Previous artifact"              },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_TargetWarp                      , "Target Aleph"                          },
+    { TK_TargetWarpNearest               , "Target Nearest Aleph"                  },
+    { TK_TargetWarpPrev                  , "Target Previous Alpeh"                 },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_TargetHostile                   , "Target Hostile"                        },
+    { TK_TargetEnemy                     , "Target Enemy"                          },
+    { TK_TargetEnemyNearest              , "Target Enemy Nearest"                  },
+    { TK_TargetEnemyPrev                 , "Target Enemy Previous"                 },
+    { TK_TargetEnemyBase                 , "Target Enemy Base"                     },
+    { TK_TargetEnemyBaseNearest          , "Target Enemy Base Nearest"             },
+    { TK_TargetEnemyBasePrev             , "Target Enemy Base Previous"            },
+    { TK_TargetEnemyBomber               , "Target Enemy Bomber"                   },
+    { TK_TargetEnemyFighter              , "Target Enemy Fighter"                  },
+    { TK_TargetEnemyConstructor          , "Target Enemy Constructor"              },
+    { TK_TargetEnemyMiner                , "Target Enemy Miner"                    },
+    { TK_TargetEnemyMajorBase            , "Target Enemy Major Base"               },
+    { TK_TargetEnemyBomberNearest        , "Target Nearest Enemy Bomber"           },
+    { TK_TargetEnemyFighterNearest       , "Target Nearest Enemy Fighter"          },
+    { TK_TargetEnemyConstructorNearest   , "Target Nearest Enemy Constructor"      },
+    { TK_TargetEnemyMinerNearest         , "Target Nearest Enemy Miner"            },
+    { TK_TargetEnemyMajorBaseNearest     , "Target Nearest Enemy Major Base"       },
+    { TK_TargetEnemyBomberPrev           , "Target Previous Enemy Bomber"          },
+    { TK_TargetEnemyFighterPrev          , "Target Previous Enemy Fighter"         },
+    { TK_TargetEnemyConstructorPrev      , "Target Previous Enemy Constructor"     },
+    { TK_TargetEnemyMinerPrev            , "Target Previous Enemy Miner"           },
+    { TK_TargetEnemyMajorBasePrev        , "Target Previous Enemy Major Base"      },
+    { TK_NoKeyMapping                    , ""                                      },
+ 	{ TK_TargetAlliedBase                , "Target Allied Base"                    }, //Imago 8/1/09
+    { TK_TargetAlliedBaseNearest         , "Target Allied Base Nearest"            },
+    { TK_TargetAlliedBasePrev            , "Target Allied Base Previous"           },
+    { TK_TargetFriendly                  , "Target Friendly"                       },
+    { TK_TargetFriendlyNearest           , "Target Friendly Nearest"               },
+    { TK_TargetFriendlyPrev              , "Target Friendly Previous"              },
+    { TK_TargetFriendlyBase              , "Target Friendly Base"                  },
+    { TK_TargetFriendlyBaseNearest       , "Target Friendly Base Nearest"          },
+    { TK_TargetFriendlyBasePrev          , "Target Friendly Base Previous"         },
+    { TK_TargetFriendlyBomber            , "Target Friendly Bomber"                },
+    { TK_TargetFriendlyFighter           , "Target Friendly Fighter"               },
+    { TK_TargetFriendlyConstructor       , "Target Friendly Constructor"           },
+    { TK_TargetFriendlyMiner             , "Target Friendly Miner"                 },
+    { TK_TargetFriendlyLifepod           , "Target Friendly Lifepod"               },
+    { TK_TargetFriendlyMajorBase         , "Target Friendly Major Base"            },
+    { TK_TargetFriendlyBomberNearest     , "Target Nearest Friendly Bomber"        },
+    { TK_TargetFriendlyFighterNearest    , "Target Nearest Friendly Fighter"       },
+    { TK_TargetFriendlyConstructorNearest, "Target Nearest Friendly Constructor"   },
+    { TK_TargetFriendlyMinerNearest      , "Target Nearest Friendly Miner"         },
+    { TK_TargetFriendlyLifepodNearest    , "Target Nearest Friendly Lifepod"       },
+    { TK_TargetFriendlyMajorBaseNearest  , "Target Nearest Friendly Major Base"    },
+    { TK_TargetFriendlyBomberPrev        , "Target Previous Friendly Bomber"       },
+    { TK_TargetFriendlyFighterPrev       , "Target Previous Friendly Fighter"      },
+    { TK_TargetFriendlyConstructorPrev   , "Target Previous Friendly Constructor"  },
+    { TK_TargetFriendlyMinerPrev         , "Target Previous Friendly Miner"        },
+    { TK_TargetFriendlyLifepodPrev       , "Target Previous Friendly Lifepod"      },
+    { TK_TargetFriendlyMajorBasePrev     , "Target Previous Friendly Major Base"   },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Other"                                 },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Other"                                 },
+    { TK_NoKeyMapping                    , ""                                      },
 
-    { TK_Suicide                         , L"Eject From Turret (Press 3 times)"     },
-    { TK_ToggleCloak                     , L"Toggle Cloak"                          },
-    { TK_Ripcord                         , L"Ripcord (teleport)"                    },
-    { TK_PauseTM                         , L"Pause (training mission only)"         },
-    { TK_CommandFinishTM                 , L"Finish goal (training mission only)"   },
-    { TK_TrackCommandView                , L"Toggle command view target tracking"   },
-	{ TK_ScrnShot                        , L"Take a screen shot"                    },
+    { TK_Suicide                         , "Eject From Turret (Press 3 times)"     },
+    { TK_ToggleCloak                     , "Toggle Cloak"                          },
+    { TK_Ripcord                         , "Ripcord (teleport)"                    },
+    { TK_PauseTM                         , "Pause (training mission only)"         },
+    { TK_CommandFinishTM                 , "Finish goal (training mission only)"   },
+    { TK_TrackCommandView                , "Toggle command view target tracking"   },
+	{ TK_ScrnShot                        , "Take a screen shot"                    },
 
-    { TK_NoKeyMapping                    , L""                                      },
-    { TK_NoKeyMapping                    , L"Joystick"                              },
-    { TK_NoKeyMapping                    , L""                                      },
+    { TK_NoKeyMapping                    , ""                                      },
+    { TK_NoKeyMapping                    , "Joystick"                              },
+    { TK_NoKeyMapping                    , ""                                      },
 };
 
 const int g_nCommandInfo = ArrayCount(g_pCommandInfo);
@@ -1787,7 +1787,7 @@ private:
                         str += "Alt+";
                     }
 
-                    wchar_t buf[128];
+                    char buf[128];
 
                     UINT scan   = ::MapVirtualKey(map.m_vk, 0) << 16;
 #pragma warning(disable:4293)
@@ -1800,7 +1800,7 @@ private:
                     int length = 0;
 
                     if (bInternational) {
-                        length = ::GetKeyNameText(scan, buf, 128);
+                        length = ::GetKeyNameTextA(scan, buf, 128);
                     }
 
                     if (length == 0) {
@@ -1981,7 +1981,7 @@ public:
 		strValue.SetEmpty();
 
 		if (m_KeyStringMap.Find(tk,strValue)) {
-			if (Strcmp((PCC)strValue,(PCC)m_pcommandMap[tk].GetString(m_pinputEngine, IsInternationalKeyboard())) != 0) {
+			if (strcmp((PCC)strValue,(PCC)m_pcommandMap[tk].GetString(m_pinputEngine, IsInternationalKeyboard())) != 0) {
 				return strValue;
 			}
 		}

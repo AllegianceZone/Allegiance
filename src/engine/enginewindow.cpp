@@ -82,7 +82,7 @@ public:
                 #ifdef _DEBUG
                     case VK_F9:
                         if (ks.bShift) {
-                            ZError(L"Forced Assert");
+                            ZError("Forced Assert");
                         }
                         return true;
 
@@ -207,7 +207,7 @@ EngineWindow::EngineWindow(	EngineApp *			papp,
 	// Create the D3D device.
 	HWND hWindow = GetHWND();
 
-	CLogFile devLog(L"DeviceCreation.log");
+	CLogFile devLog( "DeviceCreation.log" );
 	pDev->Initialise( &devLog );
 	if( pDev->CreateD3D9( &devLog ) != D3D_OK )
 	{
@@ -217,7 +217,7 @@ EngineWindow::EngineWindow(	EngineApp *			papp,
 	{
 		_ASSERT( false );
 	}
-	devLog.OutputString(L"Device creation finished.\n");
+	devLog.OutputString( "Device creation finished.\n" );
 
 	// Initialise the various engine components.
 	CVRAMManager::Get()->Initialise( );
@@ -516,7 +516,7 @@ void EngineWindow::UpdateWindowStyle()
 void EngineWindow::UpdateRectValues()
 {
     if (g_bWindowLog) {
-        ZDebugOutput(L"EngineWindow::UpdateRectValues()\n");
+        ZDebugOutput("EngineWindow::UpdateRectValues()\n");
     }
 
     //
@@ -773,7 +773,7 @@ WinPoint EngineWindow::GetFullscreenSize()
 void EngineWindow::SetWindowedSize(const WinPoint& size)
 {
     if (g_bWindowLog) {
-        ZDebugOutput(L"EngineWindow::SetWindowedSize(" + GetString(size) + L")\n");
+        ZDebugOutput("EngineWindow::SetWindowedSize(" + GetString(size) + ")\n");
     }
 
     if (m_sizeWindowed != size) {
@@ -785,7 +785,7 @@ void EngineWindow::SetWindowedSize(const WinPoint& size)
     }
 
     if (g_bWindowLog) {
-        ZDebugOutput(L"EngineWindow::SetWindowedSize() exiting\n");
+        ZDebugOutput("EngineWindow::SetWindowedSize() exiting\n");
     }
 }
 
@@ -934,8 +934,8 @@ ZString EngineWindow::GetRendererString()
                 || m_psurface->GetSurfaceType().Test(SurfaceTypeVideo())
                )
           )
-        ? L"Using hardware rendering"
-        : L"Using software rendering";
+        ? "Using hardware rendering"
+        : "Using software rendering";
 }
 
 ZString EngineWindow::GetDeviceString()
@@ -947,16 +947,16 @@ ZString EngineWindow::GetAllow3DAccelerationString()
 {
     return 
           GetEngine()->GetAllow3DAcceleration()
-        ? L"Use 3D acceleration when needed"
-        : L"Never use 3D acceleration";
+        ? "Use 3D acceleration when needed"
+        : "Never use 3D acceleration";
 }
 
 ZString EngineWindow::GetAllowSecondaryString()
 {
     return 
           GetEngine()->GetAllowSecondary()
-        ? L"Use secondary device for 3D acceleration when needed"
-        : L"Never use secondary device";
+        ? "Use secondary device for 3D acceleration when needed"
+        : "Never use secondary device";
 }
 
 
@@ -1081,8 +1081,8 @@ void EngineWindow::UpdatePerformanceCounters(Context* pcontext, Time timeCurrent
 void EngineWindow::OutputPerformanceCounters()
 {
    if (m_bFPS) {
-        ZString strOut = m_strPerformance1 + L" " + m_strPerformance2 + L"\r\n";
-        OutputDebugString(strOut);
+        ZString strOut = m_strPerformance1 + " " + m_strPerformance2 + "\r\n";
+        OutputDebugStringA(strOut);
     }
 }
 
@@ -1341,11 +1341,11 @@ bool EngineWindow::OnActivateApp(bool bActive)
 {
     if (g_bWindowLog) {
         ZDebugOutput(
-              ZString(L"OnActivateApp: was ")
-            + (m_bActive ? L"active" : L"inactive")
-            + L", becoming "
-            + (bActive ? L"active" : L"inactive")
-            + L"\n"
+              ZString("OnActivateApp: was ")
+            + (m_bActive ? "active" : "inactive")
+            + ", becoming "
+            + (bActive ? "active" : "inactive")
+            + "\n"
         );
     }
 
@@ -1363,7 +1363,7 @@ bool EngineWindow::OnActivateApp(bool bActive)
     }
 
     if (g_bWindowLog) {
-        ZDebugOutput(L"OnActivateApp exiting\n");
+        ZDebugOutput("OnActivateApp exiting\n");
     }
 
     return Window::OnActivateApp(bActive);
@@ -1610,12 +1610,12 @@ void EngineWindow::HandleMouseMessage(UINT message, const Point& point, UINT nFl
                     break;
 
 		        case WM_XBUTTONDOWN: //imago 8/15/09
-                    ZDebugOutput(L"WM_XBUTTONDOWN: " + ZString(2+GET_XBUTTON_WPARAM(nFlags)) + L"\n");
+                    ZDebugOutput("WM_XBUTTONDOWN: " + ZString(2+GET_XBUTTON_WPARAM(nFlags)) + "\n");
                     mouseResult = pimage->Button(this, point, 2+GET_XBUTTON_WPARAM(nFlags), m_bCaptured, m_bHit, true );
                     break;
 
 		        case WM_XBUTTONUP:
-                    ZDebugOutput(L"WM_XBUTTONUP: " + ZString(2+GET_XBUTTON_WPARAM(nFlags)) + L"\n");
+                    ZDebugOutput("WM_XBUTTONUP: " + ZString(2+GET_XBUTTON_WPARAM(nFlags)) + "\n");
                     mouseResult = pimage->Button(this, point, 2+GET_XBUTTON_WPARAM(nFlags), m_bCaptured, m_bHit, false );
                     break;
             }

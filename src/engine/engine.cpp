@@ -390,7 +390,7 @@ private:
     bool InitializeWindowed()
     {
         if (g_bWindowLog) {
-            ZDebugOutput(L"InitializeWindowed\n");
+            ZDebugOutput("InitializeWindowed\n");
         }
 
         //
@@ -443,7 +443,7 @@ private:
 		CD3DDevice9::Get()->ResetDevice( true, 800, 600 );
 
         if (g_bWindowLog) {
-            ZDebugOutput(L"InitializeWindowed exiting\n");
+            ZDebugOutput("InitializeWindowed exiting\n");
         }
 
         return true;
@@ -631,7 +631,7 @@ private:
         if (g_bWindowLog) 
 		{
             //ZDebugOutput( "SwitchToFullscreenDevice( " + pdddevice->GetName() + ", resolution: " + GetString(size) + ")\n" );
-			ZDebugOutput( L"SwitchToFullscreenDevice\n" );
+			ZDebugOutput( "SwitchToFullscreenDevice\n" );
         }
 
  /*       // If switching to a different device go to normal mode
@@ -738,13 +738,13 @@ private:
 		if (CD3DDevice9::Get()->ResetDevice( false, size.X(), size.Y(), g_DX9Settings.m_refreshrate ) != D3D_OK) {
 			EliminateModes(Vector((float)size.X(),(float)size.Y(),(float)g_DX9Settings.m_refreshrate));
 			if (g_bWindowLog) {
-				ZDebugOutput(L"Invalid resolution\n");
+				ZDebugOutput("Invalid resolution\n");
 			}
 			//auto retry next mode untill end of list NYI
 		}
 
         if (g_bWindowLog) {
-            ZDebugOutput(L"SwitchToFullscreenDevice exiting\n");
+            ZDebugOutput("SwitchToFullscreenDevice exiting\n");
         }
         return true;
     }
@@ -758,7 +758,7 @@ private:
     bool InitializeFullscreen(bool& bChanges)
     {
         if (g_bWindowLog) {
-            ZDebugOutput(L"InitalizeFullscreen()\n");
+            ZDebugOutput("InitalizeFullscreen()\n");
         }
 
         //
@@ -1072,7 +1072,7 @@ private:
     void SetFullscreenSize(const Vector& point)
     {
         if (g_bWindowLog) {
-            ZDebugOutput(L"Engine::SetFullscreenSize(" + ZString(point.X()) + L"x" + ZString(point.Y()) + L" @ " + ZString(point.Z()) +L")\n");
+            ZDebugOutput("Engine::SetFullscreenSize(" + ZString(point.X()) + "x" + ZString(point.Y()) + " @ " + ZString(point.Z()) +")\n");
         }
 
         if (m_pointFullscreen != WinPoint(int(point.X()),int(point.Y()))) {
@@ -1085,7 +1085,7 @@ private:
 		}
 
         if (g_bWindowLog) {
-            ZDebugOutput(L"Engine::SetFullscreenSize() Exiting\n");
+            ZDebugOutput("Engine::SetFullscreenSize() Exiting\n");
         }
     }
 
@@ -1291,7 +1291,7 @@ private:
         //            return DeviceOK(bChanges);
 
         //        default:
-        //            ZError(L"Unexpected result\n");
+        //            ZError("Unexpected result\n");
         //    }
         //}
 

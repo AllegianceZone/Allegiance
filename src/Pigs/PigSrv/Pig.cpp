@@ -133,7 +133,7 @@ TCAutoCriticalSection CPig::s_csCreate, CPig::s_csUpdate, CPig::s_csLogon;
 
 // Table of special chat commands
 TCLookupTable_BEGIN(CPig, ChatCommands)    
-	CPig_ChatCommand_ENTRY(L"ruapig?",  true, 6, &OnChat_AreYouAPig)
+	CPig_ChatCommand_ENTRY("ruapig?",  true, 6, &OnChat_AreYouAPig)
 	//imago 10/14
 	//CPig_ChatCommand_ENTRY("eval"   ,  true, 2, &OnChat_Evaluate)
 	//CPig_ChatCommand_ENTRY("? "     , false, 1, &OnChat_Evaluate)
@@ -149,7 +149,7 @@ TCLookupTable_BEGIN(CPig, ChatCommands)
 	HRESULT _VSM_hr = _hr;                                                \
 	if (FAILED(_VSM_hr))                                                  \
 {                                                                     \
-	debugf(TEXT(_fn L"() script method failed: %s\n"),                         \
+	debugf(_fn "() script method failed: %s\n",                         \
 	_com_error(_VSM_hr).ErrorMessage());                              \
 	if (false) {ZSucceeded(_VSM_hr);}                                   \
 }                                                                     \
@@ -317,12 +317,12 @@ HRESULT CPig::Create(CPigBehaviorScriptType* pType, BSTR bstrCommandLine,
 #define CPig_OnStateTransition(newState)                                    \
     case PigState_##newState:                                               \
 {                                                                       \
-	debugf(L"CPig::wm_FireStateChange(%hs)\n", #newState);                 \
+	debugf("CPig::wm_FireStateChange(%hs)\n", #newState);                 \
 	_AGCModule.TriggerEvent(NULL, PigEventID_StateChange_##newState,      \
 	bstrName, -1, -1, -1, 1,                                            \
 	"PrevState", VT_BSTR, bstrPrevState);                               \
 	VerifyScriptMethod(pBehavior->OnState##newState(ePrevState),          \
-	"OnState" TEXT(#newState));                                               \
+	"OnState" #newState);                                               \
 	break;                                                                \
 }
 
@@ -526,7 +526,7 @@ bool CPig::WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds)
 }
 
 
-void CPig::SendChat(ChatTarget chatTarget, const wchar_t* psz,
+void CPig::SendChat(ChatTarget chatTarget, const char* psz,
 	IshipIGC* pshipRecipient, SoundID voiceOver)
 {
 	BaseClient::SendChat(GetShip(), chatTarget,
@@ -978,7 +978,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
 
 				// Compute the minimum number of significant characters
 				int cchMin = (entry.m_key.m_cchSignificant <= 0) ?
-					wcslen(entry.m_key.m_szVerb) : entry.m_key.m_cchSignificant;
+					strlen(entry.m_key.m_szVerb) : entry.m_key.m_cchSignificant;
 
 				// Compare down to the minimum number of significant characters
 				bool bMatched = false;
@@ -986,7 +986,7 @@ bool CPig::HandleThreadMessage(const MSG* pMsg, HANDLE hObject)
 strVerb : chat.m_strText.Left(strVerbCompare.GetLength()));
 				int cch = strCompare.GetLength();
 				while (cch-- >= cchMin &&
-					!(bMatched = (!_wcsicmp(strCompare, strVerbCompare.Left(cch + 1)))))
+					!(bMatched = (!_stricmp(strCompare, strVerbCompare.Left(cch + 1)))))
 					strCompare = strCompare.Left(cch);
 
 				// Process the verb, if it was matched
@@ -1151,7 +1151,7 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 			ObjectType ot = pfmExport->objecttype;
 			if (OT_staticBegin <= ot && ot <= OT_staticEnd)
 			{
-				ZError(L"FM_S_EXPORT is exporting static objects (and it shouldn't be)!");
+				ZError("FM_S_EXPORT is exporting static objects (and it shouldn't be)!");
 			}
 			break;
 		}
@@ -1292,19 +1292,19 @@ HRESULT CPig::ProcessAppMessage(FEDMESSAGE* pfm)
 bool CPig::OnChat_AreYouAPig(CPig::REFXChatCommand chat)
 {
 	// Get the computer name
-	wchar_t szName[MAX_COMPUTERNAME_LENGTH + 1];
+	char szName[MAX_COMPUTERNAME_LENGTH + 1];
 	DWORD cchName = sizeofArray(szName);
-	GetComputerName(szName, &cchName);
+	GetComputerNameA(szName, &cchName);
 
 	// Do nothing if the computer name does not match that specified, if any
-	if (chat.m_strMessage.GetLength() && _wcsicmp(chat.m_strMessage, szName))
+	if (chat.m_strMessage.GetLength() && _stricmp(chat.m_strMessage, szName))
 		return true;
 
 	// Format the Oink! reply
-	wchar_t szFmt[_MAX_PATH], szMsg[_MAX_PATH];
-	_VERIFYE(LoadString(_Module.GetResourceInstance(), IDS_FMT_OINK, szFmt,
+	char szFmt[_MAX_PATH], szMsg[_MAX_PATH];
+	_VERIFYE(LoadStringA(_Module.GetResourceInstance(), IDS_FMT_OINK, szFmt,
 		sizeofArray(szFmt)));
-	swprintf(szMsg, szFmt, szName);
+	sprintf(szMsg, szFmt, szName);
 
 	// Reply to the sender
 	SendChat(CHAT_INDIVIDUAL, szMsg, chat.m_pshipSender, GetOink());
@@ -1356,13 +1356,14 @@ bool CPig::OnChat_Evaluate(CPig::REFXChatCommand chat)
 		return false;
 
 	// Reply to the sender
-	SendChat(CHAT_INDIVIDUAL, OLE2CW(V_BSTR(&varResult)), chat.m_pshipSender);
+	USES_CONVERSION;
+	SendChat(CHAT_INDIVIDUAL, OLE2CA(V_BSTR(&varResult)), chat.m_pshipSender);
 
 	// Indicate that we handled the message
 	return true;
 }
 
-bool CPig::FindMissionName(wchar_t* pszMissionName)
+bool CPig::FindMissionName(char* pszMissionName)
 {
 	// Return an error if there are no missions
 	if (!m_mapMissions.GetCount())
@@ -1373,7 +1374,7 @@ bool CPig::FindMissionName(wchar_t* pszMissionName)
 
 	// Iterate through the mission map
 	for (MissionIt it(BaseClient::m_mapMissions); !it.End(); it.Next())
-		if (0 == _wcsicmp(pszMissionName, it.Value()->Name()))
+		if (0 == _stricmp(pszMissionName, it.Value()->Name()))
 			return true;
 
 	// Mission name was not found
@@ -1421,7 +1422,7 @@ HRESULT CPig::SendBytes(FedMessaging* pfm, VARIANT* pvBytes, bool bGuaranteed)
 
 	// Convert the BSTR to an LPCTSTR
 	USES_CONVERSION;
-	LPCTSTR pszFileName = OLE2CT(V_BSTR(&vBytes));
+	LPCSTR pszFileName = OLE2CA(V_BSTR(&vBytes));
 
 	// Open the file
 	ZFile file(pszFileName);
@@ -1457,7 +1458,7 @@ STDMETHODIMP CPig::InterfaceSupportsErrorInfo(REFIID riid)
 
 /////////////////////////////////////////////////////////////////////////////
 // BaseClient Overrides
-HRESULT CPig::OnSessionLost(wchar_t* szReason, FedMessaging * pthis)
+HRESULT CPig::OnSessionLost(char* szReason, FedMessaging * pthis)
 {
 	XLock lock(this);
 	if (!m_bDisconnected)
@@ -1480,7 +1481,7 @@ void CPig::ModifyShipData(DataShipIGC* pds)
 	pds->pilotType = c_ptCheatPlayer;
 }
 
-void CPig::OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam)
+void CPig::OnQuitMission(QuitSideReason reason, const char* szMessageParam)
 {
 	// Perform default processing
 	BaseClient::OnQuitMission(reason);
@@ -1492,12 +1493,13 @@ void CPig::OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam)
 		SetCurrentState(PigState_MissionList);
 }
 
-const wchar_t* CPig::GetArtPath()
+const char* CPig::GetArtPath()  
 { 
 	CComBSTR bstrPath;
 	GetEngine().get_ArtPath(&bstrPath);
 
-	return bstrPath;
+	USES_CONVERSION;
+	return OLE2CA(bstrPath);
 } 
 
 IAutoUpdateSink* CPig::OnBeginAutoUpdate()
@@ -1505,7 +1507,7 @@ IAutoUpdateSink* CPig::OnBeginAutoUpdate()
 	return this;
 }
 
-bool CPig::ResetStaticData(wchar_t* szIGCStaticFile, ImissionIGC** ppStaticIGC,
+bool CPig::ResetStaticData(char* szIGCStaticFile, ImissionIGC** ppStaticIGC,
 	Time tNow, bool bEncrypt)
 {
 	// Lock static variables during BaseClient re-initialization
@@ -1557,7 +1559,7 @@ HRESULT CPig::OnAppMessage(FedMessaging* pthis, CFMConnection & cnxnFrom, FEDMES
 	return ProcessAppMessage(pfm);
 }
 
-int CPig::OnMessageBox(FedMessaging * pthis, const wchar_t* strText, const wchar_t* strCaption,
+int CPig::OnMessageBox(FedMessaging * pthis, const char* strText, const char* strCaption,
 	UINT nType)
 {
 	UNUSED_ALWAYS(nType);
@@ -1586,7 +1588,7 @@ void CPig::OnPreCreate(FedMessaging * pthis)
 /////////////////////////////////////////////////////////////////////////////
 // IClientEventSink Overrides
 
-void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
+void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
 	XLock lock(this);
 	assert(PigState_CreatingMission == GetCurrentState()
@@ -1599,7 +1601,7 @@ void CPig::OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
 	}
 }
 
-void CPig::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason)
+void CPig::OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason)
 {
 	XLock lock(this);
 	assert(PigState_LoggingOn == GetCurrentState());
@@ -1682,7 +1684,7 @@ TRef<ClusterSite> CPig::CreateClusterSite(IclusterIGC* pCluster)
 }
 
 void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
-	ObjectID oidRecipient, SoundID voiceOver, const wchar_t* szText,
+	ObjectID oidRecipient, SoundID voiceOver, const char* szText,
 	CommandID cid, ObjectType otTarget, ObjectID oidTarget,
 	ImodelIGC* pmodelTarget, bool bObjectModel)
 {
@@ -1708,7 +1710,7 @@ void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
 	pChat->m_ctRecipient  = ctRecipient;
 	pChat->m_oidRecipient = oidRecipient;
 	pChat->m_voiceOver    = voiceOver;
-	pChat->m_strText      = szText ? szText : L"";
+	pChat->m_strText      = szText ? szText : "";
 	pChat->m_cid          = cid;
 	pChat->m_pmodelTarget = GetCore()->GetModel(otTarget, oidTarget);
 
@@ -1721,7 +1723,7 @@ void CPig::ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
 }
 
 void CPig::SendChat(IshipIGC* pshipSender, ChatTarget chatTarget,
-	ObjectID oidRecipient, SoundID soVoiceOver, const wchar_t* szText,
+	ObjectID oidRecipient, SoundID soVoiceOver, const char* szText,
 	CommandID cid, ObjectType otTarget, ObjectID oidTarget,
 	ImodelIGC* pmodelTarget)
 {
@@ -2002,11 +2004,11 @@ void CPig::OnBeginRetrievingFileList()
 	SetCurrentDirectory(szFileName);
 }
 
-bool CPig::ShouldFilterFile(const wchar_t* szFileName) // if returns true, then file is not downloaded
+bool CPig::ShouldFilterFile(const char* szFileName) // if returns true, then file is not downloaded
 {
-	wchar_t szExt[_MAX_EXT];
-	_wsplitpath(szFileName, NULL, NULL, NULL, szExt);
-	if (0 == _wcsicmp(szExt, L".cvh") || 0 == _wcsicmp(szExt, L".igc"))
+	char szExt[_MAX_EXT];
+	_splitpath(szFileName, NULL, NULL, NULL, szExt);
+	if (0 == _stricmp(szExt, ".cvh") || 0 == _stricmp(szExt, ".igc"))
 		return false; // do not filter-out these files
 	return true; // filter-out the rest
 }
@@ -2182,8 +2184,9 @@ STDMETHODIMP CPig::Logon()
 	SetCurrentState(PigState_LoggingOn);
 
 	// Copy the lobby server to the connection parameters
+	USES_CONVERSION;
 	BaseClient::ConnectInfo ci;
-	ci.strServer = OLE2CW(GetEngine().GetMissionServer());
+	ci.strServer = OLE2CT(GetEngine().GetMissionServer());
 
 	// Big HACK! Due to the Connect method trashing ci.strServer with
 	// the CfgInfo value.
@@ -2191,13 +2194,13 @@ STDMETHODIMP CPig::Logon()
 	BaseClient::GetCfgInfo().strPublicLobby = ci.strServer;
 
 	// Copy the pig account name and password to the connection parameters
-	lstrcpy(ci.szName, OLE2CW(m_bstrName));
+	Strcpy(ci.szName, OLE2CA(m_bstrName));
 
 	//imago 10/14
 	CComBSTR bstrPW;
 	RETURN_FAILED(m_spAccount->get_Password(&bstrPW));
-	LPWSTR pszPW = bstrPW.Length() ? OLE2W(bstrPW) : L"";
-	lstrcpy(ci.szPW,pszPW);
+	LPSTR pszPW = bstrPW.Length() ? OLE2A(bstrPW) : "";
+	Strcpy(ci.szPW,pszPW);
 
 #ifdef USEAUTH
 	// Authenticate the account on the Zone authentication server, if any
@@ -2270,7 +2273,7 @@ STDMETHODIMP CPig::Logon()
 		// Trigger an event
 		_AGCModule.TriggerEvent(NULL, PigEventID_ConnectFailed, m_bstrName,
 			-1, -1, -1, 1,
-			"LobbyServer", VT_LPSTR, (LPCWSTR)ci.strServer);
+			"LobbyServer", VT_LPSTR, (LPCSTR)ci.strServer);
 
 		// Return an error
 		return Error(IDS_E_CONNECT_FAILED, IID_IPig);
@@ -2286,7 +2289,7 @@ STDMETHODIMP CPig::Logon()
 		// Trigger an event
 		_AGCModule.TriggerEvent(NULL, PigEventID_LogonDenied, m_bstrName,
 			-1, -1, -1, 2,
-			"LobbyServer", VT_LPSTR, (LPCWSTR)ci.strServer,
+			"LobbyServer", VT_LPSTR, (LPCSTR)ci.strServer,
 			"Reason"     , VT_BSTR , (BSTR)m_evtLogonLobbyAck);
 
 		// Set the state to PigState_NonExistant
@@ -2390,7 +2393,8 @@ STDMETHODIMP CPig::CreateMission(BSTR bstrServer, BSTR bstrAddr, IPigMissionPara
 
 	// Set the state to PigState_CreatingMission
 	SetCurrentState(PigState_CreatingMission);
-	CreateMissionReq(OLE2CW(bstrServer),OLE2CW(bstrAddr),mp.szIGCStaticFile,mp.strGameName); //Imago 10/14
+	USES_CONVERSION;
+	CreateMissionReq(OLE2CA(bstrServer),OLE2CA(bstrAddr),mp.szIGCStaticFile,mp.strGameName); //Imago 10/14
 
 	// Wait for the acknowledgement event
 	if (!WaitInTimerLoop(m_evtCreatingMission))
@@ -2430,8 +2434,10 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 	MissionInfo * pMissionInfo = NULL;
 	if (BSTRLen(bstrMissionOrPlayer))
 	{
-		LPCWSTR pszMissionOrPlayer = OLE2CW(bstrMissionOrPlayer);
-		int    cchMissionOrPlayer = wcslen(pszMissionOrPlayer);
+		// Convert the specified string to ANSI
+		USES_CONVERSION;
+		LPCSTR pszMissionOrPlayer = OLE2CA(bstrMissionOrPlayer);
+		int    cchMissionOrPlayer = strlen(pszMissionOrPlayer);
 
 		// Create a local array of the missions with positions available (with matching names)
 		std::vector<MissionInfo*> vecAvailableMissions;
@@ -2439,8 +2445,8 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 		{
 			if (it.Value()->GetAnySlotsAreAvailable())
 			{
-				int cch = wcslen(it.Value()->Name());
-				if (cch >= cchMissionOrPlayer && 0 == _wcsnicmp(pszMissionOrPlayer,
+				int cch = strlen(it.Value()->Name());
+				if (cch >= cchMissionOrPlayer && 0 == _strnicmp(pszMissionOrPlayer,
 					it.Value()->Name(), cchMissionOrPlayer))
 					vecAvailableMissions.push_back(it.Value());
 			}
@@ -2462,7 +2468,7 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 		// Error
 		if (!pMissionInfo)
 		{
-			return Error(L"Specified game not found or has no positions available", IID_IPig);
+			return Error("Specified game not found or has no positions available", IID_IPig);
 		}
 	}
 	else
@@ -2490,7 +2496,7 @@ STDMETHODIMP CPig::JoinMission(BSTR bstrMissionOrPlayer)
 	// Set the state to PigState_JoiningMission
 	SetCurrentState(PigState_JoiningMission);
 
-	BaseClient::JoinMission(pMissionInfo, L"");
+	BaseClient::JoinMission(pMissionInfo, "");
 
 	// Wait for the acknowledgement event
 	if (!WaitInTimerLoop(m_evtJoiningMission))
@@ -2532,6 +2538,7 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 	// Validate the current state
 	//if (PigState_TeamList != GetCurrentState())
 	//return Error(IDS_E_JOINTEAM_TEAMLIST, IID_IPig);
+	USES_CONVERSION;
 	// Find a team using the specified string, if any
 	SideID idSide = NA;
 	if (BSTRLen(bstrTeamOrPlayer))
@@ -2539,7 +2546,7 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 		// Find a team with the specified name, if any
 		for (SideID i = 0; i < BaseClient::MyMission()->NumSides(); ++i)
 		{
-			if (!_wcsicmp(OLE2CW(bstrTeamOrPlayer), BaseClient::MyMission()->SideName(i)))
+			if (!_stricmp(OLE2CA(bstrTeamOrPlayer), BaseClient::MyMission()->SideName(i)))
 			{
 				if (0 < BaseClient::MyMission()->SideAvailablePositions(i))
 				{
@@ -2594,21 +2601,21 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 		SetCurrentState(eStateNew);
 		//imago 10/14
 		if (eStateNew == PigState_WaitingForMission && BSTRLen(bstrCivName) && BaseClient::MyPlayerInfo()->IsTeamLeader()) {
-			wchar_t * civNames[c_cSidesMax] = { '\0' };
+			char * civNames[c_cSidesMax] = {'\0'};
 			CivID civSelection = NA;
 			SideID civSide = BaseClient::GetSideID();
-			wchar_t * token;
+			char * token;
 			int i = 0;
-			token = wcstok((wchar_t *)OLE2CW(bstrCivName), L",");
+			token = strtok((char *)OLE2CA(bstrCivName), ",");
 			while(token)
 			{
 				civNames[i] = token;
-				token = wcstok(NULL, L",");
+				token = strtok(NULL, ",");
 				i++;
 			}
 			for (CivilizationLinkIGC* linkCiv = BaseClient::GetCore()->GetCivilizations()->first();  linkCiv != NULL; linkCiv = linkCiv->next())
             {
-				if(!_wcsicmp(linkCiv->data()->GetName(),civNames[civSide])) {
+				if(!_stricmp(linkCiv->data()->GetName(),civNames[civSide])) {
 					civSelection = linkCiv->data()->GetObjectID();
 					break;
 				}
@@ -2627,7 +2634,7 @@ STDMETHODIMP CPig::JoinTeam(BSTR bstrCivName, BSTR bstrTeamOrPlayer)
 	else
 	{
 		SetCurrentState(PigState_TeamList);
-		return Error(L"The team did not accept you", IID_IPig);
+		return Error("The team did not accept you", IID_IPig);
 	}
 	return S_OK;
 }

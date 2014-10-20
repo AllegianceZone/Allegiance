@@ -28,7 +28,7 @@ public:
         // check to make sure the file exists.
         HANDLE hFile;
 
-        hFile = CreateFile(strFilename, 0, FILE_SHARE_READ, NULL, 
+        hFile = CreateFileA(strFilename, 0, FILE_SHARE_READ, NULL, 
             OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, NULL);
 
         if (INVALID_HANDLE_VALUE == hFile)
@@ -74,7 +74,7 @@ public:
 				DWORD dwSize = sizeof(dwResult);
 				DWORD dwType = REG_DWORD;
 
-				::RegQueryValueEx(hKey, L"MonoOff", NULL, &dwType, (BYTE*)&dwResult, &dwSize);
+				::RegQueryValueExA(hKey, "MonoOff", NULL, &dwType, (BYTE*)&dwResult, &dwSize);
 				::RegCloseKey(hKey);
 
 				if (dwType != REG_DWORD)

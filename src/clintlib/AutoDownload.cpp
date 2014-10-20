@@ -17,13 +17,13 @@
 // forward local functions
 class CAutoDownloadImpl;
 class CLocalFilesVerifier;
-CLocalFilesVerifier * CreateLocalFilesVerifier(CAutoDownloadImpl * p, bool bForceCRCCheck, int nOfficialCRC, wchar_t * szArtPath);
+CLocalFilesVerifier * CreateLocalFilesVerifier(CAutoDownloadImpl * p, bool bForceCRCCheck, int nOfficialCRC, char * szArtPath);
 void DestroyFilesVerifier(CLocalFilesVerifier * p);
 bool ContinueLocalFilesVerification(CLocalFilesVerifier * p, DWORD dwTimeAlloted);
 
-void SetLocalFileTime(HANDLE hFile, wchar_t *szFileName, SYSTEMTIME * psystime);
+void SetLocalFileTime(HANDLE hFile, char *szFileName, SYSTEMTIME * psystime);
 
-void _debugf(const wchar_t* format, ...);
+void _debugf(const char* format, ...);
 
 /*
 
@@ -61,21 +61,21 @@ public:
           m_cTotalBytes(0)
     {
       m_szErrorMessage[0] = 0;
-  	  Strcpy(m_szURL, L"FTPServer Key (in Server's Registry) is probably pointing to an invalid FTP/HTTP Site");
+  	  strcpy(m_szURL, "FTPServer Key (in Server's Registry) is probably pointing to an invalid FTP/HTTP Site");
       m_cListAllocSize = 8;
-	  m_pszFileList = (wchar_t**)realloc(NULL, m_cListAllocSize * sizeof(wchar_t*));
+      m_pszFileList = (char**)realloc(NULL, m_cListAllocSize * sizeof(char*));
       *m_pszFileList = NULL;
       m_pFileInfo = (CFileInfo*)realloc(NULL, m_cListAllocSize * sizeof(CFileInfo));
       m_szFilelistSubDir[0] = '\0';
 
-	  wchar_t    path[MAX_PATH + 16];
-      ::GetModuleFileName(NULL, path, MAX_PATH);
-	  wchar_t*   p = wcsrchr(path, '\\');
+      char    path[MAX_PATH + 16];
+      ::GetModuleFileNameA(NULL, path, MAX_PATH);
+      char*   p = strrchr(path, '\\');
       if (p)
       {
           p++;
           *p = 0; // erase filename
-          Strcpy(m_szEXEPath, path);
+          strcpy(m_szEXEPath, path);
       }
       else
       {
@@ -113,7 +113,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	void SetFTPSite(const wchar_t * szFTPSite, const wchar_t * szInitialDirectory, const wchar_t * szUsername, const wchar_t * szPassword)
+    void SetFTPSite(const char * szFTPSite, const char * szInitialDirectory, const char * szUsername, const char * szPassword)
     {
         //
         // Prepare m_szURL
@@ -123,7 +123,7 @@ public:
             //
             //  figure out FTP/HTTP
             //
-            if (_wcsnicmp(szFTPSite, L"ftp://", 6) == 0)
+            if (_strnicmp(szFTPSite, "ftp://", 6) == 0)
             {
 
                 /* TODO: make Username and Password work for FTP
@@ -132,35 +132,35 @@ public:
                 }
                 else
                 */
-                    Strcpy(m_szURL, szFTPSite);
+                    strcpy(m_szURL, szFTPSite);
 
 
             }
             else // http
             {
-                if (_wcsnicmp(szFTPSite, L"http://", 7) == 0)
+                if (_strnicmp(szFTPSite, "http://", 7) == 0)
                 {
-                    Strcpy(m_szURL, szFTPSite);
+                    strcpy(m_szURL, szFTPSite);
                 }
                 else
                 {
-                    Strcpy(m_szURL, L"http://");
-                    Strcat(m_szURL, szFTPSite);
+                    strcpy(m_szURL, "http://");
+                    strcat(m_szURL, szFTPSite);
                 }
             }
 
             if (szInitialDirectory)
             {
                 // ensure just one slash seperator
-                if (m_szURL[0] != '\0' && m_szURL[wcslen(m_szURL)-1] != '/' && szInitialDirectory[0] != '/')
-                    Strcat(m_szURL, L"/");
+                if (m_szURL[0] != '\0' && m_szURL[strlen(m_szURL)-1] != '/' && szInitialDirectory[0] != '/')
+                    strcat(m_szURL, "/");
 
-                Strcat(m_szURL, szInitialDirectory);
+                strcat(m_szURL, szInitialDirectory);
             }
 
             // ensure last character is a slash
-            if (m_szURL[0] != '\0' && m_szURL[wcslen(m_szURL)-1] != '/')
-                Strcat(m_szURL, L"/");
+            if (m_szURL[0] != '\0' && m_szURL[strlen(m_szURL)-1] != '/')
+                strcat(m_szURL, "/");
         }
     }
 
@@ -175,13 +175,13 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	void SetArtPath(const wchar_t * szArtPath)
+    void SetArtPath(const char * szArtPath)
     {
         //
         // Make sure art path is in a friendly format as we copy it
         //
 
-        int cLen = wcslen(szArtPath);
+        int cLen = strlen(szArtPath);
         int i,j;
         for (i = 0, j = 0; i < cLen; ++i)
             if (szArtPath[i] == '/')
@@ -201,12 +201,12 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	void SetFilelistSubDir(const wchar_t * pszPath)
+    void SetFilelistSubDir(const char * pszPath)
     {
-        Strncpy(m_szFilelistSubDir, pszPath, sizeof(m_szFilelistSubDir));
+        strncpy(m_szFilelistSubDir, pszPath, sizeof(m_szFilelistSubDir));
         // ensure last character is a slash
-        if (m_szFilelistSubDir[0] != '\0' && m_szFilelistSubDir[wcslen(m_szFilelistSubDir)-1] != '/')
-            Strcat(m_szFilelistSubDir, L"/");
+        if (m_szFilelistSubDir[0] != '\0' && m_szFilelistSubDir[strlen(m_szFilelistSubDir)-1] != '/')
+            strcat(m_szFilelistSubDir, "/");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -217,16 +217,16 @@ public:
         // Make sure the current path is where Allegiance.exe is for the AutoUpdate:
         // For Download -AND- for Reloader.exe
         //
-		wchar_t    path[MAX_PATH + 16];
-        ::GetModuleFileName(NULL, path, MAX_PATH);
-		wchar_t*   p = wcsrchr(path, '\\');
+        char    path[MAX_PATH + 16];
+        ::GetModuleFileNameA(NULL, path, MAX_PATH);
+        char*   p = strrchr(path, '\\');
         if (!p)
             p = path;
         else
             p++;
 
         *p = 0; // erase filename
-        ::SetCurrentDirectory(path);
+        ::SetCurrentDirectoryA(path);
 
         m_bNeedToMoveFiles = false;
         m_bNeedToRestart = false;
@@ -241,16 +241,16 @@ public:
         m_phase = PHASE_GETTING_FILELIST;
         m_pSink->OnBeginRetrievingFileList();
 
-        ::CreateDirectory(L"AutoUpdate", NULL);
+        ::CreateDirectoryA("AutoUpdate", NULL);
 
         //
         // See if the correct file list happens to be in the AutoUpdate folder
         //
-		wchar_t szBuffer[100 + MAX_PATH];
-        int nLocalCRC = FileCRC(L".\\AutoUpdate\\FileList.txt", szBuffer);
+        char szBuffer[100+MAX_PATH];
+        int nLocalCRC = FileCRC(".\\AutoUpdate\\FileList.txt", szBuffer);
         if(nLocalCRC == m_nOfficialCRC)
         {
-            _debugf(L"Skipping download of FileList.txt since we already have the correct one in the AutoUpdate folder\n");
+            _debugf("Skipping download of FileList.txt since we already have the correct one in the AutoUpdate folder\n");
 
             m_pSink->OnRetrievingFileListProgress(m_nFileListSize, m_nFileListSize);
 
@@ -266,16 +266,16 @@ public:
         //
         ConnectToHTTPSite();
 
-		wchar_t szURL[256];
-        Strcpy(szURL, m_szURL);
+        char szURL[256];
+        strcpy(szURL, m_szURL);
         if (m_szFilelistSubDir[0] != '\0')
         {
-           Strcat(szURL, m_szFilelistSubDir);
+           strcat(szURL, m_szFilelistSubDir);
         }
-        Strcat(szURL, L"FileList.txt");
-		wchar_t * szInitialList[] = { szURL, L"FileList.txt", NULL };
+        strcat(szURL, "FileList.txt");
+        char * szInitialList[] = { szURL, "FileList.txt", NULL };
 
-        m_pHTTPSession->InitiateDownload(szInitialList, L".\\AutoUpdate\\");
+        m_pHTTPSession->InitiateDownload(szInitialList, ".\\AutoUpdate\\");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -360,7 +360,7 @@ public:
             m_pHTTPSession->Abort();
 
         // treat like error
-        DoError(L"Aborted.");
+        DoError("Aborted.");
 
         m_pSink->OnUserAbort();
     }
@@ -376,81 +376,81 @@ public:
     //
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    void DoError(wchar_t * szFormat, ...)
+    void DoError(char * szFormat, ...)
     {
-		wchar_t szMsg[sizeof(m_szErrorMessage)];
+        char szMsg[sizeof(m_szErrorMessage)];
         va_list pArg;
         va_start(pArg, szFormat);
-		_vsnwprintf(szMsg, sizeof(szMsg), szFormat, pArg);
+        _vsnprintf(szMsg, sizeof(szMsg), szFormat, pArg);
         va_end(pArg);
 
         DoError(0, szMsg);
     }
 
-	void DoError(int nInternalErrorCode, wchar_t * szFormat, ...)
+    void DoError(int nInternalErrorCode, char * szFormat, ...)
     {
         if(!m_bErrorHasOccurred)  // first error is most important
         {
             int nLastError = GetLastError();
 
-			wchar_t szMsg[sizeof(m_szErrorMessage)];
+            char szMsg[sizeof(m_szErrorMessage)];
             va_list pArg;
             va_start(pArg, szFormat);
-            _vsnwprintf(szMsg, sizeof(szMsg), szFormat, pArg);
+            _vsnprintf(szMsg, sizeof(szMsg), szFormat, pArg);
             va_end(pArg);
 
             ZDebugOutput(szMsg);
 
             // write to file
-			wchar_t szFileData[sizeof(szMsg) + 200];
+            char szFileData[sizeof(szMsg) + 200];
             SYSTEMTIME st;
             GetLocalTime(&st);
-            swprintf(szFileData, L"\r\n\r\nUpdate attempt at: %d/%d/%02d at %d:%02d:%02d  (local time)\r\n%s\r\n\r\n", st.wMonth, st.wDay, st.wYear % 100, st.wHour, st.wMinute, st.wSecond, szMsg);
-            bool bErrorFileSaved = UTL::AppendFile(L"UpdateError.txt", szFileData, wcslen(szFileData));
+            sprintf(szFileData, "\r\n\r\nUpdate attempt at: %d/%d/%02d at %d:%02d:%02d  (local time)\r\n%s\r\n\r\n", st.wMonth, st.wDay, st.wYear % 100, st.wHour, st.wMinute, st.wSecond, szMsg);
+            bool bErrorFileSaved = UTL::AppendFile("UpdateError.txt", szFileData, strlen(szFileData));
 
-			wchar_t szDisplayMsg[256] = { L"?" };
+            char szDisplayMsg[256] = {"?"};
 
             //
             // Suggest a resolution
             //
-            if (_wcsicmp(szFormat, L"Aborted.") == 0)
+            if (_stricmp(szFormat, "Aborted.") == 0)
             {
-                swprintf(szDisplayMsg, L"Aborted.");
+                sprintf(szDisplayMsg, "Aborted.");
             }
             else
             {
                 if (nInternalErrorCode == 1)
                 {
-                    swprintf(szDisplayMsg, L"Server is too busy.  Try again later.");
+                    sprintf(szDisplayMsg, "Server is too busy.  Try again later.");
                 }
                 else
                 if (nLastError == ERROR_DISK_FULL)
                 {
-                    swprintf(szDisplayMsg, L"Disk didn't have enough space.  Free up some space and try again.");
+                    sprintf(szDisplayMsg, "Disk didn't have enough space.  Free up some space and try again.");
                 }
                 else
                 if (nLastError == ERROR_INTERNET_DISCONNECTED)
                 {
-                    swprintf(szDisplayMsg, L"Disconnected.  Reconnect and try again.");
+                    sprintf(szDisplayMsg, "Disconnected.  Reconnect and try again.");
                 }
                 else
                 {
-                    swprintf(szDisplayMsg, L"Try again later.  As a last resort you may want to reinstall.");
+                    sprintf(szDisplayMsg, "Try again later.  As a last resort you may want to reinstall.");
                 }
 
                 if(bErrorFileSaved)
                 {
-                   Strcat(szDisplayMsg, L"\n\nSee UpdateError.txt for details.");
+                   strcat(szDisplayMsg, "\n\nSee UpdateError.txt for details.");
                 }
                 else
                 {
-                   Strcat(szDisplayMsg, L"\n\nUpdateError.txt could not be updated.");
+                   strcat(szDisplayMsg, "\n\nUpdateError.txt could not be updated.");
                 }
             }
 
             m_bErrorHasOccurred = true;
 
-            Strncpy(m_szErrorMessage, szMsg, sizeof(szMsg)-1);
+            strncpy(m_szErrorMessage, szMsg, sizeof(szMsg)-1);
 
             m_pSink->OnError(szDisplayMsg); // forward event
         }
@@ -458,13 +458,13 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    void AddFileToDownloadList(wchar_t * szFileName, unsigned long cFileSize, int nCRC, SYSTEMTIME * pstTime)
+    void AddFileToDownloadList(char * szFileName, unsigned long cFileSize, int nCRC, SYSTEMTIME * pstTime)
     {
-        _debugf(L"Planning to download %s.\n", szFileName);
+        _debugf("Planning to download %s.\n", szFileName);
 
-        if (_wcsicmp(szFileName, L"FileList.txt") == 0)
+        if (_stricmp(szFileName, "FileList.txt") == 0)
         {
-            DoError(L"FileList.txt is invalid. The file \"FileList.txt\" was found within FileList.txt. ");
+            DoError("FileList.txt is invalid. The file \"FileList.txt\" was found within FileList.txt. ");
             return;
         }
 
@@ -475,7 +475,7 @@ public:
         {
             m_cListAllocSize = max(32, m_cListAllocSize*2);
 
-			m_pszFileList = (wchar_t**)realloc(m_pszFileList, m_cListAllocSize * sizeof(wchar_t*));
+            m_pszFileList = (char**)realloc(m_pszFileList, m_cListAllocSize * sizeof(char*));
 
             m_pFileInfo = (CFileInfo*)realloc(m_pFileInfo, m_cListAllocSize * sizeof(CFileInfo));
          }
@@ -483,7 +483,7 @@ public:
         //
         //  Add to list
         //
-        m_pszFileList[m_cFiles] = _wcsdup(szFileName); // Alloc space for filename and copy it
+        m_pszFileList[m_cFiles] = _strdup(szFileName); // Alloc space for filename and copy it
 
         m_pFileInfo[m_cFiles].nCRC = nCRC;
         m_pFileInfo[m_cFiles].nSize = cFileSize;
@@ -519,14 +519,14 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	virtual bool ShouldFilterFile(const wchar_t * szFileName) // if returns true, then file is not downloaded
+    virtual bool ShouldFilterFile(const char * szFileName) // if returns true, then file is not downloaded
     {
         return m_pSink->ShouldFilterFile(szFileName);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	bool ShouldRetry(wchar_t * szFilename)
+    bool ShouldRetry(char * szFilename)
     {
         ZFile file(szFilename);
 
@@ -545,7 +545,7 @@ public:
 
                 if (m_cHTTPServerFails >= 10)
                 {
-                    DoError(1, L"Data for file %s is wrong. Tried to download %d times.  The HTTP Update server may be too busy or missing the file. Or there may be a problem with your ISP or proxy server.  Look at this file in a text editor/web browser for details.", szFilename, m_cHTTPServerFails);
+                    DoError(1, "Data for file %s is wrong. Tried to download %d times.  The HTTP Update server may be too busy or missing the file. Or there may be a problem with your ISP or proxy server.  Look at this file in a text editor/web browser for details.", szFilename, m_cHTTPServerFails);
                     return false;
                 }
                 Sleep(500);
@@ -566,25 +566,25 @@ public:
     //
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	virtual void OnError(wchar_t *szErrorMessage)
+    virtual void OnError(char *szErrorMessage)
     {
         DoError(szErrorMessage);
     }
 
-	virtual bool OnFileCompleted(wchar_t * szFileName)
+    virtual bool OnFileCompleted(char * szFileName)
     {
-		wchar_t szNewFileName[MAX_PATH + 10];
-        Strcpy(szNewFileName, m_szEXEPath);
-        Strcat(szNewFileName, L"AutoUpdate\\");
-        Strcat(szNewFileName, szFileName);
+        char szNewFileName[MAX_PATH+10];
+        strcpy(szNewFileName, m_szEXEPath);
+        strcat(szNewFileName, "AutoUpdate\\");
+        strcat(szNewFileName, szFileName);
 
-		wchar_t szOutOfSyncExplaination[] = { L"Perhaps FileList.txt in Lobby server's folder is different than one at FTP Site -OR- Newer file(s) have been added to FTP Site without updating FileList.txt." };
+        char szOutOfSyncExplaination[] = {"Perhaps FileList.txt in Lobby server's folder is different than one at FTP Site -OR- Newer file(s) have been added to FTP Site without updating FileList.txt."};
 
         int nLength = CAutoDownloadUtil::GetFileLength(szNewFileName);
 
         if (nLength == (unsigned) -1)
         {
-            DoError(L"Couldn't determine file length for %s (Error Code %d) ", szFileName, GetLastError());
+            DoError("Couldn't determine file length for %s (Error Code %d) ", szFileName, GetLastError());
             return true;
         }
 
@@ -596,7 +596,7 @@ public:
             if (ShouldRetry(szNewFileName))
                 return false;
 
-            DoError(L"File %s was bigger than expected.  Make sure FileList.txt is up-to-date.  Make sure no compressed files at FTP site got bigger when compressed. Make sure lobby server's FileList.txt is the same as one on FTP Site. ", szFileName);
+            DoError("File %s was bigger than expected.  Make sure FileList.txt is up-to-date.  Make sure no compressed files at FTP site got bigger when compressed. Make sure lobby server's FileList.txt is the same as one on FTP Site. ", szFileName);
             return true;
         }
 
@@ -606,9 +606,9 @@ public:
             // Decompress the file.
             //
 
-			wchar_t szDestFileName[MAX_PATH + 11];
-            Strcpy(szDestFileName, szNewFileName);
-            Strcat(szDestFileName, L"_");
+            char szDestFileName[MAX_PATH+11];
+            strcpy(szDestFileName, szNewFileName);
+            strcat(szDestFileName, "_");
 
             OFSTRUCT dum1/*, dum2*/;
 
@@ -616,16 +616,16 @@ public:
 
             const int cbBuffer = 128*1024;
 
-			//NYI Imago 10/14 7z TODO
-            INT nSourceHandle = LZOpenFile(szNewFileName, &dum1, OF_READ);
+
+            INT nSourceHandle = LZOpenFileA(szNewFileName, &dum1, OF_READ);
 
             if (nSourceHandle < 0)
             {
-                DoError(L"Failed to open compressed file %s \n LZ Error Code: %d \n ", szNewFileName, nSourceHandle);
+                DoError("Failed to open compressed file %s \n LZ Error Code: %d \n ", szNewFileName, nSourceHandle);
                 return true;
             }
 
-            HANDLE hDest = CreateFile(szDestFileName,
+            HANDLE hDest = CreateFileA(szDestFileName,
                                      GENERIC_WRITE,
                                      FILE_SHARE_READ,
                                      NULL,
@@ -635,7 +635,7 @@ public:
 
             if (hDest == INVALID_HANDLE_VALUE)
             {
-                DoError(L"Failed to create a file to decompress to. %s \n Error Code: %d \n ", szDestFileName, GetLastError());
+                DoError("Failed to create a file to decompress to. %s \n Error Code: %d \n ", szDestFileName, GetLastError());
                 return true;
             }
 
@@ -643,7 +643,7 @@ public:
 
             if (pBuffer == NULL)
             {
-                DoError(L"Out of memory: bytes attempted: %d", cbBuffer);
+                DoError("Out of memory: bytes attempted: %d", cbBuffer);
                 return true;
             }
 
@@ -660,7 +660,7 @@ public:
                     delete[] pBuffer;
                     LZClose(nSourceHandle);
                     ::CloseHandle(hDest);
-                    DoError(L"Failed to Decompress File %s \n LZ Error Code: %d \n ", szNewFileName, nReadResult);
+                    DoError("Failed to Decompress File %s \n LZ Error Code: %d \n ", szNewFileName, nReadResult);
                     return true;
                 }
 
@@ -669,7 +669,7 @@ public:
                     delete[] pBuffer;
                     LZClose(nSourceHandle);
                     ::CloseHandle(hDest);
-                    DoError(L"Failed to Decompress File %s \n Write Error Code: %d \n ", szDestFileName, GetLastError());
+                    DoError("Failed to Decompress File %s \n Write Error Code: %d \n ", szDestFileName, GetLastError());
                     return true;
                 }
 
@@ -688,7 +688,7 @@ public:
             LZClose(nSourceHandle);
             if (!::CloseHandle(hDest))
             {
-                DoError(L"Failed to close file after decompression; %s (Error Code:%d) \n ", szDestFileName, GetLastError());
+                DoError("Failed to close file after decompression; %s (Error Code:%d) \n ", szDestFileName, GetLastError());
                 return true;
             }
 
@@ -699,19 +699,19 @@ public:
 
                 if (cbDone == CAutoDownloadUtil::GetFileLength(szNewFileName))
                 {
-                    DoError(L"File size for %s did not match size of file with same name in FileList.txt. %s", szNewFileName, szOutOfSyncExplaination);
+                    DoError("File size for %s did not match size of file with same name in FileList.txt. %s", szNewFileName, szOutOfSyncExplaination);
                     return true;
                 }
 
-                DoError(L"After decompression, file %s wasn't the size expected.  %s", szDestFileName, szOutOfSyncExplaination);
+                DoError("After decompression, file %s wasn't the size expected.  %s", szDestFileName, szOutOfSyncExplaination);
                 return true;
             }
 
-            DeleteFile(szNewFileName);
+            DeleteFileA(szNewFileName);
 
-            if (!MoveFile(szDestFileName, szNewFileName))
+            if (!MoveFileA(szDestFileName, szNewFileName))
             {
-                DoError(L"Rename file after decompression failed; %s to %s (Error Code:%d) \n ", szNewFileName, szDestFileName, GetLastError());
+                DoError("Rename file after decompression failed; %s to %s (Error Code:%d) \n ", szNewFileName, szDestFileName, GetLastError());
                 return true;
             }
         }
@@ -724,13 +724,13 @@ public:
             //
             // Verify CRC
             //
-            wchar_t szErrorMsgBuffer[100+MAX_PATH];
+            char szErrorMsgBuffer[100+MAX_PATH];
             int nCRC;
             nCRC = FileCRC(szNewFileName, szErrorMsgBuffer);
 
             if (nCRC == 0)
             {
-                DoError(L"Couldn't verify downloaded file's CRC: %s\n", szErrorMsgBuffer);
+                DoError("Couldn't verify downloaded file's CRC: %s\n", szErrorMsgBuffer);
                 return true;
             }
             else
@@ -739,7 +739,7 @@ public:
                 if (ShouldRetry(szNewFileName))
                     return false;
 
-                DoError(L"CRC for %s did not match CRC of file with same name in FileList.txt.  %s \n ", szFileName, szOutOfSyncExplaination);
+                DoError("CRC for %s did not match CRC of file with same name in FileList.txt.  %s \n ", szFileName, szOutOfSyncExplaination);
                 return true;
             }
 
@@ -754,10 +754,10 @@ public:
 
             m_pSink->OnFileCompleted(szFileName); // forward event
 
-            if (_wcsicmp(szFileName, L"readme.txt") == 0)
+            if (_stricmp(szFileName, "readme.txt") == 0)
             {
                 m_bReadmeUpdated = true;
-                ShellExecute(NULL, NULL, L".\\AutoUpdate\\readme.txt", NULL, NULL, SW_SHOWNORMAL);
+                ShellExecuteA(NULL, NULL, ".\\AutoUpdate\\readme.txt", NULL, NULL, SW_SHOWNORMAL);
                 Sleep(1000);  // delay so that Notepad has time to load the readme file before it is moved to the EXE Folder
             }
         }
@@ -768,7 +768,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-	virtual void OnProgress(unsigned long cTotalBytes, const wchar_t* szCurrentFile, unsigned long cCurrentFileBytes)
+    virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes)
     {
         if (IsDownloadListBuilt()) // don't send progress update for FileList.txt, only for downloading real list of files
         {
@@ -822,7 +822,7 @@ public:
        }
         else
         {
-            assert(_wcsicmp(L"FileList.txt", szCurrentFile) == 0);
+            assert(_stricmp("FileList.txt", szCurrentFile) == 0);
 
             m_pSink->OnRetrievingFileListProgress(m_nFileListSize, cCurrentFileBytes);
         }
@@ -878,20 +878,20 @@ private:
         // that is, make string pairs like so:
         // "URL1", "localfile1", "URL2", "localfile2", ..., NULL
         //
-		wchar_t ** pszURLs = new wchar_t*[2 * m_cFiles + 1];
+        char ** pszURLs = new char*[2*m_cFiles+1];
         pszURLs[2*m_cFiles] = NULL;
-		wchar_t szURL[512];
-        int nBaseLen = wcslen(m_szURL);
-        Strcpy(szURL, m_szURL);
+        char szURL[512];
+        int nBaseLen = strlen(m_szURL);
+        strcpy(szURL, m_szURL);
 
         for (unsigned i = 0; i < m_cFiles; i++)
         {
-            Strcpy(szURL + nBaseLen, m_pszFileList[i]);
-            pszURLs[i*2] =   _wcsdup(szURL);
-            pszURLs[i*2+1] = _wcsdup(m_pszFileList[i]);
+            strcpy(szURL + nBaseLen, m_pszFileList[i]);
+            pszURLs[i*2] =   _strdup(szURL);
+            pszURLs[i*2+1] = _strdup(m_pszFileList[i]);
         }
 
-        m_pHTTPSession->InitiateDownload(pszURLs, L".\\AutoUpdate\\");
+        m_pHTTPSession->InitiateDownload(pszURLs, ".\\AutoUpdate\\");
 
         for (int i = 0; i < m_cFiles * 2; i++)
             free(pszURLs[i]);
@@ -925,14 +925,14 @@ private:
                     // After analysis, we have determined that no files are
                     // needed to be downloaded
                     //
-                    ::DeleteFile(L"FileList.txt");
+                    ::DeleteFileA("FileList.txt");
 
                     // Note: considered using MoveFileEx, but win95/98 doesn't support it
-                    BOOL bResult = ::MoveFile(L".\\AutoUpdate\\FileList.txt", L"FileList.txt");
+                    BOOL bResult = ::MoveFileA(".\\AutoUpdate\\FileList.txt", "FileList.txt");
 
                     if (!bResult)
                     {
-                        DoError(L"Unable to move FileList.txt from AutoUpdate folder to current one. Error Code: %d", GetLastError());
+                        DoError("Unable to move FileList.txt from AutoUpdate folder to current one. Error Code: %d", GetLastError());
                     }
 
                     delete this;
@@ -968,18 +968,18 @@ private:
             DWORD dwValue = 1;
             if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey))
             {
-              ::RegSetValueEx(hKey, L"MoveInProgress", NULL, REG_DWORD, (unsigned char*)&dwValue, sizeof(DWORD));
+              ::RegSetValueExA(hKey, "MoveInProgress", NULL, REG_DWORD, (unsigned char*)&dwValue, sizeof(DWORD));
             }
         }
 
         //
         // Move Files from AutoUpdate folder to Artwork (or EXE-containing) folder
         //
-		wchar_t szErrorMsg[2 * MAX_PATH + 50];
+        char szErrorMsg[2*MAX_PATH+50];
 
-        if (!CAutoDownloadUtil::MoveFiles(L".\\AutoUpdate\\", m_szArtPath, !m_bSkipReloader, &m_bNeedToRestart, m_bSkipReloader, szErrorMsg, m_pSink))
+        if (!CAutoDownloadUtil::MoveFiles(".\\AutoUpdate\\", m_szArtPath, !m_bSkipReloader, &m_bNeedToRestart, m_bSkipReloader, szErrorMsg, m_pSink))
         {
-            DoError(L"Error while moving downloaded files (be sure dest file isn't already open): %s", szErrorMsg);
+            DoError("Error while moving downloaded files (be sure dest file isn't already open): %s", szErrorMsg);
         }
 
         if (m_bNeedToRestart && !m_bSkipReloader)
@@ -989,9 +989,9 @@ private:
 
             if (!LaunchReloaderAndExit(m_bReadmeUpdated))
             {
-				wchar_t * sz = L"Couldn't complete update process; couldn't launch Reloader.exe.";
+                char * sz = "Couldn't complete update process; couldn't launch Reloader.exe.";
                 DoError(sz);
-                ::MessageBox(NULL, sz, L"Fatal Error", MB_ICONERROR);
+                ::MessageBoxA(NULL, sz, "Fatal Error", MB_ICONERROR);
                 ::ExitProcess(0);
             }
         }
@@ -1024,9 +1024,9 @@ private:
 private: // Data members
 
 
-	wchar_t                 m_szArtPath[MAX_PATH];
-	wchar_t                 m_szEXEPath[MAX_PATH];
-	wchar_t                 m_szFilelistSubDir[MAX_PATH];
+    char                 m_szArtPath[MAX_PATH];
+    char                 m_szEXEPath[MAX_PATH];
+    char                 m_szFilelistSubDir[MAX_PATH];
     bool                 m_bNeedToMoveFiles;
     bool                 m_bNeedToRestart;
     bool                 m_bErrorHasOccurred;
@@ -1039,11 +1039,11 @@ private: // Data members
     unsigned             m_timeLast;
     unsigned             m_cSecsLeft;
 
-	wchar_t                 m_szURL[256];
-	wchar_t                 m_szUsername[128];
-	wchar_t                 m_szPassword[128];
+    char                 m_szURL[256];
+    char                 m_szUsername[128];
+    char                 m_szPassword[128];
 
-	wchar_t **              m_pszFileList;      // list of files to download
+    char **              m_pszFileList;      // list of files to download
     unsigned             m_cFiles;
     unsigned long        m_cListAllocSize;   // number of bytes for alloc-ed pointers for list
     CFileInfo *          m_pFileInfo;        // pointer to array of FileInfo's
@@ -1059,7 +1059,7 @@ private: // Data members
     int                  m_nOfficialCRC;            // CRC of lobby server's FileList.txt
     unsigned             m_nFileListSize;           // length of server's FileList.txt
 
-	wchar_t                 m_szErrorMessage[1024];
+    char                 m_szErrorMessage[1024];
 
     IAutoUpdateSink *    m_pSink;      // Event Sink for UI in wintrek/pigs
 
@@ -1103,9 +1103,9 @@ class CLocalFilesVerifier
 {
 public:
 
-	CLocalFilesVerifier(CAutoDownloadImpl * pCreator, bool bForceCRCCheck, int nOfficialCRC, wchar_t * szArtPath) :
+    CLocalFilesVerifier(CAutoDownloadImpl * pCreator, bool bForceCRCCheck, int nOfficialCRC, char * szArtPath) :
         m_pCreator(pCreator),
-        m_file(L".\\AutoUpdate\\FileList.txt"),
+        m_file(".\\AutoUpdate\\FileList.txt"),
         m_szArtPath(szArtPath),
         m_bForceCRCCheck(bForceCRCCheck)
     {
@@ -1118,21 +1118,21 @@ public:
         //
         if(!m_file.IsValid())
         {
-            m_pCreator->DoError(L"Couldn't open FileList.txt (Error Code: %d) ", GetLastError());
+            m_pCreator->DoError("Couldn't open FileList.txt (Error Code: %d) ", GetLastError());
             return;
         }
         int nSize = m_file.GetLength();
-		m_pStart = new wchar_t[nSize];
+        m_pStart = new char[nSize];
         m_pCurrent = m_pStart;
         if (m_file.Read(m_pCurrent, nSize) != (DWORD) nSize)
         {
-            m_pCreator->DoError(L"Couldn't read FileList.txt (Error Code: %d) ", GetLastError());
+            m_pCreator->DoError("Couldn't read FileList.txt (Error Code: %d) ", GetLastError());
             return;
         }
         // verify FileList.txt downloaded valid
         if (MemoryCRC(m_pStart, (unsigned)nSize) != nOfficialCRC)
         {
-            m_pCreator->DoError(L"FileList.txt downloaded from FTP site is different than the one the Lobby Server has in its local directory.  Make sure these files have the same CRC. ");
+            m_pCreator->DoError("FileList.txt downloaded from FTP site is different than the one the Lobby Server has in its local directory.  Make sure these files have the same CRC. ");
             return;
         }
         m_pEnd = m_pCurrent + nSize;
@@ -1146,7 +1146,7 @@ public:
 
             if (!m_pCreator->HasErrorOccurred() && m_pCurrent != m_pEnd)
             {
-                m_pCreator->DoError(L"The file fileList.txt downloaded from server has a bad format near or at line: %d. ", m_nLineNumber);
+                m_pCreator->DoError("The file fileList.txt downloaded from server has a bad format near or at line: %d. ", m_nLineNumber);
             }
         }
     }
@@ -1177,43 +1177,43 @@ public:
 
                     SYSTEMTIME systime;
 
-                    systime.wYear = _wtoi(m_pCurrent);
+                    systime.wYear = atoi(m_pCurrent);
 
                     m_pCurrent += 4;
                     if (*(m_pCurrent++) != '/')
                         return false;
 
-					systime.wMonth = _wtoi(m_pCurrent);
+                    systime.wMonth = atoi(m_pCurrent);
 
                     m_pCurrent += 2;
                     if (*(m_pCurrent++) != '/')
                         return false;
 
-					systime.wDay = _wtoi(m_pCurrent);
+                    systime.wDay = atoi(m_pCurrent);
 
                     m_pCurrent += 2;
                     if (*(m_pCurrent++) != ' ')
                         return false;
 
-					systime.wHour = _wtoi(m_pCurrent);
+                    systime.wHour = atoi(m_pCurrent);
 
                     m_pCurrent += 2;
                     if (*(m_pCurrent++) != ':')
                         return false;
 
-					systime.wMinute = _wtoi(m_pCurrent);
+                    systime.wMinute = atoi(m_pCurrent);
 
                     m_pCurrent += 2;
                     if (*(m_pCurrent++) != ':')
                         return false;
 
-					systime.wSecond = _wtoi(m_pCurrent);
+                    systime.wSecond = atoi(m_pCurrent);
 
                     m_pCurrent += 2;
                     if (*(m_pCurrent++) != ' ')
                         return false;
 
-					int nFileLength = _wtoi(m_pCurrent);
+                    int nFileLength = atol(m_pCurrent);
 
                     m_pCurrent += 9;
                     if (*(m_pCurrent++) != ' ')
@@ -1225,9 +1225,9 @@ public:
                     if (*(m_pCurrent++) != ' ')
                         return false;
 
-                    wchar_t * pLineEnd = wcschr(m_pCurrent, '\r');
+                    char * pLineEnd = strchr(m_pCurrent, '\r');
                     *pLineEnd = '\0';
-					wchar_t * szm_fileName = m_pCurrent;
+                    char * szm_fileName = m_pCurrent;
 
                     systime.wMilliseconds = 0;
 
@@ -1308,7 +1308,7 @@ private:
      *      false: if file is was quickly considered
      *      true : if file took some CPU time to look at closely.
      */
-	bool ConsiderDownloadingFile(wchar_t *szFileName, SYSTEMTIME * psystime, int nCRC, int nFileLength)
+    bool ConsiderDownloadingFile(char *szFileName, SYSTEMTIME * psystime, int nCRC, int nFileLength)
     {
         if (m_pCreator->ShouldFilterFile(szFileName))
             return false;
@@ -1316,8 +1316,8 @@ private:
         SYSTEMTIME systimeLocal;
         int nLocalFileLength;
 
-		wchar_t szFileNameWithPath[MAX_PATH + 20];
-        CAutoDownloadUtil::GetFileNameWithPath(szFileNameWithPath, szFileName, m_szArtPath, L".\\");
+        char szFileNameWithPath[MAX_PATH+20];
+        CAutoDownloadUtil::GetFileNameWithPath(szFileNameWithPath, szFileName, m_szArtPath, ".\\");
 
         HANDLE hFile = OpenAndGetFileInfo(szFileNameWithPath, &systimeLocal, &nLocalFileLength);
 
@@ -1327,7 +1327,7 @@ private:
         {
             if(GetLastError() != ERROR_FILE_NOT_FOUND)
             {
-                m_pCreator->DoError(L"Before determining if we needed to download a file, failed open local file (%s); Error Code: %d ", szFileName, GetLastError());
+                m_pCreator->DoError("Before determining if we needed to download a file, failed open local file (%s); Error Code: %d ", szFileName, GetLastError());
                 return false;
             }
 
@@ -1346,7 +1346,7 @@ private:
             // Okay, times are different, let's be ultra-sure we need to download this file,
             // let's do a CRC check
             //
-			wchar_t szBuffer[100 + MAX_PATH];
+            char szBuffer[100+MAX_PATH];
             int nLocalCRC;
 
             if (!bNewFile && (!bIsFileLengthWrong || m_bForceCRCCheck))
@@ -1355,13 +1355,13 @@ private:
 
                 if (nLocalCRC == 0)
                 {
-                    m_pCreator->DoError(L"Error during gettings CRC: %s", szBuffer);
+                    m_pCreator->DoError("Error during gettings CRC: %s", szBuffer);
                     ::CloseHandle(hFile);
                     return true;
                 }
             }
 
-            swprintf(szBuffer, L".\\AutoUpdate\\%s", szFileName);
+            sprintf(szBuffer, ".\\AutoUpdate\\%s", szFileName);
 
             if (bIsFileLengthWrong || nLocalCRC != nCRC || bNewFile)
             {
@@ -1375,7 +1375,7 @@ private:
                     // but we still need to move it
                     m_pCreator->SetNeedToMoveFiles(true);
 
-                    _debugf(L"%s with correct CRC was found in AutoUpdate folder.  Planning to move it later.  (Resetting filetime just in case.) \n", szBuffer);
+                    _debugf("%s with correct CRC was found in AutoUpdate folder.  Planning to move it later.  (Resetting filetime just in case.) \n", szBuffer);
                     // make sure has correct time; even though it's probably valid
                     SetLocalFileTime(INVALID_HANDLE_VALUE, szBuffer, psystime);
                 }
@@ -1391,14 +1391,14 @@ private:
                 // wrong time.
                 //
                 if (!m_bForceCRCCheck)
-                    _debugf(L"Correcting filetime for %s, which was found to have wrong time but correct CRC.\n", szFileName);
+                    _debugf("Correcting filetime for %s, which was found to have wrong time but correct CRC.\n", szFileName);
 
                 // Make sure file has right time so we don't get here again.
                 SetLocalFileTime(hFile, szFileNameWithPath, psystime);
 
                 // since we already have the right file in the EXE or Artwork folder, delete one
                 // of same name in AutoUpdate folder (in the rare event that a old copy of one exists there)
-                ::DeleteFile(szBuffer);
+                ::DeleteFileA(szBuffer);
             }
             ::CloseHandle(hFile);
             return true;
@@ -1409,9 +1409,9 @@ private:
 
     //////////////////////////////////////////////////////////////////////////
 
-HANDLE OpenAndGetFileInfo(wchar_t * szFileName, SYSTEMTIME * psystimeTrue, int * pnLocalFileLength)
+    HANDLE OpenAndGetFileInfo(char * szFileName, SYSTEMTIME * psystimeTrue, int * pnLocalFileLength)
     {
-        HANDLE hFile = CreateFile(szFileName,
+        HANDLE hFile = CreateFileA(szFileName,
                                  GENERIC_READ | GENERIC_WRITE,
                                  FILE_SHARE_READ,
                                  NULL,
@@ -1423,7 +1423,7 @@ HANDLE OpenAndGetFileInfo(wchar_t * szFileName, SYSTEMTIME * psystimeTrue, int *
         {
             // try again with just read rights
 
-            hFile = CreateFile(szFileName,
+            hFile = CreateFileA(szFileName,
                                GENERIC_READ,
                                FILE_SHARE_READ,
                                NULL,
@@ -1452,20 +1452,20 @@ HANDLE OpenAndGetFileInfo(wchar_t * szFileName, SYSTEMTIME * psystimeTrue, int *
 
 private:
 
-	wchar_t *              m_pStart;
-	wchar_t *              m_pCurrent;
-	wchar_t *              m_pEnd;
+    char *              m_pStart;
+    char *              m_pCurrent;
+    char *              m_pEnd;
     ZFile               m_file;
     int                 m_nLineNumber;
 
     bool                m_bForceCRCCheck;
-	wchar_t *              m_szArtPath;
+    char *              m_szArtPath;
 
     CAutoDownloadImpl * m_pCreator;
 };
 
 
-CLocalFilesVerifier * CreateLocalFilesVerifier(CAutoDownloadImpl * p, bool bForceCRCCheck, int nOfficialCRC, wchar_t * szArtPath)
+CLocalFilesVerifier * CreateLocalFilesVerifier(CAutoDownloadImpl * p, bool bForceCRCCheck, int nOfficialCRC, char * szArtPath)
 {
     return new CLocalFilesVerifier(p, bForceCRCCheck, nOfficialCRC, szArtPath);
 }
@@ -1486,19 +1486,19 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
 {
     // Need to restart allegiance
 
-	wchar_t szCommandLine[MAX_PATH];
+    char szCommandLine[MAX_PATH];
 
-	wchar_t * szReadme = bReLaunchAllegianceAsMinimized ? L"-Minimized" : L"-Normal";
+    char * szReadme = bReLaunchAllegianceAsMinimized ? "-Minimized" : "-Normal";
 
     // This command-line needs to be in sync with the command-line reader in Reloader.exe
-    swprintf(szCommandLine, L"%ld %s %s", ::GetCurrentProcessId(), szReadme, wcschr(::GetCommandLine(), L' '));
+    sprintf(szCommandLine, "%ld %s %s", ::GetCurrentProcessId(), szReadme, strchr(::GetCommandLineA(), ' '));
 
     //
     //  Launch Reloader.exe
     //
-    int nRet = (int)ShellExecute(0,
-         L"Open",
-         L"Reloader.exe",
+    int nRet = (int)ShellExecuteA(0,
+         "Open",
+         "Reloader.exe",
          szCommandLine,  // re-feed the original command-line back into Allegiance.exe
          NULL,
          SW_SHOWNORMAL);
@@ -1506,9 +1506,9 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
     if(nRet <= 32)
     {
         // check again for dev/manual builds
-        int nRet2 = (int)ShellExecute(0,
-             L"Open",
-             L"..\\Reloader\\Reloader.exe",
+        int nRet2 = (int)ShellExecuteA(0,
+             "Open",
+             "..\\Reloader\\Reloader.exe",
              szCommandLine,  // re-feed the original command-line back into Allegiance.exe
              NULL,
              SW_SHOWNORMAL);
@@ -1529,13 +1529,13 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
 
 //////////////////////////////////////////////////////////////////////////
 
-void SetLocalFileTime(HANDLE hFile, wchar_t *szFileName, SYSTEMTIME * psystime)
+void SetLocalFileTime(HANDLE hFile, char *szFileName, SYSTEMTIME * psystime)
 {
     bool bOpenHere = hFile == INVALID_HANDLE_VALUE;
 
     if (bOpenHere)
     {
-        hFile = CreateFile(szFileName,
+        hFile = CreateFileA(szFileName,
                                  GENERIC_READ | GENERIC_WRITE,
                                  FILE_SHARE_READ,
                                  NULL,
@@ -1545,7 +1545,7 @@ void SetLocalFileTime(HANDLE hFile, wchar_t *szFileName, SYSTEMTIME * psystime)
 
         if (hFile == INVALID_HANDLE_VALUE)
         {
-            _debugf(L"Failed to open file before trying to reset filetime, (%s); Error Code: %d ", szFileName, GetLastError());
+            _debugf("Failed to open file before trying to reset filetime, (%s); Error Code: %d ", szFileName, GetLastError());
             return;
         }
     }
@@ -1558,7 +1558,7 @@ void SetLocalFileTime(HANDLE hFile, wchar_t *szFileName, SYSTEMTIME * psystime)
     b = SetFileTime(hFile, NULL, NULL, &ft);
 
     if (!b)
-        _debugf(L"Unabled to reset file time; we must only have read access.\n");
+        _debugf("Unabled to reset file time; we must only have read access.\n");
 
     if (bOpenHere)
         ::CloseHandle(hFile);

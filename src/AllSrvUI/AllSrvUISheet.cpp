@@ -132,9 +132,9 @@ void CAllSrvUISheet::AddChildrenToAutoSizer()
   while (pwnd)
   {
     // Get tne class name of the child window
-    TCHAR szClass[_MAX_PATH];
-    GetClassName(*pwnd, szClass, sizeofArray(szClass));
-    if (0 == _tcsicmp(szClass, L"button"))
+    CHAR szClass[_MAX_PATH];
+    GetClassNameA(*pwnd, szClass, sizeofArray(szClass));
+    if (0 == _stricmp(szClass, "button"))
     {
       // Add some AutoSizer rules for this child window
       m_AutoSizer.AddRule(*pwnd, AutoSizer_Follow_LeftRight,

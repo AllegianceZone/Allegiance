@@ -405,7 +405,7 @@ public:
                     index++;
                     iter.Next();
                 }
-                ZError(L"WriteReference: can't find " + str);
+                ZError("WriteReference: can't find " + str);
             } else {
                 m_pfile->Write(ObjectImport);
                 m_pfile->Write(index);

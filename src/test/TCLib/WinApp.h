@@ -44,7 +44,7 @@ extern Win32App* g_papp;
       AccessPrevHook() = _CrtSetReportHook(ReportHook);
 
       // Get the module filename of the current process
-	  char szModule[_MAX_PATH];
+      char szModule[_MAX_PATH];
       GetModuleFileNameA(NULL, szModule, sizeofArray(szModule));
 
       // Break out just the file name part
@@ -67,7 +67,7 @@ extern Win32App* g_papp;
   // Overrides
   public:
     /////////////////////////////////////////////////////////////////////////
-	  virtual void DebugOutput(const char *psz)
+    virtual void DebugOutput(const char *psz)
     {
       int cch = strlen(psz);
       if (cch < (int)(sizeof(m_szModuleName) - (m_cchModuleName + 1))) //Imago 8/10 added (int)
@@ -77,14 +77,14 @@ extern Win32App* g_papp;
       }
       else
       {
-		  char* pszCopy = (char*)_alloca(cch + m_cchModuleName + 1);
+        char* pszCopy = (char*)_alloca(cch + m_cchModuleName + 1);
         strncpy(pszCopy, m_szModuleName, m_cchModuleName);
         strcpy(pszCopy + m_cchModuleName, psz);
         _CrtDbgReport(_CRT_WARN, NULL, NULL, NULL, pszCopy);
       }
     }
     /////////////////////////////////////////////////////////////////////////
-	  virtual bool OnAssert(const char* psz, const char* pszFile, int line,
+    virtual bool OnAssert(const char* psz, const char* pszFile, int line,
       const char* pszModule)
     {
       // Save the current _CRT_ASSERT report mode, if we are interactive
@@ -145,7 +145,7 @@ extern Win32App* g_papp;
       return false;
     }
     /////////////////////////////////////////////////////////////////////////
-	static int ReportHook(int reportType, char* message, int* returnValue)
+    static int ReportHook(int reportType, char* message, int* returnValue)
     {
       static bool s_bInHook = false;
       if (s_bInHook)
@@ -171,8 +171,8 @@ extern Win32App* g_papp;
 
   // Data Members
   protected:
-	  char  m_szModuleName[_MAX_PATH * 4];
-	  char* m_pszModuleNameEnd;
+    char  m_szModuleName[_MAX_PATH * 4];
+    char* m_pszModuleNameEnd;
     int   m_cchModuleName;
   };
 

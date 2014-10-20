@@ -9,7 +9,7 @@
 
 class FileTimeEquals {
 public:
-    bool operator () (const WIN32_FIND_DATA pdata1, const WIN32_FIND_DATA pdata2)
+    bool operator () (const WIN32_FIND_DATAA pdata1, const WIN32_FIND_DATAA pdata2)
     {
          return ((CompareFileTime(&pdata1.ftLastWriteTime, &pdata2.ftLastWriteTime)) == 0) ? 1 : 0;
     }
@@ -17,13 +17,13 @@ public:
 
 class FileTimeCompare {
 public:
-    bool operator () (const WIN32_FIND_DATA pdata1, const WIN32_FIND_DATA pdata2)
+    bool operator () (const WIN32_FIND_DATAA pdata1, const WIN32_FIND_DATAA pdata2)
     {
         return  ((CompareFileTime(&pdata1.ftLastWriteTime, &pdata2.ftLastWriteTime)) == 1) ? 0 : 1;
     }
 };
 
-typedef TList<WIN32_FIND_DATA, FileTimeEquals, FileTimeCompare> FileList;
+typedef TList<WIN32_FIND_DATAA, FileTimeEquals, FileTimeCompare> FileList;
 
 FileList FindDumps();
 

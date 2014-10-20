@@ -43,7 +43,7 @@ unsigned CALLBACK SQLQueueProc(void * pvSQLQueueThread)
           break;
 
         default:
-          ZError(L"SQLThreadProc: Unexpected thread message.\n");
+          ZError("SQLThreadProc: Unexpected thread message.\n");
       }
     }
   } while (WAIT_OBJECT_0 != dwWait); 
@@ -84,7 +84,7 @@ unsigned CALLBACK SQLThreadProc(void * pvsqlThread)
         break;
 
       default:
-        ZError(L"Unexpected object signaled in SQLThreadProc.\n");
+        ZError("Unexpected object signaled in SQLThreadProc.\n");
     }
 
   } while (WAIT_OBJECT_0 != dwWait);
@@ -231,7 +231,7 @@ HRESULT CSQLThread::ServiceQuery(CSQLQuery * pqueryNew)
       m_psql->DumpErrorInfo(pqueryCache->GetIUnknown(), IID_ICommand, &fRetry);
       if (fRetry)
       {
-        debugf(L"Query deadlocked or timed-out. Retry #%d\n", ++cRetries);
+        debugf("Query deadlocked or timed-out. Retry #%d\n", ++cRetries);
         Sleep(50 * cRetries);
       }
     }

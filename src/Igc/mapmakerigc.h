@@ -39,7 +39,7 @@ const int c_HiddenToPlayerAleph = 5;
 class CMapData
 {
     protected:
-		static const wchar_t * smszClusterName[c_NumClusterNames];
+        static const char * smszClusterName[c_NumClusterNames];
 
     protected:
         ImissionIGC * mpMission;
@@ -170,7 +170,7 @@ class CMapData
         //
         // Our own custom methods.
         //
-        VOID GetNewClusterName(wchar_t * szClusterName);
+        VOID GetNewClusterName(CHAR * szClusterName);
 } ;
 
 
@@ -186,12 +186,12 @@ class CMapData
 class CmapMakerIGC : public ImapMakerIGC
 {
     protected:
-        static const wchar_t * smszPlanetName[c_NumberOfPlanetPosters];
+        static const char * smszPlanetName[c_NumberOfPlanetPosters];
         MapMakerID mMMID;
-		wchar_t mszName[c_cbDescription + 4];
+        char mszName[c_cbDescription + 4];
 
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -201,10 +201,10 @@ class CmapMakerIGC : public ImapMakerIGC
 
         virtual MapMakerID  GetMapMakerID() const           { return(mMMID); }
         virtual VOID        SetMapMakerID(MapMakerID mmID)  { mMMID = mmID; }
-		virtual wchar_t const* GetName() const
+        virtual char const* GetName() const
             { return(mszName); }
-		virtual VOID        SetName(const wchar_t * newVal)
-            { Strcpy(mszName, newVal); }
+        virtual VOID        SetName(const char * newVal)
+            { strcpy(mszName, newVal); }
 
         virtual VOID        GenerateMission(Time now,
                                             const MissionParams * pmp,
@@ -261,7 +261,7 @@ class CmapMakerIGC : public ImapMakerIGC
 class   CmapMakerSingleRingIGC  :   public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -281,7 +281,7 @@ class   CmapMakerSingleRingIGC  :   public CmapMakerIGC
 class CmapMakerDoubleRingIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -306,7 +306,7 @@ class CmapMakerDoubleRingIGC : public CmapMakerIGC
 class CmapMakerHiLoIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -331,7 +331,7 @@ class CmapMakerHiLoIGC : public CmapMakerIGC
 class CmapMakerHiHigherIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -356,7 +356,7 @@ class CmapMakerHiHigherIGC : public CmapMakerIGC
 class CmapMakerStarIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -383,7 +383,7 @@ class CmapMakerStarIGC : public CmapMakerIGC
 class CmapMakerBigRingIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -410,7 +410,7 @@ class CmapMakerBigRingIGC : public CmapMakerIGC
 class CmapMakerBrawlIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp);
+        static const char*  IsValid(const MissionParams* pmp);
 
         CmapMakerBrawlIGC();
 
@@ -438,7 +438,7 @@ class CmapMakerBrawlIGC : public CmapMakerIGC
 class CmapMakerPinWheelIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp);
+        static const char*  IsValid(const MissionParams* pmp);
 
         CmapMakerPinWheelIGC();
 
@@ -464,7 +464,7 @@ class CmapMakerPinWheelIGC : public CmapMakerIGC
 class CmapMakerDiamondRingIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp);
+        static const char*  IsValid(const MissionParams* pmp);
 
         CmapMakerDiamondRingIGC();
 
@@ -492,7 +492,7 @@ class CmapMakerDiamondRingIGC : public CmapMakerIGC
 class CmapMakerSnowFlakeIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -522,7 +522,7 @@ class CmapMakerSnowFlakeIGC : public CmapMakerIGC
 class CmapMakerLargeSplitIGC : public CmapMakerHiHigherIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp);
+        static const char*  IsValid(const MissionParams* pmp);
 
         CmapMakerLargeSplitIGC();
 };
@@ -530,7 +530,7 @@ class CmapMakerLargeSplitIGC : public CmapMakerHiHigherIGC
 class CmapMakerInsideOutIGC : public CmapMakerHiHigherIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -541,7 +541,7 @@ class CmapMakerInsideOutIGC : public CmapMakerHiHigherIGC
 class CmapMakerGridIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp)
+        static const char*  IsValid(const MissionParams* pmp)
         {
             return NULL;
         }
@@ -563,7 +563,7 @@ class CmapMakerGridIGC : public CmapMakerIGC
 class CmapMakerEastWestIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp);
+        static const char*  IsValid(const MissionParams* pmp);
 
         CmapMakerEastWestIGC();
 
@@ -585,7 +585,7 @@ class CmapMakerEastWestIGC : public CmapMakerIGC
 class CmapMakerSplitBaseIGC : public CmapMakerIGC
 {
     public:
-		static const wchar_t*  IsValid(const MissionParams* pmp);
+        static const char*  IsValid(const MissionParams* pmp);
 
         CmapMakerSplitBaseIGC();
         virtual VOID        GenerateLayout(CMapData * pMapData);

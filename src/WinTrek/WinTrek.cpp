@@ -143,7 +143,7 @@ void DummyPackCreateCallback( int iCurrentFileIndex, int iMaxFileIndex )
 DWORD WINAPI DummyPackCreateThreadProc( LPVOID param )
 {
 	ZString strArtwork = ZString(UTL::artworkPath()); //duh
-	CDX9PackFile textures(strArtwork , L"CommonTextures" );
+	CDX9PackFile textures(strArtwork , "CommonTextures" );
 	textures.Create( DummyPackCreateCallback );
 	return 0;
 }
@@ -157,12 +157,12 @@ DWORD WINAPI DDVidCreateThreadProc( LPVOID param ) {
 	bool bHide = false;
 	HWND hwndFound = NULL;
 	if (pData->bWindowed) {
-		hwndFound=FindWindow(NULL, L"Allegiance");
+		hwndFound=FindWindowA(NULL, "Allegiance");
 	} else {
 		//this window will have our "intro" in it...
-		hwndFound = ::CreateWindow(L"MS_ZLib_Window", L"Intro", WS_VISIBLE|WS_POPUP, 0, 0,
+		hwndFound = ::CreateWindowA("MS_ZLib_Window", "Intro", WS_VISIBLE|WS_POPUP, 0, 0,
 			GetSystemMetrics(SM_CXFULLSCREEN),GetSystemMetrics(SM_CYFULLSCREEN),NULL, NULL,
-			::GetModuleHandle(NULL), NULL);
+			::GetModuleHandleA(NULL), NULL);
 		bHide = true;
 	}
 	
@@ -212,7 +212,7 @@ TRef<IMessageBox> CreateMessageBox(
 ) {
     TRef<ButtonPane> pbutton = pbuttonIn;
 
-    debugf(L"Creating message box with text \"%s\"\n", (const wchar_t*)str);
+    debugf("Creating message box with text \"%s\"\n", (const char*)str);
 
     if (fAddDefaultButton) {
         assert(pbutton == NULL);
@@ -769,7 +769,7 @@ class TrekWindowImpl :
     public TrekInputSite
 {
 public:
-    const wchar_t*     m_pszCursor;
+    const char*     m_pszCursor;
 
     //////////////////////////////////////////////////////////////////////////////
     //
@@ -2218,13 +2218,13 @@ public:
         screen(s, -1);
     }
 
-	void screen(ScreenID s, int idPlayer, const wchar_t * szPlayerName = NULL, const wchar_t * szOther = NULL)
+    void screen(ScreenID s, int idPlayer, const char * szPlayerName = NULL, const char * szOther = NULL)
     {
 
         static bool bSwitchingScreens = false;
         static ScreenID sNextScreen;
-        ZString strPlayerName = szPlayerName ? szPlayerName : L""; // make copy of player name cause previous screen is going to be destroyed
-        ZString strOther = szOther ? szOther : L"";
+        ZString strPlayerName = szPlayerName ? szPlayerName : ""; // make copy of player name cause previous screen is going to be destroyed
+        ZString strOther = szOther ? szOther : "";
 
         sNextScreen = s;
 
@@ -2234,7 +2234,7 @@ public:
 
         bSwitchingScreens = true;
 
-        debugf(L"Switched to screen %d\n", s);
+        debugf("Switched to screen %d\n", s);
         if (s != m_screen)
         {
             //
@@ -2316,7 +2316,7 @@ public:
                         : vmCombat, true);
                     PositionCommandView(NULL, 0.0f);
 
-                    VTSetText(L"Screen=%d", ScreenIDCombat);
+                    VTSetText("Screen=%d", ScreenIDCombat);
 
                     //
                     // Fill in the game state dialog
@@ -2358,8 +2358,8 @@ public:
 				case ScreenIDSplashScreen:
 					{
 						//Imago 6/29/09 7/28/09 dont allow intro vid on nonprimary
-						HMODULE hVidTest = ::LoadLibrary(L"WMVDECOD.dll");
-						HMODULE hAudTest = ::LoadLibrary(L"wmadmod.dll");
+						HMODULE hVidTest = ::LoadLibraryA("WMVDECOD.dll");
+						HMODULE hAudTest = ::LoadLibraryA("wmadmod.dll");
 						bool bWMP = (hVidTest && hAudTest);
 						::FreeLibrary(hVidTest); ::FreeLibrary(hAudTest); 
 						if (!CD3DDevice9::Get()->GetDeviceSetupParams()->iAdapterID && bWMP) {					
@@ -2371,7 +2371,7 @@ public:
 							}
 							DDVid->m_hWnd =  GetHWND();
 							bool bOk = true;
-							ZString pathStr = GetModeler()->GetArtPath() + L"/intro.avi"; //this can be any kind of AV file
+							ZString pathStr = GetModeler()->GetArtPath() + "/intro.avi"; //this can be any kind of AV file
 							if(SUCCEEDED(DDVid->Play(pathStr,!m_pengine->IsFullscreen()))) //(Type WMV2 is good as most systems will play it)  
 							{ 
 								GetAsyncKeyState(VK_LBUTTON); GetAsyncKeyState(VK_RBUTTON);
@@ -2488,7 +2488,7 @@ public:
                     break;
 
                 default:
-                    ZError(L"Bad screen id");
+                    ZError("Bad screen id");
                     break;
             }
 
@@ -2508,7 +2508,7 @@ public:
         screen(ScreenIDCharInfo, idZone);
     }
 
-	void        SquadScreenForPlayer(const wchar_t * szName, int idZone, const wchar_t * szSquad)
+    void        SquadScreenForPlayer(const char * szName, int idZone, const char * szSquad)
     {
         screen(ScreenIDSquadsScreen, idZone, szName, szSquad);
     }
@@ -2700,7 +2700,7 @@ public:
 		ZString pathStr = GetModeler()->GetArtPath() + "/intro.avi";
 
 		if (!g_bQuickstart && bMovies && !g_bReloaded && !bSoftware &&
-		::GetFileAttributes(pathStr) != INVALID_FILE_ATTRIBUTES && 
+		::GetFileAttributesA(pathStr) != INVALID_FILE_ATTRIBUTES && 
 		!CD3DDevice9::Get()->GetDeviceSetupParams()->iAdapterID) {
 			//Imago only check for these if we have to 8/16/09
 			HMODULE hVidTest = ::LoadLibraryA("WMVDECOD.dll");
@@ -2721,8 +2721,8 @@ public:
 			}
 		}
 
-		m_pnumFFGain = new ModifiableNumber((float)LoadPreference(L"FFGain", 10000)); //Imago #187 
-		m_pnumMouseSens = new ModifiableNumber(_wtof(LoadPreference(L"MouseSensitivity", L"1.0"))); //Imago #215 8/10
+		m_pnumFFGain = new ModifiableNumber((float)LoadPreference("FFGain", 10000)); //Imago #187 
+		m_pnumMouseSens = new ModifiableNumber(atof(LoadPreference("MouseSensitivity", "1.0"))); //Imago #215 8/10
 
 		// load the fonts
 		TrekResources::Initialize(GetModeler());
@@ -2933,7 +2933,7 @@ public:
 
         InitializeQuickChatMenu();
 
-        debugf(L"Time initializing sound: %d ms\n", timeGetTime() - dwSoundInitStartTime);
+        debugf("Time initializing sound: %d ms\n", timeGetTime() - dwSoundInitStartTime);
 
         //
         // Load Input toggles
@@ -3301,7 +3301,7 @@ public:
         SetImage(m_pgroupImage);
     }
 
-	void SetCursor(const wchar_t* pszCursor)
+    void SetCursor(const char* pszCursor)
     {
         if (m_pszCursor != pszCursor)       //Assume they are all static strings that are combined so pointers are all we need
         {
@@ -3336,7 +3336,7 @@ public:
         if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT,
                 0, L"", REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))
         {
-            ::RegSetValueEx(hKey, szName, NULL, REG_DWORD, (const BYTE*)&dwValue, sizeof(dwValue));
+            ::RegSetValueExA(hKey, szName, NULL, REG_DWORD, (const BYTE*)&dwValue, sizeof(dwValue));
             ::RegCloseKey(hKey);
         }
     }
@@ -3349,7 +3349,7 @@ public:
         if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT,
                 0, L"", REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))
         {
-            ::RegSetValueEx(hKey, szName, NULL, REG_BINARY, (const BYTE*)&lpData, cbData);
+            ::RegSetValueExA(hKey, szName, NULL, REG_BINARY, (const BYTE*)&lpData, cbData);
             ::RegCloseKey(hKey);
         }
     }
@@ -3368,7 +3368,7 @@ public:
             DWORD dwSize = sizeof(dwResult);
             DWORD dwType = REG_DWORD;
 
-            ::RegQueryValueEx(hKey, szName, NULL, &dwType, (BYTE*)&dwResult, &dwSize);
+            ::RegQueryValueExA(hKey, szName, NULL, &dwType, (BYTE*)&dwResult, &dwSize);
             ::RegCloseKey(hKey);
 
             if (dwType != REG_DWORD)
@@ -3389,7 +3389,7 @@ public:
         {
             DWORD dwType = REG_BINARY;
 
-            ::RegQueryValueEx(hKey, szName, NULL, &dwType, (BYTE*)&dwResult, &dwSize);
+            ::RegQueryValueExA(hKey, szName, NULL, &dwType, (BYTE*)&dwResult, &dwSize);
             ::RegCloseKey(hKey);
 
             if (dwType != REG_BINARY)
@@ -3406,8 +3406,8 @@ public:
         if (ERROR_SUCCESS == ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT,
                 0, L"", REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))
         {
-            ::RegSetValueEx(hKey, szName, NULL, REG_SZ,
-                (const unsigned char*)(const wchar_t*)strValue, strValue.GetLength() + 1);
+            ::RegSetValueExA(hKey, szName, NULL, REG_SZ,
+                (const unsigned char*)(const char*)strValue, strValue.GetLength() + 1);
             ::RegCloseKey(hKey);
         }
     }
@@ -3428,7 +3428,7 @@ public:
             DWORD dwType = REG_SZ;
             unsigned char cbValue[nMaxStrLen + 1];
 
-            ::RegQueryValueEx(hKey, szName, NULL, &dwType, cbValue, &dwSize);
+            ::RegQueryValueExA(hKey, szName, NULL, &dwType, cbValue, &dwSize);
             
 
             cbValue[nMaxStrLen] = '\0';
@@ -3901,14 +3901,14 @@ public:
         return EngineWindow::IsValid();
     }
 
-	void ShowWebPage(const wchar_t* szURL)
+    void ShowWebPage(const char* szURL)
     {
 		//
 		// WLP - 2005 removed line below - this overrides all web pages to alleg.net for now
 		//  the compare doesn't work anyway
 		//   if (szURL[0] == '\0')
 		if (szURL[0] == '\0')
-			szURL = L"http://www.allegiancezone.com";
+			szURL = "http://www.allegiancezone.com";
 
         if (!IsWindows9x()) {
             /*
@@ -3918,7 +3918,7 @@ public:
             */
         }
 
-        ShellExecute(NULL, NULL, szURL, NULL, NULL, SW_SHOWNORMAL);
+        ShellExecuteA(NULL, NULL, szURL, NULL, NULL, SW_SHOWNORMAL);
     }
 
     #define idmConfigure         3
@@ -4101,7 +4101,7 @@ public:
 		scrnShotName += ".bmp";
 
 		FILE* outputFile;
-		outputFile = _wfopen(scrnShotName,L"wb");
+		outputFile = fopen(scrnShotName,"wb");
 		//write the BITMAPFILEHEADER, BITMAPINFOHEADER, and bimap bit values to create the *.bmp
 		fwrite(&bmpFileHeader, sizeof(BITMAPFILEHEADER), 1, outputFile);
 		fwrite(&bmpInfo.bmiHeader, sizeof(BITMAPINFOHEADER), 1, outputFile);
@@ -4127,19 +4127,19 @@ public:
 		ZString dR;
 		{
 			ZString dVer, dYY, dMM, dDD;
-			dVer = ZVersionInfo().GetStringValue(L"FileVersion").Right(6);
+			dVer = ZVersionInfo().GetStringValue("FileVersion").Right(6);
 			dR = ZVersionInfo().GetProductVersionString().Middle(3,1); //Imago good till R10
 			dDD = dVer.Right(2);
 			dMM = dVer.Middle(2,2);
 			dYY = dVer.Middle(0,2);
 
-			YY = _wtoi(dYY); 	
+			YY = atoi(dYY); 	
 			YY = (YY/10)*8+(YY%10);
 			
-			MM = _wtoi(dMM); 	
+			MM = atoi(dMM); 	
 			MM = (MM/10)*8+(MM%10);
 			
-			DD = _wtoi(dDD); 	
+			DD = atoi(dDD); 	
 			DD = (DD/10)*8+(DD%10);
 		}
 
@@ -5185,7 +5185,7 @@ public:
     void SetGamma(ZString& value)
     {
        //we save only when loading non-default or terminate()
-		GetEngine()->SetGammaLevel(_wtof(ZString(value)));
+		GetEngine()->SetGammaLevel(atof(ZString(value)));
         SavePreference("Gamma", value);
     }
 
@@ -6137,7 +6137,7 @@ public:
 
 			case idmPack: { //this apparently doesn't even do anything yet....but we'll let them push it anyways.
 				ZString strArtwork = ZString(UTL::artworkPath()); //duh
-				CDX9PackFile textures(strArtwork , L"CommonTextures" );
+				CDX9PackFile textures(strArtwork , "CommonTextures" );
 				if (!textures.Exists() && !g_DX9Settings.mbUseTexturePackFiles) {
 					GetWindow()->SetWaitCursor();
 		            pmsgBoxPack = CreateMessageBox("Please wait while the texture pack file is being created.", NULL, false, false);
@@ -6556,7 +6556,7 @@ public:
         SaveCombatSize();
 
         if (vm == vmLoadout) {
-            ZDebugOutput(L"SetViewMode : 800x600\n");
+            ZDebugOutput("SetViewMode : 800x600\n");
 
             //
             // Hangar or loadout switch to 8x6
@@ -6570,7 +6570,7 @@ public:
             //SetFullscreenSize(WinPoint(800, 600));
             //SetSizeable(false);
         } else {
-            ZDebugOutput(L"SetViewMode : combat size\n");
+            ZDebugOutput("SetViewMode : combat size\n");
 
             //
             // a 3D mode switch to the combat resolution
@@ -6589,7 +6589,7 @@ public:
 
     void SetViewMode(ViewMode vm, bool bForce = false)
     {
-        ZDebugOutput(L"SetViewMode(" + ZString((int)vm) + L")\n");
+        ZDebugOutput("SetViewMode(" + ZString((int)vm) + ")\n");
 
         //
         // Ignore the set display mode.
@@ -6612,7 +6612,7 @@ public:
 
         if (vm != m_viewmode)
         {
-            debugf(L"Changing view mode from %d to %d\n", m_viewmode, vm);
+            debugf("Changing view mode from %d to %d\n", m_viewmode, vm);
 
             m_viewmode = vm;
 
@@ -7361,11 +7361,11 @@ public:
 
         int nNumPlayingSoundBuffers;
         ZSucceeded(m_pSoundEngine->GetNumPlayingVirtualBuffers(nNumPlayingSoundBuffers));
-		wchar_t szRemoteAddress[16];
+        char szRemoteAddress [16];
         if (trekClient.m_fm.IsConnected())
           trekClient.m_fm.GetIPAddress(*trekClient.m_fm.GetServerConnection(), szRemoteAddress);
         else
-          lstrcpy(szRemoteAddress, L"N/A");
+          Strcpy(szRemoteAddress, "N/A");
 
         return
               "TC:" + ZString(ThingGeo::GetTrashCount())
@@ -7642,7 +7642,7 @@ public:
         trekClient.m_lastUpdate  = m_timeLastFrame;
         trekClient.m_now         = time;
         if (FAILED(trekClient.ReceiveMessages())) {
-			debugf(L"*!* frame# %d dropped (net)\n",m_frameID);
+			debugf("*!* frame# %d dropped (net)\n",m_frameID);
 			return;     //bug out
 		}
             
@@ -8863,8 +8863,8 @@ public:
     {
         if ((cid != c_cidNone) && m_pconsoleImage)
         {
-            trekClient.PostText(false, L"Command accepted.");
-            trekClient.PostText(true, L"");
+            trekClient.PostText(false, "Command accepted.");
+            trekClient.PostText(true, "");
         }
 
         trekClient.GetShip()->SetCommand(c_cmdAccepted, pmodel, cid);
@@ -9249,7 +9249,7 @@ public:
             DWORD dwSize = sizeof(buf);
             DWORD dwType = REG_SZ;
 
-            ::RegQueryValueEx(hKey, str, NULL, &dwType, (BYTE*)buf, &dwSize);
+            ::RegQueryValueExA(hKey, str, NULL, &dwType, (BYTE*)buf, &dwSize);
             ::RegCloseKey(hKey);
 
             if (dwType != REG_SZ) {
@@ -9276,7 +9276,7 @@ public:
             DWORD dwSize = sizeof(buf);
             DWORD dwType = REG_SZ;
 
-            ::RegQueryValueEx(hKey, L"PID", NULL, &dwType, (BYTE*)buf, &dwSize);
+            ::RegQueryValueExA(hKey, "PID", NULL, &dwType, (BYTE*)buf, &dwSize);
             ::RegCloseKey(hKey);
 
             if (dwType == REG_SZ) {
@@ -9284,7 +9284,7 @@ public:
             }
         }
 
-        return ZString(L"<unknown pid>");
+        return ZString("<unknown pid>");
     }
 
     ZString GetVersionString()
@@ -9486,7 +9486,7 @@ public:
             case TK_TrackCommandView:
             {
                 m_bTrackCommandView = !m_bTrackCommandView;
-                trekClient.PostText(false, m_bTrackCommandView ? L"Command view tracking enabled" : L"Command view tracking disabled");
+                trekClient.PostText(false, m_bTrackCommandView ? "Command view tracking enabled" : "Command view tracking disabled");
             }
             break;
 
@@ -10005,14 +10005,14 @@ public:
                     value = m_radarCockpit = (m_radarCockpit + 1) % (int(RadarImage::c_rlMax) + 1);
                     m_pradarImage->SetRadarLOD((RadarImage::RadarLOD)m_radarCockpit);
 
-                    trekClient.PostText(false, L"%s", c_szRadarLODs[m_radarCockpit]);
+                    trekClient.PostText(false, "%s", c_szRadarLODs[m_radarCockpit]);
                 }
                 else if (GetViewMode() == vmCommand)
                 {
                     value = m_radarCommand = (m_radarCommand + 1) % (int(RadarImage::c_rlMax) + 1);
                     m_pradarImage->SetRadarLOD((RadarImage::RadarLOD)m_radarCommand);
 
-                    trekClient.PostText(false, L"%s", c_szRadarLODs[m_radarCommand]);
+                    trekClient.PostText(false, "%s", c_szRadarLODs[m_radarCommand]);
                 }
 				SavePreference("RadarLOD", value); //imago 7/8/09
             }
@@ -10630,7 +10630,7 @@ public:
                     if (pshipSender != trekClient.GetShip())
                     {
                         trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pshipSender->GetObjectID(),
-                                            voNegativeSound, L"Negative.");
+                                            voNegativeSound, "Negative.");
                     }
                 }
                 trekClient.SetLastSender(NULL);
@@ -10649,7 +10649,7 @@ public:
                     if (pshipSender != trekClient.GetShip())
                     {
                         trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pshipSender->GetObjectID(),
-                                            voNegativeSound, L"Negative.");
+                                            voNegativeSound, "Negative.");
                     }
                 }
                 trekClient.SetLastSender(NULL);
@@ -10739,7 +10739,7 @@ public:
         {
             if (pshipSender != trekClient.GetShip())
                 trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pshipSender->GetObjectID(),
-                                    voAffirmativeSound, L"Affirmative.");
+                                    voAffirmativeSound, "Affirmative.");
             trekClient.SetLastSender(NULL);
         }
 
@@ -10785,8 +10785,8 @@ public:
             IhullTypeIGC*   pht = trekClient.m_pCoreIGC->GetHullType(hid);
             assert (pht);
 
-            trekClient.PostText(true, L"%s",
-                                (const wchar_t*)((pshipSender->GetName() + c_str1) +
+            trekClient.PostText(true, "%s",
+                                (const char*)((pshipSender->GetName() + c_str1) +
                                               (ZString(money) + c_str2) +
                                               (pht->GetName() + c_str3)));
         }
@@ -11261,20 +11261,20 @@ public:
     // VT functions.
     //
 
-    VOID VTSetText(LPWSTR szFormat, ...)
+    VOID VTSetText(LPSTR szFormat, ...)
     {
-        TCHAR szText[1024];
+        CHAR szText[1024];
         va_list vaList;
         INT cchText;
 
         if (NULL != m_hwndVTEdit)
         {
-            cchText = swprintf(szText, L"Version=%d,", ++m_cVTVersion);
+            cchText = sprintf(szText, "Version=%d,", ++m_cVTVersion);
             va_start(vaList, szFormat);
-            vswprintf(szText + cchText, szFormat, vaList);
+            vsprintf(szText + cchText, szFormat, vaList);
             va_end(vaList);
 
-            ::SetWindowText(m_hwndVTEdit, szText);
+            ::SetWindowTextA(m_hwndVTEdit, szText);
         }
     }
 

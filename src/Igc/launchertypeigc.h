@@ -55,21 +55,21 @@ class   ClauncherTypeIGC : public IlauncherTypeIGC
         }
 
 // IbuyableIGC
-		virtual const wchar_t*          GetModelName(void) const
+        virtual const char*          GetModelName(void) const
         {
             return m_launcherDef->modelName;
         }
 
-		virtual const wchar_t*          GetIconName(void) const
+        virtual const char*          GetIconName(void) const
         {
             return m_launcherDef->iconName;
         }
 
-		virtual const wchar_t*          GetName(void) const
+        virtual const char*          GetName(void) const
         {
             return m_launcherDef->name;
         }
-		virtual const wchar_t*          GetDescription(void) const
+        virtual const char*          GetDescription(void) const
         {
             return m_launcherDef->description;
         }
@@ -121,7 +121,7 @@ class   ClauncherTypeIGC : public IlauncherTypeIGC
             return m_pptSuccessor;
         }
 
-        const wchar_t*             GetInventoryLineMDLName(void) const
+        const char*             GetInventoryLineMDLName(void) const
         {
             return m_data.inventoryLineMDL;
         }

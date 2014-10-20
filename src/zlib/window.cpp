@@ -90,7 +90,7 @@ Window::Window(
     AdjustWindowRect(&m_rect, m_style.GetWord(), m_hmenu != NULL);
 
     if (strClass.IsEmpty()) {
-        m_hwnd = ::CreateWindowEx(
+        m_hwnd = ::CreateWindowExA(
             m_styleEX.GetWord(),
             GetTopLevelWindowClassname(),
             strTitle,
@@ -106,11 +106,11 @@ Window::Window(
             m_rect.XSize(), m_rect.YSize(),
             pwindowParent ? pwindowParent->GetHWND() : NULL,
             m_hmenu,
-            GetModuleHandle(NULL),
+            GetModuleHandleA(NULL),
             this
         );
     } else {
-        m_hwnd = ::CreateWindowEx(
+        m_hwnd = ::CreateWindowExA(
             m_styleEX.GetWord(),
             strClass,
             strTitle,
@@ -148,8 +148,8 @@ Window::Window(
 BOOL Window::Create(
           Window*  pwindowParent,
     const WinRect& rect,
-          LPCWSTR   szTitle,
-          LPCWSTR   szClass,
+          LPCSTR   szTitle,
+          LPCSTR   szClass,
           Style    style,
           HMENU    hmenu,
           UINT     nID,
@@ -170,16 +170,16 @@ BOOL Window::Create(
         m_hcursor = LoadCursor(NULL, IDC_ARROW);
     }
     
-    m_hwnd = ::CreateWindowEx(
+    m_hwnd = ::CreateWindowExA(
             styleEX.GetWord(),
-            szClass ? szClass : TEXT("Window"),
+            szClass ? szClass : "Window",
             szTitle,
             m_style.GetWord(),
             m_rect.left, m_rect.top,
             m_rect.XSize(), m_rect.YSize(),
             pwindowParent ? pwindowParent->GetHWND() : NULL,
             hmenu ? hmenu : (HMENU) nID,
-            GetModuleHandle(NULL),
+            GetModuleHandleA(NULL),
             this);
     
     s_mapWindow.Set(m_hwnd, this);
@@ -608,13 +608,13 @@ void Window::SetCursorPos(const WinPoint& point)
 
 ZString Window::GetText() const
 {
-    int length = GetWindowTextLength(m_hwnd) + 1;
+    int length = GetWindowTextLengthA(m_hwnd) + 1;
 
     if (length == 0) {
         return ZString();
     } else {
-		wchar_t* pch = new wchar_t[length];
-        GetWindowText(m_hwnd, pch, length);
+        char* pch = new char[length];
+        GetWindowTextA(m_hwnd, pch, length);
         ZString str(pch);
         delete[] pch;
         return str;
@@ -1044,8 +1044,8 @@ HRESULT Window::StaticInitialize()
     // See if TrackMouseEvent exists
     //
     s_pfnTrackMouseEvent = 
-		(PFNTrackMouseEvent)GetProcAddress(
-            GetModuleHandle(L"user32"),
+        (PFNTrackMouseEvent)GetProcAddress(
+            GetModuleHandleA("user32"),
             "TrackMouseEvent"
         );
     return S_OK;

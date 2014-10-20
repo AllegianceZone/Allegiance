@@ -71,5 +71,5 @@ public:
 	DWORD GetNumChildren( CHashEntry * pEntry );
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	static DWORD GenerateHashValue(const wchar_t * szString);
+	static DWORD GenerateHashValue( const char * szString );
 };

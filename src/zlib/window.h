@@ -112,7 +112,7 @@ public:
     static Window* WindowFromHWND(HWND hwnd);
     static void AddKeyboardInputFilter(IKeyboardInput* pkeyboardInput);
     static void RemoveKeyboardInputFilter(IKeyboardInput* pkeyboardInput);
-    static LPCTSTR GetTopLevelWindowClassname() { return TEXT("MS_ZLib_Window"); };
+    static LPCSTR GetTopLevelWindowClassname() { return "MS_ZLib_Window"; };
 	
     //
     // ITimerEventSource
@@ -187,8 +187,8 @@ public:
     BOOL Create(
             Window*     pwindowParent,
             const WinRect& rect = WinRect(0, 0, -1, -1),
-            LPCWSTR      szTitle = NULL,
-            LPCWSTR      szClass = NULL,
+            LPCSTR      szTitle = NULL,
+            LPCSTR      szClass = NULL,
             Style       style   = Style(),
             HMENU       hmenu   = 0,
             UINT        nID     = 0,
@@ -267,7 +267,7 @@ public:
 
     int MessageBox(const ZString& strText, const ZString& strCaption, UINT nType)
     {
-        return ::MessageBox(m_hwnd, strText, strCaption, nType);
+        return ::MessageBoxA(m_hwnd, strText, strCaption, nType);
     }
 
     HMENU GetSystemMenu(BOOL bRevert = false)

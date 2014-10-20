@@ -685,7 +685,7 @@ public:
             if (ptype != NULL) {
                 return true;
             }
-            ZError(L"Undefined indentifier " + strType);
+            ZError("Undefined indentifier " + strType);
         }
 
         return false;
@@ -755,7 +755,7 @@ public:
 
         if (m_ptoken->IsSymbol(strType, bError)) {
             if (g_bMDLLog) {
-                ZDebugOutput(L"Reading struct: " + strType + L"\n");
+                ZDebugOutput("Reading struct: " + strType + "\n");
             }
             TRef<StructMDLType> pstructType;
 
@@ -767,7 +767,7 @@ public:
                     return false;
                 }
             } else {
-                pstructType = new StructMDLType(strType, L"IMDLObject");
+                pstructType = new StructMDLType(strType, "IMDLObject");
             }
 
             if (m_ptoken->Is(m_ptoken->LeftCurly, true)) {
@@ -1030,7 +1030,7 @@ public:
             return ReadStruct(pns, true);
         } else if (m_ptoken->IsSymbol(strIdentifier, bError)) {
             if (g_bMDLLog) {
-			    ZDebugOutput(L"Reading identifier: " + strIdentifier + L"\n");
+			    ZDebugOutput("Reading identifier: " + strIdentifier + "\n");
             }
             if (m_ptoken->Is(m_ptoken->Equals, true)) {
                 TRef<IObject> pobject;

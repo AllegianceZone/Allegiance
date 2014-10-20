@@ -106,8 +106,9 @@ public:
       CHAT_ALL_SECTOR : CHAT_FRIENDLY_SECTOR;
 
     // Send the chat
+    USES_CONVERSION;
     GetIGC()->GetMission()->GetIgcSite()->SendChat(NULL, eRecipient,
-      GetIGC()->GetObjectID(), idSound, OLE2CW(bstrText), c_cidNone, NA, NA, NULL, true); 
+      GetIGC()->GetObjectID(), idSound, OLE2CA(bstrText), c_cidNone, NA, NA, NULL, true); 
 
     // Indicate success
     return S_OK;
@@ -140,7 +141,7 @@ public:
 
     // Send the chat
     GetIGC()->GetMission()->GetIgcSite()->SendChat(NULL, eRecipient,
-      GetIGC()->GetObjectID(), idSound, L"", idCmd, pModel->GetObjectType(),
+      GetIGC()->GetObjectID(), idSound, "", idCmd, pModel->GetObjectType(),
       pModel->GetObjectID(), pModel, true);
       
     // Indicate success

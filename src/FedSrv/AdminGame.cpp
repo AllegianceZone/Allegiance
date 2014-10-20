@@ -114,11 +114,12 @@ STDMETHODIMP CAdminGame::SendMsg(BSTR bstrMessage)
 
   assert(GetHostIGC());
 
+  USES_CONVERSION;
   GetHostIGC()->GetSite()->SendChat(NULL,   //from system
                   CHAT_EVERYONE,            //send to everyone
                   NA,                       //no target ship 
                   NA,                       //No voice over
-                  OLE2CW(bstrMessage), c_cidNone, NA, NA, NULL, 
+                  OLE2A(bstrMessage), c_cidNone, NA, NA, NULL, 
                   true); // true means object model generated
 
   // Indicate success
@@ -298,7 +299,8 @@ STDMETHODIMP CAdminGame::SetTeamName(int iSideID, BSTR bstrName)
     assert(GetHostIGC());
     if(!GetIGC()->GetSide(iSideID))
       return S_OK;
-    GetHostIGC()->SetSideName(iSideID, OLE2W(bstrName));
+    USES_CONVERSION;
+    GetHostIGC()->SetSideName(iSideID, OLE2A(bstrName));
     return S_OK;
 }
 
@@ -323,7 +325,7 @@ STDMETHODIMP CAdminGame::OverrideTechBit(int iSideID, int nTechBitID, BOOL bSett
         else
           (pfsmission->m_pttbmNewSetting)[iSideID].ClearBit(nTechBitID);
 
-        debugf(L"\nBits: %d %d\n", int((pfsmission->m_pttbmAltered)[iSideID].GetBit(nTechBitID)), int((pfsmission->m_pttbmNewSetting)[iSideID].GetBit(nTechBitID)));
+        debugf("\nBits: %d %d\n", int((pfsmission->m_pttbmAltered)[iSideID].GetBit(nTechBitID)), int((pfsmission->m_pttbmNewSetting)[iSideID].GetBit(nTechBitID)));
     }
     return S_OK;
 }

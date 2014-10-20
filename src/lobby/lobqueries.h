@@ -14,8 +14,7 @@
 #include "allegdb.h"
 
 // Stuff we need to logon
-BEGIN_QUERY(CQLobbyLogon, true, 
-  TEXT("{call GetLobbyLogonInfo(?, ?, ?, ?, ?)}"))
+BEGIN_QUERY(CQLobbyLogon, true, "{call GetLobbyLogonInfo(?, ?, ?, ?, ?)}")
 
   CQLobbyLogonData() :
     szReason(NULL)
@@ -30,19 +29,19 @@ BEGIN_QUERY(CQLobbyLogon, true,
   DWORD dwConnectionID;                 // Remember who this is using a SAFE mechanism
   bool  fValid : 1;                         // If false we just go straight to the handler
   bool  fRetry : 1;                         // Remember whether the client should retry the logon
-  wchar_t * szReason;
+  char * szReason;
   DWORD dTime;
 
   // query parameters
-  wchar_t  szCDKey[c_cbCDKey]; // Imago changed
-  wchar_t  szPW[c_cbCDKey]; // Imago changed 9/14
-  wchar_t  szCharacterName[c_cbName];
+  char  szCDKey[c_cbCDKey]; // Imago changed
+  char  szPW[c_cbCDKey]; // Imago changed 9/14
+  char  szCharacterName[c_cbName];
   int   characterID;
-  wchar_t  fValidCode; // out
-  wchar_t  fCanCheat;  // out
+  char  fValidCode; // out
+  char  fCanCheat;  // out
 
   //squad stuff
-  wchar_t szSquadName[31]; // constant??? Please???
+  char szSquadName[31]; // constant??? Please???
   int  status;
   int  squadID;
   int  detailedStatus;

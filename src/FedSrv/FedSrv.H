@@ -152,7 +152,7 @@ public:
                 ChatTarget  ctRecipient,
                 ObjectID    oidRecipient,
                 SoundID     soVoiceOver,
-				const wchar_t* pszText,
+                const char* pszText,
                 CommandID   cid       = c_cidNone,
                 ObjectType  otTarget  = NA,
                 ObjectType  oidTarget = NA,
@@ -165,7 +165,7 @@ public:
 
 // IFedMessagingSite
   virtual HRESULT OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm) ;
-  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType) ;
   virtual HRESULT OnNewConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnDestroyConnection(FedMessaging * pthis, CFMConnection & cnxn) ;
   virtual HRESULT OnSessionLost(FedMessaging * pthis) ;
@@ -176,7 +176,7 @@ public:
 #endif
 
 // Also for ISQLSite
-  virtual int  OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType);
+  virtual int  OnMessageBox(const char * strText, const char * strCaption, UINT nType);
 
 // KG: eventually remove this, not yet, Imago 6/10
 //#ifndef ALLSRV_STANDALONE
@@ -205,7 +205,7 @@ public:
   {}
 // IFedMessagingSite
   virtual HRESULT OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm) ;
-  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType) ;
   virtual HRESULT OnSessionLost(FedMessaging * pthis);
 #ifndef NO_MSG_CRC
   virtual void    OnBadCRC(FedMessaging * pthis, CFMConnection & cnxn, BYTE * pMsg, DWORD cbMsg);
@@ -303,7 +303,7 @@ struct Global
   bool                fTimeOut;
   bool                fWantInt3;
   ZString             strArtPath;
-  wchar_t                m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
+  char                m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
   int                 nUpdatesPerSecond;
 #ifdef USEAUTH
   TRef<IZoneAuthServer> pzas;
@@ -413,7 +413,7 @@ IshipIGC*   PickNewLeader(const ShipListIGC*    pships,
                           IshipIGC*             pshipIgnore,
                           int                   maxVotes);
 void SetSessionDetails();
-HRESULT ConnectToLobby(const wchar_t * pszLobby_OverrideCFG /* NULL == do not override */);
+HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not override */);
   
 #define TrapHack(x) assert(x)
 

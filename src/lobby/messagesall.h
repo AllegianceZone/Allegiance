@@ -74,23 +74,23 @@ class SquadMembership
 {
 public:
     SquadID m_squadID;
-	wchar_t  m_szSquadName[c_cbName];
+    char  m_szSquadName[c_cbName];
     bool  m_fIsLeader           : 1;
     bool  m_fIsAssistantLeader  : 1;
 
     SquadMembership() {} // creator beware--uninitialized values (but this is intentional for performance in allocating arrays that will be filled in)
-	SquadMembership(SquadID squadID, const wchar_t *szSquadName, bool  fIsLeader, bool  fIsAssistantLeader) :
+    SquadMembership(SquadID squadID, const char *szSquadName, bool  fIsLeader, bool  fIsAssistantLeader) :
         m_squadID(squadID),
         m_fIsLeader(fIsLeader),
         m_fIsAssistantLeader(fIsAssistantLeader)
     {
         assert(!(m_fIsLeader && m_fIsAssistantLeader));
-        assert(wcslen(szSquadName) < c_cbName);
+        assert(strlen(szSquadName) < c_cbName);
         Strcpy(m_szSquadName, szSquadName);
     };
     
     const SquadID GetID() const         { return m_squadID; };
-	const wchar_t* GetName() const         { return m_szSquadName; };
+    const char* GetName() const         { return m_szSquadName; };
     bool  GetIsLeader() const           { return m_fIsLeader; };
     bool  GetIsAssistantLeader() const  { return m_fIsAssistantLeader; };
 };
@@ -107,7 +107,7 @@ END_FEDMSG
 // only core file name atm, but in a struct for futur extensibility 
 struct StaticCoreInfo
 {
-    wchar_t    cbIGCFile[c_cbFileName];
+    char    cbIGCFile[c_cbFileName];
 };
 
 

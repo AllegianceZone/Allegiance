@@ -14,7 +14,7 @@ const char* c_szRadarLODs[] = {
                                */
 
 
-static const wchar_t*  c_pszEmpty = L"";
+static const char*  c_pszEmpty = "";
 const float rangeClipLabels = 1000.0f;
 
 const int   c_iNotUseful  = 0;
@@ -51,7 +51,7 @@ class RadarImageImpl : public RadarImage {
     class TextData
     {
     public:
-		const wchar_t* m_pszName;
+        const char* m_pszName;
         int         m_range;
         float       m_shield;
         float       m_hull;
@@ -62,7 +62,7 @@ class RadarImageImpl : public RadarImage {
         Point       m_direction;
         Color       m_color;
 
-		TextData(const wchar_t*    pszName,
+        TextData(const char*    pszName,
                  int            range,
                  float          shield,
                  float          hull,
@@ -276,7 +276,7 @@ public:
                   unsigned char ucRadarState,
                   ThingSite*    pts,
                   Surface*      psurfaceIcon,
-				  const wchar_t*   pszName,
+                  const char*   pszName,
                   int           range,
                   float         shield,
                   float         hull,
@@ -577,7 +577,7 @@ public:
                 {
                     int   maskBrackets = 0x00;
 
-                    const wchar_t*     pszName = pmodel->GetName();
+                    const char*     pszName = pmodel->GetName();
                     Command         cmd;
                     CommandID       cidOrder = c_cidNone;
                     {

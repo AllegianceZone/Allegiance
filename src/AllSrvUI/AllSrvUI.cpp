@@ -46,21 +46,21 @@ CAllSrvUIApp::CAllSrvUIApp() :
 /////////////////////////////////////////////////////////////////////////////
 // Attributes
 
-void CAllSrvUIApp::GetArtPath(wchar_t * szArtPath)
+void CAllSrvUIApp::GetArtPath(char * szArtPath)
 {
-  wcscpy(szArtPath, L".\\Artwork\\");
+  strcpy(szArtPath, ".\\Artwork\\");
 
   CRegKey key;
   if (ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv, KEY_READ))
   {
-    CString strArtPath;
-    if (SUCCEEDED(LoadRegString(key, L"Artpath",strArtPath)))
+    ZString strArtPath;
+    if (SUCCEEDED(LoadRegString(key, "Artpath", strArtPath)))
     {
       // if reg value exists copy over default
-      wcsncpy(szArtPath, PCC(strArtPath), MAX_PATH);
+      strncpy(szArtPath, PCC(strArtPath), MAX_PATH);
     }
     // ensure last character is a backslash
-    int nLast = max(0, wcslen(szArtPath)-1);
+    int nLast = max(0, strlen(szArtPath)-1);
     if (szArtPath[nLast] != '\\' || szArtPath[nLast] != '/')
       szArtPath[nLast+1] = '\\';
     szArtPath[nLast+2] = 0;

@@ -15,7 +15,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
   HRESULT hr = S_OK;
   assert(&g.fmLobby == pthis);
 
-  static CTempTimer timerOnAppMessage(L"in FedSrvLobbySite::OnAppMessage", .02f);
+  static CTempTimer timerOnAppMessage("in FedSrvLobbySite::OnAppMessage", .02f);
   timerOnAppMessage.Start();
 
   switch(pfm->fmid)
@@ -27,8 +27,8 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 #if !defined(SRV_CHILD)
         CASTPFM(pfmCreateMissionReq, L, CREATE_MISSION_REQ, pfm);
         MissionParams mp;
-		lstrcpy(mp.strGameName,    ZString(FM_VAR_REF(pfmCreateMissionReq, GameName)));// + "'s game");
-		lstrcpy(mp.szIGCStaticFile,ZString(FM_VAR_REF(pfmCreateMissionReq, IGCStaticFile)));
+		Strcpy(mp.strGameName,    ZString(FM_VAR_REF(pfmCreateMissionReq, GameName)));// + "'s game");
+		Strcpy(mp.szIGCStaticFile,ZString(FM_VAR_REF(pfmCreateMissionReq, IGCStaticFile)));
         mp.bScoresCount = false;// dont set to true till clients can change this!
 		mp.iMaxImbalance = 0x7ffe;// added
         assert(!mp.Invalid());
@@ -103,7 +103,7 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		bool ValidCore = false;
 		for ( int i = 0; i<g.cStaticCoreInfo; i++ )
 		{
-			if ( !lstrcmpi(mp.szIGCStaticFile, g.vStaticCoreInfo[i].cbIGCFile ) )
+			if ( !strcmpi(mp.szIGCStaticFile, g.vStaticCoreInfo[i].cbIGCFile ) )
 			{
 				ValidCore = true;
 				break; // quit loop
@@ -113,12 +113,12 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		{
 			//Imago - start the mission in this thread as usual 
 			FedSrvSite * psiteFedSrv = new FedSrvSite();
-			CFSMission * pfsMissionNew = new CFSMission(mp, L"", psiteFedSrv, psiteFedSrv, NULL, NULL);
+			CFSMission * pfsMissionNew = new CFSMission(mp, "", psiteFedSrv, psiteFedSrv, NULL, NULL);
 			pfsMissionNew->SetCookie(pfmCreateMissionReq->dwCookie);
 		}
 		else
 		{
-			debugf(L"Lobby sent invalid core information %s, ignoring message\n", mp.szIGCStaticFile);
+			debugf("Lobby sent invalid core information %s, ignoring message\n", mp.szIGCStaticFile);
 		}
 		// pkk end
 #endif
@@ -165,22 +165,22 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     {
       CASTPFM(pfmRemovePlayer, L, REMOVE_PLAYER, pfm);
       CFSMission * pfsMission = CFSMission::GetMission(pfmRemovePlayer->dwMissionCookie);
-      const wchar_t* szCharacterName = FM_VAR_REF(pfmRemovePlayer, szCharacterName);
-	  const wchar_t* szMessageParam = FM_VAR_REF(pfmRemovePlayer, szMessageParam);
+      const char* szCharacterName = FM_VAR_REF(pfmRemovePlayer, szCharacterName);
+      const char* szMessageParam = FM_VAR_REF(pfmRemovePlayer, szMessageParam);
       
       // try to find the player in question
       if (!pfsMission)
       {        
-        debugf(L"Asked to boot character %s from mission %x by lobby, "
-          L"but the mission was not found.\n", 
+        debugf("Asked to boot character %s from mission %x by lobby, "
+          "but the mission was not found.\n", 
           szCharacterName, pfmRemovePlayer->dwMissionCookie);
       }
       else if (!pfsMission->RemovePlayerByName(szCharacterName, 
           (pfmRemovePlayer->reason == RPR_duplicateCDKey) ? QSR_DuplicateCDKey : QSR_DuplicateRemoteLogon,
           szMessageParam))
       {
-        debugf(L"Asked to boot character %s from mission %x by lobby, "
-          L"but the character was not found.\n", 
+        debugf("Asked to boot character %s from mission %x by lobby, "
+          "but the character was not found.\n", 
           szCharacterName, pfmRemovePlayer->dwMissionCookie);
       }
     }
@@ -188,13 +188,13 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
     case FM_L_LOGON_SERVER_NACK:
     {
-		wchar_t * szReason;
+      char * szReason;
 
       CASTPFM(pfmLogonNack, L, LOGON_SERVER_NACK, pfm);
       
       szReason = FM_VAR_REF(pfmLogonNack, Reason);
 
-      OnMessageBox(pthis, szReason ? szReason : L"Error while try to log onto server.", L"Allegiance Server Error", MB_SERVICE_NOTIFICATION);
+      OnMessageBox(pthis, szReason ? szReason : "Error while try to log onto server.", "Allegiance Server Error", MB_SERVICE_NOTIFICATION);
       // TODO: consider firing out an event message
       PostQuitMessage(-1);
     }
@@ -207,10 +207,10 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 		CASTPFM(pfmPlayerRank, LS, PLAYER_RANK, pfm);
 
-		lstrcpy(pqd->szCDKey, FM_VAR_REF(pfmPlayerRank, szCDKey));
-		lstrcpy(pqd->szCharacterName, FM_VAR_REF(pfmPlayerRank, szCharacterName));
-		lstrcpy(pqd->szPassword, FM_VAR_REF(pfmPlayerRank, szPassword));
-		lstrcpy(pqd->szReason, FM_VAR_REF(pfmPlayerRank, szReason));
+		Strcpy(pqd->szCDKey, FM_VAR_REF(pfmPlayerRank, szCDKey));
+		Strcpy(pqd->szCharacterName, FM_VAR_REF(pfmPlayerRank, szCharacterName));
+		Strcpy(pqd->szPassword, FM_VAR_REF(pfmPlayerRank, szPassword));
+		Strcpy(pqd->szReason, FM_VAR_REF(pfmPlayerRank, szReason));
 
 		pqd->characterID = pfmPlayerRank->characterID;
 		pqd->fCanCheat = pfmPlayerRank->fCanCheat;
@@ -233,19 +233,19 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     break;
   }
 
-  timerOnAppMessage.Stop(L"...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
+  timerOnAppMessage.Stop("...for message type %s\n", g_rgszMsgNames[pfm->fmid]);
   return hr;
 }
 
 
-int FedSrvLobbySite::OnMessageBox(FedMessaging * pthis, const wchar_t * strText, const wchar_t * strCaption, UINT nType)
+int FedSrvLobbySite::OnMessageBox(FedMessaging * pthis, const char * strText, const char * strCaption, UINT nType)
 {
   return g.siteFedSrv.OnMessageBox(pthis, strText, strCaption, nType); // don't need a separate handler
 }
 
 HRESULT FedSrvLobbySite::OnSessionLost(FedMessaging * pthis)
 {
-  _AGCModule.TriggerEvent(NULL, AllsrvEventID_LostLobby, L"", -1, -1, -1, 0);
+  _AGCModule.TriggerEvent(NULL, AllsrvEventID_LostLobby, "", -1, -1, -1, 0);
   // KGJV: close the connexion
   if (pthis)
 	pthis->Shutdown();

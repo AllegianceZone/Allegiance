@@ -10,7 +10,7 @@
 class ATL_NO_VTABLE IClubSite
 {
 public:
-  virtual int LogEvent(WORD wType, LPCTSTR pFormat, ...) = 0;
+  virtual int LogEvent(WORD wType, LPCSTR pFormat, ...) = 0;
 };
 
 

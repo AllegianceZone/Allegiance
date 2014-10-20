@@ -439,20 +439,20 @@ public:
         {
             // nothing more to do
         }
-        else if (_wcsicmp(strChat.LeftOf(L":"), L"admin") == 0)
+        else if (_stricmp(strChat.LeftOf(":"), "admin") == 0)
         {
             trekClient.SendChat(trekClient.GetShip(), CHAT_ADMIN, NA,
-                                NA, (const wchar_t*)strChat.RightOf(L":"));
+                                NA, (const char*)strChat.RightOf(":"));
         }
-        else if (NULL != (pplayer = trekClient.FindPlayer(strChat.LeftOf(L":"))))
+        else if (NULL != (pplayer = trekClient.FindPlayer(strChat.LeftOf(":"))))
         {
             trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pplayer->ShipID(),
-				NA, (const wchar_t*)strChat.RightOf(L":"));
+                                NA, (const char*)strChat.RightOf(":"));
         }
         else
         {
             trekClient.SendChat(trekClient.GetShip(), CHAT_EVERYONE, NA,
-				NA, (const wchar_t*)strChat);
+                                NA, (const char*)strChat);
         }
     }
 
@@ -488,29 +488,29 @@ public:
 		SYSTEMTIME sysTimeForName;
 		GetLocalTime(&sysTimeForName);
 
-		ZString statsFileName = L"scores-";
+		ZString statsFileName = "scores-";
 		statsFileName += sysTimeForName.wYear;
-		statsFileName += L"-";
+		statsFileName += "-";
 		statsFileName += sysTimeForName.wMonth;
-		statsFileName += L"-";
+		statsFileName += "-";
 		statsFileName += sysTimeForName.wDay;
-		statsFileName += L"_";
+		statsFileName += "_";
 		statsFileName += sysTimeForName.wHour;
-		statsFileName += L".";
+		statsFileName += ".";
 		statsFileName += sysTimeForName.wMinute;
-		statsFileName += L".xml";
+		statsFileName += ".xml";
 
 		// 2. open the file
 		FILE* outputFile;
-		outputFile = _wfopen(statsFileName,L"wt");
+		outputFile = fopen(statsFileName,"wt");
 		if (!outputFile)
 		{
-			statsFileName = L"error opening file "+statsFileName;
+			statsFileName = "error opening file "+statsFileName;
 			trekClient.SendChat(trekClient.MyPlayerInfo()->GetShip(),
 				CHAT_INDIVIDUAL,
 				trekClient.MyPlayerInfo()->ShipID(),
 				NA,
-				(const wchar_t*)statsFileName);
+				(const char*)statsFileName);			
 			return true;
 		}
 
@@ -524,82 +524,82 @@ public:
 		// we save unsorted for now
 		
 		// store current date/time in a ZString
-		wchar_t tmpbuf[128];
+		char tmpbuf[128];
 		ZString dateName;
-		_wstrdate_s( tmpbuf, 128 );
+		_strdate_s( tmpbuf, 128 );
 		dateName = tmpbuf;
-	    _wstrtime_s( tmpbuf, 128 );
-		dateName += L" ";
+	    _strtime_s( tmpbuf, 128 );
+		dateName += " ";
 		dateName += tmpbuf;
 		ZString s;
 
 		// generate XML (hand made XML, fiesty!)
-		s = L"<xml>\n";	fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "<xml>\n";	fwrite((const char *)s,1,s.GetLength(),outputFile);
 		// game info
-		s = L"<GameInfo>\n";
-		s += L"  <Date>"; s += dateName; s += L"</Date>\n";
-		s += L"  <Server>"; s += trekClient.MyMission()->GetMissionDef().szServerName; s += L"</Server>\n";
-		s += L"  <Core>"; s += trekClient.MyMission()->GetMissionDef().misparms.szIGCStaticFile; s += L"</Core>\n";
-		s += L"  <GameOverReason>"; s += m_ptextReason->GetString(); s += L"</GameOverReason>\n";
-		s += L"</GameInfo>\n"; fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "<GameInfo>\n";
+		s += "  <Date>"; s += dateName; s += "</Date>\n";
+		s += "  <Server>"; s+= trekClient.MyMission()->GetMissionDef().szServerName; s += "</Server>\n";
+		s += "  <Core>"; s+= trekClient.MyMission()->GetMissionDef().misparms.szIGCStaticFile; s += "</Core>\n";
+		s += "  <GameOverReason>"; s += m_ptextReason->GetString(); s += "</GameOverReason>\n";
+		s += "</GameInfo>\n"; fwrite((const char *)s,1,s.GetLength(),outputFile);
 		// iterate thru teams
-		s = L"<Teams>\n"; fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "<Teams>\n"; fwrite((const char *)s,1,s.GetLength(),outputFile);
 		TListListWrapper<SideEndgameInfo*>::Iterator iterSides(*m_plistStatsSide);
 		SideEndgameInfo* si; int n = 0;
 		while (!iterSides.End()) 
         {
-			s = L"  <Team>\n";
+			s = "  <Team>\n";
 			si = iterSides.Value();
-			s += L"    <TeamNumber>"; s += n++; s += L"</TeamNumber>\n";
-			s += L"    <Name>"; s += si->sideName; s += L"</Name>\n";
-			s += L"    <Faction>"; s += trekClient.GetCore()->GetCivilization(si->civID)->GetName(); s += L"</Faction>\n";
-			s += L"  </Team>\n";
-			fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+			s += "    <TeamNumber>"; s += n++; s += "</TeamNumber>\n";
+			s += "    <Name>"; s += si->sideName; s += "</Name>\n";
+			s += "    <Faction>"; s += trekClient.GetCore()->GetCivilization(si->civID)->GetName(); s += "</Faction>\n";
+			s += "  </Team>\n";
+			fwrite((const char *)s,1,s.GetLength(),outputFile);
 
 			iterSides.Next();
 		}
-		s = L"</Teams>\n"; fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "</Teams>\n"; fwrite((const char *)s,1,s.GetLength(),outputFile);
 		// end - iterate thru teams
 
 		// iterate thru players
-		s = L"<PlayersScore>\n";	fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "<PlayersScore>\n";	fwrite((const char *)s,1,s.GetLength(),outputFile);
 	
 		TListListWrapper<PlayerEndgameInfo*>::Iterator iterPlayers(*m_plistStats);
 		PlayerEndgameInfo* pi;
 		while (!iterPlayers.End()) 
         {
-			s = L"  <PlayerScore>\n";
+			s = "  <PlayerScore>\n";
             pi = iterPlayers.Value();
-			s += L"    <Name>"; s += pi->characterName; s += L"</Name>\n";
-			s += L"    <TeamNumber>"; s += pi->sideId; s += L"</TeamNumber>\n";
-			s += L"    <IsCommander>"; s += pi->scoring.GetCommander() ? L"true" : L"false"; s += L"</IsCommander>\n";
-			s += L"    <Rank>"; s += pi->scoring.GetRank(); s += L"</Rank>\n";
-			s += L"    <Assists>"; s += pi->scoring.GetRecentAssists(); s += L"</Assists>\n";
-			s += L"    <BaseCaptures>"; s += pi->scoring.GetRecentBaseCaptures(); s += L"</BaseCaptures>\n";
-			s += L"    <BaseKills>"; s += pi->scoring.GetRecentBaseKills(); s += L"</BaseKills>\n";
-			s += L"    <Deaths>"; s += pi->scoring.GetRecentDeaths(); s += L"</Deaths>\n";
-			s += L"    <Ejections>"; s += pi->scoring.GetRecentEjections(); s += L"</Ejections>\n";
-			s += L"    <Kills>"; s += pi->scoring.GetRecentKills(); s += L"</Kills>\n";
-			s += L"    <Score>"; s += pi->scoring.GetRecentScore(); s += L"</Score>\n";
-			s += L"    <TimePlayed>"; s += pi->scoring.GetRecentTimePlayed(); s += L"</TimePlayed>\n";
-			s += L"  </PlayerScore>\n";
-			fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+			s += "    <Name>"; s += pi->characterName; s += "</Name>\n";
+			s += "    <TeamNumber>"; s += pi->sideId; s += "</TeamNumber>\n";
+			s += "    <IsCommander>"; s += pi->scoring.GetCommander()? "true" : "false" ; s += "</IsCommander>\n";
+			s += "    <Rank>"; s += pi->scoring.GetRank(); s += "</Rank>\n";
+			s += "    <Assists>"; s += pi->scoring.GetRecentAssists(); s += "</Assists>\n";
+			s += "    <BaseCaptures>"; s += pi->scoring.GetRecentBaseCaptures(); s += "</BaseCaptures>\n";
+			s += "    <BaseKills>"; s += pi->scoring.GetRecentBaseKills(); s += "</BaseKills>\n";
+			s += "    <Deaths>"; s += pi->scoring.GetRecentDeaths(); s += "</Deaths>\n";
+			s += "    <Ejections>"; s += pi->scoring.GetRecentEjections(); s += "</Ejections>\n";
+			s += "    <Kills>"; s += pi->scoring.GetRecentKills(); s += "</Kills>\n";
+			s += "    <Score>"; s += pi->scoring.GetRecentScore(); s += "</Score>\n";
+			s += "    <TimePlayed>"; s += pi->scoring.GetRecentTimePlayed(); s += "</TimePlayed>\n";
+			s += "  </PlayerScore>\n";
+			fwrite((const char *)s,1,s.GetLength(),outputFile);
             iterPlayers.Next();
         }
-		s = L"</PlayersScore>\n"; fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "</PlayersScore>\n"; fwrite((const char *)s,1,s.GetLength(),outputFile);
 		// end - iterate thru players
 
-		s = L"</xml>\n";	fwrite((const wchar_t *)s, 1, s.GetLength(), outputFile);
+		s = "</xml>\n";	fwrite((const char *)s,1,s.GetLength(),outputFile);
 
 		fclose(outputFile);
 
 		// 4. inform player
-		statsFileName = L"scores saved to " + statsFileName;
+		statsFileName = "scores saved to "+statsFileName;
 		trekClient.SendChat(trekClient.MyPlayerInfo()->GetShip(),
 			CHAT_INDIVIDUAL,
 			trekClient.MyPlayerInfo()->ShipID(),
 			NA,
-			(const wchar_t*)statsFileName);
+			(const char*)statsFileName);			
 		return true;
 	}
 
@@ -728,7 +728,7 @@ public:
 
     static bool SortName(ItemID id1, ItemID id2)
     {
-        return _wcsicmp(((PlayerEndgameInfo*)id1)->characterName, ((PlayerEndgameInfo*)id2)->characterName) > 0;
+        return _stricmp(((PlayerEndgameInfo*)id1)->characterName, ((PlayerEndgameInfo*)id2)->characterName) > 0;
     }
 
     static bool SortRank(ItemID id1, ItemID id2)
@@ -788,7 +788,7 @@ public:
 
     static bool SortSideName(ItemID id1, ItemID id2)
     {
-        return _wcsicmp(((SideEndgameInfo*)id1)->sideName, ((SideEndgameInfo*)id2)->sideName) > 0;
+        return _stricmp(((SideEndgameInfo*)id1)->sideName, ((SideEndgameInfo*)id2)->sideName) > 0;
     }
         
     static bool SortSideBaseKills(ItemID id1, ItemID id2)

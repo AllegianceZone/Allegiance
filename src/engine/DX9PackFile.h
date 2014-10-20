@@ -32,8 +32,8 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 public:
 	CPackExclusion();
-	CPackExclusion(const wchar_t * szFilter);
-	bool IsExcluded(const wchar_t * szFileName);
+	CPackExclusion( const char * szFilter );
+	bool IsExcluded( const char * szFileName );
 };
 
 
@@ -115,7 +115,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 public:
 	////////////////////////////////////////////////////////////////////////
-	CDX9PackFile(const wchar_t * szDataPath, const wchar_t * szFileName);
+	CDX9PackFile( const char * szDataPath, const char * szFileName );
 	~CDX9PackFile( void );
 
 	////////////////////////////////////////////////////////////////////////
@@ -135,12 +135,12 @@ public:
 	static void AddToPackFileList( CDX9PackFile * pPackFile );
 
 	////////////////////////////////////////////////////////////////////////
-	static void * LoadFile(const wchar_t * szFileName, DWORD * pdwFileSize);
+	static void * LoadFile( const char * szFileName, DWORD * pdwFileSize );
 
 ////////////////////////////////////////////////////////////////////////////////
 private:
 	////////////////////////////////////////////////////////////////////////
-	void AddExclusionFilter(const wchar_t * szFilter);
+	void AddExclusionFilter( const char * szFilter );
 
 	////////////////////////////////////////////////////////////////////////
 	int GetFileCount( ZString szDir, ZString szFilter );
@@ -152,5 +152,5 @@ private:
 	bool WriteHashTableData( );
 	
 	////////////////////////////////////////////////////////////////////////
-	void * LoadFileInternal(const wchar_t * szFileName, DWORD * pdwFileSize);
+	void * LoadFileInternal( const char * szFileName, DWORD * pdwFileSize );
 };

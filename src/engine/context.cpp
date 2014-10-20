@@ -783,7 +783,7 @@ public:
                 break;
 
             default:
-                ZError(L"Invalid shade mode");
+                ZError("Invalid shade mode");
                 break;
         }
 

@@ -90,7 +90,7 @@ public:
     virtual bool OnChar(const KeyState& ks) = 0;
 
     virtual TRef<GameStateContainer> GetGameStateContainer() = 0;
-    virtual void SetDisplayMDL(const wchar_t* pszFileName) = 0;
+    virtual void SetDisplayMDL(const char* pszFileName) = 0;
 
     virtual void StartQuickChat(ChatTarget  ctRecipient,
                                 ObjectID    oidRecipient,

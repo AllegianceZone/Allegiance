@@ -30,7 +30,7 @@ public:
      * Purpose:
      *      Set the site info so we know what sever to connect to.
      */
-	virtual void SetFTPSite(const wchar_t * szFTPSite, const wchar_t * szInitialDirectory, const wchar_t * szUsername, const wchar_t * szPassword) = 0;
+    virtual void SetFTPSite(const char * szFTPSite, const char * szInitialDirectory, const char * szUsername, const char * szPassword) = 0;
 
     /*-------------------------------------------------------------------------
      * SetOfficialFileListAttributes()
@@ -48,7 +48,7 @@ public:
      * SetOfficialTime()
      *-------------------------------------------------------------------------
      */
-	virtual void SetArtPath(const wchar_t * pArtPath) = 0;
+    virtual void SetArtPath(const char * pArtPath) = 0;
 
     /*-------------------------------------------------------------------------
      * SetFilelistSubDir()
@@ -58,7 +58,7 @@ public:
      * set, then the regular base directory is used.
      *-------------------------------------------------------------------------
      */
-	virtual void SetFilelistSubDir(const wchar_t * pszPath) = 0;
+    virtual void SetFilelistSubDir(const char * pszPath) = 0;
 
     /*-------------------------------------------------------------------------
      * BeginUpdate()
@@ -127,12 +127,12 @@ public:
 
     virtual void OnAnalysisProgress(float fPercentDone) {}
 
-	virtual bool ShouldFilterFile(const wchar_t * szFileName) // szFileName is base filename (not including path)
+    virtual bool ShouldFilterFile(const char * szFileName) // szFileName is base filename (not including path)
     {
       return false; // if returns true, then file is not downloaded
     }
 
-	virtual void OnProgress(unsigned long cTotalBytes, const wchar_t* szCurrentFile, unsigned long cCurrentFileBytes, unsigned cEstimatedSecondsLeft) {}
+    virtual void OnProgress(unsigned long cTotalBytes, const char* szCurrentFile, unsigned long cCurrentFileBytes, unsigned cEstimatedSecondsLeft) {}
 
     virtual void OnBeginDownloadProgressBar(unsigned cTotalBytes, int cFiles) {}
 
@@ -146,19 +146,19 @@ public:
      *
      * Returns: true if the autoupdate system should try again
      */
-    virtual bool OnMoveError(wchar_t * szErrorMsg)
+    virtual bool OnMoveError(char * szErrorMsg)
     {
       return false;
     }
 
     // returns true if file should be registered
-	virtual bool ShouldRegister(wchar_t * szFullFileName) // path is included in szFullFileName
+    virtual bool ShouldRegister(char * szFullFileName) // path is included in szFullFileName
     {
       return false;
     }
 
     // returns registration exit code (0 means success)
-	virtual int RegisterFile(wchar_t * szFullFileName) // path is included in szFullFileName
+    virtual int RegisterFile(char * szFullFileName) // path is included in szFullFileName
     {
       return -1;
     }
@@ -198,21 +198,21 @@ public:
      * Returns:
      *      true only on success
      */
-	static bool MoveFiles(const wchar_t * szTempPath, const wchar_t * szArtPath_, bool bSkipSharingViolation,
-		bool * pbFilesWereSkipped, bool bNoRegistryWrite, wchar_t * szErrorMsg, IAutoUpdateSink * pSink)
+    static bool MoveFiles(const char * szTempPath, const char * szArtPath_, bool bSkipSharingViolation,
+                          bool * pbFilesWereSkipped, bool bNoRegistryWrite, char * szErrorMsg, IAutoUpdateSink * pSink)
     {
 
-      WIN32_FIND_DATAW finddata;
+      WIN32_FIND_DATAA finddata;
       HANDLE hsearchFiles = 0;
 
-	  wchar_t szSourceSpec[MAX_PATH + 20];
-	  wchar_t szArtPath[MAX_PATH + 20];
-      Strcpy(szSourceSpec, szTempPath);
-      Strcat(szSourceSpec, L"*.*");
+      char szSourceSpec[MAX_PATH+20];
+      char szArtPath[MAX_PATH+20];
+      strcpy(szSourceSpec, szTempPath);
+      strcat(szSourceSpec, "*.*");
 
-      Strcpy(szArtPath, szArtPath_);
+      strcpy(szArtPath, szArtPath_);
 
-      int cLen = wcslen(szArtPath);
+      int cLen = strlen(szArtPath);
       if (cLen == 0 || szArtPath[cLen-1] != '\\')
       {
           szArtPath[cLen++] = '\\';
@@ -222,26 +222,26 @@ public:
       bool bFilesWereSkipped = false;
 
       // count the files in the file path
-      hsearchFiles = FindFirstFileW(szSourceSpec, &finddata);
+      hsearchFiles = FindFirstFileA(szSourceSpec, &finddata);
       if (INVALID_HANDLE_VALUE == hsearchFiles)
       {
           return false;
       }
 
-	  wchar_t szSource[MAX_PATH + 20];
-	  wchar_t szDest[MAX_PATH + 20];
+      char szSource[MAX_PATH+20];
+      char szDest[MAX_PATH+20];
 
       while (INVALID_HANDLE_VALUE != hsearchFiles)
       {
         // skip directory listings "." and ".."; and filelist (filelist is moved last)
         if (finddata.cFileName[0] != '.' &&
-            _wcsicmp(finddata.cFileName, L"FileList.txt") != 0 &&
+            _stricmp(finddata.cFileName, "FileList.txt") != 0 &&
             (!pSink || !pSink->ShouldFilterFile(finddata.cFileName)))
         {
             // setup move paths
-            Strcpy(szSource, szTempPath);
-            Strcat(szSource, finddata.cFileName);
-            GetFileNameWithPath(szDest, finddata.cFileName, szArtPath, L".\\");
+            strcpy(szSource, szTempPath);
+            strcat(szSource, finddata.cFileName);
+            GetFileNameWithPath(szDest, finddata.cFileName, szArtPath, ".\\");
 
             // Move files to their dest
             if (!MoveFilePrivate(szSource, szDest, bSkipSharingViolation, &bFilesWereSkipped, szErrorMsg, pSink))
@@ -255,17 +255,17 @@ public:
               if (nExitCode != 0)
               {
                 // registration failed; move file back so autoupdate attempts to register later; then abort
-                MoveFile(szDest, szSource);
+                MoveFileA(szDest, szSource);
 
                 if (szErrorMsg)
-                    swprintf(szErrorMsg, L"Failed to Register file %s; registration exit code(%d)", finddata.cFileName, nExitCode);
+                    sprintf(szErrorMsg, "Failed to Register file %s; registration exit code(%d)", finddata.cFileName, nExitCode);
 
                 return false;
               }
             }
         }
 
-        if (!FindNextFile(hsearchFiles, &finddata))
+        if (!FindNextFileA(hsearchFiles, &finddata))
         {
           FindClose(hsearchFiles);
           hsearchFiles = INVALID_HANDLE_VALUE;
@@ -278,12 +278,12 @@ public:
       //
       if(!bFilesWereSkipped)
       {
-          Strcpy(szSource, szTempPath);
-          Strcat(szSource, L"FileList.txt");
+          strcpy(szSource, szTempPath);
+          strcat(szSource, "FileList.txt");
 
           if (CAutoDownloadUtil::GetFileLength(szSource) != -1) // check for existance
           {
-            GetFileNameWithPath(szDest, L"FileList.txt", szArtPath, L".\\");
+            GetFileNameWithPath(szDest, "FileList.txt", szArtPath, ".\\");
 
             if (!MoveFilePrivate(szSource, szDest, bSkipSharingViolation, &bFilesWereSkipped, szErrorMsg, pSink))
                 return false;
@@ -302,27 +302,27 @@ public:
           DWORD dwValue = 0;
           if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey))
           {
-            ::RegSetValueEx(hKey, L"MoveInProgress", NULL, REG_DWORD, (unsigned char*)&dwValue, sizeof(DWORD));
+            ::RegSetValueExA(hKey, "MoveInProgress", NULL, REG_DWORD, (unsigned char*)&dwValue, sizeof(DWORD));
           }
       }
 
       return true;
     }
 
-    static wchar_t * GetEXEFileName(int nIndex)
+    static char * GetEXEFileName(int nIndex)
     {
-		static wchar_t * pszEXEFiles[] =
+        static char * pszEXEFiles[] =
         {
-            L"CliConfig.exe",
-			L"fsmon.exe",
-			L"readme.txt",
-			L"patcher.exe",
-			L"FileList.txt",
-			L"Reloader.exe",
-			L"msrgbits.inf",
-			L"msrgtran.dll",
-			L"msrgip.dll",
-			L"dbghelp.dll"
+            "CliConfig.exe",
+            "fsmon.exe",
+            "readme.txt",
+            "patcher.exe",
+            "FileList.txt",
+            "Reloader.exe",
+            "msrgbits.inf",
+            "msrgtran.dll",
+            "msrgip.dll",
+			"dbghelp.dll"
             // the file muse be at least 8 characters (including ext)  For example: fsmon.exe
             // increment g_cEXEFiles, if you add to this
         };
@@ -337,10 +337,10 @@ public:
      * Returns:
      *      The full path of where the file belongs.
      */
-	static void GetFileNameWithPath(OUT wchar_t * szFileNameWithPath,
-		IN  const wchar_t * szRawFileName,
-		IN  const wchar_t * szArtPath,
-		IN  const wchar_t * szEXEPath)
+    static void GetFileNameWithPath(OUT char * szFileNameWithPath,
+                             IN  const char * szRawFileName,
+                             IN  const char * szArtPath,
+                             IN  const char * szEXEPath)
     {
         //
         // Move special files to current directory
@@ -350,282 +350,282 @@ public:
         // NOTE: if you add special files, try adding them to the GetEXEFileName()
         // list to ensure get special care for the PC Gamer Build (Beta 1) bug.
         //   ///////////////////////////////////////////////////////
-        if (_wcsicmp(szRawFileName, L"AllegianceRetail.exe") == 0 ||
-			_wcsicmp(szRawFileName, L"AllegianceDebug.exe") == 0 ||
-			_wcsicmp(szRawFileName, L"AllegianceTest.exe") == 0 ||
-			_wcsicmp(szRawFileName, L"Allegiance.exe") == 0)
+        if (_stricmp(szRawFileName, "AllegianceRetail.exe") == 0 ||
+            _stricmp(szRawFileName, "AllegianceDebug.exe") == 0 ||
+            _stricmp(szRawFileName, "AllegianceTest.exe") == 0 ||
+            _stricmp(szRawFileName, "Allegiance.exe") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-            Strcat(szFileNameWithPath, L"Allegiance.exe");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "Allegiance.exe");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllegianceRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllegianceDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllegianceTest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"Allegiance.pdb") == 0)
+        if (_stricmp(szRawFileName, "AllegianceRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllegianceDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllegianceTest.pdb") == 0 ||
+            _stricmp(szRawFileName, "Allegiance.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-            Strcat(szFileNameWithPath, L"Allegiance.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "Allegiance.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllegianceRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllegianceDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllegianceTest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"Allegiance.sym") == 0)
+        if (_stricmp(szRawFileName, "AllegianceRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AllegianceDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AllegianceTest.sym") == 0 ||
+            _stricmp(szRawFileName, "Allegiance.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"Allegiance.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "Allegiance.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllegianceRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllegianceDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllegianceTest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"Allegiance.map") == 0)
+        if (_stricmp(szRawFileName, "AllegianceRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AllegianceDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AllegianceTest.map") == 0 ||
+            _stricmp(szRawFileName, "Allegiance.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"Allegiance.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "Allegiance.map");
         }
         else ///////////////////////////////////////////////////////
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.exe") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.exe") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.exe");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.exe");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.pdb") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.sym") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.map") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.map");
         }
         else ///////////////////////////////////////////////////////
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.exe") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.exe") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.exe");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.exe");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.pdb") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.sym") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvTest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrv.map") == 0)
+        if (_stricmp(szRawFileName, "AllSrvRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvTest.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrv.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrv.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrv.map");
         }
         else ///////////////////////////////////////////////////////
-			if (_wcsicmp(szRawFileName, L"AGCRetail.dll") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCDebug.dll") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCTest.dll") == 0 ||
-				_wcsicmp(szRawFileName, L"AGC.dll") == 0)
+        if (_stricmp(szRawFileName, "AGCRetail.dll") == 0 ||
+            _stricmp(szRawFileName, "AGCDebug.dll") == 0 ||
+            _stricmp(szRawFileName, "AGCTest.dll") == 0 ||
+            _stricmp(szRawFileName, "AGC.dll") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AGC.dll");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AGC.dll");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AGCRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCTest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AGC.pdb") == 0)
+        if (_stricmp(szRawFileName, "AGCRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AGCDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AGCTest.pdb") == 0 ||
+            _stricmp(szRawFileName, "AGC.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AGC.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AGC.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AGCRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCTest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AGC.sym") == 0)
+        if (_stricmp(szRawFileName, "AGCRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AGCDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AGCTest.sym") == 0 ||
+            _stricmp(szRawFileName, "AGC.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AGC.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AGC.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AGCRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AGCTest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AGC.map") == 0)
+        if (_stricmp(szRawFileName, "AGCRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AGCDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AGCTest.map") == 0 ||
+            _stricmp(szRawFileName, "AGC.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AGC.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AGC.map");
         }
         else ///////////////////////////////////////////////////////
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.exe") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.exe") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.exe");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.exe");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.pdb") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.sym") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.map") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.map");
         }
         else ///////////////////////////////////////////////////////
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.exe") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.exe") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.exe") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.exe");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.exe");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.pdb") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.pdb") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.sym") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.sym") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AllSrvUIRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUIDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUITest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AllSrvUI.map") == 0)
+        if (_stricmp(szRawFileName, "AllSrvUIRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUIDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUITest.map") == 0 ||
+            _stricmp(szRawFileName, "AllSrvUI.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AllSrvUI.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AllSrvUI.map");
         }
         else ///////////////////////////////////////////////////////
-			if (_wcsicmp(szRawFileName, L"AutoUpdateRetail.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateDebug.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateTest.exe") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdate.exe") == 0)
+        if (_stricmp(szRawFileName, "AutoUpdateRetail.exe") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateDebug.exe") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateTest.exe") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdate.exe") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AutoUpdate.exe");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AutoUpdate.exe");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AutoUpdateRetail.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateDebug.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateTest.pdb") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdate.pdb") == 0)
+        if (_stricmp(szRawFileName, "AutoUpdateRetail.pdb") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateDebug.pdb") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateTest.pdb") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdate.pdb") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AutoUpdate.pdb");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AutoUpdate.pdb");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AutoUpdateRetail.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateDebug.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateTest.sym") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdate.sym") == 0)
+        if (_stricmp(szRawFileName, "AutoUpdateRetail.sym") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateDebug.sym") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateTest.sym") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdate.sym") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AutoUpdate.sym");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AutoUpdate.sym");
         }
         else
-			if (_wcsicmp(szRawFileName, L"AutoUpdateRetail.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateDebug.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdateTest.map") == 0 ||
-				_wcsicmp(szRawFileName, L"AutoUpdate.map") == 0)
+        if (_stricmp(szRawFileName, "AutoUpdateRetail.map") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateDebug.map") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdateTest.map") == 0 ||
+            _stricmp(szRawFileName, "AutoUpdate.map") == 0)
         {
-            Strcpy(szFileNameWithPath, szEXEPath);
-			Strcat(szFileNameWithPath, L"AutoUpdate.map");
+            strcpy(szFileNameWithPath, szEXEPath);
+            strcat(szFileNameWithPath, "AutoUpdate.map");
         }
         else
         {
             for (int i = 0; i < g_cEXEFiles; ++i)
             {
-				if (_wcsicmp(szRawFileName, GetEXEFileName(i)) == 0)
+                if (_stricmp(szRawFileName, GetEXEFileName(i)) == 0)
                 {
-                    Strcpy(szFileNameWithPath, szEXEPath);
-                    Strcat(szFileNameWithPath, szRawFileName);
+                    strcpy(szFileNameWithPath, szEXEPath);
+                    strcat(szFileNameWithPath, szRawFileName);
                     return;
                 }
             }
             //
             // Must be an ArtFile!
             //
-            Strcpy(szFileNameWithPath, szArtPath);
-            Strcat(szFileNameWithPath, szRawFileName);
+            strcpy(szFileNameWithPath, szArtPath);
+            strcat(szFileNameWithPath, szRawFileName);
         }
     }
 
 
     //////////////////////////////////////////////////////////////////////////
 
-	static unsigned GetFileLength(wchar_t *szFileName)
+    static unsigned GetFileLength(char *szFileName)
     {
-        HANDLE hFile = CreateFile(szFileName,
+        HANDLE hFile = CreateFileA(szFileName,
                                  0/*GENERIC_READ*/,  // 0 == query only
                                  FILE_SHARE_READ,
                                  NULL,
@@ -653,18 +653,18 @@ private:
      *
      * returns false if error, true on success
      */
-	static bool MoveFilePrivate(wchar_t * szSource, wchar_t * szDest, bool bSkipSharingViolation,
-		bool * pbFilesWereSkipped, wchar_t * szErrorMsg, IAutoUpdateSink * pSink)
+    static bool MoveFilePrivate(char * szSource, char * szDest, bool bSkipSharingViolation,
+                                bool * pbFilesWereSkipped, char * szErrorMsg, IAutoUpdateSink * pSink)
     {
         bool bErrorOccured;
         bool bTryAgain;
 
         do
         {
-            ::DeleteFile(szDest);
+            ::DeleteFileA(szDest);
 
             // Note: considered using MoveFileEx, but win95/98 doesn't support it
-            BOOL bResult = ::MoveFile(szSource, szDest);
+            BOOL bResult = ::MoveFileA(szSource, szDest);
 
             if(!bResult)
             {
@@ -685,8 +685,8 @@ private:
                 else
 				{
 					if (g_outputdebugstring) { //Imago changed from _DEBUG ifdef 8/17/09
-	                    wchar_t sz[MAX_PATH];
-						swprintf(sz, L"Moving Files Error: %d", GetLastError());
+	                    char sz[40];
+	                    sprintf(sz, "Moving Files Error: %d", GetLastError());
 	                    ZDebugOutput(sz);
 					}
 
@@ -700,20 +700,20 @@ private:
 
             if (bErrorOccured && (pSink || szErrorMsg))
             {
-                wchar_t szErrorMessage[2*MAX_PATH+50];
+                char szErrorMessage[2*MAX_PATH+50];
 
                 FormatErrorMessage(szErrorMessage, GetLastError());
 
-                Strcat(szErrorMessage, L"\n\r\n\r   Source: ");
+                strcat(szErrorMessage, "\n\r\n\r   Source: ");
 
-				Strcat(szErrorMessage, szSource);
+                strcat(szErrorMessage, szSource);
 
-				Strcat(szErrorMessage, L"\n\r\n\r   Dest: ");
+                strcat(szErrorMessage, "\n\r\n\r   Dest: ");
 
-				Strcat(szErrorMessage, szDest);
+                strcat(szErrorMessage, szDest);
 
                 if (szErrorMsg)
-                    Strcpy(szErrorMsg, szErrorMessage);
+                    strcpy(szErrorMsg, szErrorMessage);
 
                 if (pSink)
                    bTryAgain = pSink->OnMoveError(szErrorMessage);
@@ -731,22 +731,26 @@ private:
      *    dwErrorCode: take a dwErrorCode and print what it means as text
      *
      */
-    static void FormatErrorMessage(wchar_t *szBuffer, DWORD dwErrorCode)
+    static void FormatErrorMessage(char *szBuffer, DWORD dwErrorCode)
     {
 
-      swprintf(szBuffer,L"(%d) ", dwErrorCode);
+      sprintf(szBuffer,"(%d) ", dwErrorCode);
 
-      FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+      FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM |
                     FORMAT_MESSAGE_IGNORE_INSERTS,
                     NULL,
                     dwErrorCode,
                     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                    szBuffer + wcslen(szBuffer),
+                    szBuffer + strlen(szBuffer),
                     128,
                     NULL
                     );
     }
 
 };
+
+
+
+
 
 bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized);

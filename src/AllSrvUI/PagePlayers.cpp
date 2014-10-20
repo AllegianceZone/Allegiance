@@ -187,7 +187,7 @@ void CPagePlayers::LoadFromRegistry()
 
   // PlayerListColumnOrder
   CComBSTR bstrColumnOrder;
-  LoadRegString(key, TEXT("PlayerListColumnOrder"), bstrColumnOrder);
+  LoadRegString(key, "PlayerListColumnOrder", bstrColumnOrder);
   m_spStrings->RemoveAll();
   m_spStrings->AddDelimited(CComBSTR(L","), bstrColumnOrder);
   long cOrderedColumns = 0;
@@ -206,7 +206,7 @@ void CPagePlayers::LoadFromRegistry()
 
   // PlayerListColumnWidths
   CComBSTR bstrColumnWidths;
-  LoadRegString(key, TEXT("PlayerListColumnWidths"), bstrColumnWidths);
+  LoadRegString(key, "PlayerListColumnWidths", bstrColumnWidths);
   m_spStrings->RemoveAll();
   m_spStrings->AddDelimited(CComBSTR(L","), bstrColumnWidths);
   long cWidthColumns = 0;
@@ -245,9 +245,9 @@ void CPagePlayers::LoadFromRegistry()
     // Read each string and add it to the combo box
     for (DWORD i = 0; i < cStrings; ++i)
     {
-      TCHAR szInt[16];
+      CHAR szInt[16];
       CString strMRUItem;
-      LoadRegString(keyMRU, _itot(i, szInt, 10), strMRUItem);
+      LoadRegString(keyMRU, _itoa(i, szInt, 10), strMRUItem);
       strMRUItem.TrimLeft();
       strMRUItem.TrimRight();
       if (!strMRUItem.IsEmpty())

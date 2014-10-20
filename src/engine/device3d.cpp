@@ -315,7 +315,7 @@ public:
                 case CounterMatrixLoads     : return m_countMatrixLoads    ;
             }
 
-            ZError(L"Unknown counter");
+            ZError("Unknown counter");
             return 0;
         }
     #endif
@@ -863,7 +863,7 @@ public:
                 break;
 
             default:
-                ZError(L"Invalid ShadeMode");
+                ZError("Invalid ShadeMode");
             }
         }
     }
@@ -922,7 +922,7 @@ public:
                     break;
 
                 default:
-                    ZError(L"Invalid ShadeMode");
+                    ZError("Invalid ShadeMode");
             }
 
             //

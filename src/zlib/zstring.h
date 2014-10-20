@@ -2,7 +2,8 @@
 #ifndef _ZString_H_
 #define _ZString_H_
 
-typedef const wchar_t* PCC;
+typedef const char* PCC;
+typedef const wchar_t* WPCC;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -18,18 +19,19 @@ private:
     class ZStringData : public IObjectSingle {
     protected:
         PCC   m_pcc;
-		wchar_t* m_pch;
+        char* m_pch;
         int   m_length;
 
     public:
         ZStringData(PCC pch);
+		ZStringData(WPCC pch);
         ZStringData(PCC pch, bool bStatic);
         ZStringData(PCC pch, int length);
-		ZStringData(wchar_t ch, int length);
+        ZStringData(char ch, int length);
         ZStringData(const ZStringData* pdata1, const ZStringData* pdata2);
         ~ZStringData();
 
-		void Set(int index, wchar_t ch);
+        void Set(int index, char ch);
         PCC  GetPointer() { return m_pcc; }
 
         int GetLength() const
@@ -40,8 +42,8 @@ private:
         int        Find(const ZStringData* pdata) const;
         int ReverseFind(const ZStringData* pdata) const;
 
-		int        Find(wchar_t ch, int index) const;
-		int ReverseFind(wchar_t ch, int index) const;
+        int        Find(char ch, int index) const;
+        int ReverseFind(char ch, int index) const;
 
         int        FindAny(const ZStringData* pdata, int index) const;
         int ReverseFindAny(const ZStringData* pdata, int index) const;
@@ -60,10 +62,11 @@ private:
 public:
     ZString();
     ZString(PCC);
+	ZString(WPCC);
     ZString(PCC, bool bStatic);
     ZString(PCC, int length);
     ZString(PCC, int length, bool bStatic);
-	ZString(wchar_t ch, int length);
+    ZString(char ch, int length);
     ZString(const ZString&);
     ZString(int);
     ZString(float value);
@@ -72,15 +75,15 @@ public:
 
     static ZString GetProfileString(const ZString& strSection, const ZString& strKey);
 
-	const wchar_t& operator[](int index) const { return m_pdata->GetPointer()[index]; }
+    const char& operator[](int index) const { return m_pdata->GetPointer()[index]; }
     int GetLength() const { return m_pdata->GetLength(); }
     operator PCC() const { return m_pdata->GetPointer(); }
     bool IsEmpty() const { return GetLength() == 0; }
     BSTR MakeBSTR() const;
 
-	int Find(wchar_t ch, int index = 0) const;
+    int Find(char ch, int index = 0) const;
     int Find(const ZString& str) const;
-	int ReverseFind(wchar_t ch, int index = 0) const;
+    int ReverseFind(char ch, int index = 0) const;
     int ReverseFind(const ZString& str) const;
     int FindAny(const ZString& str, int index = 0) const;
     int ReverseFindAny(const ZString& str, int index = 0) const;
@@ -126,11 +129,11 @@ public:
     inline friend bool operator>=(const ZString& str, PCC pcc)     { return !(str < pcc); }
     inline friend bool operator>=(           PCC pcc, const ZString& str)     { return !(pcc < str); }
 
-	void ReplaceAll(const ZString& str, wchar_t ch);
-	void RemoveAll(wchar_t chToRemove);
+    void ReplaceAll(const ZString& str, char ch);
+    void RemoveAll(char chToRemove);
     ZString& operator=(const ZString&);
     ZString& operator+=(const ZString&);
-	void Set(int index, wchar_t ch);
+    void Set(int index, char ch);
     void SetEmpty();
     ZString GetToken();
 };
@@ -172,7 +175,7 @@ public:
     PathString(PCC pcc);
     PathString(const ZString& str) : ZString(str) {}
 
-    static PathString ZGetCurrentDirectory();
+    static PathString GetCurrentDirectory();
     static PathString GetModulePath();
 
     PathString operator+(const PathString&) const;
@@ -203,10 +206,10 @@ public:
 //
 //////////////////////////////////////////////////////////////////////////////
 
-void ZScramble(wchar_t* szDest, PCC szSource, PCC szKey);
-void ZUnscramble(wchar_t* szDest, PCC szSource, PCC szKey);
+void ZScramble(char* szDest, PCC szSource, PCC szKey);
+void ZUnscramble(char* szDest, PCC szSource, PCC szKey);
 
-void ZToUpper(wchar_t* szDest, PCC szSource);
-void ZToLower(wchar_t* szDest, PCC szSource);
+void ZToUpper(char* szDest, PCC szSource);
+void ZToLower(char* szDest, PCC szSource);
 
 #endif

@@ -198,7 +198,7 @@ private:
                     return stack.Pop();
 
                 default:
-                    ZError(L"ReadObject: Bad token");
+                    ZError("ReadObject: Bad token");
                     break;
             }
         };

@@ -37,7 +37,7 @@ HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
     ZRetailAssert (data && (dataSize == sizeof(DataBuoyIGC)));
     DataBuoyIGC*  dataBuoy = (DataBuoyIGC*)data;
 
-    LoadDecal(L"buoy", L"buoyicon",
+    LoadDecal("buoy", "buoyicon",
               Color(1.0f, 1.0f, 1.0f, 1.0f),
               false,
               1.0f,
@@ -58,7 +58,7 @@ HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, 
     if (dataBuoy->type == c_buoyCluster)
         SetSecondaryName(pcluster->GetName());
     else
-        SetSecondaryName(L"waypoint");
+        SetSecondaryName("waypoint");
 
     SetMass(0.0f);
 

@@ -223,21 +223,21 @@ void CPageEvents::InitEventList()
   strColumn.LoadString(IDS_COLUMN_TYPE);
   lvcol.pszText  = const_cast<LPTSTR>((LPCWSTR)strColumn);
   m_listEvents.InsertColumn(lvcol.iSubItem, &lvcol);
-  m_cxMaxType = m_listEvents.GetStringWidth(strColumn + L"    + ");
+  m_cxMaxType = m_listEvents.GetStringWidth(strColumn + "    + ");
   
   // Insert EventID column
   lvcol.iSubItem = 1;
   lvcol.fmt    = LVCFMT_RIGHT;
   strColumn.LoadString(IDS_COLUMN_EVENTID);
-  lvcol.pszText = const_cast<LPTSTR>((LPCWSTR)strColumn);
+  lvcol.pszText  = const_cast<LPTSTR>((LPCWSTR)strColumn);
   m_listEvents.InsertColumn(lvcol.iSubItem, &lvcol);
-  m_cxMaxID = m_listEvents.GetStringWidth(strColumn + L"    + ");
+  m_cxMaxID = m_listEvents.GetStringWidth(strColumn + "    + ");
   
   // Insert Name column
   lvcol.iSubItem = 2;
   lvcol.fmt    = LVCFMT_LEFT;
   strColumn.LoadString(IDS_COLUMN_NAME);
-  lvcol.pszText = const_cast<LPTSTR>((LPCWSTR)strColumn);
+  lvcol.pszText  = const_cast<LPTSTR>((LPCWSTR)strColumn);
   m_listEvents.InsertColumn(lvcol.iSubItem, &lvcol);
 }
 

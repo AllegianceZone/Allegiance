@@ -70,7 +70,7 @@ public:
 
 // Operations
 public:
-	HRESULT Eval(const wchar_t* pszExpression, VARIANT* pvResult);
+  HRESULT Eval(const char* pszExpression, VARIANT* pvResult);
 
 // Overrides
 public:

@@ -508,7 +508,8 @@ public:
     XLock lock(static_cast<T*>(this));
     RETURN_FAILED(VerifyInit(pbExists));
     bool bExists;
-    m_vi.GetStringValue(bstrKey ? OLE2CW(bstrKey) : L"", &bExists);
+    USES_CONVERSION;
+    m_vi.GetStringValue(bstrKey ? OLE2CA(bstrKey) : "", &bExists);
     *pbExists = VARBOOL(bExists);
     return HRESULT_FROM_WIN32(GetLastError());
   }
@@ -516,7 +517,8 @@ public:
   {
     XLock lock(static_cast<T*>(this));
     RETURN_FAILED(VerifyInit(pbstrValue));
-    ZString strValue(m_vi.GetStringValue(bstrKey ? OLE2CW(bstrKey) : L""));
+    USES_CONVERSION;
+    ZString strValue(m_vi.GetStringValue(bstrKey ? OLE2CA(bstrKey) : ""));
     HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
     *pbstrValue = CComBSTR(strValue).Detach();
     return hr;

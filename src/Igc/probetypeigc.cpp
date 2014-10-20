@@ -41,7 +41,7 @@ HRESULT     CprobeTypeIGC::Initialize(ImissionIGC* pMission, Time now, const voi
             if (pmhb)
             {
                 float   scale = (m_data.radius / pmhb->GetOriginalRadius());
-                m_emissionPt = pmhb->GetFrameOffset(L"wepemt") * scale;
+                m_emissionPt = pmhb->GetFrameOffset("wepemt") * scale;
             }
             else
             {

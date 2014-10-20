@@ -233,9 +233,10 @@ public:
     if (!BSTRLen(bstrText))
       return S_FALSE;
 
-    // Send the chat;
+    // Send the chat
+    USES_CONVERSION;
     GetIGC()->GetIgcSite()->SendChat(NULL, CHAT_EVERYONE, NA, idSound,
-      bstrText, c_cidNone, NA, NA, NULL, true); 
+      OLE2CA(bstrText), c_cidNone, NA, NA, NULL, true); 
 
     // Indicate success
     return S_OK;
@@ -263,7 +264,7 @@ public:
     ImodelIGC* pModel = reinterpret_cast<ImodelIGC*>(spPrivate->GetIGCVoid());
 
     // Send the chat
-    GetIGC()->GetIgcSite()->SendChat(NULL, CHAT_EVERYONE, NA, idSound, L"",
+    GetIGC()->GetIgcSite()->SendChat(NULL, CHAT_EVERYONE, NA, idSound, "",
       idCmd, pModel->GetObjectType(), pModel->GetObjectID(), pModel, true);
       
     // Indicate success

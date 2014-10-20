@@ -363,7 +363,7 @@ private:
                     TrekResources::SmallFont(),
                     Color::White(),
                     WinPoint(m_viColumns[0]+4, m_nHeight * 1/2 -2),
-						L"Random"
+						"Random"
 						);
 					else
 						psurface->DrawString(
@@ -376,24 +376,24 @@ private:
                 psurface->RestoreClipRect(rectClipOld);
 
                 // draw the available positions
-				wchar_t cbPositions[80];
+                char cbPositions[80];
                 if (pitem->GetSideID() == SIDE_TEAMLOBBY)
                 {
                     TRef<List> plistPlayers = pitem->GetMemberList();
 					if (teamTotalRank > 0)
-                        wsprintf(cbPositions, L"(%d)[%d]", plistPlayers->GetCount(), teamTotalRank);//	yp - Your_Persona Team total rank in lobby patch Aug-04-2006
+                        sprintf(cbPositions, "(%d)[%d]", plistPlayers->GetCount(), teamTotalRank);//	yp - Your_Persona Team total rank in lobby patch Aug-04-2006
 					else
-						wsprintf(cbPositions, L"(%d)", plistPlayers->GetCount());
+						sprintf(cbPositions, "(%d)", plistPlayers->GetCount());
                 }
                 else
                 {
 					if (teamTotalRank > 0)
-						wsprintf(cbPositions, L"(%d/%d)[%d]", //	yp - Your_Persona Team toal rank in lobby patch Aug-04-2006
+						sprintf(cbPositions, "(%d/%d)[%d]", //	yp - Your_Persona Team toal rank in lobby patch Aug-04-2006
 							m_pMission->SideNumPlayers(pitem->GetSideID()),
 							m_pMission->SideMaxPlayers(pitem->GetSideID()),
 							teamTotalRank);//	yp - Your_Persona Team toal rank in lobby patch Aug-04-2006
 					else
-						wsprintf(cbPositions, L"(%d/%d)",
+						sprintf(cbPositions, "(%d/%d)",
 							m_pMission->SideNumPlayers(pitem->GetSideID()),
 							m_pMission->SideMaxPlayers(pitem->GetSideID()));
                 }
@@ -682,44 +682,44 @@ private:
 				switch ( missionparams.mmMapType )
 				{
 					case 0:
-						return L"Single Ring";
+						return "Single Ring";
 					case 1:
-						return L"Double Ring";
+						return "Double Ring";
 					case 2:
-						return L"Pinwheel";
+						return "Pinwheel";
 					case 3:
-						return L"Diamond Ring";
+						return "Diamond Ring";
 					case 4:
-						return L"Snowflake";
+						return "Snowflake";
 					case 5:
-						return L"Split Bases";
+						return "Split Bases";
 					case 6:
 						return "Brawl";
 					case 7:
-						return L"Big Ring";
+						return "Big Ring";
 					case 8:
-						return L"HiLo";
+						return "HiLo";
 					case 9:
-						return L"HiHigher";
+						return "HiHigher";
 					case 10:
-						return L"Star";
+						return "Star";
 					case 11:
-						return L"InsideOut";
+						return "InsideOut";
 					case 12:
-						return L"Grid";
+						return "Grid";
 					case 13:
-						return L"EastWest";
+						return "EastWest";
 					case 14:
-						return L"LargeSplit";
+						return "LargeSplit";
 					default:
-						return L"Unknown map name";
+						return "Unknown map name";
 				}				
 			} else 
 			{
 				int mapNum;
 				for (int i = 0; i < trekClient.GetNumStaticMaps(); i++)
 				{
-					if (Strcmp(missionparams.szCustomMapFile, trekClient.GetStaticMapInfo(i).cbIGCFile) == 0)
+					if (strcmp(missionparams.szCustomMapFile, trekClient.GetStaticMapInfo(i).cbIGCFile) == 0)
 						mapNum = i;
 				}
 				return trekClient.GetStaticMapInfo(mapNum).cbFriendlyName;
@@ -730,58 +730,58 @@ private:
         {
             ZString strResult;
             const int nMaxText = 2048;
-			wchar_t cbTemp[nMaxText];
+            char cbTemp[nMaxText];
             
             ZString strMainText;
             const MissionParams& misparams = trekClient.MyMission()->GetMissionParams();
 
             if (misparams.IsNoWinningConditionsGame())
-                strMainText = GetCivString(L"NoWin", pns);
+                strMainText = GetCivString("NoWin", pns);
             else 
-                strMainText = GetCivString(L"Default", pns);
+                strMainText = GetCivString("Default", pns);
 
-			_snwprintf(cbTemp, nMaxText, strMainText, (const wchar_t*)CensorBadWords(trekClient.GetSide()->GetName()), (const wchar_t*)trekClient.GetBriefingText(), (const wchar_t*)GetCivListString());
+            _snprintf(cbTemp, nMaxText, strMainText, (const char*)CensorBadWords (trekClient.GetSide()->GetName()), (const char*)trekClient.GetBriefingText(), (const char*)GetCivListString());
             strResult = cbTemp;
 
             if (misparams.IsArtifactsGame() || misparams.IsFlagsGame() || misparams.IsCountdownGame() 
                 || (misparams.IsConquestGame() && misparams.GetConquestPercentage() != 100)
                 || misparams.IsDeathMatchGame() || misparams.IsProsperityGame())
             {
-                strResult += GetCivString(L"SecondaryObjectives", pns);
+                strResult += GetCivString("SecondaryObjectives", pns);
 
                 if (misparams.IsConquestGame() && misparams.GetConquestPercentage() != 100)
                 {
-                    _snwprintf(cbTemp, nMaxText, GetCivString(L"Conquest", pns), misparams.GetConquestPercentage());
+                    _snprintf(cbTemp, nMaxText, GetCivString("Conquest", pns), misparams.GetConquestPercentage());
                     strResult += cbTemp;
                 }
 
                 if (misparams.IsArtifactsGame())
                 {
-                    _snwprintf(cbTemp, nMaxText, GetCivString(L"Artifacts", pns), misparams.nGoalArtifactsCount);
+                    _snprintf(cbTemp, nMaxText, GetCivString("Artifacts", pns), misparams.nGoalArtifactsCount);
                     strResult += cbTemp;
                 }
 
                 if (misparams.IsFlagsGame())
                 {
-                    _snwprintf(cbTemp, nMaxText, GetCivString(L"Flags", pns), misparams.nGoalFlagsCount);
+                    _snprintf(cbTemp, nMaxText, GetCivString("Flags", pns), misparams.nGoalFlagsCount);
                     strResult += cbTemp;
                 }
 
                 if (misparams.IsCountdownGame())
                 {
-                    _snwprintf(cbTemp, nMaxText, GetCivString(L"Countdown", pns), (int)(misparams.GetCountDownTime() / 60));
+                    _snprintf(cbTemp, nMaxText, GetCivString("Countdown", pns), (int)(misparams.GetCountDownTime() / 60));
                     strResult += cbTemp;
                 }
 
                 if (misparams.IsDeathMatchGame())
                 {
-                    _snwprintf(cbTemp, nMaxText, GetCivString(L"Deathmatch", pns), misparams.GetDeathMatchKillLimit());
+                    _snprintf(cbTemp, nMaxText, GetCivString("Deathmatch", pns), misparams.GetDeathMatchKillLimit());
                     strResult += cbTemp;
                 }
 
                 if (misparams.IsProsperityGame())
                 {
-                    _snwprintf(cbTemp, nMaxText, GetCivString(L"Prosperity", pns), (int)(misparams.fGoalTeamMoney * trekClient.GetCore()->GetFloatConstant(c_fcidWinTheGameMoney)));
+                    _snprintf(cbTemp, nMaxText, GetCivString("Prosperity", pns), (int)(misparams.fGoalTeamMoney * trekClient.GetCore()->GetFloatConstant(c_fcidWinTheGameMoney)));
                     strResult += cbTemp;
                 }
             }
@@ -942,7 +942,7 @@ private:
             {
                 // close the popup
                 OnButtonCancel();
-                debugf(L"team settings popup closed because of del player\n");
+                debugf("team settings popup closed because of del player\n");
             }
         }
 
@@ -977,7 +977,7 @@ private:
             m_pparent->m_bTeamSettingsPopupOpen = false;
 
             IPopup::OnClose();
-            debugf(L"team settings popup closed\n");
+            debugf("team settings popup closed\n");
         }
 
         virtual void SetContainer(IPopupContainer* pcontainer)
@@ -1051,7 +1051,7 @@ private:
             else
             {
                 pfmSetTeamInfo->squadID = NA;
-                Strcpy(pfmSetTeamInfo->SideName, m_peditPaneTeamName->GetString());
+                strcpy(pfmSetTeamInfo->SideName, m_peditPaneTeamName->GetString());
             }
 			//Xynth #170 8/2010
 			int civSelection, randIndex;
@@ -1134,57 +1134,57 @@ public:
         // Teamscreen exports
         //
 
-        TRef<INameSpace> pnsTeamScreenData = GetModeler()->CreateNameSpace(L"teamscreendata");
-        pnsTeamScreenData->AddMember(L"civImage", (Value*)(m_pwrapImageCiv = new WrapImage(Image::GetEmpty())));
-        pnsTeamScreenData->AddMember(L"showSquad", m_pnumberShowSquad = new ModifiableNumber(0));
-        pnsTeamScreenData->AddMember(L"statsCount", m_pnumberStatsCount = new ModifiableNumber(0));
-        pnsTeamScreenData->AddMember(L"squadStatsCount", m_pnumberSquadStatsCount = new ModifiableNumber(0));
-        pnsTeamScreenData->AddMember(L"civColor", m_pcolorCiv = new ModifiableColorValue(Color::Black()));
-		pnsTeamScreenData->AddMember(L"CurrentVote", m_pstringCurrentVote = new ModifiableString("")); //Spunky #177
-		pnsTeamScreenData->AddMember(L"HasVote", m_pnumberHasVote = new ModifiableNumber(0)); //Spunky #177 - export so we can hide
+        TRef<INameSpace> pnsTeamScreenData = GetModeler()->CreateNameSpace("teamscreendata");
+        pnsTeamScreenData->AddMember("civImage", (Value*)(m_pwrapImageCiv = new WrapImage(Image::GetEmpty())));
+        pnsTeamScreenData->AddMember("showSquad", m_pnumberShowSquad = new ModifiableNumber(0));
+        pnsTeamScreenData->AddMember("statsCount", m_pnumberStatsCount = new ModifiableNumber(0));
+        pnsTeamScreenData->AddMember("squadStatsCount", m_pnumberSquadStatsCount = new ModifiableNumber(0));
+        pnsTeamScreenData->AddMember("civColor", m_pcolorCiv = new ModifiableColorValue(Color::Black()));
+		pnsTeamScreenData->AddMember("CurrentVote", m_pstringCurrentVote = new ModifiableString("")); //Spunky #177
+		pnsTeamScreenData->AddMember("HasVote", m_pnumberHasVote = new ModifiableNumber(0)); //Spunky #177 - export so we can hide
 
 		//KGJV added: core name & server name export 
 		// so we can use strServerName and strCoreName in teamscreen.mdl
-		const wchar_t* szServerName = trekClient.MyMission()->GetMissionDef().szServerName;
-		const wchar_t* szServerAddr = trekClient.MyMission()->GetMissionDef().szServerAddr;
-		pnsTeamScreenData->AddMember(L"strServerName", new StringValue(szServerName));
-		const wchar_t* szCoreName = trekClient.MyMission()->GetMissionParams().szIGCStaticFile;
-		pnsTeamScreenData->AddMember(L"strCoreName", new StringValue(trekClient.CfgGetCoreName(szCoreName)));
+		const char* szServerName = trekClient.MyMission()->GetMissionDef().szServerName;
+		const char* szServerAddr = trekClient.MyMission()->GetMissionDef().szServerAddr;
+		pnsTeamScreenData->AddMember("strServerName", new StringValue(szServerName));
+		const char* szCoreName = trekClient.MyMission()->GetMissionParams().szIGCStaticFile;
+		pnsTeamScreenData->AddMember("strCoreName", new StringValue(trekClient.CfgGetCoreName(szCoreName)));
 
 		//
         // Load the members from MDL
         //
 
-        TRef<INameSpace> pns = pmodeler->GetNameSpace(L"teamscreen");
+        TRef<INameSpace> pns = pmodeler->GetNameSpace("teamscreen");
 
-        CastTo(m_ppane,                    pns->FindMember(L"screen"              ));
-        CastTo(pobjPlayerColumns,          pns->FindMember(L"playerColumns"       ));
-        CastTo(pobjTeamColumns,            pns->FindMember(L"teamColumns"         ));
-        CastTo(pnumTeamColorIntensity,     pns->FindMember(L"teamColorIntensity"  ));
-        CastTo(pnumTeamColorBrightness,     pns->FindMember(L"teamColorBrightness"  ));
-        CastTo(m_pbuttonBack,              pns->FindMember(L"backButtonPane"      ));
-        CastTo(m_pbuttonGameOver,          pns->FindMember(L"gameOverButtonPane"  ));
-        CastTo(m_pbuttonStart,             pns->FindMember(L"startButtonPane"      ));
-        //CastTo(m_pbuttonReady,             pns->FindMember(L"readyButtonPane"     ));
-        CastTo(m_pbuttonAwayFromKeyboard,  pns->FindMember(L"awayFromKeyboardButtonPane"));
-        CastTo(m_pbuttonTeamReady,         pns->FindMember(L"sideReadyButtonPane" ));
-        CastTo(m_pbuttonAutoAccept,        pns->FindMember(L"autoAcceptButtonPane"));
-        CastTo(m_pbuttonLockLobby,         pns->FindMember(L"lockLobbyButtonPane"));
-        CastTo(m_pbuttonLockSides,         pns->FindMember(L"lockSidesButtonPane"));
-        CastTo(m_pbuttonRandomize,         pns->FindMember(L"randomizeButtonPane"));
-        CastTo(m_pbuttonAccept,            pns->FindMember(L"acceptButtonPane"    ));
-        CastTo(m_pbuttonReject,            pns->FindMember(L"rejectButtonPane"    ));
-        CastTo(m_pbuttonJoin,              pns->FindMember(L"joinButtonPane"      ));
-        CastTo(m_pbuttonbarPlayers,        pns->FindMember(L"playerListHeader"    ));
-        CastTo(m_pbuttonbarChat,           pns->FindMember(L"chatHeader"          ));
-        CastTo(m_pbuttonSend,              pns->FindMember(L"sendButtonPane"      ));
-        CastTo(m_pbuttonDetails,           pns->FindMember(L"detailsButtonPane"   ));
-        CastTo(m_pbuttonSettings,          pns->FindMember(L"settingsButtonPane"  ));
-        CastTo(m_pbuttonTeamSettings,      pns->FindMember(L"teamSettingsButtonPane"  ));
-        CastTo(m_pbuttonMakeLeader,        pns->FindMember(L"makeLeaderButtonPane"));
+        CastTo(m_ppane,                    pns->FindMember("screen"              ));
+        CastTo(pobjPlayerColumns,          pns->FindMember("playerColumns"       ));
+        CastTo(pobjTeamColumns,            pns->FindMember("teamColumns"         ));
+        CastTo(pnumTeamColorIntensity,     pns->FindMember("teamColorIntensity"  ));
+        CastTo(pnumTeamColorBrightness,     pns->FindMember("teamColorBrightness"  ));
+        CastTo(m_pbuttonBack,              pns->FindMember("backButtonPane"      ));
+        CastTo(m_pbuttonGameOver,          pns->FindMember("gameOverButtonPane"  ));
+        CastTo(m_pbuttonStart,             pns->FindMember("startButtonPane"      ));
+        //CastTo(m_pbuttonReady,             pns->FindMember("readyButtonPane"     ));
+        CastTo(m_pbuttonAwayFromKeyboard,  pns->FindMember("awayFromKeyboardButtonPane"));
+        CastTo(m_pbuttonTeamReady,         pns->FindMember("sideReadyButtonPane" ));
+        CastTo(m_pbuttonAutoAccept,        pns->FindMember("autoAcceptButtonPane"));
+        CastTo(m_pbuttonLockLobby,         pns->FindMember("lockLobbyButtonPane"));
+        CastTo(m_pbuttonLockSides,         pns->FindMember("lockSidesButtonPane"));
+        CastTo(m_pbuttonRandomize,         pns->FindMember("randomizeButtonPane"));
+        CastTo(m_pbuttonAccept,            pns->FindMember("acceptButtonPane"    ));
+        CastTo(m_pbuttonReject,            pns->FindMember("rejectButtonPane"    ));
+        CastTo(m_pbuttonJoin,              pns->FindMember("joinButtonPane"      ));
+        CastTo(m_pbuttonbarPlayers,        pns->FindMember("playerListHeader"    ));
+        CastTo(m_pbuttonbarChat,           pns->FindMember("chatHeader"          ));
+        CastTo(m_pbuttonSend,              pns->FindMember("sendButtonPane"      ));
+        CastTo(m_pbuttonDetails,           pns->FindMember("detailsButtonPane"   ));
+        CastTo(m_pbuttonSettings,          pns->FindMember("settingsButtonPane"  ));
+        CastTo(m_pbuttonTeamSettings,      pns->FindMember("teamSettingsButtonPane"  ));
+        CastTo(m_pbuttonMakeLeader,        pns->FindMember("makeLeaderButtonPane"));
         CastTo(m_plistPanePlayers,  (Pane*)pns->FindMember("playerListPane"      ));
         CastTo(m_plistPaneTeams,    (Pane*)pns->FindMember("teamListPane"        ));
-        CastTo(m_pcomboWing,               pns->FindMember(L"wingComboPane"       ));
+        CastTo(m_pcomboWing,               pns->FindMember("wingComboPane"       ));
         CastTo(m_peditPane,         (Pane*)pns->FindMember("chatEditPane"        ));
         CastTo(m_pchatPane,         (Pane*)pns->FindMember("chatText"            ));
         CastTo(m_ptextTitle,        (Pane*)pns->FindMember("textTitle"           ));
@@ -1470,15 +1470,15 @@ public:
         {
             // nothing more to do
         }
-        else if (_wcsicmp(strChat.LeftOf(L":"), L"admin") == 0)
+        else if (_stricmp(strChat.LeftOf(":"), "admin") == 0)
         {
             trekClient.SendChat(trekClient.GetShip(), CHAT_ADMIN, NA,
-                                NA, (const wchar_t*)strChat.RightOf(L":"));
+                                NA, (const char*)strChat.RightOf(":"));
         }
-        else if (NULL != (pplayer = trekClient.FindPlayer(strChat.LeftOf(L":"))))
+        else if (NULL != (pplayer = trekClient.FindPlayer(strChat.LeftOf(":"))))
         {
             trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pplayer->ShipID(),
-				NA, (const wchar_t*)strChat.RightOf(L":"));
+                                NA, (const char*)strChat.RightOf(":"));
         }
 
         // WLP 2005 - added this to send chat to a highlighted player
@@ -1495,10 +1495,10 @@ public:
 			PlayerInfo* pplayer_S = trekClient.FindPlayer(shipID_S);
 			//if a valid player selection and not ourself (most cases)
 			if (pplayer_S && (pplayer_S->ShipID() != trekClient.GetShipID()) && (pplayer_S->ShipID() != NA))
-				trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pplayer_S->ShipID(), NA, (const wchar_t*)strChat);
+				trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, pplayer_S->ShipID(), NA, (const char*)strChat);
 			//if the LCT is set (edge cases)
 			else if (oRecip != NA)
-				trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, oRecip, NA, (const wchar_t*)strChat);
+				trekClient.SendChat(trekClient.GetShip(), CHAT_INDIVIDUAL, oRecip, NA, (const char*)strChat);
 			//otherwise (unknown cases)
 			else
 				OnPlayerClicked(); //eat it and reset
@@ -1508,7 +1508,7 @@ public:
         else
         {
             trekClient.SendChat(trekClient.GetShip(), m_chattargetChannel, NA,
-				NA, (const wchar_t*)strChat);
+                                NA, (const char*)strChat);
         }
     }
 	// KGJV #62
@@ -1650,7 +1650,7 @@ public:
     void UpdateTitleText()
     {   
         ZString str = ZString(m_pMission->Name()).ToUpper();
-        m_ptextTitle->SetString(((wcscmp(str, L"") != 0) ? CensorBadWords (m_pMission->Name()) : L"THIS GAME"));
+        m_ptextTitle->SetString(((strcmp(str, "") != 0) ? CensorBadWords (m_pMission->Name()) : "THIS GAME"));
     }
     
     void UpdatePromptText()
@@ -1658,14 +1658,14 @@ public:
         // KGJV #104 - display join requests
         if (m_sideToJoin != NA)
             m_ptextPrompt->SetString(ZString(trekClient.GetShip()->GetName()).ToUpper() 
-                + ZString(L", YOU ARE REQUESTING TO JOIN A TEAM ")); // todo: append team name may be or not :)
+                + ZString(", YOU ARE REQUESTING TO JOIN A TEAM ")); // todo: append team name may be or not :)
         else
         if (trekClient.GetSideID() != NA && trekClient.GetSideID() != SIDE_TEAMLOBBY)
             m_ptextPrompt->SetString(ZString(trekClient.GetShip()->GetName()).ToUpper() 
-                + ZString(L", YOU ARE ON TEAM ") + CensorBadWords (ZString(trekClient.GetSide()->GetName())).ToUpper());
+                + ZString(", YOU ARE ON TEAM ") + CensorBadWords (ZString(trekClient.GetSide()->GetName())).ToUpper());
         else
             m_ptextPrompt->SetString(ZString(trekClient.GetShip()->GetName()).ToUpper() 
-                + ZString(L" -- you need to pick a team"));
+                + ZString(" -- you need to pick a team"));
     }
     void OnFrame()
     {
@@ -1718,21 +1718,21 @@ public:
 
         if (m_pMission->InProgress())
         {
-            m_ptextStatus->SetString(L"GAME IN PROGRESS");
-            m_ptextStatus2->SetString(L"");
+            m_ptextStatus->SetString("GAME IN PROGRESS");
+            m_ptextStatus2->SetString("");
             m_pbuttonStart->SetEnabled(false);
         }
         else if (m_pMission->GetStage() == STAGE_STARTING 
             || (m_pMission->GetMissionParams().bAutoRestart && m_pMission->GetStage() == STAGE_NOTSTARTED))
         {
-            m_ptextStatus->SetString(L"COUNTDOWN IN PROGRESS");
-            m_ptextStatus2->SetString(L"");
+            m_ptextStatus->SetString("COUNTDOWN IN PROGRESS");
+            m_ptextStatus2->SetString("");
             m_pbuttonStart->SetEnabled(false);
         }
         else if (m_pMission->GetStage() == STAGE_OVER)
         {
-            m_ptextStatus->SetString(L"GAME CANCELED");
-            m_ptextStatus2->SetString(L"");
+            m_ptextStatus->SetString("GAME CANCELED");
+            m_ptextStatus2->SetString("");
             m_pbuttonStart->SetEnabled(false);
         }
         else
@@ -1814,29 +1814,29 @@ public:
             if ((minPlayers + m_pMission->MaxImbalance() < maxPlayers) ||
 			((m_pMission->GetMissionParams().iMaxImbalance == 0x7ffe) && (maxTeamRank - minTeamRank > threshold)))
             {
-                m_ptextStatus->SetString(L"TEAMS ARE UNBALANCED");
-                m_ptextStatus2->SetString(L"");
+                m_ptextStatus->SetString("TEAMS ARE UNBALANCED");
+                m_ptextStatus2->SetString("");
                 m_pbuttonStart->SetEnabled(false);
             }
             else
             {
                 SideID  idBlockingSide = NA;
-				const wchar_t* szBlockingReason = NULL;
+                const char* szBlockingReason = NULL;
 
                 for (SideID id = 0; id < m_pMission->NumSides(); id++)
                 {
-					const wchar_t* szReason = NULL;
+                    const char* szReason = NULL;
 					// KGJV #62 - logic changed for AllowEmptyTeams 
 					if (m_pMission->SideNumPlayers(id) < ( !m_pMission->SideActive(id) ? 0 : m_pMission->MinPlayersPerTeam()))
-                        szReason = L"BELOW MINIMUM SIZE";
+                        szReason = "BELOW MINIMUM SIZE";
                     else if (m_pMission->SideNumPlayers(id) > m_pMission->MaxPlayersPerTeam())
-                        szReason = L"ABOVE MAXIMUM SIZE";
+                        szReason = "ABOVE MAXIMUM SIZE";
 					// EmptyTeams not allowed so check SideReady
 					else if (m_pMission->SideActive(id) && !m_pMission->SideReady(id))
-						szReason = L"NOT READY";
+						szReason = "NOT READY";
 					// EmptyTeams allowed so check SideReady only if it has at least 1 player
 					else if (m_pMission->SideActive(id) && (m_pMission->SideNumPlayers(id) > 0 ) && !m_pMission->SideReady(id))
-						szReason = L"NOT READY";
+						szReason = "NOT READY";
 
                     if (szReason)
                     {
@@ -1844,7 +1844,7 @@ public:
                         {
                             idBlockingSide = id;
                             szBlockingReason = szReason;
-							debugf(L"%s szBlockingReason set to %s\n",trekClient.GetCore()->GetSide(id)->GetName(),szBlockingReason);
+							debugf("%s szBlockingReason set to %s\n",trekClient.GetCore()->GetSide(id)->GetName(),szBlockingReason);
                         }
                         else
                         {
@@ -2076,7 +2076,7 @@ public:
         PlayerInfo* pplayer1 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem1));
         PlayerInfo* pplayer2 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem2));
         
-        return _wcsicmp(pplayer1->CharacterName(), pplayer2->CharacterName()) > 0;
+        return _stricmp(pplayer1->CharacterName(), pplayer2->CharacterName()) > 0;
     }
 
     static bool PlayerRankCompare(ItemID pitem1, ItemID pitem2)
@@ -2241,14 +2241,14 @@ public:
 			return true; 
 
 
-		debugf(L"RMB team: side current = %d\n",m_sideCurrent);
+		debugf("RMB team: side current = %d\n",m_sideCurrent);
 		// count active teams
 		int activeteams = 0;
 		for (SideID i = 0; i < m_plistSides->GetCount() ; i++)
 		{
 			if (m_pMission->SideActive(i)) activeteams++;
 		}
-		debugf(L"RMB team: active teams = %d\n",activeteams);
+		debugf("RMB team: active teams = %d\n",activeteams);
 		if (activeteams < 3) return true; // no alliance if 2 or less teams
 		
 		// create the menu
@@ -2261,7 +2261,7 @@ public:
 
 		char allies = m_pMission->SideAllies(m_sideCurrent);
 		if (allies!=NA)
-			m_pmenu->AddMenuItem(0 , L"Remove allies");
+			m_pmenu->AddMenuItem(0 , "Remove allies");
 		else
 		{
 			bool groups[c_cAlliancesMax]; for(int g=0;g<c_cAlliancesMax;g++) groups[g]=false;
@@ -2275,7 +2275,7 @@ public:
 					groups[m_pMission->SideAllies(i)] = true;
 				}
 				else
-					m_pmenu->AddMenuItem(i+1 , ZString(L"Ally with Team ")+ZString(i+1));
+					m_pmenu->AddMenuItem(i+1 , ZString("Ally with Team ")+ZString(i+1));
 			}
 			// add groups
 			for(int g=0;g<c_cAlliancesMax;g++)
@@ -2293,7 +2293,7 @@ public:
 						groupname += ZString(i+1);
 					}
 				}
-				m_pmenu->AddMenuItem(oneteamofthegroup+1 , ZString(L"Ally with Teams ")+groupname);
+				m_pmenu->AddMenuItem(oneteamofthegroup+1 , ZString("Ally with Teams ")+groupname);
 			}
 		}
         m_pmenu->AddMenuItem(NA , "Cancel");
@@ -2313,7 +2313,7 @@ public:
 	// menu handlers - made to process only team RMB commands (alliances)
 	void OnMenuCommand(IMenuItem* pitem)
 	{
-		debugf(L"menu %s-%d\n",PCC(pitem->GetString()),pitem->GetID());
+		debugf("menu %s-%d\n",PCC(pitem->GetString()),pitem->GetID());
 		int menucmd = pitem->GetID();
 		CloseMenu();
 		if (m_sideCurrent == SIDE_TEAMLOBBY) return;
@@ -2368,7 +2368,7 @@ public:
 
     void CloseMenu()
 	{
-		debugf(L"menu close\n");
+		debugf("menu close\n");
         GetWindow()->GetPopupContainer()->ClosePopup(m_pmenu);
         m_pmenu = NULL;
     }
@@ -2403,7 +2403,7 @@ public:
 			// g_bAFKToggled = false; // mmf set this otherwise if afk was on it would get turned off  // mmf 9/07 may not need this anymore given above change
 			OnButtonAwayFromKeyboard() ;// wlp - tell the world ( server ) about it
 		} ;
-		debugf(L"got OnTeamAlliancesChange\n");	
+		debugf("got OnTeamAlliancesChange\n");	
 	}
 	//#ALLY -end
 
@@ -2844,7 +2844,7 @@ public:
         // KGJV #104: called when cancelling a request to join a team
         // assert to do: m_sideToJoin should be valid  and match last POSITIONREQ message
         //assert(m_lastToJoinSend == NA);
-        debugf(L"TeamScreen::OnCancelRequest: %d\n",m_lastToJoinSend);
+        debugf("TeamScreen::OnCancelRequest: %d\n",m_lastToJoinSend);
         if (m_pmsgBox)
         {
             GetWindow()->GetPopupContainer()->ClosePopup(m_pmsgBox);
@@ -2853,12 +2853,12 @@ public:
 
         if (m_lastToJoinSend == NA)  // shouldnt happen
         {
-            debugf(L"TeamScreen::OnCancelRequest - m_lastToJoinSend == NA\n"); 
+            debugf("TeamScreen::OnCancelRequest - m_lastToJoinSend == NA\n"); 
             return false;
         }
 
         GetWindow()->SetWaitCursor();
-        m_pmsgBox = CreateMessageBox(L"Canceling request...", NULL, false, false, 1.0f);
+        m_pmsgBox = CreateMessageBox("Canceling request...", NULL, false, false, 1.0f);
         GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
         // KGJV #104
         // we'll clear this when server replies
@@ -3045,7 +3045,7 @@ public:
             return 2;
 
         default:
-            ZError(L"Unreached");
+            ZError("Unreached");
             return 0;
         }
     }
@@ -3193,7 +3193,7 @@ public:
 		} ;
 		// wlp 8/5/2006 - end of Afk added code
 		GetWindow()->GetPopupContainer()->OpenPopup(m_pteamSettingsPopup,false);
-		debugf(L"opening team settings.\n");
+		debugf("opening team settings.\n");
 		return true;
 	}
 
@@ -3236,7 +3236,7 @@ public:
         pfmSideInactive->sideID = side;
         pfmSideInactive->bActive = m_pbuttonsTeam[side]->GetChecked();
 		pfmSideInactive->bChangeAET = false; // server will set this when replying
-		debugf(L"toggle team %d\n",(int)side);
+		debugf("toggle team %d\n",(int)side);
 		return true;
 	}
 	bool OnButtonToggleTeam0()	{	return OnButtonToggleTeam(0); }
@@ -3299,7 +3299,7 @@ public:
 
         if (trekClient.MyPlayerInfo()->ShipID() == pPlayerInfo->ShipID())
 		{
-            debugf(L"TeamScreen::OnAddPlayer: sideID=%d, m_sideToJoin=%d, m_lastToJoinSend=%d \n",sideID,m_sideToJoin,m_lastToJoinSend); // KGJV #104
+            debugf("TeamScreen::OnAddPlayer: sideID=%d, m_sideToJoin=%d, m_lastToJoinSend=%d \n",sideID,m_sideToJoin,m_lastToJoinSend); // KGJV #104
             if (g_civIDStart != -1 && sideID != SIDE_TEAMLOBBY) {
                 OnCivChosen(g_civIDStart);
                 g_civStart = -1;
@@ -3352,7 +3352,7 @@ public:
         // if this is me...
         if (trekClient.MyPlayerInfo()->ShipID() == pPlayerInfo->ShipID())
         {
-            debugf(L"TeamScreen::OnDelPlayer: %d %d\n",sideID, reason); // KGJV #104
+            debugf("TeamScreen::OnDelPlayer: %d %d\n",sideID, reason); // KGJV #104
             ZString strMessage;
 
             // KGJV #104
@@ -3367,30 +3367,30 @@ public:
             switch (reason)
             {
             case QSR_LeaderBooted:
-                strMessage = L"You have been booted by your team leader!";
+                strMessage = "You have been booted by your team leader!";
                 break;
 
             case QSR_OwnerBooted:
-                strMessage = L"You have been booted by the mission owner!";
+                strMessage = "You have been booted by the mission owner!";
                 break;
 
             case QSR_AdminBooted:
-                strMessage = L"You have been booted by a server administrator!";
+                strMessage = "You have been booted by a server administrator!";
                 break;
 
             case QSR_ServerShutdown:
                 break;
 
             case QSR_SquadChange:
-                strMessage = L"You have been booted because you are not a member of the new squad.";
+                strMessage = "You have been booted because you are not a member of the new squad.";
                 break;
 
             case QSR_SideDestroyed:
-                strMessage = L"Your side has been destroyed by a reduction in the number of teams.";
+                strMessage = "Your side has been destroyed by a reduction in the number of teams.";
                 break;
 
             case QSR_TeamSizeLimits:
-                strMessage = L"You have been booted to reduce your team's size.";
+                strMessage = "You have been booted to reduce your team's size.";
                 break;
 
             case QSR_RandomizeSides:
@@ -3519,7 +3519,7 @@ public:
                 GetWindow()->GetPopupContainer()->ClosePopup(m_pmsgBox);
                 GetWindow()->RestoreCursor();
             }
-            m_pmsgBox = CreateMessageBox(L"The game is starting...", NULL, false, false, 1.0f);
+            m_pmsgBox = CreateMessageBox("The game is starting...", NULL, false, false, 1.0f);
             GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
         }
         UpdateStatusText();
@@ -3529,7 +3529,7 @@ public:
     {
         if (pPlayerInfo == trekClient.MyPlayerInfo())
         {
-            debugf(L"TeamScreen::OnDelRequest: %d %d\n",sideID, reason); // KGJV #104
+            debugf("TeamScreen::OnDelRequest: %d %d\n",sideID, reason); // KGJV #104
             if (m_pmsgBox)
             {
                 GetWindow()->GetPopupContainer()->ClosePopup(m_pmsgBox);

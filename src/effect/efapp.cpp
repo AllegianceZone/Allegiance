@@ -51,7 +51,7 @@ void TrekResources::Initialize(Modeler* pmodeler)
 		bool bResult;
 		CDX9PackFile * pPackFile;
 
-		pPackFile = new CDX9PackFile( pmodeler->GetArtPath(), L"CommonTextures" );
+		pPackFile = new CDX9PackFile( pmodeler->GetArtPath(), "CommonTextures" );
 		bResult = pPackFile->ImportPackFile();
 		//_ASSERT( bResult == true ); Imago 8/16/09
         if (bResult)
@@ -709,7 +709,7 @@ TRef<INameSpace> EffectApp::OptimizeThingGeo(const ZString& str, Geo* pgeo, Numb
     TRef<INameSpace> pns = GetModeler()->CreateNameSpace(str, m_pns);
 
     if (pnumber != NULL) {
-        pns->AddMember(L"frame", pnumber);
+        pns->AddMember("frame", pnumber);
     }
 
     //
@@ -735,7 +735,7 @@ TRef<INameSpace> EffectApp::OptimizeThingGeo(const ZString& str, Geo* pgeo, Numb
     // Extract the lights and frames
     //
 
-    ZDebugOutput(L"Before Callback: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+    ZDebugOutput("Before Callback: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
 
     TRef<GroupGeoCallbackImpl> pcallback = new GroupGeoCallbackImpl(pframes, plights);
     pwrap->GetGeo()->CallGroupGeoCallback(Matrix::GetIdentity(), pcallback);
@@ -745,11 +745,11 @@ TRef<INameSpace> EffectApp::OptimizeThingGeo(const ZString& str, Geo* pgeo, Numb
     //
 
     if (plights->GetCount() > 0) {
-        pns->AddMember(L"lights", plights);
+        pns->AddMember("lights", plights);
     }
 
     if (pframes->GetList().GetCount() > 0) {
-        pns->AddMember(L"frames", pframes);
+        pns->AddMember("frames", pframes);
     }
 
     //
@@ -760,39 +760,39 @@ TRef<INameSpace> EffectApp::OptimizeThingGeo(const ZString& str, Geo* pgeo, Numb
     TRef<Geo> pgeoFold;
     do {
         bAnyFold = false;
-        ZDebugOutput(L"Before RemoveMaterial: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+        ZDebugOutput("Before RemoveMaterial: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
 
         pgeoFold = pwrap->GetGeo()->RemoveMaterial();
 
         if (pgeoFold) {
             bAnyFold = true;
             pwrap->SetGeo(pgeoFold);
-            ZDebugOutput(L"Before           Fold: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+            ZDebugOutput("Before           Fold: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
             pwrap->GetGeo()->DoFold();
         }
 
-        ZDebugOutput(L"Before    FoldTexture: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+        ZDebugOutput("Before    FoldTexture: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
         pgeoFold = pwrap->GetGeo()->FoldTexture();
 
         if (pgeoFold) {
             bAnyFold = true;
             pwrap->SetGeo(pgeoFold);
-            ZDebugOutput(L"Before           Fold: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+            ZDebugOutput("Before           Fold: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
             pwrap->GetGeo()->DoFold();
         }
         if (!bAnyFold) {
-            ZDebugOutput(L"Before           Fold: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+            ZDebugOutput("Before           Fold: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
             bAnyFold = pwrap->GetGeo()->DoFold();
         }
     } while (bAnyFold);
 
-    ZDebugOutput(L"After Optimization: " + ZString(pwrap->GetGeo()->GetNodeCount()) + L"\n");
+    ZDebugOutput("After Optimization: " + ZString(pwrap->GetGeo()->GetNodeCount()) + "\n");
 
     //
     // We're done
     //
 
-    pns->AddMember(L"object", pwrap->GetGeo());
+    pns->AddMember("object", pwrap->GetGeo());
 
     return pns;
 }

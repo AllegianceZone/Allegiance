@@ -93,7 +93,7 @@ private:
 		// Create the texture - A8R8G8B8.
 		if( CD3DDevice9::Get()->GetDevFlags()->bSupportsA1R5G6B6Format == false )
 		{
-			m_pFontTex = CreatePrivateSurface( D3DFMT_A8R8G8B8, dwTexWidth, dwTexHeight, L"Font texture" );
+			m_pFontTex = CreatePrivateSurface( D3DFMT_A8R8G8B8, dwTexWidth, dwTexHeight, "Font texture" );
 			hTex = m_pFontTex->GetTexHandle();
 
 			// Lock texture to copy font data into.
@@ -169,7 +169,7 @@ private:
 		else
 		{
 			// 16 bit version, smaller texture required.
-			m_pFontTex = CreatePrivateSurface( D3DFMT_A1R5G5B5, dwTexWidth, dwTexHeight, L"Font texture" );
+			m_pFontTex = CreatePrivateSurface( D3DFMT_A1R5G5B5, dwTexWidth, dwTexHeight, "Font texture" );
 			hTex = m_pFontTex->GetTexHandle();
 
 			// Lock texture to copy font data into.
@@ -319,7 +319,7 @@ private:
 			unsigned char ch = index;
 
 			ZVerify(::FillRect(	hdcBitmap, &(RECT)WinRect(0, 0,	m_width, m_height),	(HBRUSH)::GetStockObject(BLACK_BRUSH) ));
-			ZVerify(::TextOut(hdcBitmap, 0,	0, (PCC)&ch, 1));
+			ZVerify(::TextOutA(hdcBitmap, 0,	0, (PCC)&ch, 1));
 
 			// pull	out	the	data 
 			int	xbytes = (xsize	+ 7) / 8;
@@ -373,7 +373,7 @@ private:
 			SIZE size;
 			unsigned char ch = index;
 
-			ZVerify(::GetTextExtentPoint32( hdc, (PCC)&ch, 1,	&size )); // KG- upd to 32b api
+			ZVerify(::GetTextExtentPoint32A( hdc, (PCC)&ch, 1,	&size )); // KG- upd to 32b api
 
 			m_data[index].m_size   = WinPoint(size.cx, size.cy);
 
@@ -444,7 +444,7 @@ public:
 
 	void Write(IMDLBinaryFile* pmdlFile)
 	{
-		pmdlFile->WriteReference(L"ImportFont");
+		pmdlFile->WriteReference("ImportFont");
 		TRef<ZFile>	pfile =	pmdlFile->WriteBinary();
 
 		pfile->Write(m_height);

@@ -203,26 +203,26 @@ public:
             {
 				//Imago #7 7/10
 				if (pplayer->IsTeamLeader() || !trekClient.MyPlayerInfo()->IsTeamLeader()) {
-					wchar_t cbTemp[256];
-					wsprintf(cbTemp, L"%d", pplayer->GetMoney());
-					psurface->DrawString(TrekResources::SmallFont(),color,WinPoint(19, 14),ZString(L"$: ") + cbTemp);
+					char cbTemp[256];
+					sprintf(cbTemp, "%d", pplayer->GetMoney());
+					psurface->DrawString(TrekResources::SmallFont(),color,WinPoint(19, 14),ZString("$: ") + cbTemp);
 				} else {
 					if ((GetWindow()->GetOverlayFlags() & ofTeam) && (pplayer->LastSeenState() == c_ssDocked || pplayer->LastSeenState() == NULL)) {
-						wchar_t cbTemp[256];
+						char cbTemp[256];
 						DWORD dDelta = Time::Now().clock() - trekClient.GetCore()->GetIgcSite()->ClientTimeFromServerTime(pplayer->LastStateChange()).clock();
 						int iSecs = (dDelta != 0) ? dDelta / 1000 : 0;
 						if ((iSecs != 0) && iSecs < 60) {
-							wsprintf(cbTemp, L"Docked for %isec",iSecs);
+							sprintf(cbTemp, "Docked for %isec",iSecs);
 							psurface->DrawString(TrekResources::SmallFont(),color,WinPoint(19, 14),cbTemp);
 						} else if ((iSecs != 0)) {
 							int iMins = iSecs / 60;
 							iSecs = iSecs % 60;
-							wsprintf(cbTemp, L"Docked for %imin %isec",iMins,iSecs);
+							sprintf(cbTemp, "Docked for %imin %isec",iMins,iSecs);
 							psurface->DrawString(TrekResources::SmallFont(),color,WinPoint(19, 14),cbTemp);
 						}
 					} else {
-						wchar_t cbTemp[256];
-						wsprintf(cbTemp, L"%d", pplayer->GetMoney());
+						char cbTemp[256];
+						sprintf(cbTemp, "%d", pplayer->GetMoney());
 						psurface->DrawString(TrekResources::SmallFont(),color,WinPoint(19, 14),ZString("$: ") + cbTemp);
 					}
 				}
@@ -1130,7 +1130,7 @@ public:
 
 				//imago 7/10/09
 				if (trekClient.FindPlayer(shipID)->GetShip()->GetSide() != trekClient.GetSide())
-					trekClient.PostText(false, L"You gave %s $%d. You now have $%d.",
+					trekClient.PostText(false, "You gave %s $%d. You now have $%d.",
                     	  trekClient.FindPlayer(shipID)->CharacterName(), 
 						  (trekClient.GetMoney() >= 100) ? 100 : trekClient.GetMoney(), 
 						  (trekClient.GetMoney() >= 100) ? (trekClient.GetMoney() - 100) : 0);
@@ -1159,7 +1159,7 @@ public:
 
 				//imago 7/10/09
 				if (trekClient.FindPlayer(shipID)->GetShip()->GetSide() != trekClient.GetSide())
-					trekClient.PostText(false, L"You gave %s $%d. You now have $%d.",
+					trekClient.PostText(false, "You gave %s $%d. You now have $%d.",
                     	 trekClient.FindPlayer(shipID)->CharacterName(), 
 						  (trekClient.GetMoney() >= 500) ? 500 : trekClient.GetMoney(), 
 						  (trekClient.GetMoney() >= 500) ? (trekClient.GetMoney() - 500) : 0);
@@ -1445,13 +1445,13 @@ public:
         PlayerInfo* pplayer1 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem1));
         PlayerInfo* pplayer2 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem2));
         if (pplayer1->IsHuman() && pplayer2->IsHuman())
-            return _wcsicmp(pplayer1->CharacterName(), pplayer2->CharacterName()) > 0;
+            return _stricmp(pplayer1->CharacterName(), pplayer2->CharacterName()) > 0;
         else if (pplayer1->IsHuman())
             return false;
         else if (pplayer2->IsHuman())
             return true;
         else
-            return _wcsicmp(pplayer1->CharacterName(), pplayer2->CharacterName()) > 0;
+            return _stricmp(pplayer1->CharacterName(), pplayer2->CharacterName()) > 0;
     }
     
     static bool PlayerShipCompare(ItemID pitem1, ItemID pitem2)
@@ -1459,7 +1459,7 @@ public:
         PlayerInfo* pplayer1 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem1));
         PlayerInfo* pplayer2 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem2));
         
-        return _wcsicmp(ShipName(pplayer1), ShipName(pplayer2)) > 0;
+        return _stricmp(ShipName(pplayer1), ShipName(pplayer2)) > 0;
     }
     
     static bool PlayerSectorCompare(ItemID pitem1, ItemID pitem2)
@@ -1467,7 +1467,7 @@ public:
         PlayerInfo* pplayer1 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem1));
         PlayerInfo* pplayer2 = trekClient.FindPlayer(IntItemIDWrapper<ShipID>(pitem2));
         
-        return _wcsicmp(SectorName(pplayer1->LastSeenSector()), SectorName(pplayer2->LastSeenSector())) > 0;
+        return _stricmp(SectorName(pplayer1->LastSeenSector()), SectorName(pplayer2->LastSeenSector())) > 0;
     }
     
     static bool PlayerMoneyCompare(ItemID pitem1, ItemID pitem2)
@@ -1483,7 +1483,7 @@ public:
         IshipIGC* pship1 = trekClient.GetCore()->GetShip(IntItemIDWrapper<ShipID>(pitem1));
         IshipIGC* pship2 = trekClient.GetCore()->GetShip(IntItemIDWrapper<ShipID>(pitem2));
         
-        return _wcsicmp(CurrentCommandText(pship1), CurrentCommandText(pship2)) > 0;
+        return _stricmp(CurrentCommandText(pship1), CurrentCommandText(pship2)) > 0;
     }
 
     static bool PlayerRankCompare(ItemID pitem1, ItemID pitem2)
@@ -1531,7 +1531,7 @@ public:
         IclusterIGC* psector = trekClient.GetCore()->GetCluster(id);
         
         if (psector == NULL)
-            return L"unknown";
+            return "unknown";
         else
             return psector->GetName();
     }
@@ -1566,7 +1566,7 @@ public:
             IhullTypeIGC* phull = trekClient.GetCore()->GetHullType(pplayer->LastSeenShipType());
             
             if (phull == NULL)
-                strShip = L"<none>";
+                strShip = "<none>";
             else
                 strShip = phull->GetName();
         }
@@ -1882,16 +1882,16 @@ class ExpandedTeamPane : public TeamPane
                 // we should only see this when the hull type is NA
                 assert(pplayer->LastSeenShipType() == NA);
                 
-                pimageicon = GetModeler()->LoadImage(L"unknownshipbmp", true);
+                pimageicon = GetModeler()->LoadImage("unknownshipbmp", true);
             }
             else if (pHullType->GetIconName())
             {
-                piconname = pHullType->GetIconName() + ZString(L"bmp");
+                piconname = pHullType->GetIconName() + ZString("bmp");
                 pimageicon = GetModeler()->LoadImage(piconname, true);
             }
             else
             {
-                pimageicon = GetModeler()->LoadImage(L"ejectpodbmp", true);
+                pimageicon = GetModeler()->LoadImage("ejectpodbmp", true);
             }
             
             if (pimageicon){
@@ -1904,8 +1904,8 @@ class ExpandedTeamPane : public TeamPane
             //draw the money
             if (pplayer->IsHuman() && pplayer->SideID() == trekClient.GetSideID())
             {
-                wchar_t cbTemp[256];
-                wsprintf(cbTemp, L"%d", pplayer->GetMoney());
+                char cbTemp[256];
+                sprintf(cbTemp, "%d", pplayer->GetMoney());
                 psurface->DrawString(
                     pfont,
                     color,

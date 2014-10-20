@@ -39,7 +39,7 @@ void CLobbyApp::OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError)
  */
 bool CLobbyApp::ProcessMsgPump()
 {
-  static CTimer timerMsgPump(L"in message pump", 0.1f);
+  static CTimer timerMsgPump("in message pump", 0.1f);
   timerMsgPump.Start();
   bool fQuit = false;
 
@@ -84,11 +84,11 @@ void CLobbyApp::SetConstantGameInfo()
   gameInfo->numEntries = 1;
   ZGameServerInfoMsgEndian(gameInfo);
 
-  lstrcpy(gameInfo->info[0].gameInternalName, m_fFreeLobby ? L"sOBLI_xx_x02" : L"sOBLI_xx_x01");
+  strcpy(gameInfo->info[0].gameInternalName, m_fFreeLobby ? "sOBLI_xx_x02" : "sOBLI_xx_x01");
 
-  lstrcpy(gameInfo->info[0].gameFriendlyName, L"Allegiance");
-  lstrcpy(gameInfo->info[0].gameRoomDescription, L"Am I supposed to put something here?");
-  lstrcpy(gameInfo->info[0].setupToken, L""); //reserverd for internal Zone use
+  strcpy(gameInfo->info[0].gameFriendlyName, "Allegiance");
+  strcpy(gameInfo->info[0].gameRoomDescription, "Am I supposed to put something here?");
+  strcpy(gameInfo->info[0].setupToken, ""); //reserverd for internal Zone use
 }
 
 
@@ -123,11 +123,11 @@ void CLobbyApp::SetVariableGameInfo()
 #define BUFFSIZE 4096
 typedef struct {
 	CB size;
-	wchar_t host[128];
-	wchar_t hdrs[512];
-	wchar_t uri[128];
-	wchar_t verb[16];
-	wchar_t data[BUFFSIZE];
+	char host[128];
+	char hdrs[512];
+	char uri[128];
+	char verb[16];
+	char data[BUFFSIZE];
 } pHTTP;
 DWORD WINAPI PostThread( LPVOID param ) {
 	pHTTP* settings = (pHTTP*) param;
@@ -154,7 +154,7 @@ void CLobbyApp::SendGameInfo()
   //Imago 9/14
 	if (m_fmServers.GetConnections()->GetCount() > 0) {
 		int offset = 0;
-		wchar_t * PostData = new wchar_t[BUFFSIZE];
+		char * PostData = new char[BUFFSIZE];
 		ZeroMemory(PostData,BUFFSIZE);
 		ListConnections::Iterator iterCnxn(*m_fmServers.GetConnections());
 		while (!iterCnxn.End()) {
@@ -163,7 +163,7 @@ void CLobbyApp::SendGameInfo()
 			while (!iterMission.End()){
 				CFLMission* mission = iterMission.Value();
 				FMD_LS_LOBBYMISSIONINFO *info = mission->GetMissionInfo();
-				wmemcpy(PostData + offset, (const wchar_t*)info, info->cbmsg);
+				memcpy(PostData + offset,info,info->cbmsg);
 				offset += info->cbmsg;
 				iterMission.Next();
 			}
@@ -171,21 +171,21 @@ void CLobbyApp::SendGameInfo()
 		}
 		if (offset > 0) {
 			 pHTTP settings;
-			 Strcpy(settings.hdrs,L"Content-Type: application/octet-stream\r\n");
-			 Strcpy(settings.verb,L"POST");
-			 Strcpy(settings.uri,L"/lobbyinfo.ashx");
-			 Strcpy(settings.host,L"allegiancezone.com");
+			 Strcpy(settings.hdrs,"Content-Type: application/octet-stream\r\n");
+			 Strcpy(settings.verb,"POST");
+			 Strcpy(settings.uri,"/lobbyinfo.ashx");
+			 Strcpy(settings.host,"allegiancezone.com");
 			 ZeroMemory(settings.data,BUFFSIZE);
-			 wmemcpy(settings.data,PostData,offset);
+			 memcpy(settings.data,PostData,offset);
 			 settings.size = offset;
 			 DWORD lpExitCode;
 			 GetExitCodeThread(m_threadPost,&lpExitCode);
 			 if (lpExitCode != STILL_ACTIVE) {
-				debugf(L"Creating post thread.\n");
+				debugf("Creating post thread.\n");
 				DWORD dum;
 				m_threadPost = CreateThread(NULL, 0, PostThread, (void*)&settings, 0, &dum);
 			 } else
-				 debugf(L"Post thread was still running...\n");
+				 debugf("Post thread was still running...\n");
 		}
 	}
 }
@@ -219,7 +219,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
   {
     // read AutoUpdate portion of registry
     char szServers[c_cReportServersMax * 17];
-    bool bSuccess = _Module.ReadFromRegistry(hk, true, L"GameInfoServers", szServers, 0, true);
+    bool bSuccess = _Module.ReadFromRegistry(hk, true, "GameInfoServers", szServers, 0, true);
     if(bSuccess)
     {
       char * token;
@@ -241,22 +241,22 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
           
         token = strtok(NULL, " ");
       }
-      bSuccess = _Module.ReadFromRegistry(hk, false, L"GameInfoInterval", &m_sGameInfoInterval, 25);
+      bSuccess = _Module.ReadFromRegistry(hk, false, "GameInfoInterval", &m_sGameInfoInterval, 25);
     }
 
     DWORD dwPort;
-	bSuccess = _Module.ReadFromRegistry(hk, false, L"ClientPort", &dwPort, 2302);		// Mdvalley: defaults to port 2302
+	bSuccess = _Module.ReadFromRegistry(hk, false, "ClientPort", &dwPort, 2302);		// Mdvalley: defaults to port 2302
 	m_sPort = dwPort;
 
     m_szToken[0] = '\0';
-    bSuccess = _Module.ReadFromRegistry(hk, true, L"Token", m_szToken, NULL);
+    bSuccess = _Module.ReadFromRegistry(hk, true, "Token", m_szToken, NULL);
 
     DWORD dwProtocol;
-    bSuccess = _Module.ReadFromRegistry(hk, false, L"fProtocol", &dwProtocol, (unsigned long) true);
+    bSuccess = _Module.ReadFromRegistry(hk, false, "fProtocol", &dwProtocol, (unsigned long) true);
     m_fProtocol = !!dwProtocol;
 
     DWORD dwFreeLobby;
-    bSuccess = _Module.ReadFromRegistry(hk, false, L"fFreeLobby", &dwFreeLobby, (unsigned long) 
+    bSuccess = _Module.ReadFromRegistry(hk, false, "fFreeLobby", &dwFreeLobby, (unsigned long) 
 #ifdef USECLUB
     false
 #else    
@@ -266,7 +266,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
     m_fFreeLobby = !!dwFreeLobby;
 
     DWORD dwCheckKey;
-    bSuccess = _Module.ReadFromRegistry(hk, false, L"fCheckCDKey", &dwCheckKey, (unsigned long) 
+    bSuccess = _Module.ReadFromRegistry(hk, false, "fCheckCDKey", &dwCheckKey, (unsigned long) 
 #ifdef USECLUB
       true
 #else      
@@ -363,12 +363,12 @@ HRESULT CLobbyApp::Init()
   {
     // read AutoUpdate portion of registry
     DWORD dwWantAutoDownload;
-    bool bSuccess = _Module.ReadFromRegistry(hk, false, L"AutoUpdateActive", &dwWantAutoDownload, 0);
+    bool bSuccess = _Module.ReadFromRegistry(hk, false, "AutoUpdateActive", &dwWantAutoDownload, 0);
     if(bSuccess && dwWantAutoDownload)
     {
-		wchar_t szFileName[MAX_PATH + 16];
-      Strcpy(szFileName, _Module.GetModulePath());
-      Strcat(szFileName, L"FileList.txt");
+      char szFileName[MAX_PATH+16];
+      strcpy(szFileName, _Module.GetModulePath());
+      Strcat(szFileName, "FileList.txt");
       CreateAutoUpdate(hk, szFileName);
     }
     else 
@@ -384,7 +384,7 @@ HRESULT CLobbyApp::Init()
 
 void CLobbyApp::UpdatePerfCounters()
 {
-  static CTempTimer timerPerfCounters(L"assembling perf info", .05f);
+  static CTempTimer timerPerfCounters("assembling perf info", .05f);
   timerPerfCounters.Start();
   m_fmClients.GetSendQueue(&(m_pCounters->cOutboundQueueLength),
                            &(m_pCounters->cOutboundQueueSize));
@@ -441,12 +441,12 @@ int CLobbyApp::Run()
   InitializeCriticalSectionAndSpinCount(&HttpCriticalSection, 0x00000400);
   InitializeCriticalSectionAndSpinCount(GetLogonCS(), 0x00000400);
   m_plas->LogEvent(EVENTLOG_INFORMATION_TYPE, LE_Running);
-  _putts(L"---------Press Q to exit---------");
-   wprintf(L"Ready for clients/servers.\n");
-  CTempTimer timerIterations(L"between iterations", .25f);
+  puts("---------Press Q to exit---------");
+   printf("Ready for clients/servers.\n");
+  CTempTimer timerIterations("between iterations", .25f);
   timerIterations.Start();
-  CTempTimer timerReceiveClientsMessages(L"in clients ReceiveMessages()", .05f);
-  CTempTimer timerReceiveServersMessages(L"in servers ReceiveMessages()", .05f);
+  CTempTimer timerReceiveClientsMessages("in clients ReceiveMessages()", .05f);
+  CTempTimer timerReceiveServersMessages("in servers ReceiveMessages()", .05f);
   Time timeLastQueueCheck = Time::Now();
   Time timeLastGameInfo = Time::Now();
 
@@ -459,9 +459,9 @@ int CLobbyApp::Run()
 		//Imago #111 7/10
 		if(g_pAutoUpdate)
 		{ 
-			wchar_t szFileName[MAX_PATH + 16];
-			Strcpy(szFileName, _Module.GetModulePath());
-			Strcat(szFileName, L"FileList.txt");
+			char szFileName[MAX_PATH+16];
+			strcpy(szFileName, _Module.GetModulePath());
+			Strcat(szFileName, "FileList.txt");
 			g_pAutoUpdate->LoadCRC(szFileName);
 			FedMessaging * pfm = &g_pLobbyApp->GetFMClients();
 			int count = pfm->GetConnectionCount();
@@ -522,48 +522,48 @@ int CLobbyApp::Run()
 }
 
 
-int CLobbyApp::OnMessageBox(const wchar_t * strText, const wchar_t * strCaption, UINT nType)
+int CLobbyApp::OnMessageBox(const char * strText, const char * strCaption, UINT nType)
 {
-	wchar_t sz[256];
+  char sz[256];
   if (strCaption && *strCaption)
   {
     Strcpy(sz, strCaption);
-    Strcat(sz, L": ");
+    Strcat(sz, ": ");
   }
   Strcat(sz, strText);
   return m_plas->LogEvent(EVENTLOG_ERROR_TYPE, LE_ODBC_Error, strText);
 }
 
 
-PER_SERVER_COUNTERS * CLobbyApp::AllocatePerServerCounters(const wchar_t * szServername)
+PER_SERVER_COUNTERS * CLobbyApp::AllocatePerServerCounters(const char * szServername)
 {
   PER_SERVER_COUNTERS * pPerServerCounters = (PER_SERVER_COUNTERS *) 
-	  m_perfshare.AllocateCounters((wchar_t *) L"AllLobbyPerServer", (wchar_t*)szServername, sizeof(PER_SERVER_COUNTERS));
+        m_perfshare.AllocateCounters((CHAR *) "AllLobbyPerServer", (CHAR*) szServername, sizeof(PER_SERVER_COUNTERS));
   ZeroMemory(pPerServerCounters, sizeof(*pPerServerCounters));  
   return pPerServerCounters;
 }
 
 
-bool CLobbyApp::OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+bool CLobbyApp::OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule)
 {
-  m_plas->LogEvent(EVENTLOG_ERROR_TYPE, LE_Assert, ZString(L"'")
+  m_plas->LogEvent(EVENTLOG_ERROR_TYPE, LE_Assert, ZString("'")
             + psz
-            + L"' ("
+            + "' ("
             + pszFile
-            + L":"
+            + ":"
             + ZString(line)
-            + L")\n"
+            + ")\n"
   );
   return true;
 }
 
 
-void CLobbyApp::DebugOutput(const wchar_t *psz)
+void CLobbyApp::DebugOutput(const char *psz)
 {
     //Imago had to modify this because of the debugging changes in Win32App by mmf/radar
 #ifdef DEBUG
-  ::OutputDebugString(L"AllLobby: ");
-  ::OutputDebugString(psz);
+  ::OutputDebugStringA("AllLobby: ");
+  ::OutputDebugStringA(psz);
 #endif
 }
 
@@ -793,10 +793,10 @@ bool CLobbyApp::CDKeyIsValid(const char* szPlayerName, const char* szCDKey, cons
 
 */
 
-void CLobbyApp::SetPlayerMission(const wchar_t* szPlayerName, const wchar_t* szCDKey, CFLMission* pMission, const wchar_t* szAddress)
+void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, CFLMission* pMission, const char* szAddress)
 {
 
-	debugf(L"SetPlayerMission(): Setting player mission for: %s", szPlayerName);
+	debugf("SetPlayerMission(): Setting player mission for: %s", szPlayerName);
 
   ZString strPlayerName = szPlayerName;
   ZString strCDKey = szCDKey;
@@ -811,13 +811,13 @@ void CLobbyApp::SetPlayerMission(const wchar_t* szPlayerName, const wchar_t* szC
   {
 	  // BT - 9/11/2010 - Readding CD Key Auth on player join to the Allegiance server.
 	int resultMessageLength = 1024;
-	wchar_t resultMessage[1024];
+	char resultMessage[1024];
 
-	debugf(L"SetPlayerMission(): checking valid key for: %s, cdKey: %s, IP: %s\r\n", szPlayerName, szCDKey, szAddress);
+	debugf("SetPlayerMission(): checking valid key for: %s, cdKey: %s, IP: %s\r\n", szPlayerName, szCDKey, szAddress);
 
 	bool cdKeyIsValid = true; //CDKeyIsValid(szPlayerName, szCDKey, szAddress, resultMessage, resultMessageLength);
 
-	debugf(L"SetPlayerMission(): keycheck for: %s, key: %s, address: %s, result: %s, succeeded: %s\r\n", szPlayerName, szCDKey, szAddress, resultMessage, (cdKeyIsValid == true) ? "true" : "false");
+	debugf("SetPlayerMission(): keycheck for: %s, key: %s, address: %s, result: %s, succeeded: %s\r\n", szPlayerName, szCDKey, szAddress, resultMessage, (cdKeyIsValid == true) ? "true" : "false");
 
     if (cdKeyIsValid == false)
     {
@@ -858,7 +858,7 @@ void CLobbyApp::SetPlayerMission(const wchar_t* szPlayerName, const wchar_t* szC
   pMission->AddPlayer();
 }
 
-void CLobbyApp::RemovePlayerFromMission(const wchar_t* szPlayerName, CFLMission* pMission)
+void CLobbyApp::RemovePlayerFromMission(const char* szPlayerName, CFLMission* pMission)
 {
   ZString strPlayerName = szPlayerName;
   PlayerByName::iterator iterPlayer = m_playerByName.find(strPlayerName);
@@ -953,7 +953,7 @@ void CLobbyApp::RemoveAllPlayersFromServer(CFLServer* pServer)
   }
 }
 
-CFLMission* CLobbyApp::FindPlayersMission(const wchar_t* szPlayerName)
+CFLMission* CLobbyApp::FindPlayersMission(const char* szPlayerName)
 {
   PlayerByName::iterator iterPlayerName = m_playerByName.find(szPlayerName);
 
@@ -985,7 +985,7 @@ bool CLobbyApp::StringICmpLess::operator () (const ZString& str1, const ZString&
   int nLength2 = str2.GetLength();
 
   if (nLength1 == nLength2)
-    return _wcsicmp(str1, str2) < 0; 
+    return _stricmp(str1, str2) < 0; 
   else
     return nLength1 < nLength2;
 };
@@ -995,7 +995,7 @@ class StaticCoreInfoEquals {
 public:
     bool operator () (const StaticCoreInfo* value1, const StaticCoreInfo* value2)
     {
-        return (wcsicmp(value1->cbIGCFile,value2->cbIGCFile) == 0);
+        return (stricmp(value1->cbIGCFile,value2->cbIGCFile) == 0);
     }
 };
 void CLobbyApp::BuildStaticCoreInfo()
@@ -1051,7 +1051,7 @@ void CLobbyApp::BuildStaticCoreInfo()
 				for (int i=0; i<c; i++)
 				{
 					for (int j = 0; j < m_cStaticCoreInfo; j++)
-						if (Strcmp(pServerT->GetvStaticCoreInfo()[i].cbIGCFile,m_vStaticCoreInfo[j].cbIGCFile) == 0)
+						if (strcmp(pServerT->GetvStaticCoreInfo()[i].cbIGCFile,m_vStaticCoreInfo[j].cbIGCFile) == 0)
 							pServerT->SetStaticCoreMask(pServerT->GetStaticCoreMask() | 1<<j);
 						
 				}

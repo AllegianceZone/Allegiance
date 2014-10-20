@@ -20,17 +20,17 @@ int _matherr( struct _exception *except )
 */
 // mmf end
 
-const wchar_t*       c_pszWingName[c_widMax] =
-                        { L"command",
-                          L"attack",
-                          L"defend",
-                          L"escort",
-                          L"search",
-                          L"alpha",
-                          L"bravo",
-                          L"charlie",
-                          L"delta",
-                          L"echo",
+const char*       c_pszWingName[c_widMax] =
+                        { "command",
+                          "attack",
+                          "defend",
+                          "escort",
+                          "search",
+                          "alpha",
+                          "bravo",
+                          "charlie",
+                          "delta",
+                          "echo",
                           //"foxtrot",
                           //"golf",
                           //"hotel",
@@ -40,18 +40,18 @@ const wchar_t*       c_pszWingName[c_widMax] =
 
 const CommandData   c_cdAllCommands[c_cidMax] =
                     {
-                        { L"goto",       L"acdefaultbmp",	L"qudefaultbmp" },
-                        { L"attack",     L"ackillbmp",		L"qukillbmp" },
-                        { L"capture",    L"accptbmp",		L"qucptbmp" },
-						{ L"defend",	 L"acdefendbmp",	L"qudefendbmp" },
-						{ L"pickup",	 L"acpickupbmp",	L"qupickupbmp" },
-						{ L"goto",		 L"acgotobmp",		L"qugotobmp" },
-						{ L"repair",	 L"acrepairbmp",	L"qurepairbmp" },
-						{ L"join",		 L"acjoinbmp",		L"qujoinbmp" },
-						{ L"stop",		 L"acstopbmp",		L"qustopbmp" }, //#321
-						{ L"hide",		 L"achidebmp",		L"quhidebmp" }, //#320
-						{ L"mine",		 L"acminebmp",		L"quminebmp" },
-						{ L"build",		 L"acbuildbmp",		L"qubuildbmp" }
+                        { "goto",       "acdefaultbmp", "qudefaultbmp" },
+                        { "attack",     "ackillbmp",    "qukillbmp" },
+                        { "capture",    "accptbmp",     "qucptbmp" },
+                        { "defend",     "acdefendbmp",  "qudefendbmp" },
+                        { "pickup",     "acpickupbmp",  "qupickupbmp" },
+                        { "goto",       "acgotobmp",    "qugotobmp" },
+                        { "repair",     "acrepairbmp",  "qurepairbmp" },
+                        { "join",       "acjoinbmp",    "qujoinbmp" },
+						{ "stop",		"acstopbmp",	"qustopbmp" }, //#321
+						{ "hide",		"achidebmp",	"quhidebmp" }, //#320
+                        { "mine",       "acminebmp",    "quminebmp" },
+                        { "build",      "acbuildbmp",   "qubuildbmp" }
                     };
 
 const int   c_ttTypebits[OT_modelEnd+1] =
@@ -97,7 +97,7 @@ float    solveForImpact(const Vector&      deltaP,
 			// mmf added check for negative
 			// revisit what to set b24ac to in this case
 			if (b24ac < 0.0f) {
-				debugf(L"common.cpp b24ac is less than zero about to sqrt it, it to 0.1f\n");
+				debugf("common.cpp b24ac is less than zero about to sqrt it, it to 0.1f\n");
 				b24ac = 0.1f;
 			}
 
@@ -1008,23 +1008,23 @@ bool    SearchClusters(ImodelIGC*    pmodel,
     return rc;
 }
 
-const wchar_t* GetModelType(ImodelIGC* pmodel)
+const char* GetModelType(ImodelIGC* pmodel)
 {
     switch (pmodel->GetObjectType())
     {
         case OT_ship:
             return ((IshipIGC*)pmodel)->GetHullType()->GetName();
         case OT_projectile:
-            return L"";
-            return L"minefield";
+            return "";
+            return "minefield";
         case OT_station:
             return ((IstationIGC*)pmodel)->GetStationType()->GetName();
         case OT_buoy:
-            return L"";
+            return "";
         case OT_asteroid:
             return IasteroidIGC::GetTypeName(((IasteroidIGC*)pmodel)->GetCapabilities());
         case OT_warp:
-            return L"aleph";
+            return "aleph";
         case OT_treasure:
         {
             IbuyableIGC*    pb = ((ItreasureIGC*)pmodel)->GetBuyable();
@@ -1032,7 +1032,7 @@ const wchar_t* GetModelType(ImodelIGC* pmodel)
                 return pb->GetName();
             else
             {
-				static const wchar_t*  szNames[] = { L"", L"", L"Powerup", L"", L"Cash", L"" };
+                static const char*  szNames[] = {"", "", "Powerup", "", "Cash", ""};
                 TreasureCode tc = ((ItreasureIGC*)pmodel)->GetTreasureCode();
                 assert ((tc == c_tcPowerup) || (tc == c_tcCash) || (tc == c_tcFlag));
                 return szNames[tc];
@@ -1051,10 +1051,10 @@ const wchar_t* GetModelType(ImodelIGC* pmodel)
     }
 }
 
-const wchar_t* GetModelName(ImodelIGC* pmodel)
+const char* GetModelName(ImodelIGC* pmodel)
 {
     assert (pmodel);
-	const wchar_t* n = pmodel->GetName();
+    const char* n = pmodel->GetName();
 
     if (n[0] != '\0')
         return n;
@@ -1168,7 +1168,7 @@ GotoPositionMask Waypoint::DoApproach(IshipIGC*        pship,
 
 			float t=0.1f;
 			if ((b*b - c) < 0.0f) {
-				debugf(L"common.cpp b*b-c is less than zero about to sqrt it, set t to 0.1f\n");
+				debugf("common.cpp b*b-c is less than zero about to sqrt it, set t to 0.1f\n");
 			} else { t = sqrt(b*b - c) - b; }
 
             // float   t = sqrt(b*b - c) - b;
@@ -1727,7 +1727,7 @@ bool    GotoPlan::Execute(Time  now, float  dt, bool bDodge)
 	}
 	if ((m_maskWaypoints & c_wpTarget) && !bDone && m_pship->GetWantBoost()) {
 		if ((m_wpTarget.m_pmodelTarget->GetPosition() - m_pship->GetPosition()).LengthSquared() < 4000000) {
-			stateM &= ~afterburnerButtonIGC;
+			stateM & ~afterburnerButtonIGC;
 			m_pship->SetWantBoost(false);
 		}
 	}
@@ -2328,7 +2328,7 @@ bool LineOfSightExist2(const IclusterIGC* pcluster, const ImodelIGC*   pmodel1, 
 IshipIGC*   CreateDrone(ImissionIGC*     pmission,
                         ShipID           shipID,
                         PilotType        pt,
-						const wchar_t*      pszName,
+                        const char*      pszName,
                         HullID           hullID,
                         IsideIGC*        pside,
                         AbilityBitMask   abmOrders,
@@ -2352,13 +2352,13 @@ IshipIGC*   CreateDrone(ImissionIGC*     pmission,
 
     if (pszName)
     {
-        assert (wcslen(pszName) < c_cbName - 4);
-        Strcpy(ds.name, pszName);
+        assert (strlen(pszName) < c_cbName - 4);
+        strcpy(ds.name, pszName);
 
         //Is the name unique?
         ShipLinkIGC*    psl;
         for (psl = pmission->GetShips()->first();
-             ((psl != NULL) && (_wcsicmp(pszName, psl->data()->GetName()) != 0));
+             ((psl != NULL) && (_stricmp(pszName, psl->data()->GetName()) != 0));
              psl = psl->next())
         {
         }
@@ -2366,7 +2366,7 @@ IshipIGC*   CreateDrone(ImissionIGC*     pmission,
         if (psl != NULL)
         {
             //Name is not unique ... make it unique
-            _itow(shipID, ds.name + wcslen(ds.name), 10);
+            _itoa(shipID, ds.name + strlen(ds.name), 10);
         }
     }
     else
@@ -2448,26 +2448,26 @@ ClusterWarning  GetClusterWarning(AssetMask am, bool bInvulnerableStations)
     return cw;
 }
 
-const wchar_t*     GetClusterWarningText(ClusterWarning cw)
+const char*     GetClusterWarningText(ClusterWarning cw)
 {
-	static const wchar_t*  c_pszAlerts[c_cwMax] =
+    static const char*  c_pszAlerts[c_cwMax] =
     {
-        L"No threat",
-		L"Enemy fighter spotted",
-		L"Enemy miner spotted",
-		L"Enemy builder spotted",
-		L"Conflict",
-		L"Miner at risk",
-		L"Builder at risk",
-		L"Carrier at risk",
-		L"Enemy bomber spotted",
-		L"Enemy carrier spotted",
-		L"Enemy capital ship spotted",
-		L"Enemy assault ship spotted",
-		L"Enemy transport spotted",
-		L"Station at risk",
-		L"Station at risk by teleport",
-		L"Station at risk of capture"
+        "No threat",
+        "Enemy fighter spotted",
+        "Enemy miner spotted",
+        "Enemy builder spotted",
+        "Conflict",
+        "Miner at risk",
+        "Builder at risk",
+        "Carrier at risk",
+        "Enemy bomber spotted",
+        "Enemy carrier spotted",
+        "Enemy capital ship spotted",
+        "Enemy assault ship spotted",
+        "Enemy transport spotted",
+        "Station at risk",
+        "Station at risk by teleport",
+        "Station at risk of capture"
     };
 
     assert(cw >= 0 && cw < c_cwMax);
@@ -2700,20 +2700,20 @@ int GetDistance(IshipIGC*     pship,
     }
 }
 
-static void    GetAsteroidName(const wchar_t* pszPrefix,
+static void    GetAsteroidName(const char* pszPrefix,
                                AsteroidID  id,
-							   wchar_t*       bfr)
+                               char*       bfr)
 {
     const int   c_iMultiplier = 5237;
     const int   c_iModulo     = 8713;
     const int   c_iOffset     = 1093;
     const int   c_iPlus       = 1024;
 
-    int l = wcslen(pszPrefix);
+    int l = strlen(pszPrefix);
     if (l == 0)
         l = 2;      //Allow for asteroids with no default name
-    wmemcpy(bfr, pszPrefix, l);
-    _itow(c_iPlus + ((id + c_iOffset) * c_iMultiplier) % c_iModulo,
+    memcpy(bfr, pszPrefix, l);
+    _itoa(c_iPlus + ((id + c_iOffset) * c_iMultiplier) % c_iModulo,
           &bfr[l], 10);
 }
 
@@ -2842,7 +2842,7 @@ static IstationIGC* CreatePedestalAndFlag(ImissionIGC*     pmission,
         assert (ppedestal->HasCapability(c_sabmPedestal));
 
         ds.stationTypeID = ppedestal->GetObjectID();
-        Strcpy(ds.name, ppedestal->GetName());
+        strcpy(ds.name, ppedestal->GetName());
     }
 
     IstationIGC*    pstation = (IstationIGC*)(pmission->CreateObject(now,

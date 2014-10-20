@@ -225,7 +225,8 @@ do                                    \
     TCHAR szInit[] = TEXT(" Initialized\n");
     TCHAR szTerm[sizeofArray(szInit)] = TEXT(" Terminated\n");
     CopyMemory(szModule + cch, bInit ? szInit : szTerm, sizeof(szInit));
-    ZDebugOutputImpl(pszBackSlash + 1);
+    USES_CONVERSION;
+    ZDebugOutputImpl(T2CA(pszBackSlash + 1));
   }
 
 #else // _DEBUG
@@ -473,8 +474,8 @@ inline DWORD FileTimeToMs(const FILETIME& ft)
         _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1,p2,p3,p4,p5)
 
   #define _TRACE_END                                                        \
-                                                \
-      ZDebugOutputImpl(_trace_szMsg);                                 \
+      USES_CONVERSION;                                                      \
+      ZDebugOutputImpl(T2CA(_trace_szMsg));                                 \
     }
 
   #ifndef UNUSED
@@ -1034,7 +1035,7 @@ HRESULT TCLoadBSTR(HINSTANCE hInstance, UINT wID, BSTR* pbstrOut);
 // Error Reporting Functions/Macros
 // Note: These methods will output even in RELEASE builds!
 
-void _cdecl TCErrLog(LPCTSTR lpszFormat, ...);
+void _cdecl TCErrLog(LPCSTR lpszFormat, ...);
 
 /////////////////////////////////////////////////////////////////////////////
 // Macro Group: The TCERRLOG Macros
@@ -1066,21 +1067,21 @@ void _cdecl TCErrLog(LPCTSTR lpszFormat, ...);
 // See Also: TCErrLog, _TRACE macros
 #define TCERRLOG                       TCErrLog
 // {partof:TCERRLOG}
-#define TCERRLOG0(sz)                  TCERRLOG(_T(sz))
+#define TCERRLOG0(sz)                  TCERRLOG(sz)
 // {partof:TCERRLOG}
-#define TCERRLOG1(sz, p1)              TCERRLOG(_T(sz), p1)
+#define TCERRLOG1(sz, p1)              TCERRLOG(sz, p1)
 // {partof:TCERRLOG}
-#define TCERRLOG2(sz, p1,p2)           TCERRLOG(_T(sz), p1,p2)
+#define TCERRLOG2(sz, p1,p2)           TCERRLOG(sz, p1,p2)
 // {partof:TCERRLOG}
-#define TCERRLOG3(sz, p1,p2,p3)        TCERRLOG(_T(sz), p1,p2,p3)
+#define TCERRLOG3(sz, p1,p2,p3)        TCERRLOG(sz, p1,p2,p3)
 // {partof:TCERRLOG}
-#define TCERRLOG4(sz, p1,p2,p3,p4)     TCERRLOG(_T(sz), p1,p2,p3,p4)
+#define TCERRLOG4(sz, p1,p2,p3,p4)     TCERRLOG(sz, p1,p2,p3,p4)
 // {partof:TCERRLOG}
-#define TCERRLOG5(sz, p1,p2,p3,p4,p5)  TCERRLOG(_T(sz), p1,p2,p3,p4,p5)
+#define TCERRLOG5(sz, p1,p2,p3,p4,p5)  TCERRLOG(sz, p1,p2,p3,p4,p5)
 
 #define TCERRLOG_BEGIN_SIZE(cchMax)                                         \
   {                                                                         \
-    TCHAR* _trace_szMsg = (LPTSTR)_alloca(cchMax * sizeof(TCHAR));          \
+    CHAR* _trace_szMsg = (LPSTR)_alloca(cchMax * sizeof(CHAR));          \
     int    _trace_nIndex = 0;
 
 #define TCERRLOG_BEGIN                                                      \
@@ -1088,27 +1089,27 @@ void _cdecl TCErrLog(LPCTSTR lpszFormat, ...);
 
 #define TCERRLOG_PART0(sz)                                                  \
     _trace_nIndex +=                                                        \
-      _stprintf(_trace_szMsg + _trace_nIndex, _T(sz))
+      sprintf(_trace_szMsg + _trace_nIndex, sz)
 
 #define TCERRLOG_PART1(sz, p1)                                              \
     _trace_nIndex +=                                                        \
-      _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1)
+      sprintf(_trace_szMsg + _trace_nIndex, sz, p1)
 
 #define TCERRLOG_PART2(sz, p1,p2)                                           \
     _trace_nIndex +=                                                        \
-      _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1,p2)
+      sprintf(_trace_szMsg + _trace_nIndex, sz, p1,p2)
 
 #define TCERRLOG_PART3(sz, p1,p2,p3)                                        \
     _trace_nIndex +=                                                        \
-      _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1,p2,p3)
+      sprintf(_trace_szMsg + _trace_nIndex, sz, p1,p2,p3)
 
 #define TCERRLOG_PART4(sz, p1,p2,p3,p4)                                     \
     _trace_nIndex +=                                                        \
-      _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1,p2,p3,p4)
+      sprintf(_trace_szMsg + _trace_nIndex, sz, p1,p2,p3,p4)
 
 #define TCERRLOG_PART5(sz, p1,p2,p3,p4,p5)                                  \
     _trace_nIndex +=                                                        \
-      _stprintf(_trace_szMsg + _trace_nIndex, _T(sz), p1,p2,p3,p4,p5)
+      sprintf(_trace_szMsg + _trace_nIndex, sz, p1,p2,p3,p4,p5)
 
 #ifdef _DEBUG
   #define TCERRLOG_END                                                      \
@@ -1116,7 +1117,7 @@ void _cdecl TCErrLog(LPCTSTR lpszFormat, ...);
   }
 #else // _DEBUG
   #define TCERRLOG_END                                                      \
-    OutputDebugString(_trace_szMsg);                                        \
+    OutputDebugStringA(_trace_szMsg);                                        \
   }
 #endif // _DEBUG
 

@@ -210,7 +210,7 @@ VOID CMapPVData::SetCluster(SectorID sID, CMapPVCluster * pCluster, SideID sideI
 
 
 
-const wchar_t* ImapPVMaker::IsValid(const MissionParams* pmp)
+const char* ImapPVMaker::IsValid(const MissionParams* pmp)
 {
     switch (pmp->mmMapType)
     {
@@ -246,10 +246,10 @@ const wchar_t* ImapPVMaker::IsValid(const MissionParams* pmp)
             return CmapPVMakerEastWest::IsValid(pmp);
     }
 
-    return L"Invalid map type";
+    return "Invalid map type";
 }
 
-const wchar_t *  ImapPVMaker::Create(const MissionParams*   pmp,
+const char *  ImapPVMaker::Create(const MissionParams*   pmp,
 							 ImissionPV*           pmission)
 {
     assert (pmp->nTeams >= 2);
@@ -297,7 +297,7 @@ const wchar_t *  ImapPVMaker::Create(const MissionParams*   pmp,
 CmapPVMaker::CmapPVMaker()
 {
     mMMID = c_mmSingleRing;
-    this->SetName(L"Single Ring");
+    this->SetName("Single Ring");
 }
 
 
@@ -615,7 +615,7 @@ CMapPVCluster * CmapPVMaker::GenerateNeutralCluster(CMapPVData * pMapData,
     dc.lightColor = 0xffffffff;
     dc.lightDirection = Vector::RandomDirection();
 
-    Strcpy(dc.posterName, L"globe");
+    strcpy(dc.posterName, "globe");
     dc.posterName[5] = '0' + randomInt(1, 8);
     dc.posterName[6] = '\0';
     dc.planetName[0] = '\0';
@@ -886,7 +886,7 @@ VOID CmapPVMaker::GenerateLayout(CMapPVData * pMapData)
 CmapPVMakerDoubleRing::CmapPVMakerDoubleRing()
 {
     mMMID = c_mmDoubleRing;
-    this->SetName(L"Double Ring");
+    this->SetName("Double Ring");
 }
 
 VOID CmapPVMakerDoubleRing::GenerateTeamClusterScreenPosition(
@@ -970,7 +970,7 @@ VOID CmapPVMakerDoubleRing::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerBigRing::CmapPVMakerBigRing()
 {
     mMMID = c_mmBigRing;
-    this->SetName(L"Big Ring");
+    this->SetName("Big Ring");
 }
 
 VOID CmapPVMakerBigRing::GenerateLayout(CMapPVData * pMapData)
@@ -1056,7 +1056,7 @@ VOID CmapPVMakerBigRing::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerHiLo::CmapPVMakerHiLo()
 {
     mMMID = c_mmHiLo;
-    this->SetName(L"HiLo");
+    this->SetName("HiLo");
 }
 
 VOID CmapPVMakerHiLo::GenerateLayout(CMapPVData * pMapData)
@@ -1184,7 +1184,7 @@ VOID CmapPVMakerHiLo::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerHiHigher::CmapPVMakerHiHigher()
 {
     mMMID = c_mmHiHigher;
-    this->SetName(L"HiHigher");
+    this->SetName("HiHigher");
 }
 
 VOID CmapPVMakerHiHigher::GenerateLayout(CMapPVData * pMapData)
@@ -1359,7 +1359,7 @@ VOID CmapPVMakerHiHigher::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerStar::CmapPVMakerStar()
 {
     mMMID = c_mmStar;
-    this->SetName(L"Star");
+    this->SetName("Star");
 }
 
 VOID CmapPVMakerStar::GenerateLayout(CMapPVData * pMapData)
@@ -1498,11 +1498,11 @@ VOID CmapPVMakerStar::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerBrawl::CmapPVMakerBrawl()
 {
     mMMID = c_mmBrawl;
-    this->SetName(L"Brawl");
+    this->SetName("Brawl");
 }
 
 
-const wchar_t* CmapPVMakerBrawl::IsValid(const MissionParams * pmp)
+const char* CmapPVMakerBrawl::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed march 24 2006
     //if (pmp->nMaxPlayersPerTeam * pmp->nTeams > 36)
@@ -1550,11 +1550,11 @@ VOID CmapPVMakerBrawl::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerPinWheel::CmapPVMakerPinWheel()
 {
     mMMID = c_mmPinWheel;
-    this->SetName(L"PinWheel");
+    this->SetName("PinWheel");
 }
 
 
-const wchar_t* CmapPVMakerPinWheel::IsValid(const MissionParams * pmp)
+const char* CmapPVMakerPinWheel::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed march 24 2006
     //if (pmp->nMaxPlayersPerTeam > 200)
@@ -1651,15 +1651,15 @@ VOID CmapPVMakerPinWheel::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerDiamondRing::CmapPVMakerDiamondRing()
 {
     mMMID = c_mmDiamondRing;
-    this->SetName(L"Diamond Ring");
+    this->SetName("Diamond Ring");
 }
 
 
-const wchar_t* CmapPVMakerDiamondRing::IsValid(const MissionParams * pmp)
+const char* CmapPVMakerDiamondRing::IsValid(const MissionParams * pmp)
 {
     if (pmp->nTeams < 3)
-        return(L"Diamond ring maps must have more than 2 teams; "
-               L"please change the map type, or number of teams.");
+        return("Diamond ring maps must have more than 2 teams; "
+               "please change the map type, or number of teams.");
 
     return(NULL);
 }
@@ -1782,7 +1782,7 @@ VOID CmapPVMakerDiamondRing::LinkClusters(CMapPVData * pMapData)
 CmapPVMakerSnowFlake::CmapPVMakerSnowFlake()
 {
     mMMID = c_mmSnowFlake;
-    this->SetName(L"SnowFlake");
+    this->SetName("SnowFlake");
 }
 
 
@@ -1968,7 +1968,7 @@ VOID CmapPVMakerSnowFlake::LinkClusters(CMapPVData * pMapData)
 // Split Base
 //
 
-const wchar_t* CmapPVMakerLargeSplit::IsValid(const MissionParams * pmp)
+const char* CmapPVMakerLargeSplit::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed march 24 2006
     //if (pmp->nMinPlayersPerTeam < 10)
@@ -1981,19 +1981,19 @@ const wchar_t* CmapPVMakerLargeSplit::IsValid(const MissionParams * pmp)
 CmapPVMakerLargeSplit::CmapPVMakerLargeSplit()
 {
     mMMID = c_mmLargeSplit;
-    this->SetName(L"LargeSplit");
+    this->SetName("LargeSplit");
 }
 
 CmapPVMakerInsideOut::CmapPVMakerInsideOut()
 {
     mMMID = c_mmInsideOut;
-    this->SetName(L"Inside out");
+    this->SetName("Inside out");
 }
 
 CmapPVMakerGrid::CmapPVMakerGrid()
 {
     mMMID = c_mmGrid;
-    this->SetName(L"Grid");
+    this->SetName("Grid");
 }
 
 
@@ -2141,11 +2141,11 @@ VOID CmapPVMakerGrid::LinkClusters(CMapPVData * pMapData)
     }
 }
 
-const wchar_t* CmapPVMakerEastWest::IsValid(const MissionParams * pmp)
+const char* CmapPVMakerEastWest::IsValid(const MissionParams * pmp)
 {
     if (pmp->nTeams != 2) 
-        return(L"East West maps must have exactly two teams; "
-                L"please change the map type, or the number of teams.");
+        return("East West maps must have exactly two teams; "
+                "please change the map type, or the number of teams.");
 	// yp your_persona removed march 24 2006
     // else if (pmp->nMinPlayersPerTeam < 10)
     //     return("East West maps must have at least 10 players per team; "
@@ -2157,7 +2157,7 @@ const wchar_t* CmapPVMakerEastWest::IsValid(const MissionParams * pmp)
 CmapPVMakerEastWest::CmapPVMakerEastWest()
 {
     mMMID = c_mmEastWest;
-    this->SetName(L"EastWest");
+    this->SetName("EastWest");
 }
 
 
@@ -2267,7 +2267,7 @@ VOID CmapPVMakerEastWest::LinkClusters(CMapPVData * pMapData)
 }
 
 
-const wchar_t* CmapPVMakerSplitBase::IsValid(const MissionParams * pmp)
+const char* CmapPVMakerSplitBase::IsValid(const MissionParams * pmp)
 {
 	// yp your_persona removed  march 24 2006
     //if (pmp->nTeams * pmp->nMinPlayersPerTeam < 30)
@@ -2279,7 +2279,7 @@ const wchar_t* CmapPVMakerSplitBase::IsValid(const MissionParams * pmp)
 CmapPVMakerSplitBase::CmapPVMakerSplitBase()
 {
     mMMID = c_mmSplitBase;
-    this->SetName(L"Split Base");
+    this->SetName("Split Base");
 }
 VOID CmapPVMakerSplitBase::GenerateLayout(CMapPVData * pMapData)
 {
@@ -2340,24 +2340,24 @@ VOID CmapPVMakerSplitBase::LinkClusters(CMapPVData * pMapData)
 }
 
 // from IGC file stuff
-const wchar_t * CmapPVMakerFromIGCFile::GenerateMission(const wchar_t * igcfile, ImissionPV* pmission)
+const char * CmapPVMakerFromIGCFile::GenerateMission(const char * igcfile,	ImissionPV* pmission)
 {
     Modeler* pmodeler = pmission->GetModeler();
 
-	TRef<ZFile> zf = pmodeler->GetFile(igcfile,L"igc",false);
+	TRef<ZFile> zf = pmodeler->GetFile(igcfile,"igc",false);
     
-	if (!zf) return L"no preview available";
+	if (!zf) return "no preview available";
 
 	int             iDatasize;
 	int             iReadCount = zf->Read(&iDatasize, sizeof(iDatasize));
-	if (iReadCount != sizeof(iDatasize)) return L"bad custom map file";
+	if (iReadCount != sizeof(iDatasize)) return "bad custom map file";
 	char*           pData = new char[iDatasize+4];      //leave a little extra space for the encryption (which takes dword chunks)
 	iReadCount = zf->Read(pData, sizeof(char) * iDatasize);
-	if (iReadCount != sizeof(char) * iDatasize) return L"bad custom map file";
+	if (iReadCount != sizeof(char) * iDatasize) return "bad custom map file";
 
 	//debugf("CmapPVMakerFromIGCFile: %s , size %d\n",igcfile,iDatasize);
 	int datasize = iDatasize;
-	wchar_t const *sError = NULL;
+	char const *sError = NULL;
 	char *pdata = pData;
 // main read loop
 	int nbwarps = 0;
@@ -2383,7 +2383,7 @@ const wchar_t * CmapPVMakerFromIGCFile::GenerateMission(const wchar_t * igcfile,
 					pmission->CreatePVWrap(p,size,pcluster);
 				else
 				{
-					sError = L"invalid aleph data";
+					sError = "invalid aleph data";
 					break;
 				}
             }
@@ -2409,7 +2409,7 @@ const wchar_t * CmapPVMakerFromIGCFile::GenerateMission(const wchar_t * igcfile,
 				}
 				else
 				{
-					sError = L"invalid station data";
+					sError = "invalid station data";
 					break;
 				}
 			}
@@ -2420,7 +2420,7 @@ const wchar_t * CmapPVMakerFromIGCFile::GenerateMission(const wchar_t * igcfile,
         datasize -= (size + sizeof(int) + sizeof(ObjectType));
     }
 // end of read loop
-	debugf(L"CmapPVMakerFromIGCFile: %s , %d clusters, %d warps, %d stations\n",igcfile,nbclusters,nbwarps,nbstations);
+	debugf("CmapPVMakerFromIGCFile: %s , %d clusters, %d warps, %d stations\n",igcfile,nbclusters,nbwarps,nbstations);
 	delete [] pData;
 	return sError;
 

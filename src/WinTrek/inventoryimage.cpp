@@ -12,10 +12,10 @@ namespace {
             Mount           mount;
             IpartIGC*       ppart;
             IshipIGC*       pgunner;
-			const wchar_t*     szKey;
+            const char*     szKey;
         public:
             InventorySlotDesc() {};
-			InventorySlotDesc(EquipmentType etN, Mount mountN, IpartIGC* partN, IshipIGC* pgunnerN, const wchar_t* szKeyN)
+            InventorySlotDesc(EquipmentType etN, Mount mountN, IpartIGC* partN, IshipIGC* pgunnerN, const char* szKeyN)
                 : et(etN), mount(mountN), ppart(partN), pgunner(pgunnerN), szKey(szKeyN) {}
             bool operator == (const InventorySlotDesc& desc) const
             {
@@ -56,8 +56,8 @@ namespace {
             Rebuild();
         };
 
-		TRef<Pane> CreatePartPane(const ZString& strNamespace, IpartIGC* ppart, const wchar_t* szKey,
-			IshipIGC* gunner = NULL, const wchar_t* szLocation = L"")
+        TRef<Pane> CreatePartPane(const ZString& strNamespace, IpartIGC* ppart, const char* szKey,
+            IshipIGC* gunner = NULL, const char* szLocation = "")
         {
             TRef<PartWrapper> ppartWrapper = new PartWrapper();
             ppartWrapper->SetPart(ppart);
@@ -98,8 +98,8 @@ namespace {
             return false;
         }
 
-		void ProcessPart(Pane* paneParent, IshipIGC* pship, EquipmentType et, Mount mount, const wchar_t* szKey,
-			IshipIGC* gunner = NULL, const wchar_t* szLocation = L"")
+        void ProcessPart(Pane* paneParent, IshipIGC* pship, EquipmentType et, Mount mount, const char* szKey,
+            IshipIGC* gunner = NULL, const char* szLocation = "")
         {
             const IhullTypeIGC* pht = pship->GetHullType();
 
@@ -127,7 +127,7 @@ namespace {
                     }
                     else
                     {                    
-                        strNamespace = ZString(L"invEmpty") 
+                        strNamespace = ZString("invEmpty") 
                             + IpartTypeIGC::GetEquipmentTypeName(et);
                         ppane = CreatePartPane(strNamespace, ppart, szKey, gunner, szLocation);
                     }
@@ -138,7 +138,7 @@ namespace {
             };
         };
 
-		void ProcessObservers(Pane* paneParent, IshipIGC* pship, const wchar_t* szKey)
+        void ProcessObservers(Pane* paneParent, IshipIGC* pship, const char* szKey)
         {
             const IhullTypeIGC* pht = pship->GetHullType();
 
@@ -200,7 +200,7 @@ namespace {
             return true;
         };
 
-		void ProcessCargo(Pane* paneParent, IshipIGC* pship, Mount mount, const wchar_t* szKey)
+        void ProcessCargo(Pane* paneParent, IshipIGC* pship, Mount mount, const char* szKey)
         {
             if (ShowCargoSlot(pship, mount))
             {
@@ -218,12 +218,12 @@ namespace {
                 {
                     ppane = CreatePartPane(
                         ppart->GetPartType()->GetInventoryLineMDLName(), 
-                        ppart, szKey, NULL, L"Cargo"
+                        ppart, szKey, NULL, "Cargo"
                         );
                 }
                 else
                 {                    
-                    ppane = CreatePartPane(L"invEmptyCargo", ppart, szKey, NULL, L"Cargo");
+                    ppane = CreatePartPane("invEmptyCargo", ppart, szKey, NULL, "Cargo");
                 }
 
                 pcacheCurrent->Set(desc, ppane);
@@ -259,7 +259,7 @@ namespace {
         };
         */
 
-		void ProcessTurret(Pane* ppaneParent, IshipIGC* pship, Mount mount, const wchar_t* szKey)
+        void ProcessTurret(Pane* ppaneParent, IshipIGC* pship, Mount mount, const char* szKey)
         {
             IshipIGC* pshipGunner = pship->GetGunner(mount);
             IpartIGC* ppart = pship->GetMountedPart(ET_Weapon, mount);
@@ -275,8 +275,8 @@ namespace {
 
                 if (!pcachePrevious->Find(desc, ppaneTurret))
                 {
-                    ppaneTurret = CreatePartPane(pshipGunner ? L"invturret" : L"invemptyturret",
-                        ppart, L"", pshipGunner,
+                    ppaneTurret = CreatePartPane(pshipGunner ? "invturret" : "invemptyturret",
+                        ppart, "", pshipGunner,
                         pht->GetHardpointData(mount).locationAbreviation);
                 }
 
@@ -312,8 +312,8 @@ namespace {
 			//pRowPane->InsertAtBottom(pTab);
 			pColumnPane->InsertAtBottom(pTop);
 
-			static const wchar_t* const vszWeaponHotKeys[] = { L"1.", L"2.", L"3.", L"4." };
-			static const wchar_t* const vszTurretHotKeys[] = { L"Y.", L"U.", L"I.", L"O.", L"", L"", L"", L"" };
+            static const char* const vszWeaponHotKeys[] = { "1.", "2.", "3.", "4." };
+            static const char* const vszTurretHotKeys[] = { "Y.", "U.", "I.", "O.", "", "", "", "" };
             ZAssert(c_maxUnmannedWeapons <= sizeof(vszWeaponHotKeys)/sizeof(const char* const));
             ZAssert(c_maxMountedWeapons <= sizeof(vszTurretHotKeys)/sizeof(const char* const));
 
@@ -322,29 +322,29 @@ namespace {
             for (mount = 0; mount < nFixedWeapons; mount++)
             {
                 ProcessPart(pColumnPane, pship, ET_Weapon, mount, 
-                    bIsPilot ? vszWeaponHotKeys[mount] : L"");
+                    bIsPilot ? vszWeaponHotKeys[mount] : "");
             };
-            ProcessObservers(pColumnPane, pship, L"");
+            ProcessObservers(pColumnPane, pship, "");
             for (; mount < pht->GetMaxWeapons(); mount++)
             {
                 ProcessTurret(pColumnPane, pship, mount, 
-                    bIsPilot ? vszTurretHotKeys[mount - nFixedWeapons] : L"");
+                    bIsPilot ? vszTurretHotKeys[mount - nFixedWeapons] : "");
             };
 
-            ProcessPart(pColumnPane, pship, ET_Magazine, 0, L"5.");
-            ProcessPart(pColumnPane, pship, ET_ChaffLauncher, 0, L"6.");
-            ProcessPart(pColumnPane, pship, ET_Shield, 0, L"7.");
-            ProcessPart(pColumnPane, pship, ET_Cloak, 0, L"8.");
-            ProcessPart(pColumnPane, pship, ET_Afterburner, 0, L"9.");
-            ProcessPart(pColumnPane, pship, ET_Dispenser, 0, L"0.");
+            ProcessPart(pColumnPane, pship, ET_Magazine, 0, "5.");
+            ProcessPart(pColumnPane, pship, ET_ChaffLauncher, 0, "6.");
+            ProcessPart(pColumnPane, pship, ET_Shield, 0, "7.");
+            ProcessPart(pColumnPane, pship, ET_Cloak, 0, "8.");
+            ProcessPart(pColumnPane, pship, ET_Afterburner, 0, "9.");
+            ProcessPart(pColumnPane, pship, ET_Dispenser, 0, "0.");
 
-            ProcessCargo(pColumnPane, pship, trekClient.GetSelectedCargoMount(), L"S.");
+            ProcessCargo(pColumnPane, pship, trekClient.GetSelectedCargoMount(), "S.");
             for (int nCargoOffset = 1; nCargoOffset < c_maxCargo; nCargoOffset++)
             {
                 Mount mountCargo = trekClient.GetSelectedCargoMount() - nCargoOffset;
                 if (mountCargo < -c_maxCargo)
                     mountCargo += c_maxCargo;
-                ProcessCargo(pColumnPane, pship, mountCargo, L"");
+                ProcessCargo(pColumnPane, pship, mountCargo, "");
             }
 
             //ProcessCargo(pColumnPane, pship, "S.");
@@ -389,7 +389,7 @@ namespace {
                 break;
 
             default:
-                ZError(L"Unknown loadout change");
+                ZError("Unknown loadout change");
             }
         }
 

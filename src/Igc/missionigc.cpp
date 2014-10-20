@@ -68,10 +68,10 @@ static void DoDecrypt(int size, char* pdata)
 }
 
 //------------------------------------------------------------------------------
-void    DumpIGCFile(FILE* file, ImissionIGC* pMission, __int64 iMaskExportTypes, void(*munge)(int size, wchar_t* data))
+void    DumpIGCFile (FILE* file, ImissionIGC* pMission, __int64 iMaskExportTypes,  void (*munge)(int size, char* data))
 {
     int         iSize = pMission->Export(iMaskExportTypes, 0);
-	wchar_t*       pData = new wchar_t[iSize + 4];      //leave a little extra space for the encryption (which takes dword chunks)
+    char*       pData = new char[iSize+4];      //leave a little extra space for the encryption (which takes dword chunks)
     pMission->Export (iMaskExportTypes, pData);
     fwrite (&iSize, sizeof(int), 1, file);
 
@@ -80,19 +80,19 @@ void    DumpIGCFile(FILE* file, ImissionIGC* pMission, __int64 iMaskExportTypes,
         (*munge)(iSize, pData);
     }
 
-	fwrite(pData, sizeof(wchar_t), iSize, file);
+    fwrite (pData, sizeof(char), iSize, file);
     delete [] pData;
 }
 
 //------------------------------------------------------------------------------
-void    LoadIGCFile(FILE* file, ImissionIGC* pMission, void(*munge)(int size, char* data))
+void    LoadIGCFile (FILE* file, ImissionIGC* pMission, void (*munge)(int size, char* data))
 {
     Time            now = pMission->GetLastUpdate();
     int             iDatasize;
     int             iReadCount = fread (&iDatasize, sizeof(iDatasize), 1, file);
     assert (iReadCount == 1);
-	char*           pData = new char[iDatasize + 4];      //leave a little extra space for the encryption (which takes dword chunks)
-	iReadCount = fread(pData, sizeof(char), iDatasize, file);
+    char*           pData = new char[iDatasize+4];      //leave a little extra space for the encryption (which takes dword chunks)
+    iReadCount = fread (pData, sizeof(char), iDatasize, file);
     assert (iReadCount == iDatasize);
 
     if (munge)
@@ -106,10 +106,10 @@ void    LoadIGCFile(FILE* file, ImissionIGC* pMission, void(*munge)(int size, ch
 
 //Imago
 //moved from FedSrv.CPP and made data private on 7/28/08
-int CmissionIGC::TechBitFromToken(const wchar_t * szToken)
+int CmissionIGC::TechBitFromToken(const char * szToken)
 {
   int itoken = 0;
-  while (lstrcmpi(this->rgTechs[itoken], szToken))
+  while (strcmpi(this->rgTechs[itoken], szToken))
   {
     if(itoken == cTechs)
       return NA;
@@ -119,11 +119,11 @@ int CmissionIGC::TechBitFromToken(const wchar_t * szToken)
 }
 
 //moved from FedSrv.CPP and made data private on 7/28/08
-void CmissionIGC::TechsListToBits(const wchar_t * szTechs, TechTreeBitMask & ttbm)
+void CmissionIGC::TechsListToBits(const char * szTechs, TechTreeBitMask & ttbm)
 {
 	ttbm.ClearAll();
 	
-	if(Strcmp(szTechs,L"0") == 0) {
+	if(strcmp(szTechs,"0") == 0) {
 		return;
 	}
 
@@ -133,20 +133,20 @@ void CmissionIGC::TechsListToBits(const wchar_t * szTechs, TechTreeBitMask & ttb
 		return;
 	}
 
-	wchar_t * token;
-	token = wcstok((wchar_t *)szTechs, L" ");
+  char * token;
+  token = strtok((char *) szTechs, " ");
   while(token)
   {
     ttbm.SetBit(TechBitFromToken(token));
-    token = wcstok(NULL, L" ");
+    token = strtok(NULL, " ");
   }
 }
 
 //gets a single flag names part mask the hard way
-PartMask CmissionIGC::PartMaskFromToken(const wchar_t * szToken, EquipmentType et)
+PartMask CmissionIGC::PartMaskFromToken(const char * szToken, EquipmentType et)
 {
 	if (isdigit(szToken[0]))
-		return _wtoi(szToken);
+		return atoi(szToken);
 
 	ZString strTemp = ZString(szToken);
 	strTemp.RemoveAll(' ');	
@@ -155,7 +155,7 @@ PartMask CmissionIGC::PartMaskFromToken(const wchar_t * szToken, EquipmentType e
 		return 0;
 
 	int itoken = 0;
-	while (lstrcmpi(this->rgParts[et][itoken],(PCC)strTemp))
+	while (strcmpi(this->rgParts[et][itoken],(PCC)strTemp))
 	{
 		if(itoken == 16)
 			return 0;
@@ -200,7 +200,7 @@ PartMask CmissionIGC::PartMaskFromToken(const wchar_t * szToken, EquipmentType e
 }
 
 // flag name helper function, if any IGC.h ability mask changes, this must change as well.
-AbilityBitMask AbilitiesListToMask(const wchar_t * szAbilities, AbilityType at) {
+AbilityBitMask AbilitiesListToMask(const char * szAbilities, AbilityType at) {
 	ZString strCapabilities = ZString(szAbilities);
 	if (strCapabilities.IsEmpty())
 		return 0;
@@ -352,17 +352,17 @@ AbilityBitMask AbilitiesListToMask(const wchar_t * szAbilities, AbilityType at) 
 
 
 // for making an allowed hull/hardpoint equipment mask from bit flag names
-PartMask CmissionIGC::PartsListToMask(const wchar_t * szParts, EquipmentType et)
+PartMask CmissionIGC::PartsListToMask(const char * szParts, EquipmentType et)
 {
 	if (isdigit(szParts[0]))
-		return _wtoi(szParts);
+		return atoi(szParts);
 
-	wchar_t * token; PartMask pm = 0;
-	token = wcstok((wchar_t *)szParts, L" ");
+	char * token; PartMask pm = 0;
+	token = strtok((char *) szParts, " ");
 	while(token)
 	{
 		pm += this->PartMaskFromToken(token,et);
-		token = wcstok(NULL, L" ");
+		token = strtok(NULL, " ");
 	}
 	return pm;
 }
@@ -373,8 +373,8 @@ ZString CmissionIGC::BitsToTechsList(TechTreeBitMask & ttbm)
 	ZString strList;
 
 	//use Zmask.ToString() if the new rgTechs isn't loaded
-	if(Strcmp((PCC)GetTechFlagName(0),L"unavailable") != 0) {
-		wchar_t  * pszTechs = new wchar_t[(c_ttbMax + 7) / 8 * 2 + 1];
+	if(strcmp((PCC)GetTechFlagName(0),"unavailable") != 0) {
+		char  * pszTechs = new char[(c_ttbMax + 7) / 8 * 2 + 1];
 		ttbm.ToString(pszTechs,(c_ttbMax + 7) / 8 * 2 + 1);
 		pszTechs[100] = '\0';  //tidy
 		return ZString(pszTechs);
@@ -388,14 +388,14 @@ ZString CmissionIGC::BitsToTechsList(TechTreeBitMask & ttbm)
 				if(i < c_ttbMax - 1)
 					strList += " ";
 			} else {
-				debugf(L"BitsToTechsList: got a nameless tech bit #%i\n",i);
+				debugf("BitsToTechsList: got a nameless tech bit #%i\n",i);
 			}
 		} 
 	}
 	if(strList.GetLength() < 3) {
 		if (!(ttbm.GetAllZero())) {
 			//use Zmask.ToString() for an empty mask name list that isn't supposed to be
-			wchar_t  * pszTechs = new wchar_t[(c_ttbMax + 7) / 8 * 2 + 1];
+			char  * pszTechs = new char[(c_ttbMax + 7) / 8 * 2 + 1];
 			ttbm.ToString(pszTechs,(c_ttbMax + 7) / 8 * 2 + 1);
 			pszTechs[100] = '\0';  //tidy
 			return ZString(pszTechs);
@@ -443,10 +443,10 @@ ZString CmissionIGC::BitsToPartsList(PartMask & pm, EquipmentType et)
 }
 
 bool CmissionIGC::LoadTechBitsList() {
-	typedef std::vector< std::vector<std::wstring> > csvVector;
+	typedef std::vector< std::vector<std::string> > csvVector;
 	//Load Techbits
-	ZString strFile = ZString(UTL::artworkPath()) + ZString(this->GetMissionParams()->szIGCStaticFile) + L"\\BitsOfTechs.csv";
-	std::wfstream file0((PCC)strFile, std::ios::in);
+	ZString strFile = ZString(UTL::artworkPath()) + ZString(this->GetMissionParams()->szIGCStaticFile) + "\\BitsOfTechs.csv";
+	std::fstream file0((PCC)strFile, std::ios::in);
 	if(file0.is_open()) {
 		csvVector csvData0;
 		readCSV(file0, csvData0);
@@ -456,11 +456,11 @@ bool CmissionIGC::LoadTechBitsList() {
 			if (i != csvData0.begin()) { //skip the header row
 				int id = 0;
 				int colnum = 1;
-				for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+				for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 				{
-					std::wstring sdata = *j;
+					std::string sdata = *j;
 					if(j == i->begin()) {
-						id = _wtoi(sdata.c_str()); //aka BitID
+						id = atoi(sdata.c_str()); //aka BitID
 					} else {
 						if(colnum == 2)
 							strFlag = ZString(sdata.c_str()); //aka short name
@@ -479,10 +479,10 @@ bool CmissionIGC::LoadTechBitsList() {
 	return false;
 }
 bool CmissionIGC::LoadPartsBitsList() {
-	typedef std::vector< std::vector<std::wstring> > csvVector;
+	typedef std::vector< std::vector<std::string> > csvVector;
 	//Load Partbits
-	ZString strFile = ZString(UTL::artworkPath()) + ZString(this->GetMissionParams()->szIGCStaticFile) + L"\\BitsOfParts.csv";
-	std::wfstream file0((PCC)strFile, std::ios::in);
+	ZString strFile = ZString(UTL::artworkPath()) + ZString(this->GetMissionParams()->szIGCStaticFile) + "\\BitsOfParts.csv";
+	std::fstream file0((PCC)strFile, std::ios::in);
 	if(file0.is_open()) {
 		csvVector csvData0;
 		readCSV(file0, csvData0);
@@ -497,11 +497,11 @@ bool CmissionIGC::LoadPartsBitsList() {
 					if(et == ET_MAX - 1)
 						break;  //stop now no matter what
 				}
-				for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+				for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 				{
-					std::wstring sdata = *j;
+					std::string sdata = *j;
 					if(j == i->begin()) {
-						et = _wtoi(sdata.c_str());
+						et = atoi(sdata.c_str());
 						
 					} else {
 						if (colnum == 2)
@@ -521,16 +521,16 @@ bool CmissionIGC::LoadPartsBitsList() {
 
 
 //Imago be lazy and read in a CSV format
-void readCSV(std::wistream &input, std::vector< std::vector<std::wstring> > &output)
+void readCSV(std::istream &input, std::vector< std::vector<std::string> > &output)
 {
-	std::wstring csvLine;
+	std::string csvLine;
 	while( std::getline(input, csvLine) )
 	{
-		std::wistringstream csvStream(csvLine);
-		std::vector<std::wstring> csvColumn;
-		std::wstring csvElement;
+		std::istringstream csvStream(csvLine);
+		std::vector<std::string> csvColumn;
+		std::string csvElement;
 
-		while( std::getline(csvStream, csvElement, L'\t') )
+		while( std::getline(csvStream, csvElement, '\t') )
 		{
 			csvColumn.push_back(csvElement);
 		}		
@@ -542,14 +542,14 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 {
 	ImissionIGC* pMission = this;
 
-	typedef std::vector< std::vector<std::wstring> > csvVector;
+	typedef std::vector< std::vector<std::string> > csvVector;
 
 	Time now = pMission->GetLastUpdate();
 
 	if (!(pMission->LoadTechBitsList()))
-		debugf(L"Warning: Failed to load Tech mask bit flags! (\\artwork\\%s\\BitsOfTechs.csv)\n",pMission->GetMissionParams()->szIGCStaticFile);
+		debugf("Warning: Failed to load Tech mask bit flags! (\\artwork\\%s\\BitsOfTechs.csv)\n",pMission->GetMissionParams()->szIGCStaticFile);
 	if (!(pMission->LoadPartsBitsList()))
-		debugf(L"Warning: Failed to load Part mask bit flags! (\\artwork\\%s\\BitsOfParts.csv)\n",pMission->GetMissionParams()->szIGCStaticFile);
+		debugf("Warning: Failed to load Part mask bit flags! (\\artwork\\%s\\BitsOfParts.csv)\n",pMission->GetMissionParams()->szIGCStaticFile);
 
 	//our running size
 	int iDatasize = 0;
@@ -583,16 +583,16 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	iSize += sizeof(TreasureData) * 15;
 	*/
 
-	wchar_t* pData = new wchar_t[1024 * 1024];  // 1M max of IGC data
+	char* pData = new char[1024 * 1024];  // 1M max of IGC data
 
 	//Load Constants
-	ZString strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Constants.csv";
-	std::wfstream file((PCC)strFile, std::ios::in);
+	ZString strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Constants.csv";
+	std::fstream file((PCC)strFile, std::ios::in);
 	assert(file.is_open());
 	csvVector csvData;
 	
 	readCSV(file, csvData);
-	Constants* pConstants = (Constants*)(new wchar_t[sizeof(Constants)]);
+	Constants* pConstants = (Constants*)(new char [sizeof(Constants)]);
 	int iLine = 0;
 	int cnt = 0;
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
@@ -602,28 +602,28 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			// two different ordered row/column types (global constants, damage constants)
 			if (iLine < c_fcidMax) {
 				int colnum = 0;
-				for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+				for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 				{
 					colnum++;
-					std::wstring sdata = *j;
+					std::string sdata = *j;
 					if(j == i->begin()) {
-						id = _wtoi(sdata.c_str());
+						id = atoi(sdata.c_str());
 					} else {
 						if(colnum==2)
-							pConstants->floatConstants[id] = _wtof(sdata.c_str());
+							pConstants->floatConstants[id] = atof(sdata.c_str());
 					}
 				}
 			} else {
 				int colnum = 0;
-				for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+				for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 				{
 					colnum++;
-					std::wstring sdata = *j;
+					std::string sdata = *j;
 					if(j == i->begin()) {
-						id = _wtoi(sdata.c_str());
+						id = atoi(sdata.c_str());
 					} else {
 						if(colnum==2)
-							pConstants->damageConstants[id][cnt] = _wtof(sdata.c_str());
+							pConstants->damageConstants[id][cnt] = atof(sdata.c_str());
 					}
 				}
 				cnt++;
@@ -640,17 +640,17 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	*((ObjectType*)pData) = OT_constants;
 	*((int*)(pData + sizeof(ObjectType))) = size;
 	iDatasize += sizeof(int) + sizeof(ObjectType) + size;
-	wmemcpy(pData + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pConstants, iDatasize);
+	memcpy(pData + sizeof(int) + sizeof(ObjectType), pConstants, iDatasize);
 
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Expendables.csv";
-	std::wfstream file10((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Expendables.csv";
+	std::fstream file10((PCC)strFile, std::ios::in);
 	assert(file10.is_open());
 	csvVector csvData4;
 	readCSV(file10, csvData4);
 
 	// Load projectile types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfProjectiles.csv";
-	std::wfstream projfile((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfProjectiles.csv";
+	std::fstream projfile((PCC)strFile, std::ios::in);
 	assert(projfile.is_open());
 	csvData.clear();
 	readCSV(projfile, csvData);
@@ -659,35 +659,35 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataProjectileTypeIGC* pProj = (DataProjectileTypeIGC*)(new wchar_t[size]);
+			DataProjectileTypeIGC* pProj = (DataProjectileTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pProj->projectileTypeID = _wtoi(sdata.c_str());
+					pProj->projectileTypeID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pProj->power = _wtof(sdata.c_str());
+						pProj->power = atof(sdata.c_str());
 					if(colnum == 3)
-						pProj->blastPower = _wtof(sdata.c_str());
+						pProj->blastPower = atof(sdata.c_str());
 					if(colnum == 4)
-						pProj->blastRadius = _wtof(sdata.c_str());
+						pProj->blastRadius = atof(sdata.c_str());
 					if(colnum == 5)
-						pProj->speed = _wtof(sdata.c_str());
+						pProj->speed = atof(sdata.c_str());
 					if(colnum == 6)
-						pProj->lifespan = _wtof(sdata.c_str());
+						pProj->lifespan = atof(sdata.c_str());
 					if(colnum == 7)
 						pProj->damageType = ZString(sdata.c_str()).GetToken().GetInteger();
 					if(colnum == 8)
-						pProj->absoluteF = _wtoi(sdata.c_str());
+						pProj->absoluteF = atoi(sdata.c_str());
 					if(colnum == 9)
-						pProj->bDirectional = _wtoi(sdata.c_str());
+						pProj->bDirectional = atoi(sdata.c_str());
 					if(colnum == 10)
-						pProj->width = _wtof(sdata.c_str());;
+						pProj->width = atof(sdata.c_str());;
 					if(colnum == 11)
-						pProj->ambientSound = _wtoi(sdata.c_str());
+						pProj->ambientSound = atoi(sdata.c_str());
 					if(colnum == 12) {
 						ZString strColor = ZString(sdata.c_str());
 						pProj->color.r = strColor.GetToken().GetInteger();
@@ -696,9 +696,9 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						pProj->color.a = strColor.GetToken().GetInteger();
 					}
 					if(colnum == 13)
-						pProj->radius = _wtof(sdata.c_str());
+						pProj->radius = atof(sdata.c_str());
 					if(colnum == 14)
-						pProj->rotation = _wtof(sdata.c_str());
+						pProj->rotation = atof(sdata.c_str());
 					if(colnum == 15)
 						Strcpy(pProj->modelName,sdata.c_str());
 					if(colnum == 16)
@@ -709,7 +709,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_projectileType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pProj, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pProj, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -717,8 +717,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load missile expendable
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableMissiles.csv";
-	std::wfstream file12((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableMissiles.csv";
+	std::fstream file12((PCC)strFile, std::ios::in);
 	assert(file12.is_open());
 	csvData.clear();
 	readCSV(file12, csvData);
@@ -727,26 +727,26 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataMissileTypeIGC* pMissile = (DataMissileTypeIGC*)(new wchar_t[size]);
-			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new wchar_t[sizeof(DataLauncherTypeIGC)]);
+			DataMissileTypeIGC* pMissile = (DataMissileTypeIGC*)(new char [size]);
+			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new char [sizeof(DataLauncherTypeIGC)]);
 			pPart->partID = 0;
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					id = pMissile->expendabletypeID = _wtoi(sdata.c_str());
+					id = pMissile->expendabletypeID = atoi(sdata.c_str());
 					for(csvVector::iterator m = csvData4.begin(); m != csvData4.end(); ++m)
 					{
 						if (m != csvData4.begin()) {
 							int id2 = 0; int colnum2 = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 									if (id == id2)
 										pPart->expendabletypeID = id2;
 									else 
@@ -754,19 +754,19 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 								} else {
 									if (id == id2) {
 										if(colnum2 == 2)
-											pPart->partID = _wtoi(sdata2.c_str());
+											pPart->partID = atoi(sdata2.c_str());
 										if(colnum2 == 3)
-											pPart->amount = _wtoi(sdata2.c_str());
+											pPart->amount = atoi(sdata2.c_str());
 										if(colnum2 == 4)
-											pPart->successorPartID = _wtoi(sdata2.c_str());
+											pPart->successorPartID = atoi(sdata2.c_str());
 										if(colnum2 == 5)
-											pPart->launchCount = _wtoi(sdata2.c_str());
+											pPart->launchCount = atoi(sdata2.c_str());
 										if(colnum2 == 6)
 											Strcpy(pPart->inventoryLineMDL,sdata2.c_str());
 										if(colnum2 == 7)
-											pMissile->launcherDef.price = _wtoi(sdata2.c_str());
+											pMissile->launcherDef.price = atoi(sdata2.c_str());
 										if(colnum2 == 8)
-											pMissile->launcherDef.timeToBuild = _wtoi(sdata2.c_str());
+											pMissile->launcherDef.timeToBuild = atoi(sdata2.c_str());
 										if(colnum2 == 9)
 											Strcpy(pMissile->launcherDef.modelName,sdata2.c_str());
 										if(colnum2 == 10)
@@ -776,7 +776,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 										if(colnum2 == 12)
 											Strcpy(pMissile->launcherDef.description,sdata2.c_str());
 										if(colnum2 == 13)
-											pMissile->launcherDef.groupID = _wtoi(sdata2.c_str());
+											pMissile->launcherDef.groupID = atoi(sdata2.c_str());
 										if(colnum2 == 14)
 											pMission->TechsListToBits(sdata2.c_str(),pMissile->launcherDef.ttbmRequired);
 										if(colnum2 == 15)
@@ -790,47 +790,47 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pMissile->acceleration = _wtof(sdata.c_str());
+						pMissile->acceleration = atof(sdata.c_str());
 					if(colnum == 3)
-						pMissile->turnRate = _wtof(sdata.c_str());
+						pMissile->turnRate = atof(sdata.c_str());
 					if(colnum == 4)
-						pMissile->initialSpeed = _wtof(sdata.c_str());
+						pMissile->initialSpeed = atof(sdata.c_str());
 					if(colnum == 5)
-						pMissile->lockTime = _wtof(sdata.c_str());
+						pMissile->lockTime = atof(sdata.c_str());
 					if(colnum == 6)
-						pMissile->readyTime = _wtof(sdata.c_str());
+						pMissile->readyTime = atof(sdata.c_str());
 					if(colnum == 7)
-						pMissile->maxLock = _wtof(sdata.c_str());
+						pMissile->maxLock = atof(sdata.c_str());
 					if(colnum == 8)
-						pMissile->chaffResistance = _wtof(sdata.c_str());
+						pMissile->chaffResistance = atof(sdata.c_str());
 					if(colnum == 9)
-						pMissile->dispersion = _wtof(sdata.c_str());
+						pMissile->dispersion = atof(sdata.c_str());
 					if(colnum == 10)
-						pMissile->lockAngle = _wtof(sdata.c_str());
+						pMissile->lockAngle = atof(sdata.c_str());
 					if(colnum == 11)
-						pMissile->power = _wtof(sdata.c_str());
+						pMissile->power = atof(sdata.c_str());
 					if(colnum == 12)
-						pMissile->blastPower = _wtof(sdata.c_str());
+						pMissile->blastPower = atof(sdata.c_str());
 					if(colnum == 13)
-						pMissile->blastRadius = _wtof(sdata.c_str());
+						pMissile->blastRadius = atof(sdata.c_str());
 					if(colnum == 14)
-						pMissile->width = _wtof(sdata.c_str());
+						pMissile->width = atof(sdata.c_str());
 					if(colnum == 15)
 						pMissile->damageType = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 16)
-						pMissile->bDirectional = _wtoi(sdata.c_str());
+						pMissile->bDirectional = atoi(sdata.c_str());
 					if(colnum == 17)
-						pMissile->launchSound = _wtoi(sdata.c_str());
+						pMissile->launchSound = atoi(sdata.c_str());
 					if(colnum == 18)
-						pMissile->ambientSound = _wtoi(sdata.c_str());
+						pMissile->ambientSound = atoi(sdata.c_str());
 					if(colnum == 19)
-						pMissile->loadTime = _wtof(sdata.c_str());
+						pMissile->loadTime = atof(sdata.c_str());
 					if(colnum == 20)
-						pMissile->lifespan = _wtof(sdata.c_str());
+						pMissile->lifespan = atof(sdata.c_str());
 					if(colnum == 21)
-						pMissile->signature = _wtof(sdata.c_str());
+						pMissile->signature = atof(sdata.c_str());
 					if(colnum == 22)
-						pMissile->hitPoints = _wtof(sdata.c_str());
+						pMissile->hitPoints = atof(sdata.c_str());
 					if(colnum == 23)
 						pMissile->defenseType = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 24)
@@ -845,31 +845,31 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						pMissile->color.a = strColor.GetToken().GetInteger();
 					}
 					if(colnum == 27)
-						pMissile->radius = _wtof(sdata.c_str());
+						pMissile->radius = atof(sdata.c_str());
 					if(colnum == 28)
-						pMissile->rotation = _wtof(sdata.c_str());
+						pMissile->rotation = atof(sdata.c_str());
 					if(colnum == 29)
 						Strcpy(pMissile->modelName,sdata.c_str());
 					if(colnum == 30)
 						Strcpy(pMissile->textureName,sdata.c_str());
 					if(colnum == 31)
-						pMissile->launcherDef.signature = _wtof(sdata.c_str());
+						pMissile->launcherDef.signature = atof(sdata.c_str());
 					if(colnum == 32)
-						pMissile->launcherDef.mass = _wtof(sdata.c_str());
+						pMissile->launcherDef.mass = atof(sdata.c_str());
 					if(colnum == 33)
 						pMissile->launcherDef.partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Magazine);
 					if(colnum == 34)
-						pMissile->launcherDef.expendableSize = _wtoi(sdata.c_str());
+						pMissile->launcherDef.expendableSize = atoi(sdata.c_str());
 				}
 			}
 
 			if (pPart->partID ==0) {
-				debugf(L"non-buyable magazine (for drones only) %i\n",pMissile->expendabletypeID);
+				debugf("non-buyable magazine (for drones only) %i\n",pMissile->expendabletypeID);
 			}
 
 			*((ObjectType*)(pData + iDatasize)) = OT_missileType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pMissile, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pMissile, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -877,8 +877,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load probes expendable
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableProbes.csv";
-	std::wfstream file18((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableProbes.csv";
+	std::fstream file18((PCC)strFile, std::ios::in);
 	assert(file18.is_open());
 	csvData.clear();
 	readCSV(file18, csvData);
@@ -887,45 +887,45 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataProbeTypeIGC* pProbe = (DataProbeTypeIGC*)(new wchar_t[size]);
-			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new wchar_t[sizeof(DataLauncherTypeIGC)]);
+			DataProbeTypeIGC* pProbe = (DataProbeTypeIGC*)(new char [size]);
+			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new char [sizeof(DataLauncherTypeIGC)]);
 			pPart->partID = 0;
 
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					id = pProbe->expendabletypeID = _wtoi(sdata.c_str());
+					id = pProbe->expendabletypeID = atoi(sdata.c_str());
 					for(csvVector::iterator m = csvData4.begin(); m != csvData4.end(); ++m)
 					{
 						if (m != csvData4.begin()) {
 							int id2 = 0; int colnum2 = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 									if (id == id2)
 										pPart->expendabletypeID = id2;
 								} else {
 									if (id == id2) {
 										if(colnum2 == 2)
-											pPart->partID = _wtoi(sdata2.c_str());
+											pPart->partID = atoi(sdata2.c_str());
 										if(colnum2 == 3)
-											pPart->amount = _wtoi(sdata2.c_str());
+											pPart->amount = atoi(sdata2.c_str());
 										if(colnum2 == 4)
-											pPart->successorPartID = _wtoi(sdata2.c_str());
+											pPart->successorPartID = atoi(sdata2.c_str());
 										if(colnum2 == 5)
-											pPart->launchCount = _wtoi(sdata2.c_str());
+											pPart->launchCount = atoi(sdata2.c_str());
 										if(colnum2 == 6)
 											Strcpy(pPart->inventoryLineMDL,sdata2.c_str());
 										if(colnum2 == 7)
-											pProbe->launcherDef.price = _wtoi(sdata2.c_str());
+											pProbe->launcherDef.price = atoi(sdata2.c_str());
 										if(colnum2 == 8)
-											pProbe->launcherDef.timeToBuild = _wtoi(sdata2.c_str());
+											pProbe->launcherDef.timeToBuild = atoi(sdata2.c_str());
 										if(colnum2 == 9)
 											Strcpy(pProbe->launcherDef.modelName,sdata2.c_str());
 										if(colnum2 == 10)
@@ -935,7 +935,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 										if(colnum2 == 12)
 											Strcpy(pProbe->launcherDef.description,sdata2.c_str());
 										if(colnum2 == 13)
-											pProbe->launcherDef.groupID = _wtoi(sdata2.c_str());
+											pProbe->launcherDef.groupID = atoi(sdata2.c_str());
 										if(colnum2 == 14)
 											pMission->TechsListToBits(sdata2.c_str(),pProbe->launcherDef.ttbmRequired);
 										if(colnum2 == 15)
@@ -947,29 +947,29 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pProbe->scannerRange = _wtof(sdata.c_str());
+						pProbe->scannerRange = atof(sdata.c_str());
 					if(colnum == 3)
-						pProbe->dtimeBurst = _wtof(sdata.c_str());
+						pProbe->dtimeBurst = atof(sdata.c_str());
 					if(colnum == 4)
-						pProbe->dispersion = _wtof(sdata.c_str());
+						pProbe->dispersion = atof(sdata.c_str());
 					if(colnum == 5)
-						pProbe->accuracy = _wtof(sdata.c_str());
+						pProbe->accuracy = atof(sdata.c_str());
 					if(colnum == 6)
-						pProbe->ammo = _wtoi(sdata.c_str());
+						pProbe->ammo = atoi(sdata.c_str());
 					if(colnum == 7)
-						pProbe->projectileTypeID = _wtoi(sdata.c_str());
+						pProbe->projectileTypeID = atoi(sdata.c_str());
 					if(colnum == 8)
-						pProbe->ambientSound = _wtoi(sdata.c_str());
+						pProbe->ambientSound = atoi(sdata.c_str());
 					if(colnum == 9)
-						pProbe->dtRipcord = _wtof(sdata.c_str());
+						pProbe->dtRipcord = atof(sdata.c_str());
 					if(colnum == 10)
-						pProbe->loadTime = _wtof(sdata.c_str());					
+						pProbe->loadTime = atof(sdata.c_str());					
 					if(colnum == 11)
-						pProbe->lifespan = _wtof(sdata.c_str());
+						pProbe->lifespan = atof(sdata.c_str());
 					if(colnum == 12)
-						pProbe->signature = _wtof(sdata.c_str());
+						pProbe->signature = atof(sdata.c_str());
 					if(colnum == 13)
-						pProbe->hitPoints = _wtof(sdata.c_str());
+						pProbe->hitPoints = atof(sdata.c_str());
 					if(colnum == 14)
 						pProbe->defenseType = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 15)
@@ -984,30 +984,30 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						pProbe->color.a = strColor.GetToken().GetInteger();
 					}
 					if(colnum == 18)
-						pProbe->radius = _wtof(sdata.c_str());
+						pProbe->radius = atof(sdata.c_str());
 					if(colnum == 19)
-						pProbe->rotation = _wtof(sdata.c_str());
+						pProbe->rotation = atof(sdata.c_str());
 					if(colnum == 20)
 						Strcpy(pProbe->modelName,sdata.c_str());
 					if(colnum == 21)
 						Strcpy(pProbe->textureName,sdata.c_str());
 					if(colnum == 22)
-						pProbe->launcherDef.signature = _wtof(sdata.c_str());
+						pProbe->launcherDef.signature = atof(sdata.c_str());
 					if(colnum == 23)
-						pProbe->launcherDef.mass = _wtof(sdata.c_str());
+						pProbe->launcherDef.mass = atof(sdata.c_str());
 					if(colnum==24)
 						pProbe->launcherDef.partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Dispenser);
 					if(colnum==25)
-						pProbe->launcherDef.expendableSize = _wtoi(sdata.c_str());
+						pProbe->launcherDef.expendableSize = atoi(sdata.c_str());
 				}
 			}
 			//NYI handle this  (the asserts were commented out anyways)
 			if (pPart->partID ==0)
-				debugf(L"ImportStaticIGCObjs: non-launchable probe/tower (for drone use only) %i\n",pProbe->expendabletypeID);
+				debugf("ImportStaticIGCObjs: non-launchable probe/tower (for drone use only) %i\n",pProbe->expendabletypeID);
 
 			*((ObjectType*)(pData + iDatasize)) = OT_probeType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pProbe, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pProbe, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1015,8 +1015,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load chaff expendable
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableChaff.csv";
-	std::wfstream file9((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableChaff.csv";
+	std::fstream file9((PCC)strFile, std::ios::in);
 	assert(file9.is_open());
 	csvData.clear();
 	readCSV(file9, csvData);
@@ -1025,26 +1025,26 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataChaffTypeIGC* pChaff = (DataChaffTypeIGC*)(new wchar_t[size]);
-			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new wchar_t[sizeof(DataLauncherTypeIGC)]);
+			DataChaffTypeIGC* pChaff = (DataChaffTypeIGC*)(new char [size]);
+			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new char [sizeof(DataLauncherTypeIGC)]);
 			pPart->partID = 0;
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					id = pChaff->expendabletypeID = _wtoi(sdata.c_str());
+					id = pChaff->expendabletypeID = atoi(sdata.c_str());
 					for(csvVector::iterator m = csvData4.begin(); m != csvData4.end(); ++m)
 					{
 						if (m != csvData4.begin()) {
 							int id2 = 0; int colnum2 = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 									if (id == id2)
 										pPart->expendabletypeID = id2;
 									else 
@@ -1052,19 +1052,19 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 								} else {
 									if (id == id2) {
 										if(colnum2 == 2)
-											pPart->partID = _wtoi(sdata2.c_str());
+											pPart->partID = atoi(sdata2.c_str());
 										if(colnum2 == 3)
-											pPart->amount = _wtoi(sdata2.c_str());
+											pPart->amount = atoi(sdata2.c_str());
 										if(colnum2 == 4)
-											pPart->successorPartID = _wtoi(sdata2.c_str());
+											pPart->successorPartID = atoi(sdata2.c_str());
 										if(colnum2 == 5)
-											pPart->launchCount = _wtoi(sdata2.c_str());
+											pPart->launchCount = atoi(sdata2.c_str());
 										if(colnum2 == 6)
 											Strcpy(pPart->inventoryLineMDL,sdata2.c_str());
 										if(colnum2 == 7)
-											pChaff->launcherDef.price = _wtoi(sdata2.c_str());
+											pChaff->launcherDef.price = atoi(sdata2.c_str());
 										if(colnum2 == 8)
-											pChaff->launcherDef.timeToBuild = _wtoi(sdata2.c_str());
+											pChaff->launcherDef.timeToBuild = atoi(sdata2.c_str());
 										if(colnum2 == 9)
 											Strcpy(pChaff->launcherDef.modelName,sdata2.c_str());
 										if(colnum2 == 10)
@@ -1074,7 +1074,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 										if(colnum2 == 12)
 											Strcpy(pChaff->launcherDef.description,sdata2.c_str());
 										if(colnum2 == 13)
-											pChaff->launcherDef.groupID = _wtoi(sdata2.c_str());
+											pChaff->launcherDef.groupID = atoi(sdata2.c_str());
 										if(colnum2 == 14)
 											pMission->TechsListToBits(sdata2.c_str(),pChaff->launcherDef.ttbmRequired);
 										if(colnum2 == 15)
@@ -1088,15 +1088,15 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pChaff->chaffStrength = _wtof(sdata.c_str());
+						pChaff->chaffStrength = atof(sdata.c_str());
 					if(colnum == 3)
-						pChaff->loadTime = _wtof(sdata.c_str());
+						pChaff->loadTime = atof(sdata.c_str());
 					if(colnum == 4)
-						pChaff->lifespan = _wtof(sdata.c_str());
+						pChaff->lifespan = atof(sdata.c_str());
 					if(colnum == 5)
-						pChaff->signature = _wtof(sdata.c_str());
+						pChaff->signature = atof(sdata.c_str());
 					if(colnum == 6)
-						pChaff->hitPoints = _wtof(sdata.c_str());
+						pChaff->hitPoints = atof(sdata.c_str());
 					if(colnum == 7)
 						pChaff->defenseType = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 8)
@@ -1111,33 +1111,33 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						pChaff->color.a = strColor.GetToken().GetInteger();
 					}
 					if(colnum == 11)
-						pChaff->radius = _wtof(sdata.c_str());
+						pChaff->radius = atof(sdata.c_str());
 					if(colnum == 12)
-						pChaff->rotation = _wtof(sdata.c_str());
+						pChaff->rotation = atof(sdata.c_str());
 					if(colnum == 13)
 						Strcpy(pChaff->modelName,sdata.c_str());
 					if(colnum == 14)
 						Strcpy(pChaff->textureName,sdata.c_str());
 					if(colnum == 15)
-						pChaff->launcherDef.signature = _wtof(sdata.c_str());
+						pChaff->launcherDef.signature = atof(sdata.c_str());
 					if(colnum == 16)
-						pChaff->launcherDef.mass = _wtof(sdata.c_str());
+						pChaff->launcherDef.mass = atof(sdata.c_str());
 					if(colnum==17)
 						pChaff->launcherDef.partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_ChaffLauncher);
 					if(colnum==18)
-						pChaff->launcherDef.expendableSize = _wtoi(sdata.c_str());
+						pChaff->launcherDef.expendableSize = atoi(sdata.c_str());
 
 				}
 			}
 
 			//NYI handle this
 			if (pPart->partID ==0)
-				debugf(L"ImportStaticIGCObjs: non-launchable chaff (for drone use only) %i\n",pChaff->expendabletypeID);
+				debugf("ImportStaticIGCObjs: non-launchable chaff (for drone use only) %i\n",pChaff->expendabletypeID);
 
 
 			*((ObjectType*)(pData + iDatasize)) = OT_chaffType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pChaff, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pChaff, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1145,8 +1145,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load mines expendable
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableMines.csv";
-	std::wfstream file17((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableMines.csv";
+	std::fstream file17((PCC)strFile, std::ios::in);
 	assert(file17.is_open());
 	csvData.clear();
 	readCSV(file17, csvData);
@@ -1155,27 +1155,27 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataMineTypeIGC* pMine = (DataMineTypeIGC*)(new wchar_t[size]);
-			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new wchar_t[sizeof(DataLauncherTypeIGC)]);
+			DataMineTypeIGC* pMine = (DataMineTypeIGC*)(new char [size]);
+			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new char [sizeof(DataLauncherTypeIGC)]);
 			pPart->partID = 0;
 
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					id = pMine->expendabletypeID = _wtoi(sdata.c_str());
+					id = pMine->expendabletypeID = atoi(sdata.c_str());
 					for(csvVector::iterator m = csvData4.begin(); m != csvData4.end(); ++m)
 					{
 						if (m != csvData4.begin()) {
 							int id2 = 0; int colnum2 = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 									if (id == id2)
 										pPart->expendabletypeID = id2;
 									else 
@@ -1183,19 +1183,19 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 								} else {
 									if (id == id2) {
 										if(colnum2 == 2)
-											pPart->partID = _wtoi(sdata2.c_str());
+											pPart->partID = atoi(sdata2.c_str());
 										if(colnum2 == 3)
-											pPart->amount = _wtoi(sdata2.c_str());
+											pPart->amount = atoi(sdata2.c_str());
 										if(colnum2 == 4)
-											pPart->successorPartID = _wtoi(sdata2.c_str());
+											pPart->successorPartID = atoi(sdata2.c_str());
 										if(colnum2 == 5)
-											pPart->launchCount = _wtoi(sdata2.c_str());
+											pPart->launchCount = atoi(sdata2.c_str());
 										if(colnum2 == 6)
 											Strcpy(pPart->inventoryLineMDL,sdata2.c_str());
 										if(colnum2 == 7)
-											pMine->launcherDef.price = _wtoi(sdata2.c_str());
+											pMine->launcherDef.price = atoi(sdata2.c_str());
 										if(colnum2 == 8)
-											pMine->launcherDef.timeToBuild = _wtoi(sdata2.c_str());
+											pMine->launcherDef.timeToBuild = atoi(sdata2.c_str());
 										if(colnum2 == 9)
 											Strcpy(pMine->launcherDef.modelName,sdata2.c_str());
 										if(colnum2 == 10)
@@ -1205,7 +1205,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 										if(colnum2 == 12)
 											Strcpy(pMine->launcherDef.description,sdata2.c_str());
 										if(colnum2 == 13)
-											pMine->launcherDef.groupID = _wtoi(sdata2.c_str());
+											pMine->launcherDef.groupID = atoi(sdata2.c_str());
 										if(colnum2 == 14)
 											pMission->TechsListToBits(sdata2.c_str(),pMine->launcherDef.ttbmRequired);
 										if(colnum2 == 15)
@@ -1219,21 +1219,21 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pMine->radius= _wtof(sdata.c_str());
+						pMine->radius= atof(sdata.c_str());
 					if(colnum == 3)
-						pMine->power = _wtof(sdata.c_str());
+						pMine->power = atof(sdata.c_str());
 					if(colnum == 4)
-						pMine->endurance = _wtof(sdata.c_str());
+						pMine->endurance = atof(sdata.c_str());
 					if(colnum == 5)
 						pMine->damageType = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 6)
-						pMine->loadTime = _wtof(sdata.c_str());
+						pMine->loadTime = atof(sdata.c_str());
 					if(colnum == 7)
-						pMine->lifespan = _wtof(sdata.c_str());
+						pMine->lifespan = atof(sdata.c_str());
 					if(colnum == 8)
-						pMine->signature = _wtof(sdata.c_str());
+						pMine->signature = atof(sdata.c_str());
 					if(colnum == 9)
-						pMine->hitPoints = _wtof(sdata.c_str());
+						pMine->hitPoints = atof(sdata.c_str());
 					if(colnum == 10)
 						pMine->defenseType = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 11)
@@ -1249,30 +1249,30 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 					//there can only be one radius - MineType Data or Object Data...
 					//if(colnum == 14)
-					//	pMine->radius = _wtof(sdata.c_str());
+					//	pMine->radius = atof(sdata.c_str());
 					if(colnum == 15)
-						pMine->rotation = _wtof(sdata.c_str());
+						pMine->rotation = atof(sdata.c_str());
 					if(colnum == 16)
 						Strcpy(pMine->modelName,sdata.c_str());
 					if(colnum == 17)
 						Strcpy(pMine->textureName,sdata.c_str());
 					if(colnum == 18)
-						pMine->launcherDef.signature = _wtof(sdata.c_str());
+						pMine->launcherDef.signature = atof(sdata.c_str());
 					if(colnum == 19)
-						pMine->launcherDef.mass = _wtof(sdata.c_str());
+						pMine->launcherDef.mass = atof(sdata.c_str());
 					if(colnum==20)
 						pMine->launcherDef.partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Dispenser);
 					if(colnum==21)
-						pMine->launcherDef.expendableSize = _wtoi(sdata.c_str());
+						pMine->launcherDef.expendableSize = atoi(sdata.c_str());
 				}
 			}
 			//NYI handle this
 			if (pPart->partID ==0)
-				debugf(L"ImportStaticIGCObjs: non-launchable mine (for drone use only) %i\n",pMine->expendabletypeID);
+				debugf("ImportStaticIGCObjs: non-launchable mine (for drone use only) %i\n",pMine->expendabletypeID);
 
 			*((ObjectType*)(pData + iDatasize)) = OT_mineType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pMine, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pMine, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1280,8 +1280,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load afterburner part types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Afterburners.csv";
-	std::wfstream file7((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Afterburners.csv";
+	std::fstream file7((PCC)strFile, std::ios::in);
 	assert(file7.is_open());
 	csvData.clear();
 	readCSV(file7, csvData);
@@ -1290,41 +1290,41 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataAfterburnerTypeIGC* pPart = (DataAfterburnerTypeIGC*)(new wchar_t[size]);
+			DataAfterburnerTypeIGC* pPart = (DataAfterburnerTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pPart->partID = _wtoi(sdata.c_str());
+					pPart->partID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pPart->fuelConsumption = _wtof(sdata.c_str());
+						pPart->fuelConsumption = atof(sdata.c_str());
 					if(colnum == 3)
-						pPart->maxThrust = _wtof(sdata.c_str());
+						pPart->maxThrust = atof(sdata.c_str());
 					if(colnum == 4)
-						pPart->onRate = _wtof(sdata.c_str());
+						pPart->onRate = atof(sdata.c_str());
 					if(colnum == 5)
-						pPart->offRate = _wtof(sdata.c_str());
+						pPart->offRate = atof(sdata.c_str());
 					if(colnum == 6)
-						pPart->interiorSound = _wtoi(sdata.c_str());
+						pPart->interiorSound = atoi(sdata.c_str());
 					if(colnum == 7)
-						pPart->exteriorSound = _wtoi(sdata.c_str());
+						pPart->exteriorSound = atoi(sdata.c_str());
 					if(colnum == 8)
-						pPart->mass = _wtof(sdata.c_str());
+						pPart->mass = atof(sdata.c_str());
 					if(colnum == 9)
-						pPart->signature = _wtof(sdata.c_str());
+						pPart->signature = atof(sdata.c_str());
 					if(colnum == 10)
-						pPart->successorPartID = _wtoi(sdata.c_str());
+						pPart->successorPartID = atoi(sdata.c_str());
 					if(colnum == 11)
 						pPart->partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Afterburner); //
 					if(colnum == 12)
 						Strcpy(pPart->inventoryLineMDL,sdata.c_str());
 					if(colnum == 13)
-						pPart->price = _wtoi(sdata.c_str());
+						pPart->price = atoi(sdata.c_str());
 					if(colnum == 14)
-						pPart->timeToBuild = _wtoi(sdata.c_str());
+						pPart->timeToBuild = atoi(sdata.c_str());
 					if(colnum == 15)
 						Strcpy(pPart->modelName,sdata.c_str());
 					if(colnum == 16)
@@ -1334,7 +1334,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 18)
 						Strcpy(pPart->description,sdata.c_str());
 					if(colnum == 19)
-						pPart->groupID = _wtoi(sdata.c_str());
+						pPart->groupID = atoi(sdata.c_str());
 					if(colnum == 20)
 						pMission->TechsListToBits(sdata.c_str(),pPart->ttbmRequired);
 					if(colnum == 21)
@@ -1344,7 +1344,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pPart->equipmentType = ET_Afterburner;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPart, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPart, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1352,8 +1352,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load weapon part types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Weapons.csv";
-	std::wfstream file11((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Weapons.csv";
+	std::fstream file11((PCC)strFile, std::ios::in);
 	assert(file11.is_open());
 	csvData.clear();
 	readCSV(file11, csvData);
@@ -1362,47 +1362,47 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataWeaponTypeIGC* pPart = (DataWeaponTypeIGC*)(new wchar_t[size]);
+			DataWeaponTypeIGC* pPart = (DataWeaponTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pPart->partID = _wtoi(sdata.c_str());
+					pPart->partID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pPart->dtimeReady = _wtof(sdata.c_str());
+						pPart->dtimeReady = atof(sdata.c_str());
 					if(colnum == 3)
-						pPart->dtimeBurst = _wtof(sdata.c_str());
+						pPart->dtimeBurst = atof(sdata.c_str());
 					if(colnum == 4)
-						pPart->energyPerShot = _wtof(sdata.c_str());
+						pPart->energyPerShot = atof(sdata.c_str());
 					if(colnum == 5)
-						pPart->dispersion = _wtof(sdata.c_str());
+						pPart->dispersion = atof(sdata.c_str());
 					if(colnum == 6)
-						pPart->cAmmoPerShot = _wtof(sdata.c_str());
+						pPart->cAmmoPerShot = atof(sdata.c_str());
 					if(colnum == 7)
-						pPart->projectileTypeID = _wtoi(sdata.c_str());
+						pPart->projectileTypeID = atoi(sdata.c_str());
 					if(colnum == 8)
-						pPart->activateSound = _wtoi(sdata.c_str());
+						pPart->activateSound = atoi(sdata.c_str());
 					if(colnum == 9)
-						pPart->singleShotSound = _wtoi(sdata.c_str());
+						pPart->singleShotSound = atoi(sdata.c_str());
 					if(colnum == 10)
-						pPart->burstSound = _wtoi(sdata.c_str());
+						pPart->burstSound = atoi(sdata.c_str());
 					if(colnum == 11)
-						pPart->mass = _wtof(sdata.c_str());
+						pPart->mass = atof(sdata.c_str());
 					if(colnum == 12)
-						pPart->signature = _wtof(sdata.c_str());
+						pPart->signature = atof(sdata.c_str());
 					if(colnum == 13)
-						pPart->successorPartID = _wtoi(sdata.c_str());
+						pPart->successorPartID = atoi(sdata.c_str());
 					if(colnum == 14)
 						pPart->partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Weapon);
 					if(colnum == 15)
 						Strcpy(pPart->inventoryLineMDL,sdata.c_str());
 					if(colnum == 16)
-						pPart->price = _wtoi(sdata.c_str());
+						pPart->price = atoi(sdata.c_str());
 					if(colnum == 17)
-						pPart->timeToBuild = _wtoi(sdata.c_str());
+						pPart->timeToBuild = atoi(sdata.c_str());
 					if(colnum == 18)
 						Strcpy(pPart->modelName,sdata.c_str());
 					if(colnum == 19)
@@ -1412,7 +1412,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 21)
 						Strcpy(pPart->description,sdata.c_str());
 					if(colnum == 22)
-						pPart->groupID = _wtoi(sdata.c_str());
+						pPart->groupID = atoi(sdata.c_str());
 					if(colnum == 23)
 						pMission->TechsListToBits(sdata.c_str(),pPart->ttbmRequired);
 					if(colnum == 24)
@@ -1422,7 +1422,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pPart->equipmentType = ET_Weapon;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPart, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPart, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1430,8 +1430,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load pack types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Packs.csv";
-	std::wfstream packfile((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Packs.csv";
+	std::fstream packfile((PCC)strFile, std::ios::in);
 	assert(packfile.is_open());
 	csvData.clear();
 	readCSV(packfile, csvData);
@@ -1440,33 +1440,33 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataPackTypeIGC* pPack = (DataPackTypeIGC*)(new wchar_t[size]);
+			DataPackTypeIGC* pPack = (DataPackTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pPack->partID = _wtoi(sdata.c_str());
+					pPack->partID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pPack->packType = _wtoi(sdata.c_str());
+						pPack->packType = atoi(sdata.c_str());
 					if(colnum == 3)
-						pPack->amount = _wtoi(sdata.c_str());
+						pPack->amount = atoi(sdata.c_str());
 					if(colnum == 4)
-						pPack->mass = _wtof(sdata.c_str());
+						pPack->mass = atof(sdata.c_str());
 					if(colnum == 5)
-						pPack->signature = _wtof(sdata.c_str());
+						pPack->signature = atof(sdata.c_str());
 					if(colnum == 6)
-						pPack->successorPartID = _wtoi(sdata.c_str());
+						pPack->successorPartID = atoi(sdata.c_str());
 					if(colnum == 7)
 						pPack->partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Cloak);
 					if(colnum == 8)
 						Strcpy(pPack->inventoryLineMDL,sdata.c_str());
 					if(colnum == 9)
-						pPack->price = _wtoi(sdata.c_str());
+						pPack->price = atoi(sdata.c_str());
 					if(colnum == 10)
-						pPack->timeToBuild = _wtof(sdata.c_str());
+						pPack->timeToBuild = atof(sdata.c_str());
 					if(colnum == 11)
 						Strcpy(pPack->modelName,sdata.c_str());
 					if(colnum == 12)
@@ -1476,7 +1476,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 14)
 						Strcpy(pPack->description,sdata.c_str());
 					if(colnum == 15)
-						pPack->groupID = _wtoi(sdata.c_str());
+						pPack->groupID = atoi(sdata.c_str());
 					if(colnum == 16)
 						pMission->TechsListToBits(sdata.c_str(),pPack->ttbmRequired);
 					if(colnum == 17)
@@ -1487,7 +1487,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pPack->equipmentType = ET_Pack;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPack, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPack, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1495,8 +1495,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load shield types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Shields.csv";
-	std::wfstream shieldfile((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Shields.csv";
+	std::fstream shieldfile((PCC)strFile, std::ios::in);
 	assert(shieldfile.is_open());
 	csvData.clear();
 	readCSV(shieldfile, csvData);
@@ -1505,39 +1505,39 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataShieldTypeIGC* pShield = (DataShieldTypeIGC*)(new wchar_t[size]);
+			DataShieldTypeIGC* pShield = (DataShieldTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pShield->partID = _wtoi(sdata.c_str());
+					pShield->partID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pShield->rateRegen = _wtof(sdata.c_str());
+						pShield->rateRegen = atof(sdata.c_str());
 					if(colnum == 3)
-						pShield->maxStrength = _wtof(sdata.c_str());
+						pShield->maxStrength = atof(sdata.c_str());
 					if(colnum == 4)
 						pShield->defenseType = ZString(sdata.c_str()).GetToken().GetInteger(); ;
 					if(colnum == 5)
-						pShield->activateSound = _wtoi(sdata.c_str());
+						pShield->activateSound = atoi(sdata.c_str());
 					if(colnum == 6)
-						pShield->deactivateSound = _wtoi(sdata.c_str());
+						pShield->deactivateSound = atoi(sdata.c_str());
 					if(colnum == 7)
-						pShield->mass = _wtof(sdata.c_str());
+						pShield->mass = atof(sdata.c_str());
 					if(colnum == 8)
-						pShield->signature = _wtof(sdata.c_str());
+						pShield->signature = atof(sdata.c_str());
 					if(colnum == 9)
-						pShield->successorPartID = _wtoi(sdata.c_str());
+						pShield->successorPartID = atoi(sdata.c_str());
 					if(colnum == 10)
 						pShield->partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Shield);
 					if(colnum == 11)
 						Strcpy(pShield->inventoryLineMDL,sdata.c_str());
 					if(colnum == 12)
-						pShield->price = _wtoi(sdata.c_str());
+						pShield->price = atoi(sdata.c_str());
 					if(colnum == 13)
-						pShield->timeToBuild = _wtof(sdata.c_str());
+						pShield->timeToBuild = atof(sdata.c_str());
 					if(colnum == 14)
 						Strcpy(pShield->modelName,sdata.c_str());
 					if(colnum == 15)
@@ -1547,7 +1547,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 17)
 						Strcpy(pShield->description,sdata.c_str());
 					if(colnum == 18)
-						pShield->groupID = _wtoi(sdata.c_str());
+						pShield->groupID = atoi(sdata.c_str());
 					if(colnum == 19)
 						pMission->TechsListToBits(sdata.c_str(),pShield->ttbmRequired);
 					if(colnum == 20)
@@ -1557,7 +1557,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pShield->equipmentType = ET_Shield;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pShield, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pShield, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1565,8 +1565,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load cloaks types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Cloaks.csv";
-	std::wfstream cloakfile((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Cloaks.csv";
+	std::fstream cloakfile((PCC)strFile, std::ios::in);
 	assert(cloakfile.is_open());
 	csvData.clear();
 	readCSV(cloakfile, csvData);
@@ -1575,41 +1575,41 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataCloakTypeIGC* pCloak = (DataCloakTypeIGC*)(new wchar_t[size]);
+			DataCloakTypeIGC* pCloak = (DataCloakTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pCloak->partID = _wtoi(sdata.c_str());
+					pCloak->partID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pCloak->energyConsumption = _wtof(sdata.c_str());
+						pCloak->energyConsumption = atof(sdata.c_str());
 					if(colnum == 3)
-						pCloak->maxCloaking = _wtof(sdata.c_str());
+						pCloak->maxCloaking = atof(sdata.c_str());
 					if(colnum == 4)
-						pCloak->onRate = _wtof(sdata.c_str());
+						pCloak->onRate = atof(sdata.c_str());
 					if(colnum == 5)
-						pCloak->offRate = _wtof(sdata.c_str());
+						pCloak->offRate = atof(sdata.c_str());
 					if(colnum == 6)
-						pCloak->engageSound = _wtoi(sdata.c_str());
+						pCloak->engageSound = atoi(sdata.c_str());
 					if(colnum == 7)
-						pCloak->disengageSound = _wtoi(sdata.c_str());
+						pCloak->disengageSound = atoi(sdata.c_str());
 					if(colnum == 8)
-						pCloak->mass = _wtof(sdata.c_str());
+						pCloak->mass = atof(sdata.c_str());
 					if(colnum == 9)
-						pCloak->signature = _wtof(sdata.c_str());
+						pCloak->signature = atof(sdata.c_str());
 					if(colnum == 10)
-						pCloak->successorPartID = _wtoi(sdata.c_str());
+						pCloak->successorPartID = atoi(sdata.c_str());
 					if(colnum == 11)
 						pCloak->partMask = pMission->PartMaskFromToken(sdata.c_str(),ET_Cloak);
 					if(colnum == 12)
 						Strcpy(pCloak->inventoryLineMDL,sdata.c_str());
 					if(colnum == 13)
-						pCloak->price = _wtoi(sdata.c_str());
+						pCloak->price = atoi(sdata.c_str());
 					if(colnum == 14)
-						pCloak->timeToBuild = _wtof(sdata.c_str());
+						pCloak->timeToBuild = atof(sdata.c_str());
 					if(colnum == 15)
 						Strcpy(pCloak->modelName,sdata.c_str());
 					if(colnum == 16)
@@ -1619,7 +1619,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 18)
 						Strcpy(pCloak->description,sdata.c_str());
 					if(colnum == 19)
-						pCloak->groupID = _wtoi(sdata.c_str());
+						pCloak->groupID = atoi(sdata.c_str());
 					if(colnum == 20)
 						pMission->TechsListToBits(sdata.c_str(),pCloak->ttbmRequired);
 					if(colnum == 21)
@@ -1629,7 +1629,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pCloak->equipmentType = ET_Cloak;
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pCloak, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pCloak, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1644,22 +1644,22 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	{
 		if (m != csvData4.begin()) {
 			int colnum2 = 0;
-			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new wchar_t[size]);
-			for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+			DataLauncherTypeIGC * pPart = (DataLauncherTypeIGC*)(new char[size]);
+			for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 			{
 				colnum2++;
-				std::wstring sdata2 = *n;
+				std::string sdata2 = *n;
 				if(n == m->begin()) {
-					pPart->expendabletypeID = _wtoi(sdata2.c_str());
+					pPart->expendabletypeID = atoi(sdata2.c_str());
 				} else {
 					if(colnum2 == 2)
-						pPart->partID = _wtoi(sdata2.c_str());
+						pPart->partID = atoi(sdata2.c_str());
 					if(colnum2 == 3)
-						pPart->amount = _wtoi(sdata2.c_str());
+						pPart->amount = atoi(sdata2.c_str());
 					if(colnum2 == 4)
-						pPart->successorPartID = _wtoi(sdata2.c_str());
+						pPart->successorPartID = atoi(sdata2.c_str());
 					if(colnum2 == 5)
-						pPart->launchCount = _wtoi(sdata2.c_str());
+						pPart->launchCount = atoi(sdata2.c_str());
 					if(colnum2 == 6)
 						Strcpy(pPart->inventoryLineMDL,sdata2.c_str());
 				}
@@ -1667,7 +1667,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_partType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pPart, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pPart, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1677,15 +1677,15 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 
 	// Load hull types & hardpoints
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfShips.csv";
-	std::wfstream file5((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfShips.csv";
+	std::fstream file5((PCC)strFile, std::ios::in);
 	assert(file5.is_open());
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Hardpoints.csv";
-	std::wfstream file6((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Hardpoints.csv";
+	std::fstream file6((PCC)strFile, std::ios::in);
 	assert(file6.is_open());
 	csvVector csvData2;
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ShipsSFX.csv";
-	std::wfstream file8((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ShipsSFX.csv";
+	std::fstream file8((PCC)strFile, std::ios::in);
 	assert(file8.is_open());
 	csvVector csvData3;
 
@@ -1698,39 +1698,39 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataHullTypeIGC* pHull = (DataHullTypeIGC*)(new wchar_t[sizeof(DataHullTypeIGC) + (sizeof(HardpointData) * c_maxMountedWeapons)]); //
+			DataHullTypeIGC* pHull = (DataHullTypeIGC*)(new char [sizeof(DataHullTypeIGC) + (sizeof(HardpointData) * c_maxMountedWeapons)]); //
 			int id = 0; int colnum = 0; 
 			int iHardpoints = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) { // has sfx
-					id = pHull->hullID = _wtoi(sdata.c_str());
+					id = pHull->hullID = atoi(sdata.c_str());
 					for(csvVector::iterator m = csvData3.begin(); m != csvData3.end(); ++m)
 					{
 						if (m != csvData3.begin()) {
 							int id2 = 0; int colnum2 = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 								} else {
 									if (id == id2) {
 										if(colnum2 == 2)
-											pHull->interiorSound = _wtoi(sdata2.c_str());
+											pHull->interiorSound = atoi(sdata2.c_str());
 										if(colnum2 == 3)
-											pHull->exteriorSound = _wtoi(sdata2.c_str());
+											pHull->exteriorSound = atoi(sdata2.c_str());
 										if(colnum2 == 4)
-											pHull->mainThrusterInteriorSound = _wtoi(sdata2.c_str());
+											pHull->mainThrusterInteriorSound = atoi(sdata2.c_str());
 										if(colnum2 == 5)
-											pHull->mainThrusterExteriorSound = _wtoi(sdata2.c_str());
+											pHull->mainThrusterExteriorSound = atoi(sdata2.c_str());
 										if(colnum2 == 6)
-											pHull->manuveringThrusterInteriorSound = _wtoi(sdata2.c_str());
+											pHull->manuveringThrusterInteriorSound = atoi(sdata2.c_str());
 										if(colnum2 == 7)
-											pHull->manuveringThrusterExteriorSound = _wtoi(sdata2.c_str());
+											pHull->manuveringThrusterExteriorSound = atoi(sdata2.c_str());
 									}
 								}
 							}
@@ -1738,69 +1738,69 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pHull->mass = _wtof(sdata.c_str());
+						pHull->mass = atof(sdata.c_str());
 					if(colnum == 3)
-						pHull->signature = _wtof(sdata.c_str());
+						pHull->signature = atof(sdata.c_str());
 					if(colnum == 4)
-						pHull->speed = _wtof(sdata.c_str());
+						pHull->speed = atof(sdata.c_str());
 					if(colnum == 5) {	
 						ZString strMaxTurnRates = ZString(sdata.c_str());
 						for (int i = 0; (i < 3); i++)
-							pHull->maxTurnRates[i] = _wtof(strMaxTurnRates.GetToken());
+							pHull->maxTurnRates[i] = atof(strMaxTurnRates.GetToken());
 					}
 					if(colnum == 6) {	
 						ZString strTurnTorques = ZString(sdata.c_str());
 						for (int i = 0; (i < 3); i++)
-							pHull->turnTorques[i] = _wtof(strTurnTorques.GetToken());
+							pHull->turnTorques[i] = atof(strTurnTorques.GetToken());
 					}
 					if(colnum == 7)	
-						pHull->thrust = _wtof(sdata.c_str());
+						pHull->thrust = atof(sdata.c_str());
 					if(colnum == 8)
-						pHull->sideMultiplier = _wtof(sdata.c_str());
+						pHull->sideMultiplier = atof(sdata.c_str());
 					if(colnum == 9)
-						pHull->backMultiplier = _wtof(sdata.c_str());
+						pHull->backMultiplier = atof(sdata.c_str());
 					if(colnum == 10)
-						pHull->scannerRange = _wtof(sdata.c_str());
+						pHull->scannerRange = atof(sdata.c_str());
 					if(colnum == 11)
-						pHull->maxFuel = _wtof(sdata.c_str());
+						pHull->maxFuel = atof(sdata.c_str());
 					if(colnum == 12)
-						pHull->ecm = _wtof(sdata.c_str());
+						pHull->ecm = atof(sdata.c_str());
 					if(colnum == 13)
-						pHull->length = _wtof(sdata.c_str());
+						pHull->length = atof(sdata.c_str());
 					if(colnum == 14)
-						pHull->maxEnergy = _wtof(sdata.c_str());
+						pHull->maxEnergy = atof(sdata.c_str());
 					if(colnum == 15)
-						pHull->rechargeRate = _wtof(sdata.c_str());
+						pHull->rechargeRate = atof(sdata.c_str());
 					if(colnum == 16)
-						pHull->ripcordSpeed = _wtof(sdata.c_str());
+						pHull->ripcordSpeed = atof(sdata.c_str());
 					if(colnum == 17)
-						pHull->ripcordCost = _wtof(sdata.c_str());
+						pHull->ripcordCost = atof(sdata.c_str());
 					if(colnum == 18)
-						pHull->maxAmmo = _wtoi(sdata.c_str());
+						pHull->maxAmmo = atoi(sdata.c_str());
 					if(colnum == 19)
-						pHull->successorHullID = _wtoi(sdata.c_str());
+						pHull->successorHullID = atoi(sdata.c_str());
 					if(colnum == 20) {
-						pHull->maxWeapons = _wtoi(sdata.c_str());
+						pHull->maxWeapons = atoi(sdata.c_str());
 						if (pHull->maxWeapons != 0) { //has hard points
 							HardpointData * phpd = (HardpointData*)((char*)pHull + size);
 							for(csvVector::iterator k = csvData2.begin(); k != csvData2.end(); ++k)
 							{
 								if (k != csvData2.begin()) {
 									int id2 = 0; int colnum2 = 0;
-									for(std::vector<std::wstring>::iterator l = k->begin(); l != k->end(); ++l)
+									for(std::vector<std::string>::iterator l = k->begin(); l != k->end(); ++l)
 									{
 										colnum2++;
-										std::wstring sdata2 = *l;
+										std::string sdata2 = *l;
 										if(l == k->begin()) {
-											id2 = _wtoi(sdata2.c_str());
+											id2 = atoi(sdata2.c_str());
 											if (id == id2)
 												iHardpoints++;
 										} else {
 											if (id == id2) {
 												if(colnum2 == 2)
-													phpd->interiorSound = _wtoi(sdata2.c_str());
+													phpd->interiorSound = atoi(sdata2.c_str());
 												if(colnum2 == 3)
-													phpd->turnSound = _wtoi(sdata2.c_str());
+													phpd->turnSound = atoi(sdata2.c_str());
 												if(colnum2 == 4)
 													Strcpy(phpd->frameName,sdata2.c_str());
 												if(colnum2 == 5)
@@ -1808,7 +1808,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 												if(colnum2 == 6)
 													phpd->partMask = pMission->PartsListToMask(sdata2.c_str(),ET_Weapon);
 												if(colnum2 == 7)
-													phpd->bFixed = _wtoi(sdata2.c_str());
+													phpd->bFixed = atoi(sdata2.c_str());
 											}
 										}
 									}
@@ -1819,21 +1819,21 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						}
 					}
 					if(colnum == 21)
-						pHull->maxFixedWeapons = _wtoi(sdata.c_str());
+						pHull->maxFixedWeapons = atoi(sdata.c_str());
 					if(colnum == 22)
-						pHull->hitPoints = _wtof(sdata.c_str());
+						pHull->hitPoints = atof(sdata.c_str());
 					if(colnum == 23)		
 						pHull->defenseType = ZString(sdata.c_str()).GetToken().GetInteger();
 					if(colnum == 24)
-						pHull->capacityMagazine = _wtoi(sdata.c_str());
+						pHull->capacityMagazine = atoi(sdata.c_str());
 					if(colnum == 25)
-						pHull->capacityDispenser = _wtoi(sdata.c_str());
+						pHull->capacityDispenser = atoi(sdata.c_str());
 					if(colnum == 26)
-						pHull->capacityChaffLauncher = _wtoi(sdata.c_str());
+						pHull->capacityChaffLauncher = atoi(sdata.c_str());
 					if(colnum == 27) {
 						ZString strParts = ZString(sdata.c_str());
 						for (int i = 0; (i < c_cMaxPreferredPartTypes); i++)
-							pHull->preferredPartsTypes[i] = _wtoi(strParts.GetToken());
+							pHull->preferredPartsTypes[i] = atoi(strParts.GetToken());
 					}
 					if(colnum == 28)
 						pHull->habmCapabilities = AbilitiesListToMask(sdata.c_str(),AT_Hull);
@@ -1852,9 +1852,9 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 35)
 						pHull->pmEquipment[ET_Afterburner] = pMission->PartsListToMask(sdata.c_str(),ET_Afterburner);
 					if(colnum == 36)
-						pHull->price = _wtoi(sdata.c_str());
+						pHull->price = atoi(sdata.c_str());
 					if(colnum == 37)
-						pHull->timeToBuild = _wtoi(sdata.c_str());
+						pHull->timeToBuild = atoi(sdata.c_str());
 					if(colnum == 38)
 						Strcpy(pHull->modelName,sdata.c_str());
 					if(colnum == 39)
@@ -1864,7 +1864,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 41)
 						Strcpy(pHull->description,sdata.c_str());
 					if(colnum == 42)
-						pHull->groupID = _wtoi(sdata.c_str());
+						pHull->groupID = atoi(sdata.c_str());
 					if(colnum == 43)
 						pMission->TechsListToBits(sdata.c_str(),pHull->ttbmRequired);
 					if(colnum == 44)
@@ -1877,7 +1877,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 						
 			*((ObjectType*)(pData + iDatasize)) = OT_hullType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size + (sizeof(HardpointData) * iHardpoints);
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pHull, size + (sizeof(HardpointData) * iHardpoints));
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pHull, size + (sizeof(HardpointData) * iHardpoints));
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size + (sizeof(HardpointData) * iHardpoints);
 			iLines++;
@@ -1886,15 +1886,15 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 
 	// Load gas
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\GlobalAttributes.csv";
-	std::wfstream file16((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\GlobalAttributes.csv";
+	std::fstream file16((PCC)strFile, std::ios::in);
 	assert(file16.is_open());
 	csvVector csvData6;
 	readCSV(file16, csvData6);
 
 	//load developments
-	ZString wstr2File = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Developments.csv";
-	std::wfstream devfile((PCC)wstr2File, std::ios::in);
+	ZString wstr2File = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Developments.csv";
+	std::fstream devfile((PCC)wstr2File, std::ios::in);
 	assert(devfile.is_open());
 	csvData.clear();
 	readCSV(devfile, csvData);
@@ -1904,28 +1904,28 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	{
 		if (i != csvData.begin()) {
 			float fgas[c_gaMax] = {-1.0f};
-			DataDevelopmentIGC* pDev = (DataDevelopmentIGC*)(new wchar_t[size]);
+			DataDevelopmentIGC* pDev = (DataDevelopmentIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pDev->developmentID = _wtoi(sdata.c_str());
+					pDev->developmentID = atoi(sdata.c_str());
 					
 					for(csvVector::iterator m = csvData6.begin(); m != csvData6.end(); ++m)
 					{
 						if (m != csvData6.begin()) {
 							int id2 = 0; int colnum2 = 0; int gaid = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 								} else {
 									if (pDev->developmentID == id2 && colnum2 != 2) {
-										fgas[gaid] = _wtof(sdata2.c_str());
+										fgas[gaid] = atof(sdata2.c_str());
 										gaid++;
 									}
 								}
@@ -1934,11 +1934,11 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pDev->completionSound = _wtoi(sdata.c_str());
+						pDev->completionSound = atoi(sdata.c_str());
 					if(colnum == 3)
-						pDev->price = _wtoi(sdata.c_str());
+						pDev->price = atoi(sdata.c_str());
 					if(colnum == 4)
-						pDev->timeToBuild = _wtof(sdata.c_str());
+						pDev->timeToBuild = atof(sdata.c_str());
 					if(colnum == 5)
 						Strcpy(pDev->modelName,sdata.c_str());
 					if(colnum == 6)
@@ -1948,7 +1948,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 8)
 						Strcpy(pDev->description,sdata.c_str());					
 					if(colnum == 9)
-						pDev->groupID = _wtoi(sdata.c_str());
+						pDev->groupID = atoi(sdata.c_str());
 					if(colnum == 10)
 						pMission->TechsListToBits(sdata.c_str(),pDev->ttbmRequired);
 					if(colnum == 11)
@@ -1962,7 +1962,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			}
 			*((ObjectType*)(pData + iDatasize)) = OT_development;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pDev, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pDev, size);
 			if(i != csvData.end())
 				iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -1970,8 +1970,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load drone types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfDrones.csv";
-	std::wfstream dronefile((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfDrones.csv";
+	std::fstream dronefile((PCC)strFile, std::ios::in);
 	assert(dronefile.is_open());
 	csvData.clear();
 	readCSV(dronefile, csvData);
@@ -1980,31 +1980,31 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataDroneTypeIGC* pDrone = (DataDroneTypeIGC*)(new wchar_t[size]);
+			DataDroneTypeIGC* pDrone = (DataDroneTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pDrone->droneTypeID = _wtoi(sdata.c_str());
+					pDrone->droneTypeID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
-						pDrone->shootSkill = _wtof(sdata.c_str());
+						pDrone->shootSkill = atof(sdata.c_str());
 					if(colnum == 3)
-						pDrone->moveSkill = _wtof(sdata.c_str());
+						pDrone->moveSkill = atof(sdata.c_str());
 					if(colnum == 4)
-						pDrone->bravery = _wtof(sdata.c_str());
+						pDrone->bravery = atof(sdata.c_str());
 					if(colnum == 5)
-						pDrone->pilotType = _wtoi(sdata.c_str()); //add flag names
+						pDrone->pilotType = atoi(sdata.c_str()); //add flag names
 					if(colnum == 6)
-						pDrone->hullTypeID = _wtoi(sdata.c_str());
+						pDrone->hullTypeID = atoi(sdata.c_str());					
 					if(colnum == 7)
-						pDrone->etidLaid = _wtoi(sdata.c_str());
+						pDrone->etidLaid = atoi(sdata.c_str());
 					if(colnum == 8)
-						pDrone->price = _wtoi(sdata.c_str());
+						pDrone->price = atoi(sdata.c_str());
 					if(colnum == 9)
-						pDrone->timeToBuild = _wtoi(sdata.c_str());
+						pDrone->timeToBuild = atoi(sdata.c_str());
 					if(colnum == 10)
 						Strcpy(pDrone->modelName,sdata.c_str());
 					if(colnum == 11)
@@ -2014,7 +2014,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 13)
 						Strcpy(pDrone->description,sdata.c_str());
 					if(colnum == 14)
-						pDrone->groupID = _wtoi(sdata.c_str());
+						pDrone->groupID = atoi(sdata.c_str());
 					if(colnum == 15)
 						pMission->TechsListToBits(sdata.c_str(),pDrone->ttbmRequired);
 					if(colnum == 16)
@@ -2023,7 +2023,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			}
 			*((ObjectType*)(pData + iDatasize)) = OT_droneType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pDrone, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pDrone, size);
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -2031,14 +2031,14 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load station types
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfStations.csv";
-	std::wfstream file3((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfStations.csv";
+	std::fstream file3((PCC)strFile, std::ios::in);
 	assert(file3.is_open());
 	csvData.clear();
 	readCSV(file3, csvData);
 
 	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\StationsSFX.csv";
-	std::wfstream file15((PCC)strFile, std::ios::in);
+	std::fstream file15((PCC)strFile, std::ios::in);
 	assert(file15.is_open());
 	csvVector csvData5;
 	readCSV(file15, csvData5);
@@ -2047,52 +2047,52 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataStationTypeIGC* pStation = (DataStationTypeIGC*)(new wchar_t[size]);
+			DataStationTypeIGC* pStation = (DataStationTypeIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pStation->stationTypeID = _wtoi(sdata.c_str());
+					pStation->stationTypeID = atoi(sdata.c_str());
 					for(csvVector::iterator m = csvData5.begin(); m != csvData5.end(); ++m)
 					{
 						if (m != csvData5.begin()) {
 							int id2 = 0; int colnum2 = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 								} else {
 									if (pStation->stationTypeID == id2) {
 										if(colnum2 == 2)
-											pStation->constructorNeedRockSound = _wtoi(sdata2.c_str());
+											pStation->constructorNeedRockSound = atoi(sdata2.c_str());
 										if(colnum2 == 3)
-											pStation->constructorUnderAttackSound = _wtoi(sdata2.c_str());
+											pStation->constructorUnderAttackSound = atoi(sdata2.c_str());
 										if(colnum2 == 4)
-											pStation->constructorDestroyedSound = _wtoi(sdata2.c_str());
+											pStation->constructorDestroyedSound = atoi(sdata2.c_str());
 										if(colnum2 == 5)
-											pStation->completionSound = _wtoi(sdata2.c_str());
+											pStation->completionSound = atoi(sdata2.c_str());
 										if(colnum2 == 6)
-											pStation->interiorSound = _wtoi(sdata2.c_str());
+											pStation->interiorSound = atoi(sdata2.c_str());
 										if(colnum2 == 7)
-											pStation->exteriorSound = _wtoi(sdata2.c_str());
+											pStation->exteriorSound = atoi(sdata2.c_str());
 										if(colnum2 == 8)
-											pStation->interiorAlertSound = _wtoi(sdata2.c_str());
+											pStation->interiorAlertSound = atoi(sdata2.c_str());
 										if(colnum2 == 9)
-											pStation->underAttackSound = _wtoi(sdata2.c_str());
+											pStation->underAttackSound = atoi(sdata2.c_str());
 										if(colnum2 == 10)
-											pStation->criticalSound = _wtoi(sdata2.c_str());
+											pStation->criticalSound = atoi(sdata2.c_str());
 										if(colnum2 == 11)
-											pStation->destroyedSound = _wtoi(sdata2.c_str());
+											pStation->destroyedSound = atoi(sdata2.c_str());
 										if(colnum2 == 12)
-											pStation->capturedSound = _wtoi(sdata2.c_str());
+											pStation->capturedSound = atoi(sdata2.c_str());
 										if(colnum2 == 13)
-											pStation->enemyCapturedSound = _wtoi(sdata2.c_str());
+											pStation->enemyCapturedSound = atoi(sdata2.c_str());
 										if(colnum2 == 14)
-											pStation->enemyDestroyedSound = _wtoi(sdata2.c_str());
+											pStation->enemyDestroyedSound = atoi(sdata2.c_str());
 									}
 								}
 							}
@@ -2100,23 +2100,23 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pStation->signature = _wtof(sdata.c_str());
+						pStation->signature = atof(sdata.c_str());
 					if(colnum == 3)
-						pStation->maxArmorHitPoints = _wtof(sdata.c_str());
+						pStation->maxArmorHitPoints = atof(sdata.c_str());
 					if(colnum == 4)
-						pStation->maxShieldHitPoints = _wtof(sdata.c_str());
+						pStation->maxShieldHitPoints = atof(sdata.c_str());
 					if(colnum == 5)
-						pStation->armorRegeneration = _wtof(sdata.c_str());
+						pStation->armorRegeneration = atof(sdata.c_str());
 					if(colnum == 6)
-						pStation->shieldRegeneration = _wtof(sdata.c_str());
+						pStation->shieldRegeneration = atof(sdata.c_str());
 					if(colnum == 7)
-						pStation->scannerRange = _wtof(sdata.c_str());
+						pStation->scannerRange = atof(sdata.c_str());
 					if(colnum == 8)
-						pStation->income = _wtoi(sdata.c_str());
+						pStation->income = atoi(sdata.c_str());
 					if(colnum == 9)
-						pStation->radius = _wtof(sdata.c_str());					
+						pStation->radius = atof(sdata.c_str());					
 					if(colnum == 10)
-						pStation->successorStationTypeID = _wtoi(sdata.c_str());
+						pStation->successorStationTypeID = atoi(sdata.c_str());
 					if(colnum == 11)
 						pStation->defenseTypeArmor = ZString(sdata.c_str()).GetToken().GetInteger(); 
 					if(colnum == 12)
@@ -2126,17 +2126,17 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 14)
 						pStation->aabmBuild = AbilitiesListToMask(sdata.c_str(),AT_Asteroid);
 					if(colnum == 15)
-						pStation->classID = _wtoi(sdata.c_str()); //add flag names
+						pStation->classID = atoi(sdata.c_str()); //add flag names
 					if(colnum == 16)
-						pStation->constructionDroneTypeID = _wtoi(sdata.c_str());
+						pStation->constructionDroneTypeID = atoi(sdata.c_str());
 					if(colnum == 17)
 						Strcpy(pStation->textureName,sdata.c_str());
 					if(colnum == 18)
 						Strcpy(pStation->builderName,sdata.c_str());
 					if(colnum == 19)
-						pStation->price = _wtoi(sdata.c_str());
+						pStation->price = atoi(sdata.c_str());
 					if(colnum == 20)
-						pStation->timeToBuild = _wtoi(sdata.c_str());
+						pStation->timeToBuild = atoi(sdata.c_str());
 					if(colnum == 21)
 						Strcpy(pStation->modelName,sdata.c_str());
 					if(colnum == 22)
@@ -2146,7 +2146,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 24)
 						Strcpy(pStation->description,sdata.c_str());
 					if(colnum == 25)
-						pStation->groupID = _wtoi(sdata.c_str());
+						pStation->groupID = atoi(sdata.c_str());
 					if(colnum == 26)
 						pMission->TechsListToBits(sdata.c_str(),pStation->ttbmRequired);
 					if(colnum == 27)
@@ -2158,7 +2158,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_stationType;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pStation, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pStation, size);
 			
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
@@ -2166,8 +2166,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	}
 
 	// Load treasure set (max of 64 treasures)
-	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfTreasures.csv";
-	std::wfstream tresfile((PCC)strFile, std::ios::in);
+	strFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfTreasures.csv";
+	std::fstream tresfile((PCC)strFile, std::ios::in);
 	assert(tresfile.is_open());
 	csvData.clear();
 	readCSV(tresfile, csvData);
@@ -2176,21 +2176,21 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	for(csvVector::iterator i = csvData.begin(); i != csvData.end(); ++i)
 	{
 		if (i != csvData.begin()) {
-			DataTreasureSetIGC* pSet = (DataTreasureSetIGC*)(new wchar_t[size + (sizeof(TreasureData) * 64)]);
+			DataTreasureSetIGC* pSet = (DataTreasureSetIGC*)(new char [size + (sizeof(TreasureData) * 64)]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pSet->treasureSetID = _wtoi(sdata.c_str());
+					pSet->treasureSetID = atoi(sdata.c_str());
 				} else {
 					if(colnum == 2)
 						Strcpy(pSet->name,sdata.c_str());
 					if(colnum == 3)
-						pSet->nTreasureData = _wtoi(sdata.c_str());
+						pSet->nTreasureData = atoi(sdata.c_str());
 					if(colnum == 4)
-						pSet->bZoneOnly = _wtoi(sdata.c_str());
+						pSet->bZoneOnly = atoi(sdata.c_str());
 					if(colnum == 5) {
 						if(pSet->nTreasureData != 0) {
 							TreasureData* ptd =	(TreasureData*)((char*)pSet + size);
@@ -2223,7 +2223,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 			*((ObjectType*)(pData + iDatasize)) = OT_treasureSet;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size + (sizeof(TreasureData) * iTreasures);
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pSet, size + (sizeof(TreasureData) * iTreasures));
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pSet, size + (sizeof(TreasureData) * iTreasures));
 
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size + (sizeof(TreasureData) * iTreasures);
 			iLines++;
@@ -2232,8 +2232,8 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 
 	//load civs
-	ZString wstrFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Civilizations.csv";
-	std::wfstream file2((PCC)wstrFile, std::ios::in);
+	ZString wstrFile = ZString(UTL::artworkPath()) + ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Civilizations.csv";
+	std::fstream file2((PCC)wstrFile, std::ios::in);
 	assert(file2.is_open());
 	csvData.clear();
 	readCSV(file2, csvData);
@@ -2243,28 +2243,28 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 	{
 		if (i != csvData.begin()) {
 			float fgas[c_gaMax];
-			DataCivilizationIGC* pCiv = (DataCivilizationIGC*)(new wchar_t[size]);
+			DataCivilizationIGC* pCiv = (DataCivilizationIGC*)(new char [size]);
 			int colnum = 0;
-			for(std::vector<std::wstring>::iterator j = i->begin(); j != i->end(); ++j)
+			for(std::vector<std::string>::iterator j = i->begin(); j != i->end(); ++j)
 			{
 				colnum++;
-				std::wstring sdata = *j;
+				std::string sdata = *j;
 				if(j == i->begin()) {
-					pCiv->civilizationID = _wtoi(sdata.c_str());
+					pCiv->civilizationID = atoi(sdata.c_str());
 					
 					for(csvVector::iterator m = csvData6.begin(); m != csvData6.end(); ++m)
 					{
 						if (m != csvData6.begin()) {
 							int id2 = 0; int colnum2 = 0; int gaid = 0;
-							for(std::vector<std::wstring>::iterator n = m->begin(); n != m->end(); ++n)
+							for(std::vector<std::string>::iterator n = m->begin(); n != m->end(); ++n)
 							{
 								colnum2++;
-								std::wstring sdata2 = *n;
+								std::string sdata2 = *n;
 								if(n == m->begin()) {
-									id2 = _wtoi(sdata2.c_str());
+									id2 = atoi(sdata2.c_str());
 								} else {
 									if (pCiv->civilizationID == id2 && colnum2 != 2) {
-										fgas[gaid] = _wtof(sdata2.c_str());
+										fgas[gaid] = atof(sdata2.c_str());
 										gaid++;
 									}
 								}
@@ -2273,9 +2273,9 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					}
 				} else {
 					if(colnum == 2)
-						pCiv->incomeMoney = _wtof(sdata.c_str());
+						pCiv->incomeMoney = atof(sdata.c_str());
 					if(colnum == 3)
-						pCiv->bonusMoney = _wtof(sdata.c_str());
+						pCiv->bonusMoney = atof(sdata.c_str());
 					if(colnum == 4)
 						Strcpy(pCiv->name,sdata.c_str());
 					if(colnum == 5)
@@ -2283,9 +2283,9 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 					if(colnum == 6)
 						Strcpy(pCiv->hudName,sdata.c_str());
 					if(colnum == 7)
-						pCiv->lifepod = _wtoi(sdata.c_str());
+						pCiv->lifepod = atoi(sdata.c_str());					
 					if(colnum == 8)
-						pCiv->initialStationTypeID = _wtoi(sdata.c_str());
+						pCiv->initialStationTypeID = atoi(sdata.c_str());
 					if(colnum == 9)
 						pMission->TechsListToBits(sdata.c_str(),pCiv->ttbmBaseTechs);
 					if(colnum == 10)
@@ -2295,7 +2295,7 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 			pCiv->gasBaseAttributes.Set(fgas);
 			*((ObjectType*)(pData + iDatasize)) = OT_civilization;
 			*((int*)(pData + sizeof(ObjectType) + iDatasize)) = size;
-			wmemcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), (const wchar_t*)pCiv, size);
+			memcpy(pData + iDatasize + sizeof(int) + sizeof(ObjectType), pCiv, size);
 			iDatasize += sizeof(int) + sizeof(ObjectType) + size;
 			iLines++;
 		}
@@ -2303,18 +2303,17 @@ void CmissionIGC::ImportStaticIGCObjs() //is opposite of ExportStaticIGCObjs()
 
 
 	//the beast is now loaded up with IGC, initialize the objects
-    //pMission->Import (now, c_maskStaticTypes, pData, iDatasize);
-	//IMAGO 10/14 REVISIT UNICODE
+    pMission->Import (now, c_maskStaticTypes, pData, iDatasize);
 }
 
 // End Imago
 
 //------------------------------------------------------------------------------
-bool    DumpIGCFile (const wchar_t* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, wchar_t* data))
+bool    DumpIGCFile (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, char* data))
 {
-	wchar_t        szFilename[MAX_PATH + 1];
-    HRESULT     hr = UTL::getFile(name, L".igc", szFilename, true, true);
-    FILE*       file = _wfopen (szFilename, L"wb");
+    char        szFilename[MAX_PATH + 1];
+    HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
+    FILE*       file = fopen (szFilename, "wb");
     if (file)
     {
         DumpIGCFile (file, pMission, iMaskExportTypes, munge);
@@ -2326,11 +2325,11 @@ bool    DumpIGCFile (const wchar_t* name, ImissionIGC* pMission, __int64 iMaskEx
 }
 
 //------------------------------------------------------------------------------
-bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int size, char* data))
+bool    LoadIGCFile (const char* name, ImissionIGC* pMission, void (*munge)(int size, char* data))
 {
-	wchar_t        szFilename[MAX_PATH + 1];
-    HRESULT     hr = UTL::getFile(name, L".igc", szFilename, true, true);
-    FILE*       file = _wfopen(szFilename, L"rb");
+    char        szFilename[MAX_PATH + 1];
+    HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
+    FILE*       file = fopen(szFilename, "rb");
     if (file)
     {
         LoadIGCFile (file, pMission, munge);
@@ -2348,11 +2347,11 @@ bool    LoadIGCFile(const wchar_t* name, ImissionIGC* pMission, void(*munge)(int
 #define IGC_FILE_VERSION_TYPE   int
 
 //------------------------------------------------------------------------------
-bool    DumpIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void(*munge)(int size, wchar_t* data))
+bool    DumpIGCStaticCore (const char* name, ImissionIGC* pMission, __int64 iMaskExportTypes, void (*munge)(int size, char* data))
 {
-	wchar_t        szFilename[MAX_PATH + 1];
-    HRESULT     hr = UTL::getFile(name, L".igc", szFilename, true, true);
-    FILE*       file = _wfopen (szFilename, L"wb");
+    char        szFilename[MAX_PATH + 1];
+    HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
+    FILE*       file = fopen (szFilename, "wb");
     if (file)
     {
         IGC_FILE_VERSION_TYPE   iStaticCoreVersion = static_cast<IGC_FILE_VERSION_TYPE> (time (0));
@@ -2364,7 +2363,7 @@ bool    DumpIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, __int64 iM
     }
     else
     {
-        assert (L"Dump IGC Static Core failed." && false);
+        assert ("Dump IGC Static Core failed." && false);
         return false;
     }
 }
@@ -2374,7 +2373,7 @@ struct  CachedStaticCore
     CstaticIGC*             pstatic;
     IGC_FILE_VERSION_TYPE   version;
     int                     consumers;
-	wchar_t                    name[32]; // was c_cbFileName - needed it longer
+    char                    name[32]; // was c_cbFileName - needed it longer
 };
 
 typedef Slist_utl<CachedStaticCore> CachedList;
@@ -2382,13 +2381,13 @@ typedef Slink_utl<CachedStaticCore> CachedLink;
 
 static CachedList   s_cores;
 
-int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetVersionOnly, void(*munge)(int size, char* data))
+int     LoadIGCStaticCore (const char* name, ImissionIGC* pMission, bool fGetVersionOnly, void (*munge)(int size, char* data))
 {
     //See if we've already loaded the static core
     {
         for (CachedLink*    pcl = s_cores.first(); (pcl != NULL); pcl = pcl->next())
         {
-            if (_wcsicmp(name, pcl->data().name) == 0)
+            if (_stricmp(name, pcl->data().name) == 0)
             {
                 if (!fGetVersionOnly)
                 {
@@ -2401,9 +2400,9 @@ int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetV
         }
     }
 
-	wchar_t        szFilename[MAX_PATH + 1];
-    HRESULT     hr = UTL::getFile(name, L".igc", szFilename, true, true);
-    FILE*       file = _wfopen(szFilename, L"rb");
+    char        szFilename[MAX_PATH + 1];
+    HRESULT     hr = UTL::getFile(name, ".igc", szFilename, true, true);
+    FILE*       file = fopen(szFilename, "rb");
     if (file)
     {
         IGC_FILE_VERSION_TYPE   iStaticCoreVersion;
@@ -2419,7 +2418,7 @@ int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetV
             CachedLink* pcl = new CachedLink;
 
             pcl->data().pstatic = pMission->GetStaticCore();
-            Strcpy(pcl->data().name, name);
+            strcpy(pcl->data().name, name);
             pcl->data().version = iStaticCoreVersion;
             pcl->data().consumers = 1;
 
@@ -2612,13 +2611,13 @@ int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetV
     else
     {
 		// Imago try to load a text-based core if no .igc is present 
-		ZString strName = ZString(name) + L"\\Constants";
-		wchar_t        szFilename[MAX_PATH + 1];
-		HRESULT     hr = UTL::getFile(strName, L".csv", szFilename, true, true);
+		ZString strName = ZString(name) + "\\Constants";
+		char        szFilename[MAX_PATH + 1];
+		HRESULT     hr = UTL::getFile(strName, ".csv", szFilename, true, true);
 		if (hr == S_OK) {
             
             //NYI: Version
-		    FILE*       file = _wfopen(szFilename, L"rb");
+		    FILE*       file = fopen(szFilename, "rb");
             fclose (file);
 
 			if (!fGetVersionOnly)
@@ -2637,7 +2636,7 @@ int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetV
 
 				CachedLink* pcl = new CachedLink;
 				pcl->data().pstatic = pMission->GetStaticCore();
-				Strcpy(pcl->data().name, name);
+				strcpy(pcl->data().name, name);
 				pcl->data().version = 1337;
 				pcl->data().consumers = 1;
 				s_cores.last(pcl);
@@ -2647,8 +2646,8 @@ int     LoadIGCStaticCore(const wchar_t* name, ImissionIGC* pMission, bool fGetV
             //NYI Version
 		} else {
 			// mmf added debugf
-			debugf(L"Load IGC Static Core failed to load %s\n",name);
-			assert (L"Load IGC Static Core failed." && false);
+			debugf("Load IGC Static Core failed to load %s\n",name);
+			assert ("Load IGC Static Core failed." && false);
 			return NA;
 		}
     }
@@ -3013,23 +3012,23 @@ CmissionIGC::~CmissionIGC(void)
 
 void CmissionIGC::Initialize(Time now, IIgcSite* pIgcSite)
 {
-    debugf(L"Mission Initialize id=%d this=%x now=%d\n", GetMissionID(), this, now.clock());
+    debugf("Mission Initialize id=%d this=%x now=%d\n", GetMissionID(), this, now.clock());
     m_pIgcSite = pIgcSite;
     m_lastUpdate = now;
 
     m_damageTracks.Initialize(now);
 
     //preload the convex hulls used for the various asteroids - new roids 9/14 imago
-	ZVerify(HitTest::Load(L"bgrnd03"));
-	ZVerify(HitTest::Load(L"bgrnd05"));
-    ZVerify(HitTest::Load(L"bgrnd50"));
-    ZVerify(HitTest::Load(L"bgrnd51"));
-    ZVerify(HitTest::Load(L"bgrnd52"));
-    ZVerify(HitTest::Load(L"bgrnd53"));
-	ZVerify(HitTest::Load(L"bgrnd54"));
-	ZVerify(HitTest::Load(L"bgrnd55"));
-	ZVerify(HitTest::Load(L"bgrnd56"));
-	ZVerify(HitTest::Load(L"bgrnd57"));
+	ZVerify(HitTest::Load("bgrnd03"));
+	ZVerify(HitTest::Load("bgrnd05"));
+    ZVerify(HitTest::Load("bgrnd50"));
+    ZVerify(HitTest::Load("bgrnd51"));
+    ZVerify(HitTest::Load("bgrnd52"));
+    ZVerify(HitTest::Load("bgrnd53"));
+	ZVerify(HitTest::Load("bgrnd54"));
+	ZVerify(HitTest::Load("bgrnd55"));
+	ZVerify(HitTest::Load("bgrnd56"));
+	ZVerify(HitTest::Load("bgrnd57"));
 
 
     m_sideTeamLobby = NULL;
@@ -3037,7 +3036,7 @@ void CmissionIGC::Initialize(Time now, IIgcSite* pIgcSite)
 
 void    CmissionIGC::Terminate(void)
 {
-    debugf(L"Terminating mission id=%d, this=%x igccount=%x\n", GetMissionID(), this, GetIgcSite()->GetCount());
+    debugf("Terminating mission id=%d, this=%x igccount=%x\n", GetMissionID(), this, GetIgcSite()->GetCount());
   
     m_pIgcSite->TerminateMissionEvent(this);
 
@@ -3046,7 +3045,7 @@ void    CmissionIGC::Terminate(void)
         //So do it before nuking the clusters since that would nuke the ships in the
         //cluster.
         ShipLinkIGC*  l;
-        debugf(L"moving %x ships to NULL mission\n",m_ships.n());
+        debugf("moving %x ships to NULL mission\n",m_ships.n());
         while ((l = m_ships.first()) != NULL)
         {
             l->data()->SetMission(NULL);
@@ -3054,7 +3053,7 @@ void    CmissionIGC::Terminate(void)
     }
     {
         ClusterLinkIGC*  l;
-        debugf(L"nuking %x clusters\n",m_clusters.n());
+        debugf("nuking %x clusters\n",m_clusters.n());
         while ((l = m_clusters.first()) != NULL)
         {
             l->data()->Terminate();
@@ -3062,7 +3061,7 @@ void    CmissionIGC::Terminate(void)
     }
     {
         SideLinkIGC*  l;
-        debugf(L"nuking %x sides\n",m_sides.n());
+        debugf("nuking %x sides\n",m_sides.n());
         while ((l = m_sides.first()) != NULL)
         {
             l->data()->Terminate();
@@ -3146,7 +3145,7 @@ void     CmissionIGC::Update(Time now)
 
 static int  ExportList(__int64              maskTypes,
                        const BaseListIGC*   plist,
-					   wchar_t**               ppdata)
+                       char**               ppdata)
 {
     int offset = 0;
     int size = 0;
@@ -3177,7 +3176,7 @@ static int  ExportList(__int64              maskTypes,
 }
 
 int                 CmissionIGC::Export(__int64  maskTypes,
-                                        wchar_t*    pdata) const
+                                        char*    pdata) const
 {
     int datasize = 0;
 
@@ -3188,7 +3187,7 @@ int                 CmissionIGC::Export(__int64  maskTypes,
         {
             *((ObjectType*)pdata) = OT_constants;
             *((int*)(pdata + sizeof(ObjectType))) = size;
-			wmemcpy(pdata + sizeof(int) + sizeof(ObjectType), (const wchar_t*)GetConstants(), size);
+            memcpy(pdata + sizeof(int) + sizeof(ObjectType), GetConstants(), size);
 
             pdata += sizeof(int) + sizeof(ObjectType) + size;
         }
@@ -3228,7 +3227,7 @@ int                 CmissionIGC::Export(__int64  maskTypes,
 
 void                CmissionIGC::Import(Time    now,
                                         __int64 maskTypes,
-										char*   pdata,
+                                        char*   pdata,
                                         int     datasize)
 {
     while (datasize > 0)
@@ -3573,7 +3572,7 @@ void                        CmissionIGC::AddSide(IsideIGC*  s)
     {
         //create the lobby side
         DataSideIGC sidedata;
-        Strcpy(sidedata.name, L"Team Lobby");
+        strcpy(sidedata.name, "Team Lobby");
         sidedata.civilizationID = GetCivilizations()->first()->data()->GetObjectID();
         sidedata.sideID = SIDE_TEAMLOBBY;
         sidedata.gasAttributes.Initialize();
@@ -3693,7 +3692,7 @@ const BuoyListIGC*          CmissionIGC::GetBuoys(void) const
 
 void                        CmissionIGC::UpdateSides(Time now,
                                                      const MissionParams * pmp,
-													 const wchar_t sideNames[c_cSidesMax][c_cbSideName])
+                                                     const char sideNames[c_cSidesMax][c_cbSideName])
 {
 	// mdvalley: declaration moved to here. Compiler doesn't like it in the for loop for some reason.
 	SideID sid;
@@ -3718,8 +3717,8 @@ void                        CmissionIGC::UpdateSides(Time now,
         ds.color.SetRGBA(sideColors[sid][0],
                          sideColors[sid][1],
                          sideColors[sid][2]);
-        wmemset(ds.name, 0x00, sizeof(ds.name));
-        Strcpy(ds.name, sideNames[sid]);
+        memset(ds.name, 0x00, sizeof(ds.name));
+        strcpy(ds.name, sideNames[sid]);
         ds.ttbmDevelopmentTechs.ClearAll();
         ds.ttbmInitialTechs.ClearAll();
         ds.conquest = 0;
@@ -3752,7 +3751,7 @@ void                        CmissionIGC::UpdateSides(Time now,
     assert (GetSides()->n() == pmp->nTeams);
 }
 // #ALLY
-void		CmissionIGC::UpdateAllies(const wchar_t Allies[c_cSidesMax])
+void		CmissionIGC::UpdateAllies(const char Allies[c_cSidesMax])
 {
 	for (SideID s = 0; s < GetSides()->n(); s++)
 	{
@@ -4061,25 +4060,25 @@ void                    CmissionIGC::GenerateMission(Time                   now,
     }
 	// mmf log mission params server side via debugf's
 	// may want to revisit this and make it a member function
-    debugf(L"Name: %s\n",pmp->strGameName);
-	debugf(L"Core Name: %s\n", pmp->szIGCStaticFile);
-	debugf(L"Lives: %d\n", pmp->iLives);
-	debugf(L"Map Type: %s\n", pmp->szCustomMapFile);
-	debugf(L"Map Connectivity: %d\n", pmp->iRandomEncounters);
-	debugf(L"Resources: %d\n", pmp->iResources);
-	debugf(L"Total money: %f\n", pmp->fHe3Density);
-	debugf(L"Player Sector He3 rocks: %d\n", pmp->nPlayerSectorMineableAsteroids);
-	debugf(L"Neutral Sector He3 rocks: %d\n", pmp->nNeutralSectorMineableAsteroids);
-	debugf(L"Max Drones: %d\n", pmp->nMaxDronesPerTeam);
-	debugf(L"Scores Count: %s\n", pmp->bScoresCount ? L"yes" : L"no");
-	debugf(L"Eject Pods: %s\n", pmp->bEjectPods ? L"yes" : L"no");
-	debugf(L"Allow Friendly Fire: %s\n", pmp->bAllowFriendlyFire ? L"yes" : L"no");
-	debugf(L"Allow Defections: %s\n", pmp->bAllowDefections ? L"yes" : L"no");
-	debugf(L"Allow Joiners: %s\n", pmp->bAllowJoiners ? L"yes" : L"no");
-	debugf(L"Invulnerable Stations: %s\n", pmp->bInvulnerableStations ? L"yes" : L"no");
-	debugf(L"Developments: %s\n", pmp->bAllowDevelopments ? L"yes" : L"no");
-	debugf(L"Allow Shipyards: %s\n", pmp->bAllowShipyardPath ? L"yes" : L"no");
-	debugf(L"Experimental: %s\n", pmp->bExperimental ? L"yes" : L"no");  // mmf 10/07 Experimental game type
+    debugf("Name: %s\n",pmp->strGameName);
+    debugf("Core Name: %s\n",pmp->szIGCStaticFile);
+	debugf("Lives: %d\n",pmp->iLives);
+	debugf("Map Type: %s\n",pmp->szCustomMapFile);
+	debugf("Map Connectivity: %d\n",pmp->iRandomEncounters);
+	debugf("Resources: %d\n",pmp->iResources);
+	debugf("Total money: %f\n",pmp->fHe3Density);
+	debugf("Player Sector He3 rocks: %d\n",pmp->nPlayerSectorMineableAsteroids);
+	debugf("Neutral Sector He3 rocks: %d\n",pmp->nNeutralSectorMineableAsteroids);
+	debugf("Max Drones: %d\n",pmp->nMaxDronesPerTeam);
+    debugf("Scores Count: %s\n",pmp->bScoresCount ? "yes" : "no");
+    debugf("Eject Pods: %s\n",pmp->bEjectPods ? "yes" : "no");
+    debugf("Allow Friendly Fire: %s\n",pmp->bAllowFriendlyFire ? "yes" : "no");
+    debugf("Allow Defections: %s\n",pmp->bAllowDefections ? "yes" : "no");
+	debugf("Allow Joiners: %s\n",pmp->bAllowJoiners ? "yes" : "no");
+    debugf("Invulnerable Stations: %s\n",pmp->bInvulnerableStations ? "yes" : "no");
+    debugf("Developments: %s\n",pmp->bAllowDevelopments ? "yes" : "no");
+    debugf("Allow Shipyards: %s\n",pmp->bAllowShipyardPath ? "yes" : "no");
+    debugf("Experimental: %s\n",pmp->bExperimental ? "yes" : "no");  // mmf 10/07 Experimental game type
 }
 
 void    CmissionIGC::GenerateTreasure(Time         now,
@@ -4174,7 +4173,7 @@ short                   CmissionIGC::GetReplayCount(void) const
 }
 
 
-const wchar_t*             CmissionIGC::GetContextName(void)
+const char*             CmissionIGC::GetContextName(void)
 {
   // Return if it has already been generated
   if (!m_strContextName.IsEmpty())
@@ -4185,8 +4184,8 @@ const wchar_t*             CmissionIGC::GetContextName(void)
   ZSucceeded(::FileTimeToSystemTime(&m_ftCreated, &st));
 
   // Format the context string
-  wchar_t szContext[24];
-  swprintf(szContext, L"%c%02d%02d%02d%02d%02d%04d%02d",
+  char szContext[24];
+  sprintf(szContext, "%c%02d%02d%02d%02d%02d%04d%02d",
       (GetMissionParams()->bObjectModelCreated && GetMissionParams()->bClubGame) ? 'Z' : 'U',
       st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, GetMissionID() % 10000, GetReplayCount() % 100);
 
@@ -4204,58 +4203,58 @@ const wchar_t*             CmissionIGC::GetContextName(void)
 //      short id                short id
 //  }                       }
 ZString ConstantsDamageComment(int defenseid, int damageid) {
-	ZString strComment = L"Uncommented damage constant";
-	ZString strComment2 = L"Uncommented defense constant";
+	ZString strComment = "Uncommented damage constant";
+	ZString strComment2 = "Uncommented defense constant";
 	switch(damageid) {
-	case 0: {strComment = L"Asteroid"; } break;
-	case 1: {strComment = L"Plasma"; } break;
-	case 2: {strComment = L"Gattling"; } break;
-	case 3: {strComment = L"Disruptor"; } break;
-	case 4: {strComment = L"Sniper"; } break;
-	case 5: {strComment = L"Mini"; } break;
-	case 6: {strComment = L"Cannon"; } break;
-	case 7: {strComment = L"Galv"; } break;
-	case 8: {strComment = L"Anti Base"; } break;
-	case 9: {strComment = L"Seismic"; } break;
-	case 10: {strComment = L"Nan"; } break;
-	case 11: {strComment = L"AC Turret"; } break;
-	case 12: {strComment = L"EMP"; } break;
-	case 13: {strComment = L"More EMP"; } break;
-	case 14: {strComment = L"Gas/HTT"; } break;
-	case 15: {strComment = L"SkyRip"; } break;
-	case 16: {strComment = L"Mine"; } break;
-	case 17: {strComment = L"Stinger"; } break;
-	case 18: {strComment = L"Lancer"; } break;
-	case 19: {strComment = L"Ion"; } break;
+		case 0: {strComment = "Asteroid";} break;
+		case 1: {strComment = "Plasma";} break;
+		case 2: {strComment = "Gattling";} break;
+		case 3: {strComment = "Disruptor";} break;
+		case 4: {strComment = "Sniper";} break;
+		case 5: {strComment = "Mini";} break;
+		case 6: {strComment = "Cannon";} break;
+		case 7: {strComment = "Galv";} break;
+		case 8: {strComment = "Anti Base";} break;
+		case 9: {strComment = "Seismic";} break;
+		case 10: {strComment = "Nan";} break;
+		case 11: {strComment = "AC Turret";} break;
+		case 12: {strComment = "EMP";} break;
+		case 13: {strComment = "More EMP";} break;
+		case 14: {strComment = "Gas/HTT";} break;
+		case 15: {strComment = "SkyRip";} break;
+		case 16: {strComment = "Mine";} break;
+		case 17: {strComment = "Stinger";} break;
+		case 18: {strComment = "Lancer";} break;
+		case 19: {strComment = "Ion";} break;
 		default:
 			break;
 	}
 	switch(defenseid) {
-	case 0: {strComment2 = L"Rock"; } break;
-	case 1: {strComment2 = L"Light Ship"; } break;
-	case 2: {strComment2 = L"Medium Ship"; } break;
-	case 3: {strComment2 = L"Heavy Ship"; } break;
-	case 4: {strComment2 = L"Super Heavy Ship"; } break;
-	case 5: {strComment2 = L"Utility Ship"; } break;
-	case 6: {strComment2 = L"Light Base"; } break;
-	case 7: {strComment2 = L"Heavy Base"; } break;
-	case 8: {strComment2 = L"Ship Shields"; } break;
-	case 9: {strComment2 = L"Light Base Shields"; } break;
-	case 10: {strComment2 = L"Heavy Base Shields"; } break;
-	case 11: {strComment2 = L"Probe"; } break;
-	case 12: {strComment2 = L"Ultra Light Base Armor"; } break;
-	case 13: {strComment2 = L"Ultra Light Base Shields"; } break;
-	case 14: {strComment2 = L"Large Ship Shields"; } break;
+		case 0: {strComment2 = "Rock";} break;
+		case 1: {strComment2 = "Light Ship";} break;
+		case 2: {strComment2 = "Medium Ship";} break;
+		case 3: {strComment2 = "Heavy Ship";} break;
+		case 4: {strComment2 = "Super Heavy Ship";} break;
+		case 5: {strComment2 = "Utility Ship";} break;
+		case 6: {strComment2 = "Light Base";} break;
+		case 7: {strComment2 = "Heavy Base";} break;
+		case 8: {strComment2 = "Ship Shields";} break;
+		case 9: {strComment2 = "Light Base Shields";} break;
+		case 10: {strComment2 = "Heavy Base Shields";} break;
+		case 11: {strComment2 = "Probe";} break;
+		case 12: {strComment2 = "Ultra Light Base Armor";} break;
+		case 13: {strComment2 = "Ultra Light Base Shields";} break;
+		case 14: {strComment2 = "Large Ship Shields";} break;
 	}
 
 	if(defenseid >= 0) {
-		return (damageid < 0) ? strComment2 : strComment + L" vs. " + strComment2;
+		return (damageid < 0) ? strComment2 : strComment + " vs. " + strComment2;
 	}
 
 	if(damageid >= 0) {
-		return (defenseid < 0) ? strComment : strComment + L" vs. " + strComment2;
+		return (defenseid < 0) ? strComment : strComment + " vs. " + strComment2;
 	}
-	return ZString(L"Invincible");
+	return ZString("Invincible");
 }
 
 // Imago dump IGC data to text
@@ -4268,114 +4267,114 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataStationTypeIGC data;
 				pIGC->Export(&data);
 				DataBuyableIGC data2 = (DataBuyableIGC)data;
-				ZString strLine = ZString(data.stationTypeID) + L"\t"
-					+ ZString(data.signature) + L"\t"
-					+ ZString(data.maxArmorHitPoints) + L"\t"
-					+ ZString(data.maxShieldHitPoints) + L"\t"
-					+ ZString(data.armorRegeneration) + L"\t"
-					+ ZString(data.shieldRegeneration) + L"\t"
-					+ ZString(data.scannerRange) + L"\t"
-					+ ZString(data.income) + L"\t"
-					+ZString(data.radius) + L"\t"
-					+ZString(data.successorStationTypeID) + L"\t"
-					+ ZString(data.defenseTypeArmor) + L" (" + ConstantsDamageComment(data.defenseTypeArmor, -1) + L")\t"
-					+ ZString(data.defenseTypeShield) + L" (" + ConstantsDamageComment(data.defenseTypeShield, -1) + L")\t";
+				ZString strLine = ZString(data.stationTypeID) + "\t"
+					+ZString(data.signature) + "\t"
+					+ZString(data.maxArmorHitPoints) + "\t"
+					+ZString(data.maxShieldHitPoints) + "\t"
+					+ZString(data.armorRegeneration) + "\t"
+					+ZString(data.shieldRegeneration) + "\t"
+					+ZString(data.scannerRange) + "\t"
+					+ZString(data.income) + "\t"
+					+ZString(data.radius) + "\t"
+					+ZString(data.successorStationTypeID) + "\t"
+					+ZString(data.defenseTypeArmor) + " (" + ConstantsDamageComment(data.defenseTypeArmor,-1) + ")\t"
+					+ZString(data.defenseTypeShield)  + " (" + ConstantsDamageComment(data.defenseTypeShield,-1) + ")\t";
 				
 				ZString strCapabilities;
 				if(data.sabmCapabilities & c_sabmUnload)
-					strCapabilities += L"CanOffloadMinerals ";
+					strCapabilities += "CanOffloadMinerals ";
 				if(data.sabmCapabilities & c_sabmStart)
-					strCapabilities += L"CanStartHere ";
+					strCapabilities += "CanStartHere ";
 				if(data.sabmCapabilities & c_sabmRestart)
-					strCapabilities += L"CanRestartHere ";
+					strCapabilities += "CanRestartHere ";
 				if(data.sabmCapabilities & c_sabmRipcord)
-					strCapabilities += L"CanRipHere ";
+					strCapabilities += "CanRipHere ";
 				if(data.sabmCapabilities & c_sabmCapture)
-					strCapabilities += L"CanBeCaptured ";
+					strCapabilities += "CanBeCaptured ";
 				if(data.sabmCapabilities & c_sabmLand)
-					strCapabilities += L"CanLandHere ";
+					strCapabilities += "CanLandHere ";
 				if(data.sabmCapabilities & c_sabmRepair)
-					strCapabilities += L"CanRepair ";
+					strCapabilities += "CanRepair ";
 				if(data.sabmCapabilities & c_sabmRemoteLeadIndicator)
-					strCapabilities += L"IsVisibleInLoadout ";
+					strCapabilities += "IsVisibleInLoadout ";
 				if(data.sabmCapabilities & c_sabmReload)
-					strCapabilities += L"CanReload ";
+					strCapabilities += "CanReload ";
 				if(data.sabmCapabilities & c_sabmFlag)
-					strCapabilities += L"IsVictoryObjective ";
+					strCapabilities += "IsVictoryObjective ";
 				if(data.sabmCapabilities & c_sabmPedestal)
-					strCapabilities += L"IsFlagPedestal ";
+					strCapabilities += "IsFlagPedestal ";
 				if(data.sabmCapabilities & c_sabmTeleportUnload)
-					strCapabilities += L"CanTeleportOffloadMinerals ";
+					strCapabilities += "CanTeleportOffloadMinerals ";
 				if(data.sabmCapabilities & c_sabmCapLand)
-					strCapabilities += L"CanLandCapitols ";
+					strCapabilities += "CanLandCapitols ";
 				if(data.sabmCapabilities & c_sabmRescue)
-					strCapabilities += L"CanRescuePods ";
+					strCapabilities += "CanRescuePods ";
 				if(data.sabmCapabilities & c_sabmRescueAny)
-					strCapabilities += L"CanRescueAnyPods ";
+					strCapabilities += "CanRescueAnyPods ";
 
-				strLine += strCapabilities + L"\t";
+				strLine += strCapabilities + "\t";
 
 				ZString strCapabilities1;
 				if(data.aabmBuild & c_aabmBuildable)
-					strCapabilities1 += L"CanBeRegular ";
+					strCapabilities1 += "CanBeRegular ";
 				if(data.aabmBuild & (c_aabmSpecial << 0))
-					strCapabilities1 += L"CanBeUranium ";
+					strCapabilities1 += "CanBeUranium ";
 				if(data.aabmBuild & (c_aabmSpecial << 1))
-					strCapabilities1 += L"CanBeSilicon ";
+					strCapabilities1 += "CanBeSilicon ";
 				if(data.aabmBuild & (c_aabmSpecial << 2))
-					strCapabilities1 += L"CanBeCarbon ";
+					strCapabilities1 += "CanBeCarbon ";
 				if(data.aabmBuild & c_aabmMineHe3)
-					strCapabilities1 += L"CanBeHelium ";
+					strCapabilities1 += "CanBeHelium ";
 				if(data.aabmBuild & c_aabmMineLotsHe3)
-					strCapabilities1 += L"CanBeDenseHelium ";
+					strCapabilities1 += "CanBeDenseHelium ";
 				if(data.aabmBuild & c_aabmMineGold)
-					strCapabilities1 += L"CanBeGold ";
+					strCapabilities1 += "CanBeGold ";
 
-				strLine += strCapabilities1 + L"\t";
+				strLine += strCapabilities1 + "\t";
 
-				strLine += ZString(data.classID) + L"\t"
-					+ZString(data.constructionDroneTypeID) + L"\t";
+				strLine += ZString(data.classID) + "\t"
+					+ZString(data.constructionDroneTypeID) + "\t";
 					
-				ZString strSFX = ZString(data.stationTypeID) + L"\t"
-					+ZString(data.constructorNeedRockSound) + L"\t"
-					+ZString(data.constructorUnderAttackSound) + L"\t"
-					+ZString(data.constructorDestroyedSound) + L"\t"
-					+ZString(data.completionSound) + L"\t"
-					+ZString(data.interiorSound) + L"\t"
-					+ZString(data.exteriorSound) + L"\t"
-					+ZString(data.interiorAlertSound) + L"\t"
-					+ZString(data.underAttackSound) + L"\t"
-					+ZString(data.criticalSound) + L"\t"
-					+ZString(data.destroyedSound) + L"\t"
-					+ZString(data.capturedSound) + L"\t"
-					+ZString(data.enemyCapturedSound) + L"\t"
-					+ ZString(data.enemyDestroyedSound) + L"\r\n";
+				ZString strSFX = ZString(data.stationTypeID) + "\t"
+					+ZString(data.constructorNeedRockSound) + "\t"
+					+ZString(data.constructorUnderAttackSound) + "\t"
+					+ZString(data.constructorDestroyedSound) + "\t"
+					+ZString(data.completionSound) + "\t"
+					+ZString(data.interiorSound) + "\t"
+					+ZString(data.exteriorSound) + "\t"
+					+ZString(data.interiorAlertSound) + "\t"
+					+ZString(data.underAttackSound) + "\t"
+					+ZString(data.criticalSound) + "\t"
+					+ZString(data.destroyedSound) + "\t"
+					+ZString(data.capturedSound) + "\t"
+					+ZString(data.enemyCapturedSound) + "\t"
+					+ZString(data.enemyDestroyedSound) + "\r\n";
 					
-				strLine += ZString(data.textureName) + L"\t"
-					+ZString(data.builderName) + L"\t"
-					+ZString(data2.price) + L"\t"
-					+ZString((int)data2.timeToBuild) + L"\t"
-					+ZString(data2.modelName) + L"\t"
-					+ZString(data2.iconName) + L"\t"
-					+ZString(data2.name) + L"\t"
-					+ZString(data2.description) + L"\t"
-					+ZString(data2.groupID) + L"\t";
-				strLine += pMission->BitsToTechsList(data.ttbmRequired) + L"\t";
-				strLine += pMission->BitsToTechsList(data.ttbmEffects) + L"\t";
-				strLine += pMission->BitsToTechsList(data.ttbmLocal) + L"\r\n";
+				strLine += ZString(data.textureName) + "\t"
+					+ZString(data.builderName) + "\t"
+					+ZString(data2.price) + "\t"
+					+ZString((int)data2.timeToBuild) + "\t"
+					+ZString(data2.modelName) + "\t"
+					+ZString(data2.iconName) + "\t"
+					+ZString(data2.name) + "\t"
+					+ZString(data2.description) + "\t"
+					+ZString(data2.groupID) + "\t";
+				strLine += pMission->BitsToTechsList(data.ttbmRequired) + "\t";
+				strLine += pMission->BitsToTechsList(data.ttbmEffects) + "\t";
+				strLine += pMission->BitsToTechsList(data.ttbmLocal) + "\r\n";
 
-				ZString strFile = strCore + L"\\TypesOfStations";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true); //NYI check this!
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\TypesOfStations";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true); //NYI check this!
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 
-				strFile = strCore + "L\\StationsSFX";
+				strFile = strCore + "\\StationsSFX";
 				szFilename[MAX_PATH + 1];
-				hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				file = _wfopen(szFilename, L"ab");
-				fwrite (strSFX, sizeof(wchar_t), strSFX.GetLength(), file);
+				hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				file = fopen (szFilename, "ab");
+				fwrite (strSFX, sizeof(char), strSFX.GetLength(), file);
 				fclose (file);
 			}
 		break;
@@ -4386,24 +4385,24 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataObjectIGC data2 = (DataObjectIGC)data;
 
 				//NYI: just make the percentages
-				ZString strColor = ZString(data2.color.r) + L" " + ZString(data2.color.g) + L" " + ZString(data2.color.b) + L" "
+				ZString strColor = ZString(data2.color.r) + " " + ZString(data2.color.g) + " " + ZString(data2.color.b) + " " 
 					+ ZString(data2.color.a);
-				ZString strLine = ZString(data.projectileTypeID) + L"\t"
-					+ZString(data.power) + L"\t"
-					+ZString(data.blastPower) + L"\t"
-					+ZString(data.blastRadius) + L"\t"
-					+ZString(data.speed) + L"\t"
-					+ZString(data.lifespan) + L"\t"
-					+ ZString(data.damageType) + L" (" + ConstantsDamageComment(-1, data.damageType) + L")\t"
-					+ZString(data.absoluteF) + L"\t"
-					+ZString(data.bDirectional) + L"\t"
-					+ZString(data.width) + L"\t"
-					+ZString(data.ambientSound) + L"\t"
-					+strColor + L"\t"
-					+ZString(data2.radius) + L"\t"
-					+ZString(data2.rotation) + L"\t"
-					+ZString(data2.modelName) + L"\t"
-					+ZString(data2.textureName) + L"\t";
+				ZString strLine = ZString(data.projectileTypeID) + "\t"
+					+ZString(data.power) + "\t"
+					+ZString(data.blastPower) + "\t"
+					+ZString(data.blastRadius) + "\t"
+					+ZString(data.speed) + "\t"
+					+ZString(data.lifespan) + "\t"
+					+ZString(data.damageType) + " (" + ConstantsDamageComment(-1,data.damageType) + ")\t"
+					+ZString(data.absoluteF) + "\t"
+					+ZString(data.bDirectional) + "\t"
+					+ZString(data.width) + "\t"
+					+ZString(data.ambientSound) + "\t"
+					+strColor + "\t"
+					+ZString(data2.radius) + "\t"
+					+ZString(data2.rotation) + "\t"
+					+ZString(data2.modelName) + "\t"
+					+ZString(data2.textureName) + "\t";
 					
 				//add the weapon/probe name (just for convenience/debugging)
 				int iNotFound = 1;
@@ -4414,7 +4413,7 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 						IexpendableTypeIGC* pexp = (IexpendableTypeIGC*)petlink->data();
 						DataProbeTypeIGC* pdata  = (DataProbeTypeIGC*)pexp->GetData();
 						if(pdata->projectileTypeID == data.projectileTypeID) {
-							strLine += ZString(pexp->GetName()) + L" ";
+							strLine +=ZString(pexp->GetName()) + " ";
 							iNotFound = 0;
 						}
 					}
@@ -4427,7 +4426,7 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 							IpartTypeIGC* part = (IpartTypeIGC*)pallink->data();
 							DataWeaponTypeIGC * pdata = (DataWeaponTypeIGC*)part->GetData();
 							if(pdata->projectileTypeID == data.projectileTypeID) {
-								strLine += ZString(part->GetName()) + L" ";
+								strLine +=ZString(part->GetName()) + " ";
 								iNotFound = 0;
 								break;
 							}
@@ -4435,15 +4434,15 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 					}
 				}
 				if(iNotFound) 
-					strLine += L"Unused\r\n";
+					strLine += "Unused\r\n";
 				else
-					strLine += L"\r\n";
+					strLine += "\r\n";
 				
-				ZString strFile = strCore + L"\\TypesofProjectiles";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\TypesofProjectiles";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 			}
 		break;
@@ -4455,78 +4454,78 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataObjectIGC data3 = (DataObjectIGC)data2;
 				LauncherDef data4 = data2.launcherDef;
 				DataBuyableIGC data5 = (DataBuyableIGC)data4;
-				ZString strColor = ZString(data3.color.r) + L" " + ZString(data3.color.g) + L" " + ZString(data3.color.b) + L" "
+				ZString strColor = ZString(data3.color.r) + " " + ZString(data3.color.g) + " " + ZString(data3.color.b) + " " 
 					+ ZString(data3.color.a);
-				ZString strLine = ZString(data2.expendabletypeID) + L"\t"
-					+ZString(data.acceleration) + L"\t"
-					+ZString(data.turnRate) + L"\t"
-					+ZString(data.initialSpeed) + L"\t"
-					+ZString(data.lockTime) + L"\t"
-					+ZString(data.readyTime) + L"\t"
-					+ZString(data.maxLock) + L"\t"
-					+ZString(data.chaffResistance) + L"\t"
-					+ZString(data.dispersion) + L"\t"
-					+ZString(data.lockAngle) + L"\t"
-					+ZString(data.power) + L"\t"
-					+ZString(data.blastPower) + L"\t"
-					+ZString(data.blastRadius) + L"\t"
-					+ZString(data.width) + L"\t"
-					+ ZString(data.damageType) + L" (" + ConstantsDamageComment(-1, data.damageType) + L")\t"
-					+ZString(data.bDirectional) + L"\t"
+				ZString strLine = ZString(data2.expendabletypeID) + "\t"
+					+ZString(data.acceleration) + "\t"
+					+ZString(data.turnRate) + "\t"
+					+ZString(data.initialSpeed) + "\t"
+					+ZString(data.lockTime) + "\t"
+					+ZString(data.readyTime) + "\t"
+					+ZString(data.maxLock) + "\t"
+					+ZString(data.chaffResistance) + "\t"
+					+ZString(data.dispersion) + "\t"
+					+ZString(data.lockAngle) + "\t"
+					+ZString(data.power) + "\t"
+					+ZString(data.blastPower) + "\t"
+					+ZString(data.blastRadius) + "\t"
+					+ZString(data.width) + "\t"
+					+ZString(data.damageType) + " (" + ConstantsDamageComment(-1,data.damageType) + ")\t"
+					+ZString(data.bDirectional) + "\t"
 					//
-					+ZString(data.launchSound) + L"\t"
-					+ZString(data.ambientSound) + L"\t"
+					+ZString(data.launchSound) + "\t"
+					+ZString(data.ambientSound) + "\t"
 					//
-					+ZString(data2.loadTime) + L"\t"
-					+ZString(data2.lifespan) + L"\t"
-					+ZString(data2.signature) + L"\t"
-					+ZString(data2.hitPoints) + L"\t"
-					+ ZString(data2.defenseType) + L" (" + ConstantsDamageComment(data2.defenseType, -1) + L")\t";
+					+ZString(data2.loadTime) + "\t"
+					+ZString(data2.lifespan) + "\t"
+					+ZString(data2.signature) + "\t"
+					+ZString(data2.hitPoints) + "\t"
+					+ZString(data2.defenseType) + " (" + ConstantsDamageComment(data2.defenseType,-1)+ ")\t";
 
 				ZString strCapabilities;
 				if(data2.eabmCapabilities & c_eabmCapture)
-					strCapabilities += L"CanCaptureStations ";
+					strCapabilities += "CanCaptureStations ";
 				if(data2.eabmCapabilities & c_eabmWarpBombDual)
-					strCapabilities += L"CanWarpBombDual ";
+					strCapabilities += "CanWarpBombDual ";
 				if(data2.eabmCapabilities & c_eabmWarpBombSingle)
-					strCapabilities += L"CanWarpBombSingle ";
+					strCapabilities += "CanWarpBombSingle ";
 				if(data2.eabmCapabilities & c_eabmQuickReady)
-					strCapabilities += L"CanQuickReady ";
+					strCapabilities += "CanQuickReady ";
 				if(data2.eabmCapabilities & c_eabmWarn)
-					strCapabilities += L"CanWarn ";
+					strCapabilities += "CanWarn ";
 				if(data2.eabmCapabilities & c_eabmShootStations)
-					strCapabilities += L"CanShootStations ";
+					strCapabilities += "CanShootStations ";
 				if(data2.eabmCapabilities & c_eabmShootShips)
-					strCapabilities += L"CanShootShips ";
+					strCapabilities += "CanShootShips ";
 				if(data2.eabmCapabilities & c_eabmShootMissiles)
-					strCapabilities += L"CanShootMissiles ";
+					strCapabilities += "CanShootMissiles ";
 				if(data2.eabmCapabilities & c_eabmShootOnlyTarget)
-					strCapabilities += L"CanShootTargetOnly ";
+					strCapabilities += "CanShootTargetOnly ";
 				if(data2.eabmCapabilities & c_eabmRescue)
-					strCapabilities += L"CanRescue ";
+					strCapabilities += "CanRescue ";
 				if(data2.eabmCapabilities & c_eabmRescueAny)
-					strCapabilities += L"CanRescueAny ";
+					strCapabilities += "CanRescueAny ";
 
-				strLine += strCapabilities + L"\t"
-					+ZString(data2.iconName) + L"\t"   
-					+strColor + L"\t"
-					+ZString(data3.radius) + L"\t"
-					+ZString(data3.rotation) + L"\t"
-					+ZString(data3.modelName) + L"\t"
-					+ZString(data3.textureName) + L"\t" 
-					+ZString(data4.signature) + L"\t"
-					+ZString(data4.mass) + L"\t";
+				strLine += strCapabilities + "\t"
+					+ZString(data2.iconName) + "\t"   
+					+strColor + "\t"
+					+ZString(data3.radius) + "\t"
+					+ZString(data3.rotation) + "\t"
+					+ZString(data3.modelName) + "\t"
+					+ZString(data3.textureName) + "\t" 
+					+ZString(data4.signature) + "\t"
+					+ZString(data4.mass) + "\t";
 					
-				strLine += pMission->BitsToPartsList(data4.partMask,ET_Magazine) + L"\t";
+				strLine += pMission->BitsToPartsList(data4.partMask,ET_Magazine) + "\t";
 
-				strLine += ZString(data4.expendableSize) + L"\t"
-					+ ZString(data5.name) + L"\r\n";
+				strLine += ZString(data4.expendableSize) + "\t"
+					+ZString(data5.name) + "\r\n";
 
-				ZString strFile = strCore + L"\\ExpendableMissiles";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\ExpendableMissiles";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 
 			}
@@ -4540,61 +4539,61 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataObjectIGC data3 = (DataObjectIGC)data2;
 				LauncherDef data4 = data2.launcherDef;
 				DataBuyableIGC data5 = (DataBuyableIGC)data4;
-				ZString strColor = ZString(data3.color.r) + L" " + ZString(data3.color.g) + L" " + ZString(data3.color.b) + L" "
+				ZString strColor = ZString(data3.color.r) + " " + ZString(data3.color.g) + " " + ZString(data3.color.b) + " " 
 					+ ZString(data3.color.a);
-				ZString strLine = ZString(data2.expendabletypeID) + L"\t"
-					+ZString(data.radius) + L"\t"
-					+ZString(data.power) + L"\t"
-					+ZString(data.endurance) + L"\t"
-					+ ZString(data.damageType) + L" (" + ConstantsDamageComment(-1, data.damageType) + L")\t"
-					+ZString(data2.loadTime) + L"\t"
-					+ZString(data2.lifespan) + L"\t"
-					+ZString(data2.signature) + L"\t"
-					+ZString(data2.hitPoints) + L"\t"
-					+ ZString(data2.defenseType) + L" (" + ConstantsDamageComment(data2.defenseType, -1) + L")\t";
+				ZString strLine = ZString(data2.expendabletypeID) + "\t"
+					+ZString(data.radius) + "\t"
+					+ZString(data.power) + "\t"
+					+ZString(data.endurance) + "\t"
+					+ZString(data.damageType) + " (" + ConstantsDamageComment(-1,data.damageType) + ")\t"
+					+ZString(data2.loadTime) + "\t"
+					+ZString(data2.lifespan) + "\t"
+					+ZString(data2.signature) + "\t"
+					+ZString(data2.hitPoints) + "\t"
+					+ZString(data2.defenseType) + " (" + ConstantsDamageComment(data2.defenseType,-1)+ ")\t";
 
 				ZString strCapabilities;
 				if(data2.eabmCapabilities & c_eabmCapture)
-					strCapabilities += L"CanCaptureStations ";
+					strCapabilities += "CanCaptureStations ";
 				if(data2.eabmCapabilities & c_eabmWarpBombDual)
-					strCapabilities += L"CanWarpBombDual ";
+					strCapabilities += "CanWarpBombDual ";
 				if(data2.eabmCapabilities & c_eabmWarpBombSingle)
-					strCapabilities += L"CanWarpBombSingle ";
+					strCapabilities += "CanWarpBombSingle ";
 				if(data2.eabmCapabilities & c_eabmQuickReady)
-					strCapabilities += L"CanQuickReady ";
+					strCapabilities += "CanQuickReady ";
 				if(data2.eabmCapabilities & c_eabmWarn)
-					strCapabilities += L"CanWarn ";
+					strCapabilities += "CanWarn ";
 				if(data2.eabmCapabilities & c_eabmShootStations)
-					strCapabilities += L"CanShootStations ";
+					strCapabilities += "CanShootStations ";
 				if(data2.eabmCapabilities & c_eabmShootShips)
-					strCapabilities += L"CanShootShips ";
+					strCapabilities += "CanShootShips ";
 				if(data2.eabmCapabilities & c_eabmShootMissiles)
-					strCapabilities += L"CanShootMissiles ";
+					strCapabilities += "CanShootMissiles ";
 				if(data2.eabmCapabilities & c_eabmShootOnlyTarget)
-					strCapabilities += L"CanShootTargetOnly ";
+					strCapabilities += "CanShootTargetOnly ";
 				if(data2.eabmCapabilities & c_eabmRescue)
-					strCapabilities += L"CanRescue ";
+					strCapabilities += "CanRescue ";
 				if(data2.eabmCapabilities & c_eabmRescueAny)
-					strCapabilities += L"CanRescueAny ";
+					strCapabilities += "CanRescueAny ";
 
-				strLine += strCapabilities + L"\t"
-					+ZString(data2.iconName) + L"\t"   
-					+strColor + L"\t"
-					+ZString(data3.radius) + L"\t"
-					+ZString(data3.rotation) + L"\t"
-					+ZString(data3.modelName) + L"\t"
-					+ZString(data3.textureName) + L"\t" 
-					+ZString(data4.signature) + L"\t"
-					+ZString(data4.mass) + L"\t"
-					+pMission->BitsToPartsList(data4.partMask,ET_Dispenser) + L"\t"
-					+ZString(data4.expendableSize) + L"\t"
+				strLine += strCapabilities + "\t"
+					+ZString(data2.iconName) + "\t"   
+					+strColor + "\t"
+					+ZString(data3.radius) + "\t"
+					+ZString(data3.rotation) + "\t"
+					+ZString(data3.modelName) + "\t"
+					+ZString(data3.textureName) + "\t" 
+					+ZString(data4.signature) + "\t"
+					+ZString(data4.mass) + "\t"
+					+pMission->BitsToPartsList(data4.partMask,ET_Dispenser) + "\t"
+					+ZString(data4.expendableSize) + "\t"
 					+ZString(data5.name) + "\r\n";
 
-				ZString strFile = strCore + L"\\ExpendableMines";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\ExpendableMines";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 
 			}
@@ -4608,59 +4607,59 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataObjectIGC data3 = (DataObjectIGC)data2;
 				LauncherDef data4 = data2.launcherDef;
 				DataBuyableIGC data5 = (DataBuyableIGC)data4;
-				ZString strColor = ZString(data3.color.r) + L" " + ZString(data3.color.g) + L" " + ZString(data3.color.b) + L" "
+				ZString strColor = ZString(data3.color.r) + " " + ZString(data3.color.g) + " " + ZString(data3.color.b) + " " 
 					+ ZString(data3.color.a);
 
-				ZString strLine = ZString(data2.expendabletypeID) + L"\t"
-					+ZString(data.chaffStrength) + L"\t" 
-					+ZString(data2.loadTime) + L"\t"
-					+ZString(data2.lifespan) + L"\t"
-					+ZString(data2.signature) + L"\t"
-					+ZString(data2.hitPoints) + L"\t"
-					+ ZString(data2.defenseType) + L" (" + ConstantsDamageComment(data2.defenseType, -1) + L")\t";
+				ZString strLine = ZString(data2.expendabletypeID) + "\t"
+					+ZString(data.chaffStrength) + "\t" 
+					+ZString(data2.loadTime) + "\t"
+					+ZString(data2.lifespan) + "\t"
+					+ZString(data2.signature) + "\t"
+					+ZString(data2.hitPoints) + "\t"
+					+ZString(data2.defenseType) + " (" + ConstantsDamageComment(data2.defenseType,-1)+ ")\t";
 
 				ZString strCapabilities;
 				if(data2.eabmCapabilities & c_eabmCapture)
-					strCapabilities += L"CanCaptureStations ";
+					strCapabilities += "CanCaptureStations ";
 				if(data2.eabmCapabilities & c_eabmWarpBombDual)
-					strCapabilities += L"CanWarpBombDual ";
+					strCapabilities += "CanWarpBombDual ";
 				if(data2.eabmCapabilities & c_eabmWarpBombSingle)
-					strCapabilities += L"CanWarpBombSingle ";
+					strCapabilities += "CanWarpBombSingle ";
 				if(data2.eabmCapabilities & c_eabmQuickReady)
-					strCapabilities += L"CanQuickReady ";
+					strCapabilities += "CanQuickReady ";
 				if(data2.eabmCapabilities & c_eabmWarn)
-					strCapabilities += L"CanWarn ";
+					strCapabilities += "CanWarn ";
 				if(data2.eabmCapabilities & c_eabmShootStations)
-					strCapabilities += L"CanShootStations ";
+					strCapabilities += "CanShootStations ";
 				if(data2.eabmCapabilities & c_eabmShootShips)
-					strCapabilities += L"CanShootShips ";
+					strCapabilities += "CanShootShips ";
 				if(data2.eabmCapabilities & c_eabmShootMissiles)
-					strCapabilities += L"CanShootMissiles ";
+					strCapabilities += "CanShootMissiles ";
 				if(data2.eabmCapabilities & c_eabmShootOnlyTarget)
-					strCapabilities += L"CanShootTargetOnly ";
+					strCapabilities += "CanShootTargetOnly ";
 				if(data2.eabmCapabilities & c_eabmRescue)
-					strCapabilities += L"CanRescue ";
+					strCapabilities += "CanRescue ";
 				if(data2.eabmCapabilities & c_eabmRescueAny)
-					strCapabilities += L"CanRescueAny ";
+					strCapabilities += "CanRescueAny ";
 
-				strLine += strCapabilities + L"\t"
-					+ZString(data2.iconName) + L"\t"   
-					+strColor + L"\t"
-					+ZString(data3.radius) + L"\t"
-					+ZString(data3.rotation) + L"\t"
-					+ZString(data3.modelName) + L"\t"
-					+ZString(data3.textureName) + L"\t" 
-					+ZString(data4.signature) + L"\t"
-					+ZString(data4.mass) + L"\t"
-					+ pMission->BitsToPartsList(data4.partMask,ET_ChaffLauncher) + L"\t"
-					+ZString(data4.expendableSize) + L"\t"
-					+ ZString(data5.name) + L"\r\n";
+				strLine += strCapabilities + "\t"
+					+ZString(data2.iconName) + "\t"   
+					+strColor + "\t"
+					+ZString(data3.radius) + "\t"
+					+ZString(data3.rotation) + "\t"
+					+ZString(data3.modelName) + "\t"
+					+ZString(data3.textureName) + "\t" 
+					+ZString(data4.signature) + "\t"
+					+ZString(data4.mass) + "\t"
+					+ pMission->BitsToPartsList(data4.partMask,ET_ChaffLauncher) + "\t"
+					+ZString(data4.expendableSize) + "\t"
+					+ZString(data5.name) + "\r\n";
 
-				ZString strFile = strCore + L"\\ExpendableChaff";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\ExpendableChaff";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 
 			}
@@ -4674,66 +4673,66 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataObjectIGC data3 = (DataObjectIGC)data2;
 				LauncherDef data4 = data2.launcherDef;
 				DataBuyableIGC data5 = (DataBuyableIGC)data4;
-				ZString strColor = ZString(data3.color.r) + L" " + ZString(data3.color.g) + L" " + ZString(data3.color.b) + L" "
+				ZString strColor = ZString(data3.color.r) + " " + ZString(data3.color.g) + " " + ZString(data3.color.b) + " " 
 					+ ZString(data3.color.a);
 
-				ZString strLine = ZString(data2.expendabletypeID) + L"\t" 
-					+ZString(data.scannerRange) + L"\t" 
-					+ZString(data.dtimeBurst) + L"\t" 
-					+ZString(data.dispersion) + L"\t" 
-					+ZString(data.accuracy) + L"\t" 
-					+ZString(data.ammo) + L"\t" 
-					+ZString(data.projectileTypeID) + L"\t" 
-					+ZString(data.ambientSound) + L"\t" 
-					+ZString(data.dtRipcord) + L"\t" 
-					+ZString(data2.loadTime) + L"\t"
-					+ZString(data2.lifespan) + L"\t"
-					+ZString(data2.signature) + L"\t"
-					+ZString(data2.hitPoints) + L"\t"
-					+ ZString(data2.defenseType) + L" (" + ConstantsDamageComment(data2.defenseType, -1) + L")\t";
+				ZString strLine = ZString(data2.expendabletypeID) + "\t" 
+					+ZString(data.scannerRange) + "\t" 
+					+ZString(data.dtimeBurst) + "\t" 
+					+ZString(data.dispersion) + "\t" 
+					+ZString(data.accuracy) + "\t" 
+					+ZString(data.ammo) + "\t" 
+					+ZString(data.projectileTypeID) + "\t" 
+					+ZString(data.ambientSound) + "\t" 
+					+ZString(data.dtRipcord) + "\t" 
+					+ZString(data2.loadTime) + "\t"
+					+ZString(data2.lifespan) + "\t"
+					+ZString(data2.signature) + "\t"
+					+ZString(data2.hitPoints) + "\t"
+					+ZString(data2.defenseType) + " (" + ConstantsDamageComment(data2.defenseType,-1)+ ")\t";
 
 				ZString strCapabilities;
 				if(data2.eabmCapabilities & c_eabmCapture)
-					strCapabilities += L"CanCaptureStations ";
+					strCapabilities += "CanCaptureStations ";
 				if(data2.eabmCapabilities & c_eabmWarpBombDual)
-					strCapabilities += L"CanWarpBombDual ";
+					strCapabilities += "CanWarpBombDual ";
 				if(data2.eabmCapabilities & c_eabmWarpBombSingle)
-					strCapabilities += L"CanWarpBombSingle ";
+					strCapabilities += "CanWarpBombSingle ";
 				if(data2.eabmCapabilities & c_eabmQuickReady)
-					strCapabilities += L"CanQuickReady ";
+					strCapabilities += "CanQuickReady ";
 				if(data2.eabmCapabilities & c_eabmWarn)
-					strCapabilities += L"CanWarn ";
+					strCapabilities += "CanWarn ";
 				if(data2.eabmCapabilities & c_eabmShootStations)
-					strCapabilities += L"CanShootStations ";
+					strCapabilities += "CanShootStations ";
 				if(data2.eabmCapabilities & c_eabmShootShips)
-					strCapabilities += L"CanShootShips ";
+					strCapabilities += "CanShootShips ";
 				if(data2.eabmCapabilities & c_eabmShootMissiles)
-					strCapabilities += L"CanShootMissiles ";
+					strCapabilities += "CanShootMissiles ";
 				if(data2.eabmCapabilities & c_eabmShootOnlyTarget)
-					strCapabilities += L"CanShootTargetOnly ";
+					strCapabilities += "CanShootTargetOnly ";
 				if(data2.eabmCapabilities & c_eabmRescue)
-					strCapabilities += L"CanRescue ";
+					strCapabilities += "CanRescue ";
 				if(data2.eabmCapabilities & c_eabmRescueAny)
-					strCapabilities += L"CanRescueAny ";
+					strCapabilities += "CanRescueAny ";
 
-				strLine += strCapabilities + L"\t"
-					+ZString(data2.iconName) + L"\t"   
-					+strColor + L"\t"
-					+ZString(data3.radius) + L"\t"
-					+ZString(data3.rotation) + L"\t"
-					+ZString(data3.modelName) + L"\t"
-					+ZString(data3.textureName) + L"\t" 
-					+ZString(data4.signature) + L"\t"
-					+ZString(data4.mass) + L"\t"
-					+ pMission->BitsToPartsList(data4.partMask,ET_Dispenser) + L"\t"
-					+ZString(data4.expendableSize) + L"\t"
-					+ ZString(data2.launcherDef.name) + L"\r\n";
+				strLine += strCapabilities + "\t"
+					+ZString(data2.iconName) + "\t"   
+					+strColor + "\t"
+					+ZString(data3.radius) + "\t"
+					+ZString(data3.rotation) + "\t"
+					+ZString(data3.modelName) + "\t"
+					+ZString(data3.textureName) + "\t" 
+					+ZString(data4.signature) + "\t"
+					+ZString(data4.mass) + "\t"
+					+ pMission->BitsToPartsList(data4.partMask,ET_Dispenser) + "\t"
+					+ZString(data4.expendableSize) + "\t"
+					+ZString(data2.launcherDef.name) + "\r\n";
 
-				ZString strFile = strCore + L"\\ExpendableProbes";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\ExpendableProbes";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 			}
 		break;
@@ -4744,7 +4743,7 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				EquipmentType et = ppart->GetEquipmentType();
 				DataPartTypeIGC* pdata = (DataPartTypeIGC*)ppart->GetData();
 
-				ZString strLine = ZString(pdata->partID) + L"\t";
+				ZString strLine = ZString(pdata->partID) + "\t";
 				
 				
 				// either use launchertype data or specific parttype data
@@ -4756,61 +4755,61 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 					pIGC->Export(&data);
 
 					//override id to expendable ID for launcher types
-					strLine = ZString(data.expendabletypeID) + L"\t" 
-						+ZString(data.partID) + L"\t"
-						+ZString(data.amount) + L"\t"
-						+ZString(data.successorPartID) + L"\t"
-						+ZString(data.launchCount) + L"\t"
-						+ZString(data.inventoryLineMDL) + L"\t"
-						+ZString(pdata2->price) + L"\t"
-						+ZString((int)pdata2->timeToBuild) + L"\t"
-						+ZString(pdata2->modelName) + L"\t"
-						+ZString(pdata2->iconName) + L"\t"
-						+ZString(pdata2->name) + L"\t"
-						+ZString(pdata2->description) + L"\t"
-						+ZString(pdata2->groupID) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+					strLine = ZString(data.expendabletypeID) + "\t" 
+						+ZString(data.partID) + "\t"
+						+ZString(data.amount) + "\t"
+						+ZString(data.successorPartID) + "\t"
+						+ZString(data.launchCount) + "\t"
+						+ZString(data.inventoryLineMDL) + "\t"
+						+ZString(pdata2->price) + "\t"
+						+ZString((int)pdata2->timeToBuild) + "\t"
+						+ZString(pdata2->modelName) + "\t"
+						+ZString(pdata2->iconName) + "\t"
+						+ZString(pdata2->name) + "\t"
+						+ZString(pdata2->description) + "\t"
+						+ZString(pdata2->groupID) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 
-					ZString strFile = strCore + L"\\Expendables";
-					wchar_t        szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+					ZString strFile = strCore + "\\Expendables";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 					fclose (file);
 				} else if(et == ET_Cloak) {
 					//not using PartType's implementation of ::Export
 					DataBuyableIGC* pdata2 = (DataBuyableIGC*)pdata;
 					DataCloakTypeIGC* pdata3 = (DataCloakTypeIGC*)pdata;
 
-					strLine += ZString(pdata3->energyConsumption) + L"\t"
-						+ZString(pdata3->maxCloaking) + L"\t"
-						+ZString(pdata3->onRate) + L"\t"
-						+ZString(pdata3->offRate) + L"\t"
+					strLine += ZString(pdata3->energyConsumption) + "\t"
+						+ZString(pdata3->maxCloaking) + "\t"
+						+ZString(pdata3->onRate) + "\t"
+						+ZString(pdata3->offRate) + "\t"
 						//
-						+ZString(pdata3->engageSound) + L"\t"
-						+ZString(pdata3->disengageSound) + L"\t"
+						+ZString(pdata3->engageSound) + "\t"
+						+ZString(pdata3->disengageSound) + "\t"
 						//
-						+ZString(pdata->mass) + L"\t"
-						+ZString(pdata->signature) + L"\t"
-						+ZString(pdata->successorPartID) + L"\t"
-						+pMission->BitsToPartsList(pdata->partMask,ET_Cloak) + L"\t"
-						+ZString(pdata->inventoryLineMDL) + L"\t"
-						+ZString(pdata2->price) + L"\t"
-						+ZString((int)pdata2->timeToBuild) + L"\t"
-						+ZString(pdata2->modelName) + L"\t"
-						+ZString(pdata2->iconName) + L"\t"
-						+ZString(pdata2->name) + L"\t"
-						+ZString(pdata2->description) + L"\t"
-						+ZString(pdata2->groupID) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+						+ZString(pdata->mass) + "\t"
+						+ZString(pdata->signature) + "\t"
+						+ZString(pdata->successorPartID) + "\t"
+						+pMission->BitsToPartsList(pdata->partMask,ET_Cloak) + "\t"
+						+ZString(pdata->inventoryLineMDL) + "\t"
+						+ZString(pdata2->price) + "\t"
+						+ZString((int)pdata2->timeToBuild) + "\t"
+						+ZString(pdata2->modelName) + "\t"
+						+ZString(pdata2->iconName) + "\t"
+						+ZString(pdata2->name) + "\t"
+						+ZString(pdata2->description) + "\t"
+						+ZString(pdata2->groupID) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 					
-					ZString strFile = strCore + L"\\Cloaks";
-					wchar_t        szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+					ZString strFile = strCore + "\\Cloaks";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 					fclose (file);
 
 				} else if(et == ET_Afterburner) { 
@@ -4818,134 +4817,134 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 					DataBuyableIGC* pdata2 = (DataBuyableIGC*)pdata;
 					DataAfterburnerTypeIGC* pdata3 = (DataAfterburnerTypeIGC*)pdata;
 
-					strLine += ZString(pdata3->fuelConsumption) + L"\t"
-						+ZString(pdata3->maxThrust) + L"\t"
-						+ZString(pdata3->onRate) + L"\t"
-						+ZString(pdata3->offRate) + L"\t"
+					strLine += ZString(pdata3->fuelConsumption) + "\t"
+						+ZString(pdata3->maxThrust) + "\t"
+						+ZString(pdata3->onRate) + "\t"
+						+ZString(pdata3->offRate) + "\t"
 						//
-						+ZString(pdata3->interiorSound) + L"\t"
-						+ZString(pdata3->exteriorSound) + L"\t"
+						+ZString(pdata3->interiorSound) + "\t"
+						+ZString(pdata3->exteriorSound) + "\t"
 						//
-						+ZString(pdata->mass) + L"\t"
-						+ZString(pdata->signature) + L"\t"
-						+ZString(pdata->successorPartID) + L"\t"
-						+pMission->BitsToPartsList(pdata->partMask,ET_Afterburner) + L"\t"
-						+ZString(pdata->inventoryLineMDL) + L"\t"
-						+ZString(pdata2->price) + L"\t"
-						+ZString((int)pdata2->timeToBuild) + L"\t"
-						+ZString(pdata2->modelName) + L"\t"
-						+ZString(pdata2->iconName) + L"\t"
-						+ZString(pdata2->name) + L"\t"
-						+ZString(pdata2->description) + L"\t"
-						+ZString(pdata2->groupID) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+						+ZString(pdata->mass) + "\t"
+						+ZString(pdata->signature) + "\t"
+						+ZString(pdata->successorPartID) + "\t"
+						+pMission->BitsToPartsList(pdata->partMask,ET_Afterburner) + "\t"
+						+ZString(pdata->inventoryLineMDL) + "\t"
+						+ZString(pdata2->price) + "\t"
+						+ZString((int)pdata2->timeToBuild) + "\t"
+						+ZString(pdata2->modelName) + "\t"
+						+ZString(pdata2->iconName) + "\t"
+						+ZString(pdata2->name) + "\t"
+						+ZString(pdata2->description) + "\t"
+						+ZString(pdata2->groupID) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 					
-					ZString strFile = strCore + L"\\Afterburners";
-					wchar_t        szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+					ZString strFile = strCore + "\\Afterburners";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 					fclose (file);		
 				} else if(et == ET_Pack) { 
 				//not using PartType's implementation of ::Export
 					DataBuyableIGC* pdata2 = (DataBuyableIGC*)pdata;
 					DataPackTypeIGC* pdata3 = (DataPackTypeIGC*)pdata;
 
-					strLine += ZString(pdata3->packType) + L"\t"
-						+ZString(pdata3->amount) + L"\t"
-						+ZString(pdata->mass) + L"\t"
-						+ZString(pdata->signature) + L"\t"
-						+ZString(pdata->successorPartID) + L"\t"
-						+pMission->BitsToPartsList(pdata->partMask,ET_Pack) + L"\t"
-						+ZString(pdata->inventoryLineMDL) + L"\t"
-						+ZString(pdata2->price) + L"\t"
-						+ZString((int)pdata2->timeToBuild) + L"\t"
-						+ZString(pdata2->modelName) + L"\t"
-						+ZString(pdata2->iconName) + L"\t"
-						+ZString(pdata2->name) + L"\t"
-						+ZString(pdata2->description) + L"\t"
-						+ZString(pdata2->groupID) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+					strLine += ZString(pdata3->packType) + "\t"
+						+ZString(pdata3->amount) + "\t"
+						+ZString(pdata->mass) + "\t"
+						+ZString(pdata->signature) + "\t"
+						+ZString(pdata->successorPartID) + "\t"
+						+pMission->BitsToPartsList(pdata->partMask,ET_Pack) + "\t"
+						+ZString(pdata->inventoryLineMDL) + "\t"
+						+ZString(pdata2->price) + "\t"
+						+ZString((int)pdata2->timeToBuild) + "\t"
+						+ZString(pdata2->modelName) + "\t"
+						+ZString(pdata2->iconName) + "\t"
+						+ZString(pdata2->name) + "\t"
+						+ZString(pdata2->description) + "\t"
+						+ZString(pdata2->groupID) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 					
-					ZString strFile = strCore + L"\\Packs";
-					wchar_t        szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+					ZString strFile = strCore + "\\Packs";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 					fclose (file);	
 				} else if(et == ET_Shield) { 
 					//not using PartType's implementation of ::Export
 					DataBuyableIGC* pdata2 = (DataBuyableIGC*)pdata;
 					DataShieldTypeIGC* pdata3 = (DataShieldTypeIGC*)pdata;
 
-					strLine += ZString(pdata3->rateRegen) + L"\t"
-						+ZString(pdata3->maxStrength) + L"\t"
-						+ ZString(pdata3->defenseType) + L" (" + ConstantsDamageComment(pdata3->defenseType, -1) + L")\t"
+					strLine += ZString(pdata3->rateRegen) + "\t"
+						+ZString(pdata3->maxStrength) + "\t"
+						+ZString(pdata3->defenseType) + " (" + ConstantsDamageComment(pdata3->defenseType,-1)+ ")\t"
 						//
-						+ZString(pdata3->activateSound) + L"\t"
-						+ZString(pdata3->deactivateSound) + L"\t"
+						+ZString(pdata3->activateSound) + "\t"
+						+ZString(pdata3->deactivateSound) + "\t"
 						//
-						+ZString(pdata->mass) + L"\t"
-						+ZString(pdata->signature) + L"\t"
-						+ZString(pdata->successorPartID) + L"\t"
-						+pMission->BitsToPartsList(pdata->partMask,ET_Shield) + L"\t"
-						+ZString(pdata->inventoryLineMDL) + L"\t"
-						+ZString(pdata2->price) + L"\t"
-						+ZString((int)pdata2->timeToBuild) + L"\t"
-						+ZString(pdata2->modelName) + L"\t"
-						+ZString(pdata2->iconName) + L"\t"
-						+ZString(pdata2->name) + L"\t"
-						+ZString(pdata2->description) + L"\t"
-						+ZString(pdata2->groupID) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+						+ZString(pdata->mass) + "\t"
+						+ZString(pdata->signature) + "\t"
+						+ZString(pdata->successorPartID) + "\t"
+						+pMission->BitsToPartsList(pdata->partMask,ET_Shield) + "\t"
+						+ZString(pdata->inventoryLineMDL) + "\t"
+						+ZString(pdata2->price) + "\t"
+						+ZString((int)pdata2->timeToBuild) + "\t"
+						+ZString(pdata2->modelName) + "\t"
+						+ZString(pdata2->iconName) + "\t"
+						+ZString(pdata2->name) + "\t"
+						+ZString(pdata2->description) + "\t"
+						+ZString(pdata2->groupID) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 					
-					ZString strFile = strCore + L"\\Shields";
-					wchar_t        szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+					ZString strFile = strCore + "\\Shields";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 					fclose (file);				
 				} else if(et == ET_Weapon) { 
 					//not using PartType's implementation of ::Export
 					DataBuyableIGC* pdata2 = (DataBuyableIGC*)pdata;
 					DataWeaponTypeIGC* pdata3 = (DataWeaponTypeIGC*)pdata;
 
-					strLine += ZString(pdata3->dtimeReady) + L"\t"
-						+ZString(pdata3->dtimeBurst) + L"\t"
-						+ZString(pdata3->energyPerShot) + L"\t"
-						+ZString(pdata3->dispersion) + L"\t"
-						+ZString(pdata3->cAmmoPerShot) + L"\t"
-						+ZString(pdata3->projectileTypeID) + L"\t"
-						+ZString(pdata3->activateSound) + L"\t"
-						+ZString(pdata3->singleShotSound) + L"\t"
-						+ZString(pdata3->burstSound) + L"\t"
-						+ZString(pdata->mass) + L"\t"
-						+ZString(pdata->signature) + L"\t"
-						+ZString(pdata->successorPartID) + L"\t"
-						+pMission->BitsToPartsList(pdata->partMask,ET_Weapon) + L"\t"
-						+ZString(pdata->inventoryLineMDL) + L"\t"
-						+ZString(pdata2->price) + L"\t"
-						+ZString((int)pdata2->timeToBuild) + L"\t"
-						+ZString(pdata2->modelName) + L"\t"
-						+ZString(pdata2->iconName) + L"\t"
-						+ZString(pdata2->name) + L"\t"
-						+ZString(pdata2->description) + L"\t"
-						+ZString(pdata2->groupID) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+					strLine += ZString(pdata3->dtimeReady) + "\t"
+						+ZString(pdata3->dtimeBurst) + "\t"
+						+ZString(pdata3->energyPerShot) + "\t"
+						+ZString(pdata3->dispersion) + "\t"
+						+ZString(pdata3->cAmmoPerShot) + "\t"
+						+ZString(pdata3->projectileTypeID) + "\t"
+						+ZString(pdata3->activateSound) + "\t"
+						+ZString(pdata3->singleShotSound) + "\t"
+						+ZString(pdata3->burstSound) + "\t"
+						+ZString(pdata->mass) + "\t"
+						+ZString(pdata->signature) + "\t"
+						+ZString(pdata->successorPartID) + "\t"
+						+pMission->BitsToPartsList(pdata->partMask,ET_Weapon) + "\t"
+						+ZString(pdata->inventoryLineMDL) + "\t"
+						+ZString(pdata2->price) + "\t"
+						+ZString((int)pdata2->timeToBuild) + "\t"
+						+ZString(pdata2->modelName) + "\t"
+						+ZString(pdata2->iconName) + "\t"
+						+ZString(pdata2->name) + "\t"
+						+ZString(pdata2->description) + "\t"
+						+ZString(pdata2->groupID) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+					strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 
-					ZString strFile = strCore + L"\\Weapons";
-					wchar_t        szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+					ZString strFile = strCore + "\\Weapons";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 					fclose (file);
 				
 				} else {
-					debugf(L"Obj2Txt: unhandled equipment type %i\n", et);
+					debugf("Obj2Txt: unhandled equipment type %i\n",et);
 				}
 			}
 		break;
@@ -4962,22 +4961,22 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				{
 					const HardpointData& hp = phull->GetHardpointData(pdata->maxWeapons - i);
 					PartMask pm = hp.partMask;
-					strHardPoints += ZString(pIGC->GetObjectID()) + L"\t"
+					strHardPoints += ZString(pIGC->GetObjectID()) + "\t"
 						//
-						+ZString(hp.interiorSound) + L"\t"
-						+ZString(hp.turnSound) + L"\t"
+						+ZString(hp.interiorSound) + "\t"
+						+ZString(hp.turnSound) + "\t"
 						//
-						+ZString(hp.frameName) + L"\t"
-						+ZString(hp.locationAbreviation) + L"\t"
-						+ pMission->BitsToPartsList(pm,ET_Weapon) + L"\t"
-						+ZString(hp.bFixed) + L"\t"
-						+ ZString(pdata2->name) + L" (" + ZString(pdata2->modelName) + L")\r\n";
+						+ZString(hp.frameName) + "\t"
+						+ZString(hp.locationAbreviation) + "\t"
+						+ pMission->BitsToPartsList(pm,ET_Weapon) + "\t"
+						+ZString(hp.bFixed) + "\t"
+						+ZString(pdata2->name) + " (" + ZString(pdata2->modelName) + ")\r\n";
 				}
-				ZString strFile = strCore + L"\\Hardpoints";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strHardPoints, sizeof(wchar_t), strHardPoints.GetLength(), file);
+				ZString strFile = strCore + "\\Hardpoints";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strHardPoints, sizeof(char), strHardPoints.GetLength(), file);
 				fclose (file);
 
 				ZString strMaxTurnRates;
@@ -4986,8 +4985,8 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 					strMaxTurnRates += ZString(pdata->maxTurnRates[i]);
 					strTurnTorques += ZString(pdata->turnTorques[i]);
 					if (i != 2) {
-						strMaxTurnRates += L" ";
-						strTurnTorques += L" ";
+						strMaxTurnRates += " ";
+						strTurnTorques += " ";
 					}
 				}
 
@@ -4995,113 +4994,115 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				for(int i=0;i<c_cMaxPreferredPartTypes;i++) {
 					strPreferredPartsTypes += ZString(pdata->preferredPartsTypes[i]);
 					if (i != c_cMaxPreferredPartTypes - 1) {
-						strPreferredPartsTypes += L" ";
+						strPreferredPartsTypes += " ";
 					}
 				}
 				//Fixed copy/paste error on 8/10 thanks to Compellor
-				ZString strPmEquipment = pMission->BitsToPartsList(pdata->pmEquipment[ET_ChaffLauncher],ET_ChaffLauncher) + L"\t"
-					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Dispenser],ET_Dispenser) + L"\t"
-					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Magazine],ET_Magazine) + L"\t"
-					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Shield],ET_Shield) + L"\t"
-					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Cloak],ET_Cloak) + L"\t"
-					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Afterburner],ET_Afterburner) + L"\t";
+				ZString strPmEquipment = pMission->BitsToPartsList(pdata->pmEquipment[ET_ChaffLauncher],ET_ChaffLauncher) + "\t"
+					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Dispenser],ET_Dispenser) + "\t"
+					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Magazine],ET_Magazine) + "\t"
+					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Shield],ET_Shield) + "\t"
+					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Cloak],ET_Cloak) + "\t"
+					+pMission->BitsToPartsList(pdata->pmEquipment[ET_Afterburner],ET_Afterburner) + "\t";
 
-   				ZString strLine = ZString(pdata->hullID) + L"\t"
-					+ZString(pdata->mass) + L"\t"
-					+ZString(pdata->signature) + L"\t"
-					+ZString(pdata->speed) + L"\t"
-					+strMaxTurnRates + L"\t"
-					+strTurnTorques + L"\t"
-					+ZString(pdata->thrust) + L"\t"
-					+ZString(pdata->sideMultiplier) + L"\t"
-					+ZString(pdata->backMultiplier) + L"\t"
-					+ZString(pdata->scannerRange) + L"\t"
-					+ZString(pdata->maxFuel) + L"\t"
-					+ZString(pdata->ecm) + L"\t"
-					+ZString(pdata->length) + L"\t"
-					+ZString(pdata->maxEnergy) + L"\t"
-					+ZString(pdata->rechargeRate) + L"\t"
-					+ZString(pdata->ripcordSpeed) + L"\t"
-					+ZString(pdata->ripcordCost) + L"\t"
-					+ZString(pdata->maxAmmo) + L"\t"
-					+ZString(pdata->successorHullID) + L"\t"
-					+ZString(pdata->maxWeapons) + L"\t"
-					+ZString(pdata->maxFixedWeapons) + L"\t"
-					+ZString(pdata->hitPoints) + L"\t"
-					//+ZString(pdata->hardpointOffset) + L"\t" //Imago doesn't need binary offsets with CSV!
-					+ ZString(pdata->defenseType) + L" (" + ConstantsDamageComment(pdata->defenseType, -1) + L")\t"
-					+ZString(pdata->capacityMagazine) + L"\t"
-					+ZString(pdata->capacityDispenser) + L"\t"
-					+ZString(pdata->capacityChaffLauncher) + L"\t"
-					+strPreferredPartsTypes + L"\t";
+   				ZString strLine = ZString(pdata->hullID) + "\t"
+					+ZString(pdata->mass) + "\t"
+					+ZString(pdata->signature) + "\t"
+					+ZString(pdata->speed) + "\t"
+					+strMaxTurnRates + "\t"
+					+strTurnTorques + "\t"
+					+ZString(pdata->thrust) + "\t"
+					+ZString(pdata->sideMultiplier) + "\t"
+					+ZString(pdata->backMultiplier) + "\t"
+					+ZString(pdata->scannerRange) + "\t"
+					+ZString(pdata->maxFuel) + "\t"
+					+ZString(pdata->ecm) + "\t"
+					+ZString(pdata->length) + "\t"
+					+ZString(pdata->maxEnergy) + "\t"
+					+ZString(pdata->rechargeRate) + "\t"
+					+ZString(pdata->ripcordSpeed) + "\t"
+					+ZString(pdata->ripcordCost) + "\t"
+					+ZString(pdata->maxAmmo) + "\t"
+					+ZString(pdata->successorHullID) + "\t"
+					+ZString(pdata->maxWeapons) + "\t"
+					+ZString(pdata->maxFixedWeapons) + "\t"
+					+ZString(pdata->hitPoints) + "\t"
+					//+ZString(pdata->hardpointOffset) + "\t" //Imago doesn't need binary offsets with CSV!
+					+ZString(pdata->defenseType) + " (" + ConstantsDamageComment(pdata->defenseType,-1) + ")\t"
+					+ZString(pdata->capacityMagazine) + "\t"
+					+ZString(pdata->capacityDispenser) + "\t"
+					+ZString(pdata->capacityChaffLauncher) + "\t"
+					+strPreferredPartsTypes + "\t";
 
 				ZString strCapabilities;
 				if(pdata->habmCapabilities & c_habmBoard)
-					strCapabilities += L"CanBoard ";
+					strCapabilities += "CanBoard ";
 				if(pdata->habmCapabilities & c_habmRescue)
-					strCapabilities += L"CanRescue ";
+					strCapabilities += "CanRescue ";
 				if(pdata->habmCapabilities & c_habmLifepod)
-					strCapabilities += L"IsPod ";
+					strCapabilities += "IsPod ";
 				if(pdata->habmCapabilities & c_habmCaptureThreat)
-					strCapabilities += L"CanCapture ";
+					strCapabilities += "CanCapture ";
 				if(pdata->habmCapabilities & c_habmLandOnCarrier)
-					strCapabilities += L"CanLandOnCarrier ";
+					strCapabilities += "CanLandOnCarrier ";
 				if(pdata->habmCapabilities & c_habmNoRipcord)
-					strCapabilities += L"CanNotRip ";
+					strCapabilities += "CanNotRip ";
 				if(pdata->habmCapabilities & c_habmIsRipcordTarget)
-					strCapabilities += L"IsRipcordTarget ";
+					strCapabilities += "IsRipcordTarget ";
 				if(pdata->habmCapabilities & c_habmFighter)
-					strCapabilities += L"IsFighter ";
+					strCapabilities += "IsFighter ";
 				if(pdata->habmCapabilities & c_habmRemoteLeadIndicator)
-					strCapabilities += L"IsRemoteLeadIndicator ";
+					strCapabilities += "IsRemoteLeadIndicator ";
 				if(pdata->habmCapabilities & c_habmThreatToStation)
-					strCapabilities += L"CanBomb ";
+					strCapabilities += "CanBomb ";
 				if(pdata->habmCapabilities & c_habmCarrier)
-					strCapabilities += L"IsCarrier ";
+					strCapabilities += "IsCarrier ";
 				if(pdata->habmCapabilities & c_habmLeadIndicator)
-					strCapabilities += L"CanLeadIndicator ";
+					strCapabilities += "CanLeadIndicator ";
 				if(pdata->habmCapabilities & c_habmIsLtRipcordTarget)
-					strCapabilities += L"IsLtRip ";
+					strCapabilities += "IsLtRip ";
 				if(pdata->habmCapabilities & c_habmCanLtRipcord)
-					strCapabilities += L"CanLtRip ";
+					strCapabilities += "CanLtRip ";
 				if(pdata->habmCapabilities & c_habmMiner)
-					strCapabilities += L"IsMiner ";
+					strCapabilities += "IsMiner ";
 				if(pdata->habmCapabilities & c_habmBuilder)
-					strCapabilities += L"IsBuilder ";
+					strCapabilities += "IsBuilder ";     
 				
-				strLine += strCapabilities + L"\t"
-					+ZString(pdata->textureName) + L"\t"
+				strLine += strCapabilities + "\t"
+					+ZString(pdata->textureName) + "\t"
 					+strPmEquipment; // has trailing tab
 					
-				ZString strSFX = ZString(pdata->hullID) + L"\t"
-					+ZString(pdata2->name) + L"\t"
-					+ZString(pdata->interiorSound) + L"\t"
-					+ZString(pdata->exteriorSound) + L"\t"
-					+ZString(pdata->mainThrusterInteriorSound) + L"\t"
-					+ZString(pdata->mainThrusterExteriorSound) + L"\t"
-					+ZString(pdata->manuveringThrusterInteriorSound) + L"\t"
-					+ ZString(pdata->manuveringThrusterExteriorSound) + L"\r\n";
+				ZString strSFX = ZString(pdata->hullID) + "\t"
+					+ZString(pdata2->name) + "\t"
+					+ZString(pdata->interiorSound) + "\t"
+					+ZString(pdata->exteriorSound) + "\t"
+					+ZString(pdata->mainThrusterInteriorSound) + "\t"
+					+ZString(pdata->mainThrusterExteriorSound) + "\t"
+					+ZString(pdata->manuveringThrusterInteriorSound) + "\t"
+					+ZString(pdata->manuveringThrusterExteriorSound) + "\r\n";
 
-					strLine += ZString(pdata2->price) + L"\t"
-					+ZString((int)pdata2->timeToBuild) + L"\t"
-					+ZString(pdata2->modelName) + L"\t"
-					+ZString(pdata2->iconName) + L"\t"
-					+ZString(pdata2->name) + L"\t"
-					+ZString(pdata2->description) + L"\t"
-					+ZString(pdata2->groupID) + L"\t";
-				strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + L"\t";
-				strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + L"\r\n";
+					strLine += ZString(pdata2->price) + "\t"
+					+ZString((int)pdata2->timeToBuild) + "\t"
+					+ZString(pdata2->modelName) + "\t"
+					+ZString(pdata2->iconName) + "\t"
+					+ZString(pdata2->name) + "\t"
+					+ZString(pdata2->description) + "\t"
+					+ZString(pdata2->groupID) + "\t";
+				strLine += pMission->BitsToTechsList(pdata2->ttbmRequired) + "\t";
+				strLine += pMission->BitsToTechsList(pdata2->ttbmEffects) + "\r\n";
 
-				strFile = strCore + L"\\TypesOfShips";
-				hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				strFile = strCore + "\\TypesOfShips";
+				szFilename[MAX_PATH + 1];
+				hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 
-				strFile = strCore + L"\\ShipsSFX";
-				hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				file = _wfopen(szFilename, L"ab");
-				fwrite (strSFX, sizeof(wchar_t), strSFX.GetLength(), file);
+				strFile = strCore + "\\ShipsSFX";
+				szFilename[MAX_PATH + 1];
+				hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				file = fopen (szFilename, "ab");
+				fwrite (strSFX, sizeof(char), strSFX.GetLength(), file);
 				fclose (file);
 			}
 		break;
@@ -5114,41 +5115,41 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				GlobalAttributeSet mtgas;
 				mtgas.Initialize();
 				if(!(mtgas == data.gas)) {
-					ZString strGAS = ZString(pIGC->GetObjectID()) + L"\t" + ZString(data2.name) + L"\t";
+					ZString strGAS = ZString(pIGC->GetObjectID()) + "\t" + ZString(data2.name) + "\t";
 					for(int i=0;i<c_gaMax;i++) {
 						strGAS += ZString(data.gas.GetAttribute(i));
 							if (i != c_gaMax - 1)
-								strGAS += L"\t";
+								strGAS += "\t";
 					}
-					strGAS += L"\r\n";
-					ZString strFile = strCore + L"\\GlobalAttributes";
-					wchar_t       szFilename[MAX_PATH + 1];
-					HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-					FILE*       file = _wfopen(szFilename, L"ab");
-					fwrite (strGAS, sizeof(wchar_t), strGAS.GetLength(), file);
+					strGAS += "\r\n";
+					ZString strFile = strCore + "\\GlobalAttributes";
+					char        szFilename[MAX_PATH + 1];
+					HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+					FILE*       file = fopen (szFilename, "ab");
+					fwrite (strGAS, sizeof(char), strGAS.GetLength(), file);
 					fclose (file);
 				}
 
 
-				ZString strLine = ZString(data.developmentID) + L"\t"
+				ZString strLine = ZString(data.developmentID) + "\t"
 					//
-					+ZString(data.completionSound) + L"\t"
+					+ZString(data.completionSound) + "\t"
 					//
-					+ZString(data2.price) + L"\t"
-					+ZString((int)data2.timeToBuild) + L"\t"
-					+ZString(data2.modelName) + L"\t"
-					+ZString(data2.iconName) + L"\t"
-					+ZString(data2.name) + L"\t"
-					+ZString(data2.description) + L"\t"
-					+ZString(data2.groupID) + L"\t";
-				strLine += pMission->BitsToTechsList(data2.ttbmRequired) + L"\t";
-				strLine += pMission->BitsToTechsList(data2.ttbmEffects) + L"\r\n";
+					+ZString(data2.price) + "\t"
+					+ZString((int)data2.timeToBuild) + "\t"
+					+ZString(data2.modelName) + "\t"
+					+ZString(data2.iconName) + "\t"
+					+ZString(data2.name) + "\t"
+					+ZString(data2.description) + "\t"
+					+ZString(data2.groupID) + "\t";
+				strLine += pMission->BitsToTechsList(data2.ttbmRequired) + "\t";
+				strLine += pMission->BitsToTechsList(data2.ttbmEffects) + "\r\n";
 
-				ZString strFile = strCore + L"\\Developments";
-				wchar_t szFilename[MAX_PATH + 1];
-				HRESULT hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE* file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\Developments";
+				char szFilename[MAX_PATH + 1];
+				HRESULT hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE* file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 			}
 		break;
@@ -5158,28 +5159,28 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				pIGC->Export(&data);
 				DataBuyableIGC data2 = (DataBuyableIGC)data;
 
-				ZString strLine = ZString(data.droneTypeID) + L"\t"
-					+ZString(data.shootSkill) + L"\t"
-					+ZString(data.moveSkill) + L"\t"
-					+ZString(data.bravery) + L"\t"
-					+ZString(data.pilotType) + L"\t"
-					+ZString(data.hullTypeID) + L"\t"
-					+ZString(data.etidLaid) + L"\t"
-					+ZString(data2.price) + L"\t"
-					+ZString((int)data2.timeToBuild) + L"\t"
-					+ZString(data2.modelName) + L"\t"
-					+ZString(data2.iconName) + L"\t"
-					+ZString(data2.name) + L"\t"
-					+ZString(data2.description) + L"\t"
-					+ZString(data2.groupID) + L"\t";
-				strLine += pMission->BitsToTechsList(data2.ttbmRequired) + L"\t";
-				strLine += pMission->BitsToTechsList(data2.ttbmEffects) + L"\r\n";
+				ZString strLine = ZString(data.droneTypeID) + "\t"
+					+ZString(data.shootSkill) + "\t"
+					+ZString(data.moveSkill) + "\t"
+					+ZString(data.bravery) + "\t"
+					+ZString(data.pilotType) + "\t"
+					+ZString(data.hullTypeID) + "\t"
+					+ZString(data.etidLaid) + "\t"
+					+ZString(data2.price) + "\t"
+					+ZString((int)data2.timeToBuild) + "\t"
+					+ZString(data2.modelName) + "\t"
+					+ZString(data2.iconName) + "\t"
+					+ZString(data2.name) + "\t"
+					+ZString(data2.description) + "\t"
+					+ZString(data2.groupID) + "\t";
+				strLine += pMission->BitsToTechsList(data2.ttbmRequired) + "\t";
+				strLine += pMission->BitsToTechsList(data2.ttbmEffects) + "\r\n";
 
-				ZString strFile = strCore + L"\\TypesOfDrones";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\TypesOfDrones";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 
 			}
@@ -5189,35 +5190,36 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				DataCivilizationIGC data;
 				pIGC->Export(&data);
 
-				ZString strGAS = ZString(pIGC->GetObjectID()) + L"\t" + ZString(data.name) + L"\t";
+				ZString strGAS = ZString(pIGC->GetObjectID()) + "\t" + ZString(data.name) + "\t";
 				for(int i=0;i<c_gaMax;i++) {
 					strGAS += ZString(data.gasBaseAttributes.GetAttribute(i));
 					if (i != c_gaMax - 1)
-						strGAS += L"\t";
+						strGAS += "\t";
 				}
-				strGAS += L"\r\n";
-				ZString strFile = strCore + L"\\GlobalAttributes";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strGAS, sizeof(wchar_t), strGAS.GetLength(), file);
+				strGAS += "\r\n";
+				ZString strFile = strCore + "\\GlobalAttributes";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strGAS, sizeof(char), strGAS.GetLength(), file);
 				fclose (file);
 
-				ZString strLine = ZString(data.civilizationID) + L"\t"
-					+ZString(data.incomeMoney) + L"\t"
-					+ZString(data.bonusMoney) + L"\t"
-					+ZString(data.name) + L"\t"
-					+ZString(data.iconName) + L"\t"
-					+ZString(data.hudName) + L"\t"
-					+ZString(data.lifepod) + L"\t"
-					+ZString(data.initialStationTypeID) + L"\t";
-				strLine += pMission->BitsToTechsList(data.ttbmBaseTechs) + L"\t";
-				strLine += pMission->BitsToTechsList(data.ttbmNoDevTechs) + L"\r\n";
+				ZString strLine = ZString(data.civilizationID) + "\t"
+					+ZString(data.incomeMoney) + "\t"
+					+ZString(data.bonusMoney) + "\t"
+					+ZString(data.name) + "\t"
+					+ZString(data.iconName) + "\t"
+					+ZString(data.hudName) + "\t"
+					+ZString(data.lifepod) + "\t"
+					+ZString(data.initialStationTypeID) + "\t";
+				strLine += pMission->BitsToTechsList(data.ttbmBaseTechs) + "\t";
+				strLine += pMission->BitsToTechsList(data.ttbmNoDevTechs) + "\r\n";
 
-				strFile = strCore + L"\\Civilizations";
-				hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				strFile = strCore + "\\Civilizations";
+				szFilename[MAX_PATH + 1];
+				hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 				
 			}
@@ -5227,91 +5229,91 @@ void Obj2Txt(IbaseIGC * pIGC, ObjectType ot, ImissionIGC * pMission)
 				ItreasureSetIGC*    ptset = (ItreasureSetIGC*)pIGC;
 				int treasures = ptset->GetSize(); //more accuratley, NumOfTreasures
 				int datasize =  int(sizeof(DataTreasureSetIGC) + treasures * sizeof(TreasureData));
-				DataTreasureSetIGC* pdata = (DataTreasureSetIGC*)(new wchar_t [datasize]);
+				DataTreasureSetIGC* pdata = (DataTreasureSetIGC*)(new char [datasize]);
 				pIGC->Export(pdata);
 				TreasureData*   ptd = pdata->treasureData0();
 				ZString strTreasures;
 
 				for (short i = 0; (i < treasures); i++) {
-					strTreasures += ZString((ptd + i)->treasureID) + L" ";
+					strTreasures += ZString((ptd + i)->treasureID) + " ";
 
 					if((ptd + i)->treasureCode == c_tcPart)
-						strTreasures += L"Part ";
+						strTreasures += "Part ";
 					if((ptd + i)->treasureCode == c_tcPowerup)
-						strTreasures += L"Powerup ";
+						strTreasures += "Powerup ";
 					if((ptd + i)->treasureCode == c_tcDevelopment)
-						strTreasures += L"Development ";
+						strTreasures += "Development ";
 					if((ptd + i)->treasureCode == c_tcCash)
-						strTreasures += L"Cash ";
+						strTreasures += "Cash ";
 					if((ptd + i)->treasureCode == c_tcFlag)
-						strTreasures += L"Flag ";
+						strTreasures += "Flag ";
 
 					strTreasures += ZString((ptd + i)->chance);
 					if(i != treasures - 1)
-						strTreasures += L" ";
+						strTreasures += " ";
 				}
 
-				ZString strLine = ZString(pdata->treasureSetID) + L"\t"
-					+ZString(pdata->name) + L"\t"
-					+ZString(pdata->nTreasureData) + L"\t"
-					+ZString(pdata->bZoneOnly) + L"\t"
-					+ strTreasures + L"\r\n";
+				ZString strLine = ZString(pdata->treasureSetID) + "\t"
+					+ZString(pdata->name) + "\t"
+					+ZString(pdata->nTreasureData) + "\t"
+					+ZString(pdata->bZoneOnly) + "\t"
+					+strTreasures + "\r\n";
 
-				ZString strFile = strCore + L"\\TypesOfTreasures";
-				wchar_t        szFilename[MAX_PATH + 1];
-				HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-				FILE*       file = _wfopen(szFilename, L"ab");
-				fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+				ZString strFile = strCore + "\\TypesOfTreasures";
+				char        szFilename[MAX_PATH + 1];
+				HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+				FILE*       file = fopen (szFilename, "ab");
+				fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 				fclose (file);
 			}
 		break;
-		default: debugf(L"Obj2Txt: unhandled object type %i\n", ot);
+		default: debugf("Obj2Txt: unhandled object type %i\n",ot);
 	}
 }
 
 //...these meanings shouldn't change
 ZString ConstantsGlobalComment(int constid) {
-	ZString strComment = L"New uncommented constant";
+	ZString strComment = "New uncommented constant";
 	switch(constid) {
-	case 0: {strComment = L"Universe (sizing) lens multiplier."; } break;
-	case 1: {strComment = L"Universe (sizing) radius modifier."; } break;
-	case 2: {strComment = L"Universe (sizing) outer bounds modifier."; } break;
-	case 3: {strComment = L"Ship (speed) modifier (exiting an aleph)."; } break;
-	case 4: {strComment = L"Ship (speed) modifier (exiting a station)."; } break;
-	case 5: {strComment = L"Shield (damage) 'downed' variable (determine if shields are down)."; } break;
-	case 6: {strComment = L"Payday (economy) timer (# sec/payday)."; } break;
-	case 7: {strComment = L"He3 asteroid (economy) capacity. "; } break;
-	case 8: {strComment = L"He3 mineral (economy) unit price (worth)."; } break;
-	case 9: {strComment = L"He3 amount (economy) in universe per team."; } break;
-	case 10: {strComment = L"Ship (equipment, speed) time to mount."; } break;
-	case 11: {strComment = L"Starting cash base (economy)."; } break;
-	case 12: {strComment = L"Prosperity cash (game type) goal base."; } break;
-	case 13: {strComment = L"Ripcord time (speed) base (seconds)."; } break;
-	case 14: {strComment = L"He3 regeneration (economy) rate."; } break;
-	case 15: {strComment = L"Point modifier (rank) for finding an aleph."; } break;
-	case 16: {strComment = L"Point modifier (rank) for finding a rock."; } break;
-	case 17: {strComment = L"Point modifier (rank) for retrieving a tech."; } break;
-	case 18: {strComment = L"Point modifier (rank) for destroying a miner."; } break;
-	case 19: {strComment = L"Point modifier (rank) for destroying a builder (constructor)."; } break;
-	case 20: {strComment = L"Point modifier (rank) for destroying a layer (caltrop/tower)."; } break;
-	case 21: {strComment = L"Point modifier (rank) for destroying a carrier (drone)."; } break;
-	case 22: {strComment = L"Point modifier (rank) for destroying a player."; } break;
-	case 23: {strComment = L"Point modifier (rank) for destorying a base."; } break;
-	case 24: {strComment = L"Point modifier (rank) for capturing a base."; } break;
-	case 25: {strComment = L"Point modifier (rank) for retrieving a flag."; } break;
-	case 26: {strComment = L"Point modifier (rank) for recovering an artifcat."; } break;
-	case 27: {strComment = L"Point modifier (rank) for picking up a pod."; } break;
-	case 28: {strComment = L"Combat rating modifier (rank) added to kill math"; } break;
-	case 29: {strComment = L"Combat rating modifier (rank) divided by kill math."; } break;
-	case 30: {strComment = L"Payday (economy) size ($/payday)."; } break;
-	case 31: {strComment = L"Escape pod (gameplay) O2 supply."; } break;
-	case 32: {strComment = L"Warp bomb detonation timer."; } break;
-	case 33: {strComment = L"Cost to update (performance) lifepods."; } break;
-	case 34: {strComment = L"Cost to update (performance) turrets."; } break;
-	case 35: {strComment = L"Cost to update (performance) drones."; } break;
-	case 36: {strComment = L"Cost to update (performance) players."; } break;
-	case 37: {strComment = L"Base sector update cost (performance) in a sector."; } break;
-	case 38: {strComment = L"Cost to update (performance) divided by move math."; } break;
+		case 0: {strComment = "Universe (sizing) lens multiplier.";} break;
+		case 1: {strComment = "Universe (sizing) radius modifier.";} break;
+		case 2: {strComment = "Universe (sizing) outer bounds modifier.";} break;
+		case 3: {strComment = "Ship (speed) modifier (exiting an aleph).";} break;
+		case 4: {strComment = "Ship (speed) modifier (exiting a station).";} break;
+		case 5: {strComment = "Shield (damage) 'downed' variable (determine if shields are down).";} break;
+		case 6: {strComment = "Payday (economy) timer (# sec/payday).";} break;
+		case 7: {strComment = "He3 asteroid (economy) capacity. ";} break;
+		case 8: {strComment = "He3 mineral (economy) unit price (worth).";} break;
+		case 9: {strComment = "He3 amount (economy) in universe per team.";} break;
+		case 10: {strComment = "Ship (equipment, speed) time to mount.";} break;
+		case 11: {strComment = "Starting cash base (economy).";} break;
+		case 12: {strComment = "Prosperity cash (game type) goal base.";} break;
+		case 13: {strComment = "Ripcord time (speed) base (seconds).";} break;
+		case 14: {strComment = "He3 regeneration (economy) rate.";} break;
+		case 15: {strComment = "Point modifier (rank) for finding an aleph.";} break;
+		case 16: {strComment = "Point modifier (rank) for finding a rock.";} break;
+		case 17: {strComment = "Point modifier (rank) for retrieving a tech.";} break;
+		case 18: {strComment = "Point modifier (rank) for destroying a miner.";} break;
+		case 19: {strComment = "Point modifier (rank) for destroying a builder (constructor).";} break;
+		case 20: {strComment = "Point modifier (rank) for destroying a layer (caltrop/tower).";} break;
+		case 21: {strComment = "Point modifier (rank) for destroying a carrier (drone).";} break;
+		case 22: {strComment = "Point modifier (rank) for destroying a player.";} break;
+		case 23: {strComment = "Point modifier (rank) for destorying a base.";} break;
+		case 24: {strComment = "Point modifier (rank) for capturing a base.";} break;
+		case 25: {strComment = "Point modifier (rank) for retrieving a flag.";} break;
+		case 26: {strComment = "Point modifier (rank) for recovering an artifcat.";} break;
+		case 27: {strComment = "Point modifier (rank) for picking up a pod.";} break;
+		case 28: {strComment = "Combat rating modifier (rank) added to kill math";} break;
+		case 29: {strComment = "Combat rating modifier (rank) divided by kill math.";} break;
+		case 30: {strComment = "Payday (economy) size ($/payday).";} break;
+		case 31: {strComment = "Escape pod (gameplay) O2 supply.";} break; 
+		case 32: {strComment = "Warp bomb detonation timer.";} break;
+		case 33: {strComment = "Cost to update (performance) lifepods.";} break; 
+		case 34: {strComment = "Cost to update (performance) turrets.";} break;
+		case 35: {strComment = "Cost to update (performance) drones.";} break;
+		case 36: {strComment = "Cost to update (performance) players.";} break;
+		case 37: {strComment = "Base sector update cost (performance) in a sector.";} break;
+		case 38: {strComment = "Cost to update (performance) divided by move math.";} break;
 		default:
 			break;
 	}
@@ -5357,39 +5359,39 @@ void CmissionIGC::ExportStaticIGCObjs()
 	// Export Constants 
   {
 	int size = pMission->GetSizeOfConstants();
-	Constants* pdata = (Constants*)(new wchar_t [size]);
-	wmemcpy((wchar_t*)pdata, (const wchar_t*)pMission->GetConstants(), pMission->GetSizeOfConstants()); //whatever
+	Constants* pdata = (Constants*)(new char [size]);
+	memcpy(pdata, pMission->GetConstants(), pMission->GetSizeOfConstants()); //whatever
 
-	ZString strLine = L"GLOBALID OR DEFENSE CONSTANTIDS\tGLOBAL VALUE OR DAMAGE CONSTANTID\tCOMMENT\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Constants";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "GLOBALID OR DEFENSE CONSTANTIDS\tGLOBAL VALUE OR DAMAGE CONSTANTID\tCOMMENT\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Constants"; 
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 
 	strLine.SetEmpty();
 	for(int i=0;i<c_fcidMax;i++) {
-		strLine += ZString(i) + L"\t" + ZString(pdata->floatConstants[i]) + L"\t" + ConstantsGlobalComment(i) + L"\r\n";
+		strLine += ZString(i) + "\t" + ZString(pdata->floatConstants[i]) + "\t" + ConstantsGlobalComment(i) +"\r\n";
 	}
 	for(int i=0;i<c_dmgidMax;i++) {
 		for(int i2=0;i2<c_defidMax;i2++) {
-			strLine += ZString(i) + L"\t" + ZString(pdata->damageConstants[i][i2]) + L"\t" + ZString(i2) + L": " + ConstantsDamageComment(i, i2) + L"\r\n";
+			strLine += ZString(i) + "\t" + ZString(pdata->damageConstants[i][i2]) + "\t" + ZString(i2) + ": "+ ConstantsDamageComment(i,i2) + "\r\n";
 		}
 
 	}
 
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
   }
 
   {
 	// GAS
-	  ZString strLine = L"ID\tCOPY OF NAME\tMAX SPEED\tTHRUST\tTURN RATE\tTURN TORQUE\tMAX STATION ARMOR\tSTATION ARMOR REGEN\tMAX STATION SHIELD\tSTATION SHIELD REGEN\tSHIP MAX ARMOR\tSHIP MAX SHIELD\tSHIP SHIELD REGEN\tSCAN RANGE\tSIGNATURE\tMAX ENERGY\tAMMO RANGE\tENERGY LIFESPAN\tMISSILE TURN RATE\tMINING RATE\tMINING YIELD\tMINING CAPACITY\tIP TIME\tWEAPON DAMAGE\tMISSILE DAMAGE\tDEVELOPMENT COST\tDEVELOPMENT TIME\r\n";
-	  ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\GlobalAttributes";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tCOPY OF NAME\tMAX SPEED\tTHRUST\tTURN RATE\tTURN TORQUE\tMAX STATION ARMOR\tSTATION ARMOR REGEN\tMAX STATION SHIELD\tSTATION SHIELD REGEN\tSHIP MAX ARMOR\tSHIP MAX SHIELD\tSHIP SHIELD REGEN\tSCAN RANGE\tSIGNATURE\tMAX ENERGY\tAMMO RANGE\tENERGY LIFESPAN\tMISSILE TURN RATE\tMINING RATE\tMINING YIELD\tMINING CAPACITY\tIP TIME\tWEAPON DAMAGE\tMISSILE DAMAGE\tDEVELOPMENT COST\tDEVELOPMENT TIME\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\GlobalAttributes";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
   }
 
@@ -5397,22 +5399,22 @@ void CmissionIGC::ExportStaticIGCObjs()
   //NYI include copy of file names for even more convienence (start at path \artwork)
   {	
 	// Ship SFX
-	  ZString strLine = L"ID\tCOPY OF NAME\tINTERIOR\tEXTERIOR\tBOOST INTERIOR\tBOOST EXTERIOR\tTHRUST INTERIOR\tTHRUST EXTERIOR\r\n";
-	  ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ShipsSFX";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tCOPY OF NAME\tINTERIOR\tEXTERIOR\tBOOST INTERIOR\tBOOST EXTERIOR\tTHRUST INTERIOR\tTHRUST EXTERIOR\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ShipsSFX";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
   }
   {
 	// Station SFX
-	  ZString strLine = L"ID\tCON NEEDS ROCK\tCON UNDER ATTACK\tCON DESTROYED\tBUILD COMPLETION\tINTERIOR\tEXTERIOR\tALERT\tUNDER ATTACK\tCRITICAL\tDESTROYED\tCAPTURED\tCAPTURED ENEMY LISTENER\tDESTROYED ENEMY LISTENER\r\n";
-	  ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\StationsSFX";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tCON NEEDS ROCK\tCON UNDER ATTACK\tCON DESTROYED\tBUILD COMPLETION\tINTERIOR\tEXTERIOR\tALERT\tUNDER ATTACK\tCRITICAL\tDESTROYED\tCAPTURED\tCAPTURED ENEMY LISTENER\tDESTROYED ENEMY LISTENER\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\StationsSFX";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
   }
 
@@ -5421,12 +5423,12 @@ void CmissionIGC::ExportStaticIGCObjs()
     const StationTypeListIGC * pstlist = pMission->GetStationTypes();
     StationTypeLinkIGC * pstlink = NULL;
 	
-	ZString strLine = L"ID\tSIGNATURE\tMAX ARMOR HP\tMAX SHIELD HP\tARMOR REGEN RATE\tSHIELD REGEN RATE\tSCANNER RANGE\tINCOME\tRADIUS\tSUCCESSOR STATION TYPE ID\tARMOR DEFENSE ID\tSHIELD DEFENSE ID\tABILITIES\tALLOWED ASTEROIDS\tCLASS ID\tCON DRONE ID\tTEXTURE NAME\tCON NAME\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\tTECH SELF\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfStations";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tSIGNATURE\tMAX ARMOR HP\tMAX SHIELD HP\tARMOR REGEN RATE\tSHIELD REGEN RATE\tSCANNER RANGE\tINCOME\tRADIUS\tSUCCESSOR STATION TYPE ID\tARMOR DEFENSE ID\tSHIELD DEFENSE ID\tABILITIES\tALLOWED ASTEROIDS\tCLASS ID\tCON DRONE ID\tTEXTURE NAME\tCON NAME\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\tTECH SELF\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfStations";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (pstlink = pstlist->first(); pstlink; pstlink = pstlink->next())
@@ -5438,12 +5440,12 @@ void CmissionIGC::ExportStaticIGCObjs()
     const ProjectileTypeListIGC * pptlist = pMission->GetProjectileTypes();
     ProjectileTypeLinkIGC * pptlink = NULL;
 
-	ZString strLine = L"ID\tPOWER\tBLAST POWER\tBLAST RADIUS\tSPEED\tLIFE SPAN\tDAMAGE TYPE\tABSOLUTE\tDIRECTIONAL\tWIDTH\tAMBIENT SFX ID\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tCOPY OF NAMES\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfProjectiles";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tPOWER\tBLAST POWER\tBLAST RADIUS\tSPEED\tLIFE SPAN\tDAMAGE TYPE\tABSOLUTE\tDIRECTIONAL\tWIDTH\tAMBIENT SFX ID\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tCOPY OF NAMES\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfProjectiles";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (pptlink = pptlist->first(); pptlink; pptlink = pptlink->next())
@@ -5463,46 +5465,46 @@ void CmissionIGC::ExportStaticIGCObjs()
 
 	for (petlink = petlist->first(); petlink; petlink = petlink->next()) {
 		if (!(seenMissile) && petlink->data()->GetObjectType() == OT_missileType) {
-			ZString strLine = L"ID\tACCELLERATION\tTURN RATE\tINITIAL SPEED\tLOCK TIME\tREADY TIME\tMAX LOCK\tCHAFF RESISTANCE\tDISPERSION\tLOCK ANGLE\tPOWER\tBLAST POWER\tBLAST RADIUS\tWIDTH\tDAMAGE CONSTANT ID\tDIRECTIONAL\tLAUNCH SFX ID\tAMBIENT SFX ID\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
-			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableMissiles";
-			wchar_t        szFilename[MAX_PATH + 1];
-			HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-			FILE*       file = _wfopen(szFilename, L"wb");
-			fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+			ZString strLine = "ID\tACCELLERATION\tTURN RATE\tINITIAL SPEED\tLOCK TIME\tREADY TIME\tMAX LOCK\tCHAFF RESISTANCE\tDISPERSION\tLOCK ANGLE\tPOWER\tBLAST POWER\tBLAST RADIUS\tWIDTH\tDAMAGE CONSTANT ID\tDIRECTIONAL\tLAUNCH SFX ID\tAMBIENT SFX ID\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
+			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableMissiles";
+			char        szFilename[MAX_PATH + 1];
+			HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+			FILE*       file = fopen (szFilename, "wb");
+			fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 			fclose (file);
 			seenMissile = 1;
 		}
 		else if (!(seenMine) && petlink->data()->GetObjectType() == OT_mineType) {
-			ZString strLine = L"ID\tMINE RADIUS\tPOWER\tENDURANCE\tDAMAGE CONSTANT ID\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
-			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableMines";
-			wchar_t        szFilename[MAX_PATH + 1];
-			HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-			FILE*       file = _wfopen(szFilename, L"wb");
-			fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+			ZString strLine = "ID\tMINE RADIUS\tPOWER\tENDURANCE\tDAMAGE CONSTANT ID\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
+			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableMines";
+			char        szFilename[MAX_PATH + 1];
+			HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+			FILE*       file = fopen (szFilename, "wb");
+			fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 			fclose (file);
 			seenMine = 1;
 		}
 		else if (!(seenChaff) && petlink->data()->GetObjectType() == OT_chaffType) {
-			ZString strLine = L"ID\tSTRENGTH\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
-			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableChaff"; // not chaffs
-			wchar_t        szFilename[MAX_PATH + 1];
-			HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-			FILE*       file = _wfopen(szFilename, L"wb");
-			fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+			ZString strLine = "ID\tSTRENGTH\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
+			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableChaff"; // not chaffs
+			char        szFilename[MAX_PATH + 1];
+			HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+			FILE*       file = fopen (szFilename, "wb");
+			fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 			fclose (file);
 			seenChaff = 1;
 		}
 		else if (!(seenProbe) && petlink->data()->GetObjectType() == OT_probeType) {
-			ZString strLine = L"ID\tSCAN RANGE\tTIME TO LIVE\tDISPURSION\tACCURACY\tAMMO\tPROJECTILE TYPE ID\tAMBIENT SFX ID\tTIME TO RIP\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
-			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\ExpendableProbes";
-			wchar_t        szFilename[MAX_PATH + 1];
-			HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-			FILE*       file = _wfopen(szFilename, L"wb");
-			fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+			ZString strLine = "ID\tSCAN RANGE\tTIME TO LIVE\tDISPURSION\tACCURACY\tAMMO\tPROJECTILE TYPE ID\tAMBIENT SFX ID\tTIME TO RIP\tLOAD TIME\tLIFE SPAN\tSIGNATURE\tHIT POINTS\tDEFENSE CONSTANT ID\tABILITIES\tICON NAME\tCOLOR R G B A PCT\tRADIUS\tROTATION\tMODEL NAME\tTEXTURE NAME\tLAUNCHER SIGNATURE\tMASS\tPART MASK\tEXPENDABLE SIZE\tCOPY OF NAME\r\n";
+			ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\ExpendableProbes";
+			char        szFilename[MAX_PATH + 1];
+			HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+			FILE*       file = fopen (szFilename, "wb");
+			fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 			fclose (file);
 			seenProbe = 1;
 		} else {
-			debugf(L"ExportStaticIGCObjs: unhandled expendable type %i\n", petlink->data()->GetObjectType());
+			debugf("ExportStaticIGCObjs: unhandled expendable type %i\n",petlink->data()->GetObjectType());
 		}
       Obj2Txt(petlink->data(), petlink->data()->GetObjectType(), pMission);
 	}
@@ -5514,52 +5516,52 @@ void CmissionIGC::ExportStaticIGCObjs()
 	//expendables (aka launcher part types)
     const PartTypeListIGC * pptlist = pMission->GetPartTypes();
     PartTypeLinkIGC * pptlink = NULL;
-	ZString strLine = L"EXPENDABLE ID\tPART ID\tAMOUNT\tSUCCESSOR PART ID\tLAUNCH COUNT\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Expendables";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "EXPENDABLE ID\tPART ID\tAMOUNT\tSUCCESSOR PART ID\tLAUNCH COUNT\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Expendables";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	//weapons
-	strLine = L"ID\tREADY TIME\tBURST TIME\tENERGY PER SHOT\tDISPERSION\tAMMO PER SHOT\tPROJECTILE TYPE ID\tACTIVATE SFX ID\tSHOT SFX ID\tBURST SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Weapons";
-	hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	strLine = "ID\tREADY TIME\tBURST TIME\tENERGY PER SHOT\tDISPERSION\tAMMO PER SHOT\tPROJECTILE TYPE ID\tACTIVATE SFX ID\tSHOT SFX ID\tBURST SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Weapons";
+	hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	//shields
-	strLine = L"ID\tREGEN RATE\tMAX STRENGTH\tDEFENSE CONSTANT ID (COMMENT)\tACTIVATE SFX ID\tDEACTIVATE SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Shields";
-	hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	strLine = "ID\tREGEN RATE\tMAX STRENGTH\tDEFENSE CONSTANT ID (COMMENT)\tACTIVATE SFX ID\tDEACTIVATE SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Shields";
+	hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	//cloaks
-	strLine = L"ID\tENERGY CONSUMPTION\tMAX CLOAKING\tPOWER ON RATE\tPOWER OFF RATE\tENGAGE SFX ID\tDISENGAGE SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Cloaks";
-	hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	strLine = "ID\tENERGY CONSUMPTION\tMAX CLOAKING\tPOWER ON RATE\tPOWER OFF RATE\tENGAGE SFX ID\tDISENGAGE SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Cloaks";
+	hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	//afterburners
-	strLine = L"ID\tFUEL CONSUMPTION\tMAX THRUST\tPOWER ON RATE\tPOWER OFF RATE\tINTERIOR SFX ID\tEXTERIOR SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Afterburners";
-	hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	strLine = "ID\tFUEL CONSUMPTION\tMAX THRUST\tPOWER ON RATE\tPOWER OFF RATE\tINTERIOR SFX ID\tEXTERIOR SFX ID\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Afterburners";
+	hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	//packs
-	strLine = L"ID\tTYPE\tAMOUNT\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Packs";
-	hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	strLine = "ID\tTYPE\tAMOUNT\tMASS\tSIGNATURE\tSUCCESSOR PART ID\tPART MASK\tINVENTORY MODEL\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Packs";
+	hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	for (pptlink = pptlist->first(); pptlink; pptlink = pptlink->next()) 
@@ -5571,20 +5573,21 @@ void CmissionIGC::ExportStaticIGCObjs()
     const HullTypeListIGC * phtlist = pMission->GetHullTypes();
     HullTypeLinkIGC * phtlink = NULL;
 		
-	ZString strLine = L"ID\tMASS\tSIGNATURE\tSPEED\tMAX TURN RATES X Y Z\tTURN TORQUES Z Y Z\tTHRUST\tSIDE MULTIPLIER\tBACK MULTIPLIER\tSCANNER RANGE\tMAX FUEL\tECM\tLENGTH\tMAX ENERGY\tRECHARGE RATE\tRIP SPEED\tRIP COST\tMAX AMMO\tSUCCESSOR HULL ID\tMAX WEAPONS\tMAX FIXED WEAPONS\tHIT POINTS\tDEFENSE CONSTNAT ID\tMAGAZINE CAPACITY\tDISPENSER CAPACITY\tCHAFF LAUNCHER CAPACITY\tPREFERRED PART TYPES\tABILITIES\tTEXTURE NAME\tALLOWED CHAFF\tALLOWED MISSILES\tALLOWED DISPENSERS\tALLOWED SHIELDS\tALLOWED CLOAKS\tALLOWED BOOSTERS\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfShips";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tMASS\tSIGNATURE\tSPEED\tMAX TURN RATES X Y Z\tTURN TORQUES Z Y Z\tTHRUST\tSIDE MULTIPLIER\tBACK MULTIPLIER\tSCANNER RANGE\tMAX FUEL\tECM\tLENGTH\tMAX ENERGY\tRECHARGE RATE\tRIP SPEED\tRIP COST\tMAX AMMO\tSUCCESSOR HULL ID\tMAX WEAPONS\tMAX FIXED WEAPONS\tHIT POINTS\tDEFENSE CONSTNAT ID\tMAGAZINE CAPACITY\tDISPENSER CAPACITY\tCHAFF LAUNCHER CAPACITY\tPREFERRED PART TYPES\tABILITIES\tTEXTURE NAME\tALLOWED CHAFF\tALLOWED MISSILES\tALLOWED DISPENSERS\tALLOWED SHIELDS\tALLOWED CLOAKS\tALLOWED BOOSTERS\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfShips";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
 	// and the hardpoints
-	strLine = L"SHIP TYPE ID\tINTERIOR SFX ID\tTURN SFX ID\tFRAME NAME\tLOCATION ABBREVIATION\tALLOWED WEAPONS\tFIXED\tCOPY OF NAME MDL\r\n";
-	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Hardpoints";
-	hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	strLine = "SHIP TYPE ID\tINTERIOR SFX ID\tTURN SFX ID\tFRAME NAME\tLOCATION ABBREVIATION\tALLOWED WEAPONS\tFIXED\tCOPY OF NAME MDL\r\n";
+	strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Hardpoints";
+	szFilename[MAX_PATH + 1];
+	hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (phtlink = phtlist->first(); phtlink; phtlink = phtlink->next())
@@ -5596,12 +5599,12 @@ void CmissionIGC::ExportStaticIGCObjs()
     const DevelopmentListIGC * pdtlist = pMission->GetDevelopments();
     DevelopmentLinkIGC * pdtlink = NULL;
 
-	ZString strLine = L"ID\tCOMPLETION SFX ID\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Developments";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tCOMPLETION SFX ID\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Developments";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (pdtlink = pdtlist->first(); pdtlink; pdtlink = pdtlink->next())
@@ -5613,12 +5616,12 @@ void CmissionIGC::ExportStaticIGCObjs()
     const DroneTypeListIGC * pdtlist = pMission->GetDroneTypes();
     DroneTypeLinkIGC * pdtlink = NULL;
 
-	ZString strLine = L"ID\tSHOOT SKILL\tMOVE SKILL\tBRAVERY\tPILOT TYPE\tHULL TYPE ID\tEXPENDABLE TYPE ID\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfDrones";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tSHOOT SKILL\tMOVE SKILL\tBRAVERY\tPILOT TYPE\tHULL TYPE ID\tEXPENDABLE TYPE ID\tPRICE\tTIME TO BUILD\tMODEL NAME\tICON NAME\tNAME\tDESCRIPTION\tGROUP\tTECH REQUIRED\tTECH EFFECT\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfDrones";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (pdtlink = pdtlist->first(); pdtlink; pdtlink = pdtlink->next())
@@ -5630,12 +5633,12 @@ void CmissionIGC::ExportStaticIGCObjs()
     const CivilizationListIGC * pctlist = pMission->GetCivilizations();
     CivilizationLinkIGC * pctlink = NULL;
 
-	ZString strLine = L"ID\tINCOME MODIFIER\tBONUS MODIFIER\tNAME\tICON\tHUD\tPOD HULL TYPE ID\tINITIAL STATION TYPE ID\tSTARTING TECH\tSTARTING TECH NODEV\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\Civilizations";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tINCOME MODIFIER\tBONUS MODIFIER\tNAME\tICON\tHUD\tPOD HULL TYPE ID\tINITIAL STATION TYPE ID\tSTARTING TECH\tSTARTING TECH NODEV\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\Civilizations";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (pctlink = pctlist->first(); pctlink; pctlink = pctlink->next())
@@ -5647,12 +5650,12 @@ void CmissionIGC::ExportStaticIGCObjs()
     const TreasureSetListIGC * pctlist = pMission->GetTreasureSets();
     TreasureSetLinkIGC * pctlink = NULL;
 
-	ZString strLine = L"ID\tNAME\tNUMTREASURES\tZONE ONLY\tTREASURES  OBJID TYPE CHANCEPCT\r\n";
-	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + L"\\TypesOfTreasures";
-	wchar_t        szFilename[MAX_PATH + 1];
-	HRESULT     hr = UTL::getFile((PCC)strFile, L".csv", szFilename, true, true);
-	FILE*       file = _wfopen(szFilename, L"wb");
-	fwrite (strLine, sizeof(wchar_t), strLine.GetLength(), file);
+	ZString strLine = "ID\tNAME\tNUMTREASURES\tZONE ONLY\tTREASURES  OBJID TYPE CHANCEPCT\r\n";
+	ZString strFile = ZString(pMission->GetMissionParams()->szIGCStaticFile) + "\\TypesOfTreasures";
+	char        szFilename[MAX_PATH + 1];
+	HRESULT     hr = UTL::getFile((PCC)strFile, ".csv", szFilename, true, true);
+	FILE*       file = fopen (szFilename, "wb");
+	fwrite (strLine, sizeof(char), strLine.GetLength(), file);
 	fclose (file);
 
     for (pctlink = pctlist->first(); pctlink; pctlink = pctlink->next())

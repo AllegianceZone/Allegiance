@@ -27,11 +27,11 @@ class CZonePlayerImpl:
 
 public:
 
-	CZonePlayerImpl(const wchar_t *szName, int nID) :
+    CZonePlayerImpl(const char *szName, int nID) :
       m_nID(nID),
       m_rank(IMemberBase::RANK_UNKNOWN)
     {
-      Strncpy(m_szName, szName, sizeof(m_szName)-1);
+      strncpy(m_szName, szName, sizeof(m_szName)-1);
     }
 
 
@@ -46,13 +46,13 @@ public:
     switch (i % 3)
     {
       case 0:
-        Strcpy (m_szName, L"John Doe");
+        strcpy (m_szName, "John Doe");
         break;
       case 1:
-        Strcpy (m_szName, L"Susan Wilson");
+        strcpy (m_szName, "Susan Wilson");
         break;
       case 2:
-        Strcpy (m_szName, L"Bill Smith");
+        strcpy (m_szName, "Bill Smith");
         break;
     }
   
@@ -60,16 +60,16 @@ public:
 #endif
     }
 
-	wchar_t *            GetName()
+    char *            GetName()
     { 
       return m_szName; 
     }
-    void              SetName(PCC szName)                     { Strcpy(m_szName, szName); } 
+    void              SetName(PCC szName)                     { strcpy(m_szName, szName); } 
 
     int               GetID()                                 { return m_nID; }
     void              SetID(int nID)                          { m_nID = nID; }
 
-	wchar_t *            GetLastPlayedDate(IZoneSquad & squad);
+    char *            GetLastPlayedDate(IZoneSquad & squad);                     
     void              SetLastPlayedDate(IZoneSquad & squad, PCC szLastPlayedDate);
 
     Rank GetRank()
@@ -105,7 +105,7 @@ public:
   
 private:
 
-	wchar_t              m_szName[40];
+  char              m_szName[40];
   int               m_nID;
   Rank              m_rank;
 };
@@ -127,7 +127,7 @@ class CMembership:
 {
     TRef<IZonePlayer>            m_pPlayer;
     IZonePlayer::DetailedStatus  m_dstatus;
-	wchar_t                         m_szLastPlayedDate[9];
+    char                         m_szLastPlayedDate[9]; 
 //    float                        m_fHours;
     
 
@@ -138,7 +138,7 @@ public:
       m_pPlayer(NULL),
       m_dstatus(IZonePlayer::DSTAT_NO_ASSOCIATION)
     {
-      Strcpy(m_szLastPlayedDate, L"        ");
+      strcpy(m_szLastPlayedDate, "        ");
     }
 
 //  void              SetHours(float fHours)    { asset(0);/*m_fHours = fHours; */}
@@ -158,14 +158,14 @@ public:
       return m_dstatus;
   }
 
-  wchar_t *            GetLastPlayedDate()
+  char *            GetLastPlayedDate()                     
   { 
     return m_szLastPlayedDate; 
   }
 
   void              SetLastPlayedDate(PCC szLastPlayedDate) 
   { 
-    Strncpy (m_szLastPlayedDate, szLastPlayedDate, sizeof(m_szLastPlayedDate));
+    strncpy (m_szLastPlayedDate, szLastPlayedDate, sizeof(m_szLastPlayedDate));
   }
 
   void SetStatus(IMemberBase::DetailedStatus detailedstatus)
@@ -185,11 +185,11 @@ class CZoneSquadImpl:
 
 public:
 
-	wchar_t *GetName()             { return m_szName; }
-    void  SetName(PCC szName)   { Strcpy(m_szName, szName); }
+    char *GetName()             { return m_szName; }
+    void  SetName(PCC szName)   { strcpy(m_szName, szName); }
 
-	wchar_t *GetDescription()      { return m_szDescription; }
-    void  SetDescription(PCC szDescription) { Strcpy(m_szDescription, szDescription); }
+    char *GetDescription()      { return m_szDescription; }
+    void  SetDescription(PCC szDescription) { strcpy(m_szDescription, szDescription); }
 
     int   GetID()               { return m_nID; }
     void  SetID(int nID)        { m_nID = nID; }
@@ -197,11 +197,11 @@ public:
     int   GetCreationID()       { return m_nCreationID; }
     void  SetCreationID(int nCreationID) { m_nCreationID = nCreationID; }
 
-	wchar_t *GetURL()              { return m_szURL; }
-    void  SetURL(PCC szURL)   { Strcpy(m_szURL, szURL); }
+    char *GetURL()              { return m_szURL; }
+    void  SetURL(PCC szURL)   { strcpy(m_szURL, szURL); }
 
-	wchar_t *GetInceptionDate()    { return m_szInceptionDate; }
-    void  SetInceptionDate(wchar_t *szInceptionDate)  { Strcpy(m_szInceptionDate, szInceptionDate); }
+    char *GetInceptionDate()    { return m_szInceptionDate; }
+    void  SetInceptionDate(char *szInceptionDate)  { strcpy(m_szInceptionDate, szInceptionDate); }
 
     TRef<IZonePlayer>  GetOwner() 
     { 
@@ -210,7 +210,7 @@ public:
 
     void  SetOwner(TRef<IZonePlayer> pOwner);
 
-	const wchar_t * GetRank()
+    const char * GetRank()             
     { 
       Rank rank = Rank(m_nScore / 100);
 
@@ -287,33 +287,33 @@ public:
 
     void AddPlayersToList(XZonePlayers & list);
 
-	void SetOwnershipLog(wchar_t * szLog)
+    void SetOwnershipLog(char * szLog)
     {
         m_listStrOwnershipLog.SetEmpty();
 
         if(!szLog)
             return;
 
-		const wchar_t * szDelimit = L";";
+        const char * szDelimit = ";"; 
 
         // set bLastOneTruncated
-        int nLen = wcslen(szLog);
+        int nLen = strlen(szLog);
         int c = 0;
         for (int i = 0; i < nLen; ++i)
             if (szLog[i] == ';') c++;
         bool bLastOneTruncated = c % 2 != 0;
 
-		wchar_t * szToken;
+        char * szToken;
 
         // establish string and get the first token
-        szToken = wcstok(szLog, szDelimit);
+        szToken = strtok(szLog, szDelimit);
 
         while (szToken)
         {
             // szToken is Name
             ZString strLine(szToken);
 
-            szToken = wcstok(NULL, szDelimit);
+            szToken = strtok(NULL, szDelimit);
             if (!szToken)
                 break;
 
@@ -322,7 +322,7 @@ public:
             // szToken is date
             strLine += szToken;
 
-            szToken = wcstok(NULL, szDelimit);
+            szToken = strtok(NULL, szDelimit);
 
             m_listStrOwnershipLog.PushFront(strLine);
         }
@@ -365,10 +365,10 @@ public:
 
 private:
 
-	wchar_t            m_szName[32];
-	wchar_t            m_szDescription[512];
-	wchar_t            m_szURL[256];
-	wchar_t            m_szInceptionDate[32];
+    char            m_szName[32];
+    char            m_szDescription[512];
+    char            m_szURL[256];
+    char            m_szInceptionDate[32]; 
     Rank            m_rank;
     int             m_nRanking[SSC_MAX];
     int             m_nWins;
@@ -452,7 +452,7 @@ IZonePlayer::Position CZonePlayerImpl::GetPosition(IZoneSquad & squad)
  * GetLastPlayedDate()
  *-------------------------------------------------------------------------
  */
-wchar_t * CZonePlayerImpl::GetLastPlayedDate(IZoneSquad & squad)
+char * CZonePlayerImpl::GetLastPlayedDate(IZoneSquad & squad)
 {
   TRef<CMembership> pMembership = ((CZoneSquadImpl*)(&squad))->FindMembership(*this);
 
@@ -460,7 +460,7 @@ wchar_t * CZonePlayerImpl::GetLastPlayedDate(IZoneSquad & squad)
   {
     return pMembership->GetLastPlayedDate();
   }
-  else return L"        ";
+  else return "        ";
 }
 
 
@@ -670,7 +670,7 @@ void CZoneSquadImpl::SetOwner(TRef<IZonePlayer> pOwner)
 
 
 
-TRef<IZonePlayer> CreateZonePlayer(const wchar_t *szName, int nID)
+TRef<IZonePlayer> CreateZonePlayer(const char *szName, int nID)
 {
     return new CZonePlayerImpl(szName, nID);
 }

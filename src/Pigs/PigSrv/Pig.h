@@ -69,7 +69,7 @@ protected:
     // Specifies the verb text used for matching to the beginning of the chat
     // message string, as further specified by m_bToken and m_cchSignificant.
     // The verb text matching is always case-insensitive.
-    LPCWSTR m_szVerb;
+    LPCSTR m_szVerb;
 
     // Indicates whether m_szVerb is to be matched against a token or
     // characters. If *true*, the match is performed against the first
@@ -160,7 +160,7 @@ public:
 public:
   void ReceiveSendAndUpdate();
   bool WaitInTimerLoop(HANDLE hObject, DWORD dwMilliseconds = INFINITE);
-  void SendChat(ChatTarget chatTarget, const wchar_t* psz,
+  void SendChat(ChatTarget chatTarget, const char* psz,
     IshipIGC* pshipRecipient = NULL, SoundID voiceOver = NA);
 
 // Implementation
@@ -181,7 +181,7 @@ protected:
   HRESULT ProcessAppMessage(FEDMESSAGE* pfm);
   bool OnChat_AreYouAPig(REFXChatCommand chat);
   bool OnChat_Evaluate(REFXChatCommand chat);
-  bool FindMissionName(wchar_t* pszMissionName);
+  bool FindMissionName(char* pszMissionName);
   void CacheMaxShipAngleThresholds();
   void CacheMaxShipDistanceThresholds();
   void CacheMaxShipsUpdateLatencyThresholds();
@@ -194,14 +194,14 @@ public:
 
 // BaseClient Overrides
 public:
-	virtual HRESULT OnSessionLost(wchar_t* szReason, FedMessaging * pthis);
+  virtual HRESULT OnSessionLost(char* szReason, FedMessaging * pthis);
   virtual void ModifyShipData(DataShipIGC* pds);
-  virtual void OnQuitMission(QuitSideReason reason, const wchar_t* szMessageParam);
-  virtual void OnLogonAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
-  virtual void OnLogonLobbyAck(bool fValidated, bool bRetry, LPCWSTR szFailureReason);
-  virtual const wchar_t* GetArtPath();
+  virtual void OnQuitMission(QuitSideReason reason, const char* szMessageParam);
+  virtual void OnLogonAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
+  virtual void OnLogonLobbyAck(bool fValidated, bool bRetry, LPCSTR szFailureReason);
+  virtual const char* GetArtPath();
   virtual IAutoUpdateSink* OnBeginAutoUpdate();
-  virtual bool ResetStaticData(wchar_t* szIGCStaticFile,
+  virtual bool ResetStaticData(char* szIGCStaticFile,
     ImissionIGC** ppStaticIGC, Time tNow, bool bEncrypt);
   virtual void StartLockDown(const ZString& strReason, LockdownCriteria criteria);
   virtual void EndLockDown(LockdownCriteria criteria);
@@ -212,7 +212,7 @@ protected:
 // IFedMessagingSite Overrides
 public:
   virtual HRESULT OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnFrom, FEDMESSAGE * pfm);
-  virtual int     OnMessageBox(FedMessaging * pthis, const wchar_t* strText, const wchar_t* strCaption, UINT nType);
+  virtual int     OnMessageBox(FedMessaging * pthis, const char* strText, const char* strCaption, UINT nType);
   virtual void    OnPreCreate (FedMessaging * pthis);
 // KGJV TODO  virtual void    OnPostCreate(FedMessaging * pthis, IDirectPlayX* pdpIn, IDirectPlayX** pdpOut);
 
@@ -226,7 +226,7 @@ public:
 // IAutoUpdateSink Overrides
 public:
   virtual void OnBeginRetrievingFileList();
-  virtual bool ShouldFilterFile(const wchar_t * szFileName); // if returns true, then file is not downloaded
+  virtual bool ShouldFilterFile(const char * szFileName); // if returns true, then file is not downloaded
   virtual void OnAutoUpdateSystemTermination(bool bErrorOccurred, bool bRestarting);
   virtual void OnError(char* szErrorMessage);
 
@@ -242,11 +242,11 @@ public:
   virtual void ChangeCluster(IshipIGC*  pship, IclusterIGC* pclusterOld,
     IclusterIGC* pclusterNew);
   virtual void ReceiveChat(IshipIGC* pshipSender, ChatTarget ctRecipient,
-	  ObjectID oidRecipient, SoundID voiceOver, const wchar_t* szText,
+    ObjectID oidRecipient, SoundID voiceOver, const char* szText,
     CommandID cid, ObjectType otTarget, ObjectID oidTarget,
     ImodelIGC* pmodelTarget = NULL, bool bObjectModel = false);
   virtual void SendChat(IshipIGC* pshipSender, ChatTarget chatTarget,
-	  ObjectID oidRecipient, SoundID soVoiceOver, const wchar_t* szText,
+    ObjectID oidRecipient, SoundID soVoiceOver, const char* szText,
     CommandID cid = c_cidNone, ObjectType otTarget = NA,
     ObjectID oidTarget = NA, ImodelIGC* pmodelTarget = NULL);
   virtual void TerminateModelEvent(ImodelIGC * pModel);

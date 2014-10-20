@@ -2,7 +2,7 @@
 #include "regkey.h"
 #include "training.h"
 
-extern bool CheckNetworkDevices(ZString& strDriverURL);
+//extern bool CheckNetworkDevices(ZString& strDriverURL);
 
 //KGJV test
 #define ENABLE3DINTROSCREEN
@@ -219,8 +219,8 @@ private:
 
                 if (serverInfo->nMaxPlayers != 0)
                 {
-					wchar_t cbPlayers[20];
-                    wsprintf(cbPlayers, L"(%d/%d)", serverInfo->nNumPlayers, serverInfo->nMaxPlayers);
+                    char cbPlayers[20];
+                    sprintf(cbPlayers, "(%d/%d)", serverInfo->nNumPlayers, serverInfo->nMaxPlayers);
                     psurface->DrawString(pfont, color, WinPoint(GetXSize() - nPlayerWidth + 2, 0), cbPlayers);
                 }
             }
@@ -231,7 +231,7 @@ private:
             LANServerInfo* serverInfo1 = (LANServerInfo*)pitem1;
             LANServerInfo* serverInfo2 = (LANServerInfo*)pitem2;
 
-            return _wcsicmp(serverInfo1->strGameName, serverInfo2->strGameName) > 0;
+            return _stricmp(serverInfo1->strGameName, serverInfo2->strGameName) > 0;
         }
 
     public:
@@ -303,7 +303,7 @@ private:
             //GetWindow()->SetFocus(m_peditPane);
             m_bDoBackgroundPolling = true;
 
-            FindGames(L"");
+            FindGames("");
             IPopup::SetContainer(pcontainer);
         }
 
@@ -340,7 +340,7 @@ private:
             return true;
         }
 
-		void FindGames(const wchar_t* szServerName)
+        void FindGames(const char* szServerName)
         {
 			// WLP 2005 - turned off the every second search to keep the mouse responding
 			// added next line to turn off polling
@@ -504,7 +504,7 @@ private:
                 DWORD   dwHasRunTraining = 1;
                 if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_WRITE, &hKey)) 
                 {
-                    RegSetValueEx (hKey, L"HasTrained", NULL, REG_DWORD, (const BYTE*) &dwHasRunTraining, sizeof (dwHasRunTraining));
+                    RegSetValueExA(hKey, "HasTrained", NULL, REG_DWORD, (const BYTE*) &dwHasRunTraining, sizeof (dwHasRunTraining));
                     RegCloseKey (hKey);
                 }
             }
@@ -549,7 +549,7 @@ private:
             return false;
         }        
         else
-		*/
+			*/
             return true;
     }
 
@@ -670,7 +670,7 @@ public:
             DWORD   dwDataSize = sizeof (dwHasRunTraining);
             if (ERROR_SUCCESS == RegOpenKeyEx (HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey)) 
             {
-                RegQueryValueEx (hKey, L"HasTrained", NULL, NULL, (LPBYTE) &dwHasRunTraining, &dwDataSize);
+                RegQueryValueExA(hKey, "HasTrained", NULL, NULL, (LPBYTE) &dwHasRunTraining, &dwDataSize);
                 RegCloseKey(hKey);
             }
 
@@ -680,7 +680,7 @@ public:
             {
                 TRef<IMessageBox>   pMsgBox = 
                     CreateMessageBox(
-                        L"ALLEGIANCE is a team-based massively-multiplayer space combat game, in which your goal is to conquer the universe.\n\nTraining is strongly recommended before going online, and will take approximately 30 minutes. Press the OK button to begin training now.",
+                        "ALLEGIANCE is a team-based massively-multiplayer space combat game, in which your goal is to conquer the universe.\n\nTraining is strongly recommended before going online, and will take approximately 30 minutes. Press the OK button to begin training now.",
                         NULL,
                         true,
                         true
@@ -882,7 +882,7 @@ public:
         //
 
         TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, LogonLAN, 
-            L"Enter a call sign to use for this game.", trekClient.GetSavedCharacterName(), L"", false);
+            "Enter a call sign to use for this game.", trekClient.GetSavedCharacterName(), "", false);
         GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, false);
 
         return true;
@@ -930,31 +930,31 @@ public:
         GetWindow ()->GetPopupContainer ()->ClosePopup (m_pMsgBox);
 
         // start to find the config file
-		wchar_t    config_file_name[MAX_PATH];
+        char    config_file_name[MAX_PATH];
 
         // get the app build number
         ZVersionInfo vi;
         ZString strBuild(vi.GetFileBuildNumber());
 
         // start with a default name
-        lstrcpy(config_file_name, L"Allegiance");
-        lstrcat(config_file_name, PCC(strBuild));
-        lstrcat(config_file_name, L".cfg");
+        Strcpy(config_file_name, "Allegiance");
+        Strcat(config_file_name, PCC(strBuild));
+        Strcat(config_file_name, ".cfg");
 
         // then look to see if there is one in the registry we should use instead
         HKEY hKey;
         if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
             DWORD   cbValue = MAX_PATH;
-			wchar_t    reg_config_file_name[MAX_PATH] = { 0 };
-            ::RegQueryValueEx (hKey, L"CfgFile", NULL, NULL, (LPBYTE)&reg_config_file_name, &cbValue);
+            char    reg_config_file_name[MAX_PATH] = {0};
+            ::RegQueryValueExA(hKey, "CfgFile", NULL, NULL, (LPBYTE)&reg_config_file_name, &cbValue);
             // if it didn't succeed, we'll just use the default above
-            if (lstrlen (reg_config_file_name) > 0)
-              lstrcpy (config_file_name, reg_config_file_name);
+            if (strlen (reg_config_file_name) > 0)
+              Strcpy (config_file_name, reg_config_file_name);
         }
 
         // then construct the full path name of the config file
-        PathString  pathEXE(PathString::ZGetCurrentDirectory());
+        PathString  pathEXE(PathString::GetCurrentDirectory());
         PathString  pathConfig(pathEXE + PathString(PathString(config_file_name).GetFilename()));
 
         // load the config data
@@ -1000,8 +1000,8 @@ public:
 
         BaseClient::ConnectInfo ci;
         ci.guidSession = m_guidSession;
-        Strcpy(ci.szName, m_strCharacterName);        
-        assert(wcslen(m_strPassword) < c_cbGamePassword);
+        strcpy(ci.szName, m_strCharacterName);        
+        assert(strlen(m_strPassword) < c_cbGamePassword);
 
         trekClient.ConnectToServer(ci, NA, Time::Now(), m_strPassword, true);
 
@@ -1013,17 +1013,17 @@ public:
         // wait for a join message.
         GetWindow()->SetWaitCursor();
         TRef<IMessageBox> pmsgBox = 
-            CreateMessageBox(L"Joining mission....", NULL, false, false);
+            CreateMessageBox("Joining mission....", NULL, false, false);
         GetWindow()->GetPopupContainer()->OpenPopup(pmsgBox, false);
     }
 
-	void OnLogonGameServerFailed(bool bRetry, const wchar_t* szReason)
+    void OnLogonGameServerFailed(bool bRetry, const char* szReason)
     {
         if (bRetry)
         {
             // pop up the call sign/login dialog
             TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, LogonLAN, 
-                szReason, trekClient.GetSavedCharacterName(), L"", false);
+                szReason, trekClient.GetSavedCharacterName(), "", false);
             GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, false);
         }
         else

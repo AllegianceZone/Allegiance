@@ -8,17 +8,30 @@
 
 ZString::ZStringData::ZStringData(PCC pcc)
 {
-	m_length = pcc ? wcslen(pcc) : 0;
-	m_pch = new wchar_t[m_length + 1]; //Fix memory leak -Imago 8/2/09
+    m_length = pcc ? strlen(pcc) : 0;
+    m_pch    = new char[m_length + 1]; //Fix memory leak -Imago 8/2/09
     m_pcc    = m_pch;
-    wmemcpy(m_pch, pcc ? pcc : TEXT(""), m_length + 1);
+    memcpy(m_pch, pcc ? pcc : "", m_length + 1);
+}
+
+ZString::ZStringData::ZStringData(WPCC pcc)
+{
+	m_length = pcc ? wcslen(pcc) : 0;
+	size_t i;
+	char *pMBBuffer = (char *)malloc(m_length);
+	wcstombs_s(&i, pMBBuffer, (size_t)m_length, pcc, (size_t)m_length);
+	m_pch = new char[m_length + 1]; //Fix memory leak -Imago 8/2/09
+	m_pcc = m_pch;
+	memcpy(m_pch, pMBBuffer ? pMBBuffer : "", m_length + 1);
+	if (pMBBuffer)
+		free(pMBBuffer);
 }
 
 ZString::ZStringData::ZStringData(PCC pcc, bool bStatic)
 {
     ZAssert(bStatic);
 
-	m_length = wcslen(pcc);
+    m_length = strlen(pcc);
     m_pch    = NULL;
     m_pcc    = pcc;
 }
@@ -26,28 +39,28 @@ ZString::ZStringData::ZStringData(PCC pcc, bool bStatic)
 ZString::ZStringData::ZStringData(PCC pcc, int length)
 {
     m_length = length;
-	m_pch = new wchar_t[m_length + 1];
+    m_pch    = new char[m_length + 1];
     m_pcc    = m_pch;
-    wmemcpy(m_pch, pcc, m_length);
+    memcpy(m_pch, pcc, m_length);
     m_pch[m_length] = 0;
 }
 
-ZString::ZStringData::ZStringData(wchar_t ch, int length)
+ZString::ZStringData::ZStringData(char ch, int length)
 {
     m_length = length;
-	m_pch = new wchar_t[m_length + 1];
+    m_pch    = new char[m_length + 1];
     m_pcc    = m_pch;
-    wmemset(m_pch, ch, m_length);
+    memset(m_pch, ch, m_length);
     m_pch[m_length] = 0;
 }
 
 ZString::ZStringData::ZStringData(const ZStringData* pdata1, const ZStringData* pdata2) :
     m_length(pdata1->GetLength() + pdata2->GetLength())
 {
-	m_pch = new wchar_t[m_length + 1];
+    m_pch = new char[m_length + 1];
     m_pcc = m_pch;
-    wmemcpy(m_pch, pdata1->m_pcc, pdata1->GetLength());
-    wmemcpy(m_pch + pdata1->m_length, pdata2->m_pcc, pdata2->GetLength() + 1);
+    memcpy(m_pch, pdata1->m_pcc, pdata1->GetLength());
+    memcpy(m_pch + pdata1->m_length, pdata2->m_pcc, pdata2->GetLength() + 1);
 }
 
 ZString::ZStringData::~ZStringData()
@@ -57,7 +70,7 @@ ZString::ZStringData::~ZStringData()
     }
 }
 
-void ZString::ZStringData::Set(int index, wchar_t ch)
+void ZString::ZStringData::Set(int index, char ch)
 {
     ZAssert(
            m_pch != NULL
@@ -102,7 +115,7 @@ int ZString::ZStringData::ReverseFind(const ZStringData* pdata) const
     return -1;
 }
 
-int ZString::ZStringData::Find(wchar_t ch, int index) const
+int ZString::ZStringData::Find(char ch, int index) const
 {
     for(; index < m_length; index++) {
         if (m_pcc[index] == ch) {
@@ -113,7 +126,7 @@ int ZString::ZStringData::Find(wchar_t ch, int index) const
     return -1;
 }
 
-int ZString::ZStringData::ReverseFind(wchar_t ch, int index) const
+int ZString::ZStringData::ReverseFind(char ch, int index) const
 {
     index = m_length - index;
 
@@ -179,7 +192,7 @@ BSTR ZString::ZStringData::MakeBSTR() const
 //
 //////////////////////////////////////////////////////////////////////////////
 
-TRef<ZString::ZStringData> ZString::s_pemptyData = new ZString::ZStringData(TEXT(""), true);
+TRef<ZString::ZStringData> ZString::s_pemptyData = new ZString::ZStringData("", true);
 
 ZString::ZString() :
     m_pdata(s_pemptyData)
@@ -188,6 +201,11 @@ ZString::ZString() :
 
 ZString::ZString(PCC pcc) :
     m_pdata(new ZStringData(pcc)) //Fix memory leak -Imago 8/2/09
+{
+}
+
+ZString::ZString(WPCC pcc) : 
+	m_pdata(new ZStringData(pcc)) //Fix memory leak -Imago 8/2/09
 {
 }
 
@@ -205,7 +223,7 @@ ZString::ZString(PCC pcc, int length)
     }
 }
 
-ZString::ZString(wchar_t ch, int length)
+ZString::ZString(char ch, int length)
 {
     if (length == 0) {
         m_pdata = s_pemptyData;
@@ -235,37 +253,37 @@ ZString::ZString(ZStringData* pdata) :
 
 ZString::ZString(int value)
 {
-	wchar_t buf[32];
+    char buf[32];
 
-	_itow_s(value, buf, 32, 10);
+    _itoa_s(value,buf,32,10);
 
     m_pdata = new ZStringData(buf);
 }
 
 ZString::ZString(float value, int total, int precision)
 {
-	wchar_t format[32];
-	wchar_t buf[32];
+    char format[32];
+    char buf[32];
 
-	swprintf_s(format, 32, TEXT("%%%d.%df"), total, precision);
-	swprintf_s(buf, 32, format, value);
+    sprintf_s(format, 32, "%%%d.%df", total, precision);
+    sprintf_s(buf, 32, format, value);
 
     m_pdata = new ZStringData(buf);
 }
 
 ZString::ZString(float value)
 {
-        wchar_t buf[32];
-		swprintf_s(buf, 32, TEXT("%g"), value);
+        char buf[32];
+        sprintf_s(buf, 32, "%g", value);
         m_pdata = new ZStringData(buf);
 }
 
 ZString::ZString(bool b)
 {
     if (b) {
-		m_pdata = new ZStringData(TEXT("true"));
+        m_pdata = new ZStringData("true");
     } else {
-		m_pdata = new ZStringData(TEXT("false"));
+        m_pdata = new ZStringData("false");
     }
 }
 
@@ -276,9 +294,9 @@ ZString operator+(const ZString& str1, const ZString& str2)
 
 ZString ZString::GetProfileString(const ZString& strSection, const ZString& strKey)
 {
-	wchar_t buf[256];
+    char buf[256];
 
-    DWORD dw = ::GetProfileString(strSection, strKey, TEXT(""), buf, 256);
+    DWORD dw = ::GetProfileStringA(strSection, strKey, "", buf, 256);
 
     return ZString(buf, (int)dw);
 }
@@ -301,7 +319,7 @@ void ZString::SetEmpty()
     m_pdata = s_pemptyData;
 }
 
-void ZString::Set(int index, wchar_t ch)
+void ZString::Set(int index, char ch)
 {
     if (index < GetLength()) {
         if (m_pdata->GetPointer()[index] != ch) {
@@ -325,7 +343,7 @@ ZString& ZString::operator=(const ZString& str)
     return *this;
 }
 
-void ZString::ReplaceAll(const ZString& str, wchar_t ch)
+void ZString::ReplaceAll(const ZString& str, char ch)
 {
     UniqueData();
 
@@ -341,14 +359,14 @@ void ZString::ReplaceAll(const ZString& str, wchar_t ch)
     }
 }
 
-void ZString::RemoveAll(wchar_t chToRemove)
+void ZString::RemoveAll(char chToRemove)
 {
     int length = GetLength();
-	wchar_t* cbNew = (wchar_t*)_alloca(length + 1);
+    char* cbNew = (char*)_alloca(length + 1);
     int nLengthNew = 0;
 
     for (int indexOld = 0; indexOld < GetLength(); indexOld++) {
-		wchar_t chCurrent = m_pdata->GetPointer()[indexOld];
+        char chCurrent = m_pdata->GetPointer()[indexOld];
 
         if (chCurrent != chToRemove) {
             cbNew[nLengthNew] = chCurrent;
@@ -370,7 +388,7 @@ bool operator==(const ZString& str1, const ZString& str2)
 {
     return
            str1.GetLength() == str2.GetLength()
-		   && (wcsncmp(str1, str2, str1.GetLength()) == 0);
+        && (strncmp(str1, str2, str1.GetLength()) == 0);
 }
 
 bool operator==(const ZString& str, PCC pcc)
@@ -378,8 +396,8 @@ bool operator==(const ZString& str, PCC pcc)
     ZAssert(pcc != NULL);
 
     return
-		str.GetLength() == (int)wcslen(pcc)
-		   && (wcsncmp(str, pcc, str.GetLength()) == 0);
+           str.GetLength() == (int)strlen(pcc)
+        && (strncmp(str, pcc, str.GetLength()) == 0);
 }
 
 bool operator==(PCC pcc, const ZString& str)
@@ -387,15 +405,15 @@ bool operator==(PCC pcc, const ZString& str)
     ZAssert(pcc != NULL);
 
     return
-		str.GetLength() == (int)wcslen(pcc)
-		   && (wcsncmp(str, pcc, str.GetLength()) == 0);
+           str.GetLength() == (int)strlen(pcc)
+        && (strncmp(str, pcc, str.GetLength()) == 0);
 }
 
 bool operator!=(const ZString& str1, const ZString& str2)
 {
     return
            str1.GetLength() != str2.GetLength()
-        || (wcsncmp(str1, str2, str1.GetLength()) != 0);
+        || (strncmp(str1, str2, str1.GetLength()) != 0);
 }
 
 bool operator!=(const ZString& str, PCC pcc)
@@ -403,8 +421,8 @@ bool operator!=(const ZString& str, PCC pcc)
     ZAssert(pcc != NULL);
 
     return
-		str.GetLength() != (int)wcslen(pcc)
-        || (wcsncmp(str, pcc, str.GetLength()) != 0);
+           str.GetLength() != (int)strlen(pcc)
+        || (strncmp(str, pcc, str.GetLength()) != 0);
 }
 
 bool operator!=(PCC pcc, const ZString& str)
@@ -412,23 +430,23 @@ bool operator!=(PCC pcc, const ZString& str)
     ZAssert(pcc != NULL);
 
     return 
-		str.GetLength() != (int)wcslen(pcc)
-        || (wcsncmp(str, pcc, str.GetLength()) != 0);
+           str.GetLength() != (int)strlen(pcc)
+        || (strncmp(str, pcc, str.GetLength()) != 0);
 }
 
 bool operator<(const ZString& str1, const ZString& str2)
 {
-    return lstrcmp(str1, str2) < 0;
+    return strcmp(str1, str2) < 0;
 }
 
 bool operator<(const ZString& str, PCC pcc)
 {
-    return lstrcmp(str, pcc) < 0;
+    return strcmp(str, pcc) < 0;
 }
 
 bool operator<(PCC pcc, const ZString& str)
 {
-    return lstrcmp(pcc, str) < 0;
+    return strcmp(pcc, str) < 0;
 }
 
 /*
@@ -454,12 +472,12 @@ int ZString::ReverseFind(const ZString& str) const
     return m_pdata->Find(str.m_pdata);
 }
 
-int ZString::Find(wchar_t ch, int index) const
+int ZString::Find(char ch, int index) const
 {
     return m_pdata->Find(ch, index);
 }
 
-int ZString::ReverseFind(wchar_t ch, int index) const
+int ZString::ReverseFind(char ch, int index) const
 {
     return m_pdata->ReverseFind(ch, index);
 }
@@ -482,7 +500,7 @@ int ZString::ReverseFindAny(const ZString& str, int index) const
 
 int ZString::GetInteger() const
 {
-	return _wtoi(m_pdata->GetPointer());
+    return atoi(m_pdata->GetPointer());
 }
 
 ZString ZString::Left(int index) const
@@ -539,7 +557,7 @@ ZString ZString::RightOf(const ZString& str) const
 
 ZString ZString::ToLower() const
 {
-	wchar_t* cbResult = (wchar_t*)_alloca(GetLength() + 1);
+    char* cbResult = (char*)_alloca(GetLength() + 1);
 
     ZToLower(cbResult, (*this));
 
@@ -548,18 +566,18 @@ ZString ZString::ToLower() const
 
 ZString ZString::ToUpper() const
 {
-	wchar_t* cbResult = (wchar_t*)_alloca(GetLength() + 1);
+    char* cbResult = (char*)_alloca(GetLength() + 1);
 
     ZToUpper(cbResult, (*this));
 
     return cbResult;
 }
 
-void ZToLower(wchar_t* szDest, PCC szSource)
+void ZToLower(char* szDest, PCC szSource)
 {
 	int index;
     for (index = 0; szSource[index] != '\0'; ++index) {
-		wchar_t ch = szSource[index];
+        char ch = szSource[index];
         if (ch >= 'A' && ch <= 'Z')
             szDest[index] = (ch - ('A' - 'a'));
         else
@@ -568,11 +586,11 @@ void ZToLower(wchar_t* szDest, PCC szSource)
     szDest[index] = '\0';
 }
 
-void ZToUpper(wchar_t* szDest, PCC szSource)
+void ZToUpper(char* szDest, PCC szSource)
 {
 	int index;
     for (index = 0; szSource[index] != '\0'; ++index) {
-		wchar_t ch = szSource[index];
+        char ch = szSource[index];
         if (ch >= 'a' && ch <= 'z')
             szDest[index] = (ch - ('a' - 'A'));
         else
@@ -666,7 +684,7 @@ ZString FilenameString::GetName() const
 //////////////////////////////////////////////////////////////////////////////
 
 
-const wchar_t* g_szDirSep = TEXT("/");
+const char* g_szDirSep = "/";
 
 
 PathString::PathString(PCC pcc) :
@@ -677,11 +695,11 @@ PathString::PathString(PCC pcc) :
 	ReplaceAll("\\", '/');
 }
 
-PathString PathString::ZGetCurrentDirectory()
+PathString PathString::GetCurrentDirectory()
 {
-    int size = ::GetCurrentDirectory(0, NULL);
-	wchar_t* pch = new wchar_t[size];
-    ::GetCurrentDirectory(size, pch);
+    int size = ::GetCurrentDirectoryA(0, NULL);
+    char* pch = new char[size];
+    ::GetCurrentDirectoryA(size, pch);
     PathString str(pch);
     delete pch;
 
@@ -690,8 +708,8 @@ PathString PathString::ZGetCurrentDirectory()
 
 PathString PathString::GetModulePath()
 {
-	wchar_t ch[MAX_PATH];
-    GetModuleFileName(NULL, ch, sizeof(ch) / sizeof(*ch));
+    char ch[128];
+    GetModuleFileNameA(NULL, ch, sizeof(ch) / sizeof(*ch));
     return PathString(ch);
 }
 
@@ -729,8 +747,8 @@ PathString PathString::GetDirectory() const
 
 PathString PathString::GetDrive() const
 {
-	wchar_t ch0 = (*this)[0];
-	wchar_t ch1 = (*this)[1];
+    char ch0 = (*this)[0];
+    char ch1 = (*this)[1];
 
     if (   (ch0 ==  '/' && ch1 ==  '/')
         || (ch0 == '\\' && ch1 == '\\')
@@ -753,9 +771,9 @@ PathString PathString::operator+(const PathString& strRelativeArg) const
     ZString strRelative = strRelativeArg;
 
     int length = strRelative.GetLength();
-	wchar_t ch0 = strRelative[0];
-	wchar_t ch1 = length > 0 ? strRelative[1] : 0;
-	wchar_t ch2 = length > 1 ? strRelative[2] : 0;
+    char ch0 = strRelative[0];
+    char ch1 = length > 0 ? strRelative[1] : 0;
+    char ch2 = length > 1 ? strRelative[2] : 0;
 
     if (ch0 == '/' || ch0 == '\\') {
         if (ch1 == ch0) {
@@ -773,7 +791,7 @@ PathString PathString::operator+(const PathString& strRelativeArg) const
         if (ch2 == '/' || ch2 == '\\') {
             return strRelative;
         } else {
-            ZError(L"Current directory relative paths not supported.");
+            ZError("Current directory relative paths not supported.");
             return strAbsolute;
         }
     } else {
@@ -798,7 +816,7 @@ PathString PathString::operator+(const PathString& strRelativeArg) const
                     index = strRelative.GetLength();
                 }
 
-				wchar_t chLast = strAbsolute[strAbsolute.GetLength() - 1];
+                char chLast = strAbsolute[strAbsolute.GetLength() - 1];
 
                 if (chLast == '/' || chLast == '\\') {
                     strAbsolute = ZString(strAbsolute) + strRelative.Left(index);
@@ -953,12 +971,12 @@ static unsigned char ScrambleUnmunge(unsigned char cbStart, unsigned char cbKey)
 
 const int c_cScrambleRounds = 12;
 
-void ZScramble(wchar_t* szDest, PCC szSource, PCC szKey)
+void ZScramble(char* szDest, PCC szSource, PCC szKey)
 {
-	int length = wcslen(szSource);
-	int lengthKey = wcslen(szKey);
+    int length = strlen(szSource);
+    int lengthKey = strlen(szKey);
 
-    wmemcpy(szDest, szSource, length + 1);
+    memcpy(szDest, szSource, length + 1);
 
     for (int nRound = 0; nRound < c_cScrambleRounds; nRound++)
     {
@@ -966,27 +984,27 @@ void ZScramble(wchar_t* szDest, PCC szSource, PCC szKey)
 
         // do a pass to unscramble it by the key
         for (index = 0; index < length; index++) 
-			szDest[index] = (wchar_t)(ScrambleMunge((unsigned char)szDest[index],
+            szDest[index] = (char)(ScrambleMunge((unsigned char)szDest[index], 
                 (unsigned char)szKey[(index + 3*nRound) % lengthKey]));
 
         // cypher block chaining forwards
         for (index = 1; index < length; index++) 
-			szDest[index] = (wchar_t)(ScrambleMunge((unsigned char)szDest[index],
+            szDest[index] = (char)(ScrambleMunge((unsigned char)szDest[index], 
                 (unsigned char)szDest[index-1]));
         
         // cypher block chaining backwards
         for (index = length - 2; index >= 0; index--) 
-			szDest[index] = (wchar_t)(ScrambleMunge((unsigned char)szDest[index],
+            szDest[index] = (char)(ScrambleMunge((unsigned char)szDest[index], 
                 (unsigned char)szDest[index+1]));
     }
 }
 
-void ZUnscramble(wchar_t* szDest, PCC szSource, PCC szKey)
+void ZUnscramble(char* szDest, PCC szSource, PCC szKey)
 {
-	int length = wcslen(szSource);
-	int lengthKey = wcslen(szKey);
+    int length = strlen(szSource);
+    int lengthKey = strlen(szKey);
 
-    wmemcpy(szDest, szSource, length + 1);
+    memcpy(szDest, szSource, length + 1);
 
     for (int nRound = c_cScrambleRounds - 1; nRound >= 0; nRound--)
     {
@@ -994,24 +1012,24 @@ void ZUnscramble(wchar_t* szDest, PCC szSource, PCC szKey)
 
         // undo the cypher block chaining backwards
         for (index = 0; index < length - 1; index++) 
-			szDest[index] = (wchar_t)(ScrambleUnmunge((unsigned char)szDest[index],
+            szDest[index] = (char)(ScrambleUnmunge((unsigned char)szDest[index], 
                 (unsigned char)szDest[index+1]));
 
         // undo the cypher block chaining forwards
         for (index = length - 1; index > 0; index--) 
-			szDest[index] = (wchar_t)(ScrambleUnmunge((unsigned char)szDest[index],
+            szDest[index] = (char)(ScrambleUnmunge((unsigned char)szDest[index], 
                 (unsigned char)szDest[index-1]));
 
         // do a pass to unscramble it by the key
         for (index = 0; index < length; index++) 
-			szDest[index] = (wchar_t)(ScrambleUnmunge((unsigned char)szDest[index],
+            szDest[index] = (char)(ScrambleUnmunge((unsigned char)szDest[index], 
                 (unsigned char)szKey[(index + 3*nRound) % lengthKey]));
     }
 }
 
 ZString ZString::Scramble(const ZString& strKey) const
 {
-	wchar_t* cbResult = (wchar_t*)_alloca(GetLength() + 1);
+    char* cbResult = (char*)_alloca(GetLength() + 1);
 
     ZScramble(cbResult, (*this), strKey);
 
@@ -1020,7 +1038,7 @@ ZString ZString::Scramble(const ZString& strKey) const
 
 ZString ZString::Unscramble(const ZString& strKey) const
 {
-	wchar_t* cbResult = (wchar_t*)_alloca(GetLength() + 1);
+    char* cbResult = (char*)_alloca(GetLength() + 1);
 
     ZUnscramble(cbResult, (*this), strKey);
 

@@ -11,15 +11,15 @@
 // LoadRegString<T>
 //
 template <class T>
-HRESULT LoadRegString(HKEY hkey, LPCWSTR pszValueName, T& strOut)
+HRESULT LoadRegString(HKEY hkey, LPCSTR pszValueName, T& strOut)
 {
   // Initialize the [out] parameter
-  strOut = TEXT("");
+  strOut = "";
 
   // Get the size of data from the specified value
   DWORD dwType;
   DWORD cbData = 0;
-  long lr = RegQueryValueEx(hkey, pszValueName, NULL, &dwType, NULL, &cbData);
+  long lr = RegQueryValueExA(hkey, pszValueName, NULL, &dwType, NULL, &cbData);
   if (ERROR_SUCCESS != lr)
     return HRESULT_FROM_WIN32(lr);
 
@@ -32,15 +32,15 @@ HRESULT LoadRegString(HKEY hkey, LPCWSTR pszValueName, T& strOut)
     return S_OK;
 
   // Allocate an automatic block of memory
-  LPTSTR pszValue = (LPTSTR)_alloca(cbData + sizeof(TCHAR));
+  LPSTR pszValue = (LPSTR)_alloca(cbData + sizeof(CHAR));
 
   // Attempt to read the specified value
-  lr = RegQueryValueEx(hkey, pszValueName, NULL, NULL, (BYTE*)pszValue, &cbData);
+  lr = RegQueryValueExA(hkey, pszValueName, NULL, NULL, (BYTE*)pszValue, &cbData);
   if (ERROR_SUCCESS != lr)
     return HRESULT_FROM_WIN32(lr);
 
   // Save the value string to the [out] parameter
-  pszValue[cbData / sizeof(TCHAR)] = TEXT('\0');
+  pszValue[cbData / sizeof(CHAR)] = '\0';
   strOut = pszValue;
 
   // Indicate success

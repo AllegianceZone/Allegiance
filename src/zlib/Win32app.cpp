@@ -22,16 +22,16 @@ BYTE OriginalBytes[5] = {0};
 int Win32App::GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
     BOOL bMiniDumpSuccessful;
-    wchar_t szPathName[MAX_PATH] = L""; 
-	GetModuleFileName(NULL, szPathName, MAX_PATH);
-	wchar_t* p1 = wcsrchr(szPathName, '\\');
-	wchar_t* p = wcsrchr(szPathName, '\\');
+    char szPathName[MAX_PATH] = ""; 
+	GetModuleFileNameA(NULL, szPathName, MAX_PATH);
+	char* p1 = strrchr(szPathName, '\\');
+	char* p = strrchr(szPathName, '\\');
 	if (!p)
 		p = szPathName;
 	else
 		p++;
 	if (!p1)
-		p1 = L"mini";
+		p1 = "mini";
 	else
 		p1++;
 	ZString zApp = p1;
@@ -42,15 +42,15 @@ int Win32App::GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
     GetLocalTime( &stLocalTime );
     
-   wcscpy(p, (PCC)zApp);
+   strcpy(p, (PCC)zApp);
    
-   ZVersionInfo vi; ZString zInfo = vi.GetFileVersionString();
-   swprintf(p + zApp.GetLength(), L"-%s-%04d%02d%02d%02d%02d%02d-%ld-%ld.dmp", (PCC)zInfo,
+   ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetFileVersionString();
+   sprintf( p+zApp.GetLength(),"-%s-%04d%02d%02d%02d%02d%02d-%ld-%ld.dmp",(PCC)zInfo,
                stLocalTime.wYear, stLocalTime.wMonth, stLocalTime.wDay, 
                stLocalTime.wHour, stLocalTime.wMinute, stLocalTime.wSecond, 
                GetCurrentProcessId(), GetCurrentThreadId());
    
-    hDumpFile = CreateFile(szPathName, GENERIC_READ|GENERIC_WRITE, 
+    hDumpFile = CreateFileA(szPathName, GENERIC_READ|GENERIC_WRITE, 
                 FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
 
     ExpParam.ThreadId = GetCurrentThreadId();
@@ -80,16 +80,16 @@ int Win32App::GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
     BOOL bMiniDumpSuccessful;
-    wchar_t szPathName[MAX_PATH] = L""; 
-	GetModuleFileName(NULL, szPathName, MAX_PATH);
-	wchar_t* p1 = wcsrchr(szPathName, '\\');
-	wchar_t* p = wcsrchr(szPathName, '\\');
+    char szPathName[MAX_PATH] = ""; 
+	GetModuleFileNameA(NULL, szPathName, MAX_PATH);
+	char* p1 = strrchr(szPathName, '\\');
+	char* p = strrchr(szPathName, '\\');
 	if (!p)
 		p = szPathName;
 	else
 		p++;
 	if (!p1)
-		p1 = L"mini";
+		p1 = "mini";
 	else
 		p1++;
 	ZString zApp = p1;
@@ -100,14 +100,14 @@ int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
     GetLocalTime( &stLocalTime );
     
-   wcscpy(p, (PCC)zApp);
-   ZVersionInfo vi; ZString zInfo = vi.GetFileVersionString();
-   swprintf( p+zApp.GetLength(),L"-%s-%04d%02d%02d%02d%02d%02d-%ld-%ld.dmp",(PCC)zInfo,
+   strcpy(p, (PCC)zApp);
+   ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetFileVersionString();
+   sprintf( p+zApp.GetLength(),"-%s-%04d%02d%02d%02d%02d%02d-%ld-%ld.dmp",(PCC)zInfo,
                stLocalTime.wYear, stLocalTime.wMonth, stLocalTime.wDay, 
                stLocalTime.wHour, stLocalTime.wMinute, stLocalTime.wSecond, 
                GetCurrentProcessId(), GetCurrentThreadId());
    
-    hDumpFile = CreateFile(szPathName, GENERIC_READ|GENERIC_WRITE, 
+    hDumpFile = CreateFileA(szPathName, GENERIC_READ|GENERIC_WRITE, 
                 FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
 
     ExpParam.ThreadId = GetCurrentThreadId();
@@ -133,7 +133,7 @@ int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 // Some assertion functions
 //
 //////////////////////////////////////////////////////////////////////////////
-void ZAssertImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+void ZAssertImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule)
 {
     if (!bSucceeded) {
         //
@@ -159,21 +159,21 @@ void ZAssertImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, in
 // avalanche + mmf 03/22/07 (bugs 108 and 109) place chat logs in logs folder, use \r\n
 
 HANDLE chat_logfile = NULL;
-wchar_t logFileName[MAX_PATH + 21];
+char logFileName[MAX_PATH + 21];
 
 void InitializeLogchat()
 {
 	HKEY hKey;
 	DWORD dwType;
-	wchar_t szValue[20];
+	char szValue[20];
 	DWORD cbValue = sizeof(szValue);
 	bool bLogChat = false;
 
 	if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
 	{
 		//Imago fixed this but is still confused why it's not a dword.
-		if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"LogChat", NULL, &dwType, (unsigned char*)&szValue, &cbValue))		
-			bLogChat = (wcscmp(szValue, L"1") == 0);
+		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "LogChat", NULL, &dwType, (unsigned char*)&szValue, &cbValue))		
+			bLogChat = (strcmp(szValue, "1") == 0);
 		::RegCloseKey(hKey);
 	}
 
@@ -188,29 +188,29 @@ void InitializeLogchat()
 
 		// char logFileName[MAX_PATH + 21]; make this global so chat can open and close it
 		// turns out this is not needed but leaving it here instead of moving it again
-		GetModuleFileName(NULL, logFileName, MAX_PATH);
-		wchar_t* p = wcsrchr(logFileName, '\\');
+		GetModuleFileNameA(NULL, logFileName, MAX_PATH);
+		char* p = strrchr(logFileName, '\\');
 		if (!p)
 			p = logFileName;
 		else
 			p++;
 
-		wcscpy(p, L"logs\\");
+		strcpy(p, "logs\\");
 
-		if (!CreateDirectory(logFileName, NULL))
+		if (!CreateDirectoryA(logFileName, NULL))
 		{
 			if (GetLastError() == ERROR_PATH_NOT_FOUND)
 			{
-				debugf(L"Unable to create chat log directory %s\n",logFileName);
+				debugf("Unable to create chat log directory %s\n",logFileName);
 			}
 		}
 
 		// mmf 1/17/08 fixed month
-		swprintf(p + 5, L"chat_%02d-%02d-%02d-%02d%02d%02d.txt", (t->tm_year - 100), (t->tm_mon + 1), t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+		sprintf(p+5, "chat_%02d-%02d-%02d-%02d%02d%02d.txt", (t->tm_year - 100), (t->tm_mon+1), t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
 
 		// mmf changed 3 param from 0 to FILE_SHARE_READ
 		chat_logfile =
-			CreateFile(
+			CreateFileA(
 				logFileName,
 				GENERIC_WRITE,
 				FILE_SHARE_READ,
@@ -222,7 +222,7 @@ void InitializeLogchat()
 		delete t;
 
 		//Imago moved inside bLogChat
-		if (chat_logfile == NULL) debugf(L"Unable to create chat_logfile %s\n",logFileName);
+		if (chat_logfile == NULL) debugf("Unable to create chat_logfile %s\n",logFileName);
 	}
 }
 
@@ -234,11 +234,11 @@ void TerminateLogchat()
     }
 }
 
-void logchat(const wchar_t* strText)
+void logchat(const char* strText)
 {
 	// unravel this from debugf-ZDebugOutputImpl-DebugOutput
     const size_t size = 512;
-	wchar_t         bfr[size];
+    char         bfr[size];
 	int length;
 
 	time_t  longTime;
@@ -247,14 +247,14 @@ void logchat(const wchar_t* strText)
 //    tm*             t = localtime(&longTime);
 	localtime_s(t, &longTime);
 
-	length = wcslen(strText);
+	length = strlen(strText);
 
 	// don't log if text is bigger than buffer, we don't want to log these long 'spam' chat's anyway
 	if (chat_logfile && (length < 490)) {
-		swprintf(bfr, L"%02d/%02d/%02d %02d:%02d:%02d: %s\r\n",
+		sprintf(bfr, "%02d/%02d/%02d %02d:%02d:%02d: %s\r\n",
             (t->tm_mon + 1), t->tm_mday, (t->tm_year - 100), t->tm_hour, t->tm_min, t->tm_sec, strText);
         DWORD nBytes;
-        ::WriteFile(chat_logfile, bfr, wcslen(bfr), &nBytes, NULL);
+        ::WriteFile(chat_logfile, bfr, strlen(bfr), &nBytes, NULL);
 	}
 	delete t;
 }
@@ -262,27 +262,27 @@ void logchat(const wchar_t* strText)
 // end mmf chat logging code
 
 
-void ZDebugOutputImpl(const wchar_t *psz)
+void ZDebugOutputImpl(const char *psz)
 {
     if (g_papp)
         g_papp->DebugOutput(psz);
     else
-        ::OutputDebugString(psz);
+        ::OutputDebugStringA(psz);
 }
 HANDLE g_logfile = NULL;
 
 extern int g_outputdebugstring = 0;  // mmf temp change, control outputdebugstring call with reg key
 
-void retailf(const wchar_t* format, ...)
+void retailf(const char* format, ...)
 {
     if (g_bOutput)
     {
         const size_t size = 2048; //Avalance: Changed to log longer messages. (From 512)
-		wchar_t         bfr[size];
+        char         bfr[size];
 
         va_list vl;
         va_start(vl, format);
-        _vsnwprintf_s(bfr, size, (size-1), format, vl); //Avalanche: Fix off by one error. 
+        _vsnprintf_s(bfr, size, (size-1), format, vl); //Avalanche: Fix off by one error. 
         va_end(vl);
 
         ZDebugOutputImpl(bfr);
@@ -298,24 +298,24 @@ extern bool g_bOutput = true;
 
 #ifdef SRVLOG // mmf changed this from _DEBUG
 
-void ZWarningImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+    void ZWarningImpl(bool bSucceeded, const char* psz, const char* pszFile, int line, const char* pszModule)
     {
         if (!bSucceeded) {
-            debugf(L"%s(%d) : ShouldBe failed: '%s'\n", pszFile, line, psz);
+            debugf("%s(%d) : ShouldBe failed: '%s'\n", pszFile, line, psz);
         }
     }
 
-	bool ZFailedImpl(HRESULT hr, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+    bool ZFailedImpl(HRESULT hr, const char* pszFile, int line, const char* pszModule)
     {
         bool bFailed = FAILED(hr);
-        ZAssertImpl(!bFailed, L"Function Failed", pszFile, line, pszModule);
+        ZAssertImpl(!bFailed, "Function Failed", pszFile, line, pszModule);
         return bFailed;
     }
 
-	bool ZSucceededImpl(HRESULT hr, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+    bool ZSucceededImpl(HRESULT hr, const char* pszFile, int line, const char* pszModule)
     {
         bool bSucceeded = SUCCEEDED(hr);
-        ZAssertImpl(bSucceeded, L"Function Failed", pszFile, line, pszModule);
+        ZAssertImpl(bSucceeded, "Function Failed", pszFile, line, pszModule);
         return bSucceeded;
     }
 
@@ -365,16 +365,16 @@ void ZWarningImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, i
         }
     #endif
 
-		void debugf(const wchar_t* format, ...)
+    void debugf(const char* format, ...)
     {
         if (g_bOutput)
         {
             const size_t size = 2048; //Avalanche: Changed to handle longer messages (from 512)
-			wchar_t         bfr[size];
+            char         bfr[size];
 
             va_list vl;
             va_start(vl, format);
-			_vsnwprintf_s(bfr, size, (size - 1), format, vl); //Avalanche: Fix off by one error. 
+            _vsnprintf_s(bfr, size, (size-1), format, vl); //Avalanche: Fix off by one error. 
             va_end(vl);
 
             ZDebugOutputImpl(bfr);
@@ -385,25 +385,25 @@ void ZWarningImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, i
     {
         HKEY hKey;
         DWORD dwType;
-        wchar_t  szValue[20];
+        char  szValue[20];
         DWORD cbValue = sizeof(szValue);
         bool  bLogToFile = false;
 
-		// mmf added this regkey check - why arent these dwords? 10/14
+		// mmf added this regkey check 
         if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
-            ::RegQueryValueEx(hKey, L"OutputDebugString", NULL, &dwType, (unsigned char*)&szValue, &cbValue);
+            ::RegQueryValueExA(hKey, "OutputDebugString", NULL, &dwType, (unsigned char*)&szValue, &cbValue);
             ::RegCloseKey(hKey);
 
-            g_outputdebugstring = (wcscmp(szValue, L"1") == 0);
+            g_outputdebugstring = (strcmp(szValue, "1") == 0);
         }
 
         if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
-            ::RegQueryValueEx(hKey, L"LogToFile", NULL, &dwType, (unsigned char*)&szValue, &cbValue);
+            ::RegQueryValueExA(hKey, "LogToFile", NULL, &dwType, (unsigned char*)&szValue, &cbValue);
             ::RegCloseKey(hKey);
 
-            bLogToFile = (wcscmp(szValue, L"1") == 0);
+            bLogToFile = (strcmp(szValue, "1") == 0);
         }
 
         if (bLogToFile)
@@ -414,28 +414,28 @@ void ZWarningImpl(bool bSucceeded, const wchar_t* psz, const wchar_t* pszFile, i
 //            tm*             t = localtime(&longTime);
 			localtime_s(t, &longTime);
 
-			wchar_t    logFileName[MAX_PATH + 16];
-            GetModuleFileName(NULL, logFileName, MAX_PATH);
-			wchar_t*   p = wcsrchr(logFileName, '\\');
+            char    logFileName[MAX_PATH + 16];
+            GetModuleFileNameA(NULL, logFileName, MAX_PATH);
+            char*   p = strrchr(logFileName, '\\');
             if (!p)
                 p = logFileName;
             else
                 p++;
 
-			const wchar_t* months[] = { L"jan", L"feb", L"mar", L"apr",
-                                    L"may", L"jun", L"jul", L"aug",
-                                    L"sep", L"oct", L"nov", L"dec"};
+            const char* months[] = {"jan", "feb", "mar", "apr",
+                                    "may", "jun", "jul", "aug",
+                                    "sep", "oct", "nov", "dec"};
 //            strcpy_s(p, _MAX_PATH + 16, months[t->tm_mon]);
 //            sprintf_s(p + 3, _MAX_PATH + 13, "%02d%02d%02d%02d.txt",
 //                    t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
-			wcscpy(p, months[t->tm_mon]);
-			swprintf(p+3, L"%02d%02d%02d%02d.txt",
+			strcpy(p, months[t->tm_mon]);
+			sprintf(p+3, "%02d%02d%02d%02d.txt",
 				t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
 			delete t;
 			// mmf this is NOT where the logfile AllSrv.txt is generated
 			//     this is the client logfile and only for FZDebug build
             g_logfile = 
-                CreateFile(
+                CreateFileA(
                     logFileName, 
                     GENERIC_WRITE, 
                     FILE_SHARE_READ,
@@ -505,7 +505,7 @@ LONG __stdcall Win32App::ExceptionHandler( EXCEPTION_POINTERS* pep )
     TList<ZString> g_listOutput;
 #endif
 
-	void Win32App::DebugOutput(const wchar_t *psz)
+void Win32App::DebugOutput(const char *psz)
 {
     #ifdef MemoryOutput
         g_listOutput.PushFront(ZString(psz));
@@ -516,25 +516,25 @@ LONG __stdcall Win32App::ExceptionHandler( EXCEPTION_POINTERS* pep )
     #else
 		// mmf for now tie this to a registry key
 		if (g_outputdebugstring)
-			::OutputDebugString(psz);
+			::OutputDebugStringA(psz);
 
         if (g_logfile) {
             DWORD nBytes;
-            ::WriteFile(g_logfile, psz, wcslen(psz), &nBytes, NULL);
+            ::WriteFile(g_logfile, psz, strlen(psz), &nBytes, NULL);
         }
     #endif
 }
 
-bool Win32App::OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+bool Win32App::OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule)
 {
     ZDebugOutput(
-          ZString(L"assertion failed: '")
+          ZString("assertion failed: '")
         + psz
-		+ L"' ("
+        + "' ("
         + pszFile
-		+ L":"
+        + ":"
         + ZString(line)
-		+ L")\n"
+        + ")\n"
     );
 
     //return _CrtDbgReport(_CRT_ASSERT, pszFile, line, pszModule, psz) == 1;
@@ -708,7 +708,7 @@ bool Win32App::EnforceFilter( bool bEnforce )
 //
 //////////////////////////////////////////////////////////////////////////////
 
-__declspec(dllexport) int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpszCmdLine, int nCmdShow)
+__declspec(dllexport) int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow)
 {
     HRESULT hr;
 
@@ -772,7 +772,7 @@ __declspec(dllexport) int WINAPI Win32Main(HINSTANCE hInstance, HINSTANCE hPrevI
     delete pzSpacer;
 	if( !g_papp->EnforceFilter( false ) )
 	{
-		debugf(L"EnforceFilter(false) failed.\n");
+		debugf("EnforceFilter(false) failed.\n");
 		return 0;
 	}
     return 0;

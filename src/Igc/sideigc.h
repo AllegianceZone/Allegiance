@@ -103,18 +103,18 @@ class       CsideIGC : public IsideIGC
         virtual void        DestroyBuckets(void);
         virtual void        CreateBuckets(void);
 
-		void                SetName(const wchar_t* newVal)
+        void                SetName(const char* newVal)
         {
 			//Rock / Imago 7/28/09
 			ZString strName = newVal;
-			int istart = strName.ReverseFind(L"\x81");
-			int iend = strName.ReverseFind(L"\x82");
+			int istart = strName.ReverseFind("\x81");
+			int iend = strName.ReverseFind("\x82");
 			if ( (istart != -1 && iend == -1) || iend < istart)
 				strName += END_COLOR_STRING;
 			UTL::putName(m_data.name, (PCC)strName);
         }
 
-		virtual const wchar_t*             GetName(void) const
+        virtual const char*             GetName(void) const
         {
             return m_data.name;
         }
@@ -566,11 +566,11 @@ class       CsideIGC : public IsideIGC
         }
 
 		// #ALLY
-		void SetAllies(wchar_t allies)
+		void SetAllies(char allies)
 		{
 			m_data.allies = allies;
 		}
-		wchar_t GetAllies()
+		char GetAllies()
 		{
 			return m_data.allies;
 		}

@@ -343,19 +343,19 @@ void CAGCEventLogger::LogEvent(IAGCEvent* pEvent, bool bSynchronous)
             m_table.m_idSubject = idSubject;
             // ComputerName
             if (bstrComputerName.Length())
-              lstrcpyn(m_table.m_szComputerName, OLE2CT(bstrComputerName),
+              Strncpy(m_table.m_szComputerName, OLE2CA(bstrComputerName),
                 sizeofArray(m_table.m_szComputerName));
             else
               *m_table.m_szComputerName = TEXT('\0');
             // SubjectName
             if (bstrSubjectName.Length())
-              lstrcpyn(m_table.m_szSubjectName, OLE2CT(bstrSubjectName),
+				Strncpy(m_table.m_szSubjectName, OLE2CA(bstrSubjectName),
                 sizeofArray(m_table.m_szSubjectName));
             else
               *m_table.m_szSubjectName = TEXT('\0');
             // Context
             if (bstrContext.Length())
-              lstrcpyn(m_table.m_szContext, OLE2CT(bstrContext),
+				Strncpy(m_table.m_szContext, OLE2CA(bstrContext),
                 sizeofArray(m_table.m_szContext));
             else
               *m_table.m_szContext = TEXT('\0');
@@ -365,7 +365,8 @@ void CAGCEventLogger::LogEvent(IAGCEvent* pEvent, bool bSynchronous)
             PRIVATE_ASSERTE(IMarshalPtr(pEvent) != NULL);
             CComBSTR bstrTemp;
             PRIVATE_VERIFYE(SUCCEEDED(pEvent->SaveToString(&bstrTemp)));
-			lstrcpyn(m_table.m_szObjRef, OLE2CW(bstrTemp), sizeofArray(m_table.m_szObjRef));
+            WideCharToMultiByte(CP_ACP, 0, bstrTemp, -1,
+              m_table.m_szObjRef, sizeof(m_table.m_szObjRef), 0, 0);
 
             // Insert the row into the table
             hr = m_table.Insert();
@@ -1194,7 +1195,7 @@ STDMETHODIMP CAGCEventLogger::Initialize(BSTR bstrSourceApp, BSTR bstrRegKey)
   HKEY hkeyRoot = RootKeyFromString(bstrRegKey, &cchEaten);
   if (!hkeyRoot)
   {
-    ZError(L"CAGCEventLogger::Initialize(): Invalid registry key name specified.");
+    ZError("CAGCEventLogger::Initialize(): Invalid registry key name specified.");
     return E_INVALIDARG;
   }
 

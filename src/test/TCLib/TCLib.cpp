@@ -26,7 +26,8 @@ class __declspec(uuid("0002e005-0000-0000-c000-000000000046")) StdComponentCateg
     nBuf = _vstprintf(szBuffer, lpszFormat, args);
     assert(nBuf < sizeof(szBuffer));
 
-    ZDebugOutputImpl(szBuffer);
+    USES_CONVERSION;
+    ZDebugOutputImpl(T2CA(szBuffer));
     va_end(args);
   }
 #endif // _DEBUG
@@ -1025,21 +1026,21 @@ HRESULT TCLoadBSTR(HINSTANCE hInstance, UINT wID, BSTR* pbstrOut)
 // Error Reporting Functions/Macros
 // Note: These methods will output even in RELEASE builds!
 
-void _cdecl TCErrLog(LPCTSTR lpszFormat, ...)
+void _cdecl TCErrLog(LPCSTR lpszFormat, ...)
 {
   va_list args;
   va_start(args, lpszFormat);
 
   int nBuf;
-  TCHAR szBuffer[512];
+  CHAR szBuffer[512];
 
-  nBuf = _vstprintf(szBuffer, lpszFormat, args);
+  nBuf = vsprintf(szBuffer, lpszFormat, args);
   assert(nBuf < sizeof(szBuffer));
 
   #ifdef _DEBUG
     ZDebugOutputImpl(szBuffer);
   #else // _DEBUG
-    OutputDebugString(szBuffer);
+    OutputDebugStringA(szBuffer);
   #endif // _DEBUG
   va_end(args);
 }

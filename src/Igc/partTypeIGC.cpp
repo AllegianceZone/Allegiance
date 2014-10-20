@@ -63,37 +63,37 @@ int         CpartTypeIGC::Export(void*  data) const
 /////////////////////////////////////////////////////////////////////////////
 // IpartTypeIGC
 
-const wchar_t* IpartTypeIGC::GetEquipmentTypeName(EquipmentType et)
+const char* IpartTypeIGC::GetEquipmentTypeName(EquipmentType et)
 {
     switch (et)
     {
     case ET_ChaffLauncher:
-        return L"chaff";
+        return "chaff";
 
     case ET_Weapon:
-		return L"weapon";
+        return "weapon";
 
     case ET_Magazine:
-		return L"missile";
+        return "missile";
 
     case ET_Dispenser:
-		return L"mine";
+        return "mine";
 
     case ET_Shield:
-		return L"shield";
+        return "shield";
 
     case ET_Cloak:
-		return L"cloak";
+        return "cloak";
 
     case ET_Pack:
-		return L"ammo";
+        return "ammo";
 
     case ET_Afterburner:
-		return L"afterburner";
+        return "afterburner";
 
     default:
         assert(false);
-		return L"";
+        return "";
     }
 }
 

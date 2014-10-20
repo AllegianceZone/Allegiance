@@ -444,7 +444,7 @@ namespace Training
         dataShip.hullID = hullID;
         dataShip.sideID = sideID;
         dataShip.pilotType = pilotType;
-        Strcpy (dataShip.name, name);
+        strcpy (dataShip.name, name);
 
         // clear out the dynamic values
         //dataShip.wingID = 0;
@@ -491,7 +491,7 @@ namespace Training
     {
         ImissionIGC*        pCore = trekClient.ResetStaticData ();
         Time                now = pCore->GetLastUpdate();
-        wchar_t*               szStaticCoreFilename = IGC_STATIC_CORE_FILENAME;
+        char*               szStaticCoreFilename = IGC_STATIC_CORE_FILENAME;
         int                 iStaticCoreVersion = LoadIGCStaticCore (szStaticCoreFilename, pCore, false);
 
 
@@ -505,14 +505,14 @@ namespace Training
                                 {184.0f/255.0f,  92.0f/255.0f,   0.0f/255.0f},  //icky orange
                                 {123.0f/255.0f,  61.0f/255.0f,  61.0f/255.0f}   //icky magenta
                             };
-		static const wchar_t*  szSideNames[c_cSidesMax] =
+        static const char*  szSideNames[c_cSidesMax] =
                             {
-                                L"Iron League",
-                                L"Bios",
-                                L"Gigacorp",
-                                L"Protectorate",
-                                L"Colossal Mining Corp",
-                                L"Midnight Runners"
+                                "Iron League",
+                                "Bios",
+                                "Gigacorp",
+                                "Protectorate",
+                                "Colossal Mining Corp",
+                                "Midnight Runners"
                             };
         static CivID        civs[c_cSidesMax] = {25, 35, 18, 25, 35, 18};
 
@@ -547,7 +547,7 @@ namespace Training
             assert (civs[sid] != NA);
             ds.civilizationID = civs[sid];
             ds.color.SetRGBA(fSideColors[sid][0], fSideColors[sid][1], fSideColors[sid][2]);
-            Strcpy(ds.name, szSideNames[sid]);
+            strcpy(ds.name, szSideNames[sid]);
             ds.ttbmDevelopmentTechs = pCiv->GetBaseTechs();
             ds.ttbmInitialTechs = pCiv->GetBaseTechs();
             ds.conquest = 100 / c_cSidesMax;
@@ -570,7 +570,7 @@ namespace Training
         // create the mission def
         FMD_S_MISSIONDEF    fmMissionDef;
         fmMissionDef.szDescription[0] = 0;
-        Strcpy (fmMissionDef.misparms.szIGCStaticFile, szStaticCoreFilename);
+        strcpy (fmMissionDef.misparms.szIGCStaticFile, szStaticCoreFilename);
         fmMissionDef.misparms.verIGCcore = iStaticCoreVersion;
         fmMissionDef.dwCookie = static_cast<DWORD> (pCore->GetMissionID ());
         fmMissionDef.iSideMissionOwner = 0;
@@ -579,7 +579,7 @@ namespace Training
         fmMissionDef.stage = STAGE_STARTED;
         for (int q = 0; q < c_cSidesMax; q++)
         {
-            Strcpy (fmMissionDef.rgszName[q], szSideNames[q]);
+            strcpy (fmMissionDef.rgszName[q], szSideNames[q]);
             //fmMissionDef.rgCivID[q] = civs[q];
             fmMissionDef.rgStationID[q] = NA;
             fmMissionDef.rgShipIDLeaders[q] = NA;
@@ -599,7 +599,7 @@ namespace Training
         IshipIGC*       pShip = trekClient.GetShip ();
 
         // set the player name
-        pShip->SetName (L"Cadet");
+        pShip->SetName ("Cadet");
 
         // set the player info for the player
         CreatePlayerInfo (trekClient.GetShip (), 0, pCore->GenerateNewShipID());
@@ -682,7 +682,7 @@ namespace Training
         FMD_S_PLAYERINFO    fmPlayerInfo;
         PlayerInfo*         pPlayerInfo = trekClient.FindAndCreatePlayerLink (shipID);
         memset(&fmPlayerInfo, 0, sizeof(fmPlayerInfo));
-        Strcpy(fmPlayerInfo.CharacterName, pShip->GetName ());
+        strcpy(fmPlayerInfo.CharacterName, pShip->GetName ());
         fmPlayerInfo.iSide = NA;
         fmPlayerInfo.dtidDrone = NA;
         fmPlayerInfo.shipID = shipID;
@@ -718,16 +718,16 @@ namespace Training
         ObjectWithinRadiusCondition*    pWithinRadiusCondition = new ObjectWithinRadiusCondition (ship, place, ship->GetRadius () * 10.0f);
         Condition*                      pMovingTowardsCondition = new ObjectMovingTowardsCondition (ship, place);
         Condition*                      pAndCondition = new AndCondition (pWithinRadiusCondition, pMovingTowardsCondition);
-        MessageAction*                  pTooCloseMessage = new MessageAction (ZString (L"Don't get too close to ") + GetModelName (place) + L"!");
+        MessageAction*                  pTooCloseMessage = new MessageAction (ZString ("Don't get too close to ") + GetModelName (place) + "!");
         float                           fDisplayRadius = pWithinRadiusCondition->GetRadarRadius ();
-		wchar_t                            cFloatStringBuffer[256];
+        char                            cFloatStringBuffer[256];
         fDisplayRadius = floorf (fDisplayRadius * 0.02f) * 50.0f;
-        swprintf (cFloatStringBuffer, L"Stay at least %g meters from ", floorf (fDisplayRadius));
-        pTooCloseMessage->AddMessage (ZString (cFloatStringBuffer) + GetModelName (place) + L"!");
-        pTooCloseMessage->AddMessage (L"A little close, don't ya think?");
-        pTooCloseMessage->AddMessage (L"Watch your range!");
-        pTooCloseMessage->AddMessage (L"Whoa! where are the parachutes?");
-        pTooCloseMessage->AddMessage (L"You scratch my ship, I scratch your hide!");
+        sprintf (cFloatStringBuffer, "Stay at least %g meters from ", floorf (fDisplayRadius));
+        pTooCloseMessage->AddMessage (ZString (cFloatStringBuffer) + GetModelName (place) + "!");
+        pTooCloseMessage->AddMessage ("A little close, don't ya think?");
+        pTooCloseMessage->AddMessage ("Watch your range!");
+        pTooCloseMessage->AddMessage ("Whoa! where are the parachutes?");
+        pTooCloseMessage->AddMessage ("You scratch my ship, I scratch your hide!");
         Condition*                      pPeriodicCondition = new PeriodicCondition (pAndCondition, 2.0f);
         ConditionalAction*              pTooCloseCondition = new ConditionalAction (pPeriodicCondition, pTooCloseMessage, ConditionalAction::DELAYED_EXECUTION);
         return pTooCloseCondition;

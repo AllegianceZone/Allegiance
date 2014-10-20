@@ -25,42 +25,19 @@ public:
 // Overrides
 public:
   #ifdef _DEBUG
-	virtual void DebugOutput(const wchar_t* psz)
+    virtual void DebugOutput(const char* psz)
     {
-		if (NULL != m_spDebugHook) {
-			m_spDebugHook->DebugOutput(psz);
-		} else {
-			size_t   i;
-			char      *pMBBuffer = (char *)malloc(2048);
-			wcstombs_s(&i, pMBBuffer, (size_t)2048, psz, (size_t)2048);
-			TCWinAppDLL::DebugOutput(pMBBuffer);
-			if (pMBBuffer)
-				free(pMBBuffer);
-		}
+      if (NULL != m_spDebugHook)
+        m_spDebugHook->DebugOutput(psz);
+      else
+        TCWinAppDLL::DebugOutput(psz);
     }
 
-	virtual bool OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+    virtual bool OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule)
     {
-		if (NULL != m_spDebugHook) {
-			return !!m_spDebugHook->OnAssert(psz, pszFile, line, pszModule);
-		} else {
-			size_t   i1;
-			char      *pMBBuffer1 = (char *)malloc(2048);
-			wcstombs_s(&i1, pMBBuffer1, (size_t)2048, psz, (size_t)2048);
-			size_t   i2;
-			char      *pMBBuffer2 = (char *)malloc(400);
-			wcstombs_s(&i2, pMBBuffer2, (size_t)400, pszFile, (size_t)400);
-			size_t   i3;
-			char      *pMBBuffer3 = (char *)malloc(400);
-			wcstombs_s(&i3, pMBBuffer3, (size_t)400, pszModule, (size_t)400);
-			return TCWinAppDLL::OnAssert(pMBBuffer1, pMBBuffer2, line, pMBBuffer3);
-			if (pMBBuffer1)
-				free(pMBBuffer1);
-			if (pMBBuffer2)
-				free(pMBBuffer2);
-			if (pMBBuffer3)
-				free(pMBBuffer3);
-		}
+      return (NULL != m_spDebugHook) ?
+        !!m_spDebugHook->OnAssert(psz, pszFile, line, pszModule) :
+        TCWinAppDLL::OnAssert(psz, pszFile, line, pszModule);
     }
 
     virtual void OnAssertBreak()

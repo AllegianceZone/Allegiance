@@ -251,7 +251,7 @@ void CPageChat::LoadFromRegistry()
 
   // ChatListColumnOrder
   CComBSTR bstrColumnOrder;
-  LoadRegString(key, TEXT("ChatListColumnOrder"), bstrColumnOrder);
+  LoadRegString(key, "ChatListColumnOrder", bstrColumnOrder);
   m_spStrings->RemoveAll();
   m_spStrings->AddDelimited(CComBSTR(L","), bstrColumnOrder);
   long cOrderedColumns = 0;
@@ -270,7 +270,7 @@ void CPageChat::LoadFromRegistry()
 
   // ChatListColumnWidths
   CComBSTR bstrColumnWidths;
-  LoadRegString(key, TEXT("ChatListColumnWidths"), bstrColumnWidths);
+  LoadRegString(key, "ChatListColumnWidths", bstrColumnWidths);
   m_spStrings->RemoveAll();
   m_spStrings->AddDelimited(CComBSTR(L","), bstrColumnWidths);
   long cWidthColumns = 0;
@@ -309,9 +309,9 @@ void CPageChat::LoadFromRegistry()
     // Read each string and add it to the combo box
     for (DWORD i = 0; i < cStrings; ++i)
     {
-      TCHAR szInt[16];
+      CHAR szInt[16];
       CString strMRUItem;
-      LoadRegString(keyMRU, _itot(i, szInt, 10), strMRUItem);
+      LoadRegString(keyMRU, _itoa(i, szInt, 10), strMRUItem);
       strMRUItem.TrimLeft();
       strMRUItem.TrimRight();
       if (!strMRUItem.IsEmpty())

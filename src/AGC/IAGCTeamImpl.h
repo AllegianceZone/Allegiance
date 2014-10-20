@@ -63,12 +63,12 @@ public:
   {
     assert(GetIGC());
 
-    const wchar_t * pCivName;
+    const char * pCivName;
     IcivilizationIGC * p = GetIGC()->GetCivilization();
     if(p)
         pCivName = p->GetName();
     else 
-        pCivName = L"";
+        pCivName = "";
        
     CComBSTR bstrTemp(pCivName); 
     CLEAROUT(pbstr, (BSTR)bstrTemp);
@@ -101,8 +101,9 @@ public:
     }
 
     // Send the chat
+    USES_CONVERSION;
     GetIGC()->GetMission()->GetIgcSite()->SendChat(NULL, eRecipient,
-      idRecipient, idSound, OLE2CW(bstrText), c_cidNone, NA, NA, NULL, true);
+      idRecipient, idSound, OLE2CA(bstrText), c_cidNone, NA, NA, NULL, true);
 
     // Indicate success
     return S_OK;
@@ -145,7 +146,7 @@ public:
 
     // Send the chat
     GetIGC()->GetMission()->GetIgcSite()->SendChat(NULL, eRecipient,
-      idRecipient, idSound, L"", idCmd, pModel->GetObjectType(),
+      idRecipient, idSound, "", idCmd, pModel->GetObjectType(),
       pModel->GetObjectID(), pModel, true);
       
     // Indicate success

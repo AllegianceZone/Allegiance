@@ -6,22 +6,22 @@
 // CLogFile()
 // Constructor.
 ////////////////////////////////////////////////////////////////////////////////
-CLogFile::CLogFile(wchar_t * szFileName)
+CLogFile::CLogFile( char * szFileName )
 {
 	m_hLogFile = INVALID_HANDLE_VALUE;
 
-	wcscpy_s( m_szFileName, MAX_PATH, szFileName );
-	GetModuleFileName( NULL, m_szFilePath, MAX_PATH);
+	strcpy_s( m_szFileName, MAX_PATH, szFileName );
+	GetModuleFileNameA( NULL, m_szFilePath, MAX_PATH);
 
-	wchar_t * p = wcsrchr(m_szFilePath, '\\');
+	char * p = strrchr(m_szFilePath, '\\');
 	if (!p)
 		p = m_szFilePath;
 	else
 		p++;
 
-	wcscpy_s( p, MAX_PATH - ( wcslen( m_szFilePath ) - wcslen( p ) ), szFileName );
+	strcpy_s( p, MAX_PATH - ( strlen( m_szFilePath ) - strlen( p ) ), szFileName );
 
-	m_hLogFile = CreateFile(	m_szFilePath, 
+	m_hLogFile = CreateFileA(	m_szFilePath, 
 								GENERIC_WRITE, 
 								0,
 								NULL, 
@@ -30,7 +30,7 @@ CLogFile::CLogFile(wchar_t * szFileName)
 								NULL );
 	_ASSERT( m_hLogFile != INVALID_HANDLE_VALUE );
 
-	OutputStringV( L"Log file %s created - %s\n\n", szFileName, GetTimeStampString() );
+	OutputStringV( "Log file %s created - %s\n\n", szFileName, GetTimeStampString() );
 }
 
 
@@ -52,7 +52,7 @@ void CLogFile::CloseLogFile()
 {
 	if( m_hLogFile != INVALID_HANDLE_VALUE )
 	{
-		OutputString( L"\nLog closed.\n" );
+		OutputString( "\nLog closed.\n" );
 		CloseHandle( m_hLogFile );
 		m_hLogFile = INVALID_HANDLE_VALUE;
 	}
@@ -63,12 +63,12 @@ void CLogFile::CloseLogFile()
 // OutputString()
 // Output a standard string to the log file.
 ////////////////////////////////////////////////////////////////////////////////
-void CLogFile::OutputString(wchar_t * szString)
+void CLogFile::OutputString( const char * szString )
 {
 	if( m_hLogFile != INVALID_HANDLE_VALUE )
 	{
 		DWORD nBytes;
-		::WriteFile(m_hLogFile, szString, wcslen(szString), &nBytes, NULL);
+		::WriteFile(m_hLogFile, szString, strlen(szString), &nBytes, NULL);
 	}
 	debugf(szString);
 }
@@ -78,15 +78,15 @@ void CLogFile::OutputString(wchar_t * szString)
 // LogString()
 //
 ////////////////////////////////////////////////////////////////////////////////
-void CLogFile::OutputStringV(wchar_t * szFormat, ...)
+void CLogFile::OutputStringV( const char * szFormat, ... )
 {
 	if( m_hLogFile != INVALID_HANDLE_VALUE )
 	{
 		const size_t size = 2048;			// Based on debugf value.
-		wchar_t szTemp[size];
+		char szTemp[ size ];
 		va_list vl;
 		va_start( vl, szFormat );
-		_vsnwprintf_s( szTemp, size, (size-1), szFormat, vl );
+		_vsnprintf_s( szTemp, size, (size-1), szFormat, vl );
 		va_end(vl);
 		OutputString( szTemp );
 	}
@@ -97,7 +97,7 @@ void CLogFile::OutputStringV(wchar_t * szFormat, ...)
 // GetTimeStampString()
 // Returns the output buffer as a string for use as a input parameter.
 ////////////////////////////////////////////////////////////////////////////////
-wchar_t * CLogFile::GetTimeStampString()
+char * CLogFile::GetTimeStampString()
 {
 	time_t longTime;
 	tm t;
@@ -105,11 +105,11 @@ wchar_t * CLogFile::GetTimeStampString()
 	time(&longTime);
 	localtime_s( &t, &longTime);
 
-	const wchar_t * months[] = { L"Jan", L"Feb", L"Mar", L"Apr",
-		L"May", L"Jun", L"Jul", L"Aug",
-		L"Sep", L"Oct", L"Nov", L"Dec" };
-	wcscpy_s( m_szTimeStamp, 256, months[ t.tm_mon ] );
-	swprintf_s( m_szTimeStamp+3, 256 - 3, L" %02d, %02d:%02d", t.tm_mday, t.tm_hour, t.tm_min );
+	const char * months[] = {"Jan", "Feb", "Mar", "Apr",
+							"May", "Jun", "Jul", "Aug",
+							"Sep", "Oct", "Nov", "Dec"};
+	strcpy_s( m_szTimeStamp, 256, months[ t.tm_mon ] );
+	sprintf_s( m_szTimeStamp+3, 256 - 3, " %02d, %02d:%02d", t.tm_mday, t.tm_hour, t.tm_min );
 
 	return m_szTimeStamp;
 }

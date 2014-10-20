@@ -37,7 +37,7 @@ public:
 // Operations
 public:
 
-	int  Init(int argc, wchar_t* argv[]);
+    int  Init(int argc, char* argv[]);
     int  Run();
 
 // Handler prototypes:
@@ -93,7 +93,7 @@ public:
     CWindow m_ProgressAnalyze;
     CWindow m_ProgressDownload;
     CWindow m_staticFileName;
-	wchar_t m_szPostUpdateEXE[MAX_PATH];
+    char m_szPostUpdateEXE[MAX_PATH];
 
 // Data Members
 protected:

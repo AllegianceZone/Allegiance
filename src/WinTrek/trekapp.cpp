@@ -111,24 +111,24 @@ bool CheckDSoundVersion()
 {
     // Get version information from the application 
     
-    HMODULE hmodDSound = GetModuleHandle(L"dsound");
+    HMODULE hmodDSound = GetModuleHandleA("dsound");
     if (NULL == hmodDSound) // why isn't the dll loaded???
       return false;
 
-	wchar_t  szDSoundPath[MAX_PATH];
-    GetModuleFileName(hmodDSound, szDSoundPath, sizeof(szDSoundPath)); 
+    char  szDSoundPath[MAX_PATH];
+    GetModuleFileNameA(hmodDSound, szDSoundPath, sizeof(szDSoundPath)); 
 
     DWORD dwTemp;
-    DWORD dwVerInfoSize = GetFileVersionInfoSize(szDSoundPath, &dwTemp);
+    DWORD dwVerInfoSize = GetFileVersionInfoSizeA(szDSoundPath, &dwTemp);
     if (0 == dwVerInfoSize)
       return false;
 
     void *pvVerInfo = _alloca(dwVerInfoSize);
-    GetFileVersionInfo(szDSoundPath, NULL, dwVerInfoSize, pvVerInfo);
+    GetFileVersionInfoA(szDSoundPath, NULL, dwVerInfoSize, pvVerInfo);
 
     VS_FIXEDFILEINFO *lpvsFixedFileInfo = NULL;
     unsigned uTemp;
-    if (!VerQueryValue(pvVerInfo, L"\\", (LPVOID*) &lpvsFixedFileInfo, &uTemp))
+    if (!VerQueryValueA(pvVerInfo, "\\", (LPVOID*) &lpvsFixedFileInfo, &uTemp))
       return false;
 
 
@@ -194,11 +194,11 @@ bool CheckForAllGuard()
   // Bypass any other tests if -nod is specified on the command line
   ZString strCmdLine(::GetCommandLine());
   while (!strCmdLine.IsEmpty())
-    if (strCmdLine.GetToken() == L"-nod")
+    if (strCmdLine.GetToken() == "-nod")
       return true;
 
   // Load KERNEL32
-  HINSTANCE hinstKernel32 = ::GetModuleHandle(L"kernel32.dll");
+  HINSTANCE hinstKernel32 = ::GetModuleHandleA("kernel32.dll");
   assert(hinstKernel32);
 
   // Get the address of IsDebuggerPresent, if available
@@ -216,11 +216,11 @@ bool CheckForAllGuard()
     // Win95 doesn't support IsDebuggerPresent, so we must check some other ways
 
     // Format an event name using the current process ID
-	  wchar_t szEvent[24];
-    swprintf(szEvent, L"MSRGuard_%08X", GetCurrentProcessId());
+    char szEvent[24];
+    sprintf(szEvent, "MSRGuard_%08X", GetCurrentProcessId());
 
     // Determine if the named event already exists
-    HANDLE hEvent = ::OpenEvent(EVENT_ALL_ACCESS, false, szEvent);
+    HANDLE hEvent = ::OpenEventA(EVENT_ALL_ACCESS, false, szEvent);
     if (hEvent)
     {
       // Close the event handle and indicate that we are being debugged
@@ -234,39 +234,39 @@ bool CheckForAllGuard()
   strCmdLine.GetToken();
 
   // Get the fully-qualified path to the current process
-  wchar_t szModulePath[_MAX_PATH];
-  GetModuleFileName(NULL, szModulePath, sizeof(szModulePath));
-  wchar_t szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
-  _wsplitpath(szModulePath, szDrive, szDir, NULL, NULL);
-  _wmakepath(szModulePath, szDrive, szDir, NULL, NULL);
+  char szModulePath[_MAX_PATH];
+  GetModuleFileNameA(NULL, szModulePath, sizeof(szModulePath));
+  char szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
+  _splitpath(szModulePath, szDrive, szDir, NULL, NULL);
+  _makepath(szModulePath, szDrive, szDir, NULL, NULL);
 
   // Get the ArtPath, since that's where AllGuard.exe should be
   HKEY hKey = NULL;
   if (ERROR_SUCCESS != ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
     return true; // If it can't be read, just keep running
-  wchar_t szArtPath[_MAX_PATH];
+  char szArtPath[_MAX_PATH];
   DWORD cbArtPath = sizeof(szArtPath);
-  if (ERROR_SUCCESS != ::RegQueryValueEx(hKey, L"ArtPath", NULL, NULL, (BYTE*)&szArtPath, &cbArtPath))
+  if (ERROR_SUCCESS != ::RegQueryValueExA(hKey, "ArtPath", NULL, NULL, (BYTE*)&szArtPath, &cbArtPath))
   {
-    lstrcpy(szArtPath, szModulePath);
-    lstrcat(szArtPath, L"artwork\\");
-    cbArtPath = lstrlen(szArtPath);
+    Strcpy(szArtPath, szModulePath);
+    Strcat(szArtPath, "artwork\\");
+    cbArtPath = strlen(szArtPath);
   }
   else if ('\\' != szArtPath[cbArtPath - 1])
   {
-    lstrcat(szArtPath, L"\\");
+    Strcat(szArtPath, "\\");
     ++cbArtPath;
   }
   ::RegCloseKey(hKey);
 
   // Append the AllGuard.exe filename and parameters
-  wchar_t szAllGuard[_MAX_PATH * 4];
-  swprintf(szAllGuard, L"\"%sAllGuard.exe\" %s", szArtPath, (LPCWSTR)strCmdLine);
+  char szAllGuard[_MAX_PATH * 4];
+  sprintf(szAllGuard, "\"%sAllGuard.exe\" %s", szArtPath, (LPCSTR)strCmdLine);
 
   // Create the AllGuard.exe process
-  STARTUPINFO si = {sizeof(si)};
+  STARTUPINFOA si = {sizeof(si)};
   PROCESS_INFORMATION pi;
-  if (!::CreateProcess(NULL, szAllGuard, NULL, NULL, false, 0, NULL, szModulePath, &si, &pi))
+  if (!::CreateProcessA(NULL, szAllGuard, NULL, NULL, false, 0, NULL, szModulePath, &si, &pi))
     return true; // If it can't be created, just keep running
 
   // Indicate false to exit this instance of the process
@@ -288,13 +288,13 @@ void ReadAuthPipe(ZString &cdKey, int &processID)
 	sprintf(memoryLocation, "%ld", &buffer);
 	nDataLength = strlen(memoryLocation) + 1;
 
-	debugf(L"sending memory location: %s\r\n", memoryLocation);
+	debugf("sending memory location: %s\r\n", memoryLocation);
 
 	hWrite = CreateFile(_T("\\\\.\\pipe\\allegqueue"), 
 		FILE_GENERIC_WRITE, 0, NULL, CREATE_NEW, 0, NULL);
 
 	if(WriteFile(hWrite, memoryLocation, nDataLength, &nWritten, NULL) == false || nDataLength != nWritten)
-		debugf(L"Couldn't write memory address to named pipe for key relay.\r\n");
+		debugf("Couldn't write memory address to named pipe for key relay.\r\n");
 
 	CloseHandle(hWrite);
 
@@ -302,10 +302,10 @@ void ReadAuthPipe(ZString &cdKey, int &processID)
 		Sleep(100);
 
 	if(strlen(buffer) == 0)
-		debugf(L"Remote process didn't deliver key to memory location within 10 seconds.\r\n"); 
+		debugf("Remote process didn't deliver key to memory location within 10 seconds.\r\n"); 
 	
-	debugf(L"received key length: %ld\r\n", strlen(buffer));
-	debugf(L"received PID: %s\r\n", buffer + strlen(buffer) + 1);
+	debugf("received key length: %ld\r\n", strlen(buffer));
+	debugf("received PID: %s\r\n", buffer + strlen(buffer) + 1);
 
 	cdKey = ZString(buffer);
 	processID = atoi(buffer + strlen(buffer) + 1);
@@ -335,16 +335,16 @@ public:
           // For Download -AND- for Reloader.exe -AND- Loading FileList which happens 
           // when client logs onto lobby
           //
-			wchar_t    path[MAX_PATH + 16];
-          ::GetModuleFileName(NULL, path, MAX_PATH);
-		  wchar_t*   p = wcsrchr(path, '\\');
+          char    path[MAX_PATH + 16];
+          ::GetModuleFileNameA(NULL, path, MAX_PATH);
+          char*   p = strrchr(path, '\\');
           if (!p)
               p = path;
           else
               p++;
 
           *p = 0; // erase filename
-          ::SetCurrentDirectory(path);
+          ::SetCurrentDirectoryA(path);
 
           HKEY hKey;
           DWORD dwType;
@@ -355,22 +355,22 @@ public:
           if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_ALL_ACCESS, &hKey))
           {
               // Get MoveInProgress from registry
-              if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"MoveInProgress", NULL, &dwType, (unsigned char*)&szValue, &cbValue) &&
+              if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "MoveInProgress", NULL, &dwType, (unsigned char*)&szValue, &cbValue) &&
                   *((DWORD*)szValue) == 1)
               {
-                  if (::MessageBox(NULL, L"The AutoUpdate process failed to finish.  Try again to finish?  (YES is recommended)", L"Error", MB_ICONERROR | MB_YESNO) == IDYES)
+                  if (::MessageBoxA(NULL, "The AutoUpdate process failed to finish.  Try again to finish?  (YES is recommended)", "Error", MB_ICONERROR | MB_YESNO) == IDYES)
                   {
                       if (!LaunchReloaderAndExit(false))
                       {
-                          ::MessageBox(NULL, L"Couldn't launch Reloader.exe", L"Fatal Error", MB_ICONERROR);
+                          ::MessageBoxA(NULL, "Couldn't launch Reloader.exe", "Fatal Error", MB_ICONERROR);
                           ::ExitProcess(0);
                           return S_FALSE;
                       }
                   }
                   else
                   {
-					  ::RegDeleteValue(hKey,L"MoveInProgress");
-					  ::DeleteFile(L"FileList.txt");
+					  ::RegDeleteValueA(hKey,"MoveInProgress");
+					  ::DeleteFileA("FileList.txt");
                       ::ExitProcess(0);
                       return S_FALSE;
                   }
@@ -392,10 +392,10 @@ public:
 
         if (!CheckFreeMemory())
         {
-            if (MessageBox(NULL, 
-                L"You are low on free memory and/or hard drive space.  "
-                L"You may experience problems running Allegiance.  Run anyway?", 
-                L"Allegiance",
+            if (MessageBoxA(NULL, 
+                "You are low on free memory and/or hard drive space.  "
+                "You may experience problems running Allegiance.  Run anyway?", 
+                "Allegiance",
                 MB_ICONERROR | MB_YESNO
                 ) != IDYES)
             {
@@ -410,10 +410,10 @@ public:
 
         if (!CheckDSoundVersion())
         {
-            MessageBox(NULL, 
-                L"Allegiance requires DirectX 7 or higher, which was not detected.  "
-                    L"Please re-run setup and choose to install DirectX 7.", 
-                L"Allegiance",
+            MessageBoxA(NULL, 
+                "Allegiance requires DirectX 7 or higher, which was not detected.  "
+                    "Please re-run setup and choose to install DirectX 7.", 
+                "Allegiance",
                 MB_ICONERROR | MB_OK
                 );
 
@@ -442,7 +442,7 @@ public:
 
         HKEY hKey;
         DWORD dwType;
-		wchar_t  szValue[MAX_PATH];
+        char  szValue[MAX_PATH];
         DWORD dwValue;
         DWORD cbValue = MAX_PATH;
 
@@ -450,34 +450,34 @@ public:
         if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
         {
             // Get the art path from the registry
-            if (ERROR_SUCCESS != ::RegQueryValueEx(hKey, L"ArtPath", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
+            if (ERROR_SUCCESS != ::RegQueryValueExA(hKey, "ArtPath", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
             {
                 // Set ArtPath to be relative to the application path
-                GetModuleFileName(NULL, szValue, MAX_PATH);
-				wchar_t*   p = wcsrchr(szValue, '\\');
+                GetModuleFileNameA(NULL, szValue, MAX_PATH);
+                char*   p = strrchr(szValue, '\\');
                 if (!p)
                     p = szValue;
                 else
                     p++;
 
-                Strcpy(p, L"artwork");
+                strcpy(p, "artwork");
 
                 //Create a subdirectory for the artwork (nothing will happen if it already there)
-                CreateDirectory(szValue, NULL);
+                CreateDirectoryA(szValue, NULL);
             }
             pathStr = szValue;
  
             cbValue = MAX_PATH; // reset this
 
             // Start the frame rate data log, if necessary
-            if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"LogFrameData", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
+            if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "LogFrameData", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
             {
                 cbValue = MAX_PATH;
                 if (dwValue==1)
                 {
-                    if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, L"LogFrameDataPath", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
+                    if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "LogFrameDataPath", NULL, &dwType, (unsigned char*)&szValue, &cbValue))
                     {
-                        if (wcslen(szValue)>0)
+                        if (strlen(szValue)>0)
                         {
                             ZString strFile = szValue;
                             g_pzfFrameDump = new ZWriteFile(strFile);
@@ -511,10 +511,10 @@ public:
                             else
                             {
                               // pop up error message box
-                              MessageBox(NULL, L"Framerate log file location is invalid.\n"
-                                               L"Use CliConfig to set the framerate log file location to "
-                                               L"a valid location.",
-                                               L"Framerate Logging Error", MB_ICONEXCLAMATION | MB_OK);
+                              MessageBoxA(NULL, "Framerate log file location is invalid.\n"
+                                               "Use CliConfig to set the framerate log file location to "
+                                               "a valid location.",
+                                               "Framerate Logging Error", MB_ICONEXCLAMATION | MB_OK);
                             }
                         }
                     }
@@ -529,25 +529,21 @@ public:
             //         like for convex hull and sounds
             // pathStr = PathString::GetCurrentDirectory() + "artwork";
 
-
-			//imago 10/14 namespace conflict so its // pathStr = PathString::ZGetCurrentDirectory() + "artwork";
-			 //pathStr = PathString::ZGetCurrentDirectory() + "artwork";
-
-            wchar_t    logFileName[MAX_PATH + 16];
-            GetModuleFileName(NULL, logFileName, MAX_PATH);
-			wchar_t*   p = wcschr(logFileName, '\\');
+            char    logFileName[MAX_PATH + 16];
+            GetModuleFileNameA(NULL, logFileName, MAX_PATH);
+            char*   p = strrchr(logFileName, '\\');
             if (!p)
                 p = logFileName;
             else
                 p++;
-            Strcpy(p, L"artwork");
+            strcpy(p, "artwork");
             pathStr = logFileName;
         }
 		
 		//Imago 8/16/09
 		ZVersionInfo vi;
-		debugf(L"Running %s %s\nArtpath: %s\nCommand line: %s\n", (PCC) vi.GetInternalName(), 
-			(PCC) vi.GetStringValue(L"FileVersion"),(PCC) pathStr, (PCC) strCommandLine);
+		debugf("Running %s %s\nArtpath: %s\nCommand line: %s\n", (PCC) vi.GetInternalName(), 
+			(PCC) vi.GetStringValue("FileVersion"),(PCC) pathStr, (PCC) strCommandLine);
 
 // BUILD_DX9
 		// Now set later for D3D build, as modeller isn't valid yet.
@@ -715,7 +711,7 @@ public:
         //
         if (bSingleInstance)
         {
-            HWND hOldInstance = FindWindow(TrekWindow::GetTopLevelWindowClassname(), 
+            HWND hOldInstance = FindWindowA(TrekWindow::GetTopLevelWindowClassname(), 
                 TrekWindow::GetWindowTitle());
 
             // if we found another copy of the app

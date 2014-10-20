@@ -105,29 +105,29 @@ HRESULT CPigEngine::Construct()
   RETURN_FAILED(spPrivate->Initialize(bstrEventSource, bstrRegKey));
 
   // Load the MissionServer registry value
-  LoadRegString(key, TEXT("MissionServer"), m_bstrMissionServer);
+  LoadRegString(key, "MissionServer", m_bstrMissionServer);
 
   // Load the AccountServer registry value
-  LoadRegString(key, TEXT("AccountServer"), m_bstrAccountServer);
+  LoadRegString(key, "AccountServer", m_bstrAccountServer);
 
   // Load the ZoneAuthServer registry value
-  LoadRegString(key, TEXT("ZoneAuthServer"), m_bstrZoneAuthServer);
+  LoadRegString(key, "ZoneAuthServer", m_bstrZoneAuthServer);
 
   // Load the ZoneAuthTimeout registry value
   DWORD dwZoneAuthTimeout;
-  if (ERROR_SUCCESS == key.QueryValue(dwZoneAuthTimeout, TEXT("ZoneAuthTimeout")))
+  if (ERROR_SUCCESS == key.QueryValue(dwZoneAuthTimeout, L"ZoneAuthTimeout"))
     m_nZoneAuthTimeout = static_cast<long>(dwZoneAuthTimeout);
 
   // Load the LobbyMode registry value
   DWORD dwLobbyMode;
-  if (ERROR_SUCCESS == key.QueryValue(dwLobbyMode, TEXT("LobbyMode")))
+  if (ERROR_SUCCESS == key.QueryValue(dwLobbyMode, L"LobbyMode"))
     m_eLobbyMode =
       (PigLobbyMode_Club <= dwLobbyMode && dwLobbyMode <= PigLobbyMode_Free) ?
         static_cast<PigLobbyMode>(dwLobbyMode) : PigLobbyMode_Club;
 
   // Attempt to read the ScriptDir value from the registry
   ZString strScriptDir;
-  LoadRegString(key, TEXT("ScriptDir"), strScriptDir);
+  LoadRegString(key, "ScriptDir", strScriptDir);
 
   // Create a directory name from the root directory, by default
   if (strScriptDir.IsEmpty())
@@ -255,9 +255,9 @@ void CPigEngine::ScriptDirMonitor(HANDLE hevtExit)
       {
         #ifdef _DEBUG
           DWORD dwLastError = ::GetLastError();
-          debugf(L"\nCPigEngine::ScriptDirMonitor(): "
-            L"FindNextChangeNotification Failed : "
-            L"GetLastError() = 0x%08X, m_hDirChange = 0x%08X\n",
+          debugf("\nCPigEngine::ScriptDirMonitor(): "
+            "FindNextChangeNotification Failed : "
+            "GetLastError() = 0x%08X, m_hDirChange = 0x%08X\n",
             dwLastError, m_hDirChange);
         #endif // _DEBUG
         Sleep(1000);
@@ -316,18 +316,27 @@ HRESULT CPigEngine::EnsureScriptsAreLoaded()
   long lr = key.QueryValue(szArtPath, TEXT("ArtPath"), &cch);
   if (ERROR_SUCCESS != lr)
     return HRESULT_FROM_WIN32(lr);
-  UTL::SetArtPath(szArtPath);
 
-  LPWSTR pszScriptDir = OLE2W(m_bstrScriptDir);
+  //imago 10/14
+  size_t i;
+  char *pMBBuffer = (char *)malloc(_MAX_PATH);
+  wcstombs_s(&i, pMBBuffer, (size_t)_MAX_PATH, szArtPath, (size_t)_MAX_PATH);
+  UTL::SetArtPath(pMBBuffer);
+  if (pMBBuffer)
+  	  free(pMBBuffer);
+ 
+  // Convert the directory name to ANSI
+  USES_CONVERSION;
+  LPSTR pszScriptDir = OLE2A(m_bstrScriptDir);
 
   // Remove the whack at the end of the string
-  cch = wcslen(pszScriptDir);
+  cch = strlen(pszScriptDir);
   assert('\\' == pszScriptDir[cch - 1]);
   pszScriptDir[cch - 1] = '\0';
 
   // Ensure that the directory exists
-  WIN32_FIND_DATA ffd;
-  TCFileFindHandle hff = FindFirstFile(pszScriptDir, &ffd);
+  WIN32_FIND_DATAA ffd;
+  TCFileFindHandle hff = FindFirstFileA(pszScriptDir, &ffd);
   if(hff.IsNull() || INVALID_HANDLE_VALUE == hff)
     return HRESULT_FROM_WIN32(GetLastError());
 
@@ -366,7 +375,8 @@ void CPigEngine::ProcessScriptDirChanges()
 
   // Loop thru the "*.pig" files in the script directory
   WIN32_FIND_DATA ffd;
-  LPWSTR pszScriptDirPatt = OLE2W(m_bstrScriptDir + "*.pig");
+  USES_CONVERSION;
+  LPTSTR pszScriptDirPatt = OLE2T(m_bstrScriptDir + "*.pig");
   TCFileFindHandle hff = FindFirstFile(pszScriptDirPatt, &ffd);
   bool bContinue = !hff.IsNull() && INVALID_HANDLE_VALUE != hff;
   while (bContinue)
@@ -415,7 +425,7 @@ void CPigEngine::ProcessScriptDirChanges()
     for (XBehaviorMapIt itCmd = mapCommands.begin(); itCmd != mapCommands.end(); ++itCmd)
     {
       mapGoodBadUgly.insert(*itCmd);
-      debugf(L"inv command: %s\n", itCmd->first.c_str());
+      debugf("inv command: %s\n", itCmd->first.c_str());
     }
   }
 
@@ -732,6 +742,7 @@ HRESULT CPigEngine::put_ArtPath(BSTR bstrArtPath)
   RETURN_FAILED(_Module.OpenAppIDRegKey(key));
 
   // Save the specified value
+  USES_CONVERSION;
   _bstr_t bstrValue(bstrArtPath);
   long lr = key.SetValue(OLE2CT(bstrValue), TEXT("ArtPath"));
   if (ERROR_SUCCESS != lr)
@@ -739,7 +750,7 @@ HRESULT CPigEngine::put_ArtPath(BSTR bstrArtPath)
 
   // Set the art path in the Allegiance stuff
   //USES_CONVERSION;
-  UTL::SetArtPath(OLE2CW(bstrValue));
+  UTL::SetArtPath(OLE2CA(bstrValue));
 
   // Indicate success
   return S_OK;

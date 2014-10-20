@@ -48,22 +48,22 @@
         time(&longTime);
         tm*             t = localtime(&longTime);
 
-        wchar_t    logFileName[MAX_PATH + 16];
-        GetModuleFileName(NULL, logFileName, MAX_PATH);
-		wchar_t*   p = wcsrchr(logFileName, '\\');
+        char    logFileName[MAX_PATH + 16];
+        GetModuleFileNameA(NULL, logFileName, MAX_PATH);
+        char*   p = strrchr(logFileName, '\\');
         if (!p)
 			p = logFileName;
         else
 			p++;
 
-		wchar_t* months[] = { L"jan", L"feb", L"mar", L"apr",
-			L"may", L"jun", L"jul", L"aug",
-			L"sep", L"oct", L"nov", L"dec" };
-        Strcpy(p, months[t->tm_mon]);
-        swprintf(p + 3, L"%02d%02d%02d%02d.txt",
+        const char* months[] = {"jan", "feb", "mar", "apr",
+                                "may", "jun", "jul", "aug",
+                                "sep", "oct", "nov", "dec"};
+        strcpy(p, months[t->tm_mon]);
+        sprintf(p + 3, "%02d%02d%02d%02d.txt",
                 t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
 
-        m_hFile = CreateFile(logFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED | FILE_FLAG_OVERLAPPED, NULL);
+        m_hFile = CreateFileA(logFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED | FILE_FLAG_OVERLAPPED, NULL);
         assert (m_hFile);
 
         m_overlapped.Offset = 0;
@@ -82,8 +82,8 @@
         }
     }
 
-	virtual void DebugOutput(const wchar_t *psz);
-	virtual bool OnAssert(const wchar_t* psz, const wchar_t* pszFile, int line, const wchar_t* pszModule);
+    virtual void DebugOutput(const char *psz);
+    virtual bool OnAssert(const char* psz, const char* pszFile, int line, const char* pszModule);
     virtual void OnAssertBreak();
 
     void SetDebug(DWORD dw)
@@ -92,8 +92,8 @@
         OpenLogFile();
       else if ((m_dwDebug & FED_DEBUG_FILE) && !(dw & FED_DEBUG_FILE))
         CloseLogFile();
-	  wchar_t buff[640];
-      wsprintf(buff, L"Debug level set from %u to %u.\n", m_dwDebug, dw);
+      char buff[640];
+      sprintf(buff, "Debug level set from %u to %u.\n", m_dwDebug, dw);
       m_dwDebug = dw;
       DebugOutput(buff);
     }
@@ -105,7 +105,7 @@
       
 
   private:
-	  void AsyncFileOut(const wchar_t *psz);
+    void AsyncFileOut(const char *psz);
     
       HANDLE        m_hFile;
       OVERLAPPED    m_overlapped;

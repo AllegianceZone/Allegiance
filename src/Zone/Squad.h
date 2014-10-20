@@ -28,21 +28,21 @@ public:
       return rank >= RANK_COTTON && rank < RANK_MAX;
   }
 
-  static const wchar_t * Rank2String(Rank rank)
+  static const char * Rank2String (Rank rank)
   {
-	  static wchar_t * s_szRank[] = {
-      L"Cotton",
-      L"Copper",
-      L"Bronze",
-      L"Silver",
-      L"Gold",
-      L"Platinum",
-      L"Double Platinum",
-      L"Diamond",
-      L"Double Diamond",
-      L"Triple Diamond",
-      L"Max",
-      L"Unknown"
+    static char * s_szRank[] = {
+      "Cotton",
+      "Copper",
+      "Bronze",
+      "Silver",
+      "Gold",
+      "Platinum",
+      "Double Platinum",
+      "Diamond",
+      "Double Diamond",
+      "Triple Diamond",
+      "Max",
+      "Unknown"
     };
     return s_szRank[rank];
   }

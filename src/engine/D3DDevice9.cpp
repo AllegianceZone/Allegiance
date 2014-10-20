@@ -42,7 +42,7 @@ void CD3DDevice9::Initialise( CLogFile * pLogFile )
 		m_sD3DDev9.bInitialised = true;
 	}
 
-	pLogFile->OutputString( L"CD3DDevice9 initialised.\n" );
+	pLogFile->OutputString( "CD3DDevice9 initialised.\n" );
 }
 
 
@@ -112,33 +112,33 @@ HRESULT CD3DDevice9::CreateD3D9( CLogFile * pLogFile )
 {
 	// Create the D3D9 interface.
 	m_sD3DDev9.pD3D9 = Direct3DCreate9( D3D_SDK_VERSION ); //Fix memory leak -Imago 8/2/09
-	HMODULE hRast = LoadLibrary(L"rgb9rast.dll");
+	HMODULE hRast = LoadLibraryA("rgb9rast.dll");
 	if (hRast == 0) {
-		hRast = LoadLibrary(L"rgb9rast_1.dll");
+		hRast = LoadLibraryA("rgb9rast_1.dll");
 		if (hRast == 0) {
-			hRast = LoadLibrary(L"rgb9rast_2.dll");
+			hRast = LoadLibraryA("rgb9rast_2.dll");
 		}
 	}
 	if(hRast != 0) {
 			FARPROC D3D9GetSWInfo = GetProcAddress( hRast, "D3D9GetSWInfo");
 			HRESULT hr = m_sD3DDev9.pD3D9->RegisterSoftwareDevice(D3D9GetSWInfo);
 			if (hr == D3D_OK) {
-				pLogFile->OutputString( L"DX registered the SW Rasterizer.\n" );
+				pLogFile->OutputString( "DX registered the SW Rasterizer.\n" );
 			} else {
-				pLogFile->OutputString( L"DX did not register the SW Rasterizer!\n" );
+				pLogFile->OutputString( "DX did not register the SW Rasterizer!\n" );
 			}
 	} else {
-		pLogFile->OutputString( L"SW Rasterizer failed to load.\n" );
+		pLogFile->OutputString( "SW Rasterizer failed to load.\n" );
 	}
 	
 	_ASSERT( m_sD3DDev9.pD3D9 != NULL );
 	if( m_sD3DDev9.pD3D9 == NULL )
 	{
-		pLogFile->OutputString( L"Direct3DCreate9 failed.\n" );
+		pLogFile->OutputString( "Direct3DCreate9 failed.\n" );
 		return E_FAIL;
 	}
 
-	pLogFile->OutputString( L"Direct3DCreate9 succeeded.\n" );
+	pLogFile->OutputString( "Direct3DCreate9 succeeded.\n" );
 	return D3D_OK;
 }
 
@@ -213,7 +213,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 	if (strstr(Identifier.Description,"PerfHUD") != 0)
 	{
 		DeviceType=D3DDEVTYPE_REF;
-		pLogFile->OutputString(L"PerfHUD detected, switching to REF type\n");
+		pLogFile->OutputString("PerfHUD detected, switching to REF type\n");
 	}
 // - end of NVidia PerfHUD specific
 
@@ -254,7 +254,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 	// creation chain.
 	if( hr != D3D_OK )
 	{
-		pLogFile->OutputStringV( L"Pure HWVP device creation failed: 0x%08x.\n", hr );
+		pLogFile->OutputStringV( "Pure HWVP device creation failed: 0x%08x.\n", hr );
 		
 		//if( hr == D3DERR_NOTAVAILABLE )
 		{
@@ -268,7 +268,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 												&m_sD3DDev9.pD3DDevice );
 			if( hr != D3D_OK )
 			{
-				pLogFile->OutputStringV( L"HWVP device creation failed: 0x%08x.\n", hr );
+				pLogFile->OutputStringV( "HWVP device creation failed: 0x%08x.\n", hr );
 				
 				// Still no joy, try a software vp device.
 				//if( hr == D3DERR_NOTAVAILABLE )
@@ -284,11 +284,11 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 					{
 						m_sD3DDev9.bHardwareVP = false;
 						m_sD3DDev9.bPureDevice = false;
-						pLogFile->OutputString( L"SWVP device created.\n" );
+						pLogFile->OutputString( "SWVP device created.\n" );
 					}
 					else
 					{
-						pLogFile->OutputStringV( L"SWVP device creation failed: 0x%08x.\n", hr );
+						pLogFile->OutputStringV( "SWVP device creation failed: 0x%08x.\n", hr );
 						hr = m_sD3DDev9.pD3D9->CreateDevice(	m_sDevSetupParams.iAdapterID,
 														D3DDEVTYPE_SW, //D3DDEVTYPE_HAL, changed for NVidia PerfHUD,
 														hParentWindow,
@@ -299,7 +299,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 						{
 							m_sD3DDev9.bHardwareVP = false;
 							m_sD3DDev9.bPureDevice = false;
-							pLogFile->OutputString( L"D3DDEVTYPE_SW device created.\n" );
+							pLogFile->OutputString( "D3DDEVTYPE_SW device created.\n" );
 						}
 					}
 				}
@@ -308,7 +308,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 			{
 				m_sD3DDev9.bHardwareVP = true;
 				m_sD3DDev9.bPureDevice = false;
-				pLogFile->OutputString( L"HWVP device created.\n" );
+				pLogFile->OutputString( "HWVP device created.\n" );
 			}
 		}
 	}
@@ -317,12 +317,12 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 		if (bForceSWVP) {
 			m_sD3DDev9.bHardwareVP = false;
 			m_sD3DDev9.bPureDevice = false;
-			pLogFile->OutputString( L"Forced SWVP device created.\n" );
+			pLogFile->OutputString( "Forced SWVP device created.\n" );
 		} else {
 			// Valid pure hw device.
 			m_sD3DDev9.bHardwareVP = true;
 			m_sD3DDev9.bPureDevice = true;
-			pLogFile->OutputString( L"Pure HWVP device created.\n" );
+			pLogFile->OutputString( "Pure HWVP device created.\n" );
 		}
 	}
 
@@ -366,7 +366,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 														D3DFMT_A1R5G5B5 );
 	if( hTemp == D3D_OK )
 	{
-		pLogFile->OutputString( L"Device supports A1R5G5B5 format.\n" );
+		pLogFile->OutputString( "Device supports A1R5G5B5 format.\n" );
 		m_sD3DDev9.sFormatFlags.bSupportsA1R5G6B6Format = true;
 	} else {
 		m_sD3DDev9.sFormatFlags.bSupportsA1R5G6B6Format = false;
@@ -376,7 +376,7 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 	if( ( ( m_sD3DDev9.sD3DDevCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP ) != 0 ) &&
 		( m_sDevSetupParams.bAutoGenMipmap == true ) )
 	{
-		pLogFile->OutputString( L"Device can auto generate mipmaps.\n" );
+		pLogFile->OutputString( "Device can auto generate mipmaps.\n" );
 		m_sD3DDev9.sFormatFlags.bCanAutoGenMipMaps = true;
 		m_sDevSetupParams.bAutoGenMipmap = true;
 	} else {
@@ -407,8 +407,8 @@ HRESULT CD3DDevice9::CreateDevice( HWND hParentWindow, CLogFile * pLogFile )
 		sprintf_s( m_sDevSetupParams.szDevType, 64, "SWVP" );
 	}
 
-	swprintf_s( m_sD3DDev9.pszDevSetupString, 256,
-		L"%s [%s, %s]", m_sD3DDev9.d3dAdapterID.Description,
+	sprintf_s( m_sD3DDev9.pszDevSetupString, 256,
+		"%s [%s, %s]", m_sD3DDev9.d3dAdapterID.Description,
 		m_sDevSetupParams.szDevType,
 		m_sDevSetupParams.szAAType );
 #endif // EnablePerformanceCounters
@@ -549,12 +549,12 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 	}
 
 	if (g_outputdebugstring) {
-		wchar_t szBuffer[256];
-		swprintf_s( szBuffer, 256, L"CD3DDevice9: switching to %s, size %d x %d @ %dHz\n", + bWindowed ? L"windowed" : L"fullscreen", 
+		char szBuffer[256];
+		sprintf_s( szBuffer, 256, "CD3DDevice9: switching to %s, size %d x %d @ %dHz\n", + bWindowed ? "windowed" : "fullscreen", 
 				m_sD3DDev9.d3dPresParams.BackBufferWidth, 
 				m_sD3DDev9.d3dPresParams.BackBufferHeight,
 				m_sD3DDev9.d3dPresParams.FullScreen_RefreshRateInHz);
-		OutputDebugString( szBuffer );
+		OutputDebugStringA( szBuffer );
 	}
 
 	if( bResetRequired == true || //mode changes
@@ -644,9 +644,9 @@ HRESULT	CD3DDevice9::ResetDevice(	bool	bWindowed,
 			// Recreate the AA depth stencil buffer, if required.
 			CreateAADepthStencilBuffer( );
 
-			// Update this Imago 7/19/09
-			swprintf_s( m_sD3DDev9.pszDevSetupString, 256,
-				L"%s [%s, %s]", m_sD3DDev9.d3dAdapterID.Description,
+			// UIpdate this Imago 7/19/09
+			sprintf_s( m_sD3DDev9.pszDevSetupString, 256,
+				"%s [%s, %s]", m_sD3DDev9.d3dAdapterID.Description,
 				m_sDevSetupParams.szDevType,
 				m_sDevSetupParams.szAAType );
 		}

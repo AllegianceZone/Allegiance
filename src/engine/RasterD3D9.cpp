@@ -27,7 +27,7 @@ private:
             m_bSurfaceLost = false;
         }
 
-		void D3DError(HRESULT hr, const char* pszCall, const wchar_t* pszFile, int line, const wchar_t* pszModule)
+        void D3DError(HRESULT hr, const char* pszCall, const char* pszFile, int line, const char* pszModule)
         {
             if (m_bSurfaceLost) 
 			{
@@ -46,7 +46,7 @@ private:
             } 
         }
 
-        #define D3DCall(hr) D3DError(hr, #hr, TEXT(__FILE__), __LINE__, TEXT(__MODULE__))
+        #define D3DCall(hr) D3DError(hr, #hr, __FILE__, __LINE__, __MODULE__)
     #else
         void InitializeD3DCall() {}
         void D3DCall(HRESULT hr) {}
@@ -263,7 +263,7 @@ public:
                 break;
 
             default:
-                ZError(L"Invalid ShadeMode");
+                ZError("Invalid ShadeMode");
         }
     }
 
@@ -305,7 +305,7 @@ public:
                 break;
 
             default:
-                ZError(L"Invalid BlendMode");
+                ZError("Invalid BlendMode");
         }
     }
 
@@ -329,7 +329,7 @@ public:
                 break;
 
             default:
-                ZError(L"Invalid WrapMode");
+                ZError("Invalid WrapMode");
         }
     }
 
@@ -353,7 +353,7 @@ public:
                 break;
 
             default:
-                ZError(L"Invalid CullMode");
+                ZError("Invalid CullMode");
         }
     }
 

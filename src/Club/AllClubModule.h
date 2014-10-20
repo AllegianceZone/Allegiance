@@ -7,7 +7,7 @@
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0400
 #endif
-#define _ATL_FREE_THREADED
+#define _ATL_APARTMENT_THREADED
 
 #include <atlbase.h>
 
@@ -19,37 +19,37 @@
 class CServiceModule : public CComModule, public IClubSite
 {
 public:
-	HRESULT RegisterServer(BOOL bRegTypeLib, BOOL bService, wchar_t * szAccount, wchar_t * szPassword);
+    HRESULT RegisterServer(BOOL bRegTypeLib, BOOL bService, char * szAccount, char * szPassword);
     HRESULT UnregisterServer();
     void Init(_ATL_OBJMAP_ENTRY* p, HINSTANCE h, UINT nServiceNameID, UINT nServiceDescID, const GUID * plibid = NULL);
     void Start();
-    void ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
+    void ServiceMain(DWORD dwArgc, LPSTR* lpszArgv);
     void ExeMain();
     void Handler(DWORD dwOpcode);
     void Run();
-	const wchar_t * GetModulePath();
+    const char * GetModulePath();
     BOOL IsInstalled();
-	BOOL InstallService(wchar_t * szAccount, wchar_t * szPassword);
+    BOOL InstallService(char * szAccount, char * szPassword);
     BOOL Install();
     BOOL Uninstall();
     LONG Unlock();
     void SetServiceStatus(DWORD dwState);
     void SetupAsLocalServer();
-	bool ReadFromRegistry(HKEY & hk, bool bIsString, const wchar_t * szItem, void * pValue, DWORD dwDefault);
+    bool ReadFromRegistry(HKEY & hk, bool bIsString, const char * szItem, void * pValue, DWORD dwDefault);
 
 // IAllClubSite
-    virtual int LogEvent(WORD wType, LPCTSTR pFormat, ...);
+    virtual int LogEvent(WORD wType, LPCSTR pFormat, ...);
 
 
 //Implementation
 private:
-    static void WINAPI _ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
+    static void WINAPI _ServiceMain(DWORD dwArgc, LPSTR* lpszArgv);
     static void WINAPI _Handler(DWORD dwOpcode);
 
 // data members
 public:
-    TCHAR m_szServiceName[256];
-    TCHAR m_szServiceDesc[256];
+    CHAR m_szServiceName[256];
+    CHAR m_szServiceDesc[256];
     SERVICE_STATUS_HANDLE m_hServiceStatus;
     SERVICE_STATUS m_status;
     DWORD dwThreadID;

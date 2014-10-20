@@ -8,7 +8,7 @@
 
 void TextTokenImpl::SetError(const ZString& strError)
 {
-    ZError(L"Parsing error - " + strError);
+    ZError("Parsing error - " + strError);
     m_strError = strError;
 }
 
@@ -46,26 +46,26 @@ const int TextTokenImplString = 1;
 const int TextTokenImplNumber = 2;
 const int TextTokenImplSymbol = 3;
 
-inline bool isDigit(wchar_t ch)
+inline bool isDigit(char ch)
 {
     return (ch >= '0' && ch <= '9');
 }
 
-inline bool isAlpha(wchar_t ch) {
+inline bool isAlpha(char ch) {
     return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
 }
 
-inline bool isNumber(wchar_t ch)
+inline bool isNumber(char ch)
 {
     return isDigit(ch) || ch == '-' || ch == '.';
 }
 
-inline bool isSymbol(const wchar_t* pcc)
+inline bool isSymbol(const char* pcc)
 {
     return isAlpha(pcc[0]) || pcc[0] == '_' || pcc[0] == '\'';
 }
 
-inline bool IsWhite(const wchar_t* pcc)
+inline bool IsWhite(const char* pcc)
 {
     return
         (
@@ -84,7 +84,7 @@ inline bool IsWhite(const wchar_t* pcc)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-int ReadHexNumber(const wchar_t*& pcc, int max)
+int ReadHexNumber(const char*& pcc, int max)
 {
     int number = 0;
 
@@ -111,7 +111,7 @@ int ReadHexNumber(const wchar_t*& pcc, int max)
 
 //////////////////////////////////////////////////////////////////////////////
 
-int TranslateCharacter(const wchar_t*& pcc)
+int TranslateCharacter(const char*& pcc)
 {
     if (pcc[0] == '\\') {
         pcc += 2;
@@ -226,7 +226,7 @@ bool TextTokenImpl::ReadNumber(bool bExponent)
     }
 }
 
-bool TextTokenImpl::ReadString(wchar_t chEnd)
+bool TextTokenImpl::ReadString(char chEnd)
 {
     m_string.SetEmpty();
 
@@ -240,8 +240,8 @@ bool TextTokenImpl::ReadString(wchar_t chEnd)
     // Read 256 characters at a time
     //
 
-	wchar_t  buf[256];
-	wchar_t* pccDest = buf;
+    char  buf[256];
+    char* pccDest = buf;
 
     while (m_pcc < m_pccEnd) {
         //
@@ -279,7 +279,7 @@ bool TextTokenImpl::ReadString(wchar_t chEnd)
     return false;
 }
 
-bool TextTokenImpl::IsSymbolChar(wchar_t ch)
+bool TextTokenImpl::IsSymbolChar(char ch)
 {
     return
            isAlpha(ch)
@@ -289,8 +289,8 @@ bool TextTokenImpl::IsSymbolChar(wchar_t ch)
 
 bool TextTokenImpl::ReadSymbol()
 {
-	wchar_t buf[1000];
-	wchar_t* pccDest = buf;
+    char buf[1000];
+    char* pccDest = buf;
 
     if (m_pcc[0] == '\'') {
         *pccDest = m_pcc[0];

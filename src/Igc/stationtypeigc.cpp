@@ -49,7 +49,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
 
         {
             //Get the stations launch slots
-			static wchar_t    bfrLaunch[] = L"launchX";
+            static char    bfrLaunch[] = "launchX";
 
             while (true)
             {
@@ -69,7 +69,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
         {
             //debugf("Station %s/%s\n", GetName(), m_data.modelName);
             //Refigure the stations launch slots
-			static wchar_t    bfrLand[] = L"capgarageXA";
+            static char    bfrLand[] = "capgarageXA";
 
             while (true)
             {
@@ -106,7 +106,7 @@ HRESULT         CstationTypeIGC::Initialize(ImissionIGC* pMission,
         {
             //debugf("Station %s/%s\n", GetName(), m_data.modelName);
             //Refigure the stations launch slots
-			static wchar_t    bfrLand[] = L"garageXA";
+            static char    bfrLand[] = "garageXA";
 
             while (true)
             {

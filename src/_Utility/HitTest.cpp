@@ -588,16 +588,16 @@ class   BoundingHull : public HitTest
             return &m_ellipseEquation;
         }
 
-		const Vector   GetFrameOffset(const wchar_t*  pszFrameName) const
+        const Vector   GetFrameOffset(const char*  pszFrameName) const
         {
             return m_pMultiHull->GetFrameOffset(pszFrameName) * m_scale;
         }
 
-		const Vector&  GetFrameForward(const wchar_t* pszFrameName) const
+        const Vector&  GetFrameForward(const char* pszFrameName) const
         {
             return m_pMultiHull->GetFrameOffset(pszFrameName);
         }
-		const FrameDataUTL* GetFrame(const wchar_t* pszFrameName) const
+        const FrameDataUTL* GetFrame(const char* pszFrameName) const
         {
             return m_pMultiHull->GetFrame(pszFrameName);
         }
@@ -622,7 +622,7 @@ class   CachedMultiHull
             delete m_pMultiHull;
         }
 
-		wchar_t        m_name[c_cbName];
+        char        m_name[c_cbName];
         MultiHull*  m_pMultiHull;
 
     friend bool operator!=(const CachedMultiHull& r1, const CachedMultiHull& r2)
@@ -636,7 +636,7 @@ typedef Slink_utl<CachedMultiHull> CachedLink;
 
 CachedList  cachedMultiHulls;
 
-MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
+MultiHullBase*  HitTest::Load(const char*    pszFileName)
 {
     if ((!pszFileName) || (pszFileName[0] == '\0'))
         return NULL;
@@ -652,7 +652,7 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
              pcl = pcl->next())
         {
             const CachedMultiHull& cmh = pcl->data();
-            if (_wcsicmp(pszFileName, cmh.m_name) == 0)
+            if (_stricmp(pszFileName, cmh.m_name) == 0)
             {
                 pMultiHull = cmh.m_pMultiHull;
                 bFound = true;
@@ -666,30 +666,30 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
         assert (pMultiHull == NULL);
 
         //First time we've seen this file ... read it in.
-		wchar_t    artwork[MAX_PATH];
+        char    artwork[MAX_PATH];
 
-        HRESULT hr = UTL::getFile(pszFileName, L".cvh", artwork,
+        HRESULT hr = UTL::getFile(pszFileName, ".cvh", artwork,
                                   true, true);
 
         if (hr == S_OK)    //Don't bother to try and read a file that doesn't contain a valid convex hull
         {
-            FILE*   fileIn = _wfopen(artwork, L"r");
+            FILE*   fileIn = fopen(artwork, "r");
 
             if (fileIn)
             {
                 const int   c_maxLine = 512;
-				wchar_t        line[c_maxLine];
+                char        line[c_maxLine];
 
                 float   radius;
                 Vector  ee;         //ellipse equation
                 float   erm;
-                if (fgetws(line, c_maxLine, fileIn) &&
-                    (swscanf(line, L"%f %f %f %f %f",
+                if (fgets(line, c_maxLine, fileIn) &&
+                    (sscanf(line, "%f %f %f %f %f",
                             &radius, &ee.x, &ee.y, &ee.z, &erm) == 5))
                 {
                     int nHulls;
-                    if (fgetws(line, c_maxLine, fileIn) &&
-                        (swscanf(line, L"%d",
+                    if (fgets(line, c_maxLine, fileIn) &&
+                        (sscanf(line, "%d",
                                 &nHulls) == 1))
                     {
                         assert (nHulls > 0);
@@ -703,8 +703,8 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
                             int     nVertices;
                             int     nAdjacencies;
                             Vector  center;
-                            if (fgetws(line, c_maxLine, fileIn) &&
-                                (swscanf(line, L"%d %d %f %f %f",
+                            if (fgets(line, c_maxLine, fileIn) &&
+                                (sscanf(line, "%d %d %f %f %f",
                                         &nVertices, &nAdjacencies,
                                         &(center.x), &(center.y), &(center.z)) == 5))
                             {
@@ -727,8 +727,8 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
                                 {
                                     Vector  xyz;
                                     int     n;
-                                    if (fgetws(line, c_maxLine, fileIn) &&
-                                        (swscanf(line, L"%f %f %f %d", &xyz.x, &xyz.y, &xyz.z, &n) == 4))
+                                    if (fgets(line, c_maxLine, fileIn) &&
+                                        (sscanf(line, "%f %f %f %d", &xyz.x, &xyz.y, &xyz.z, &n) == 4))
                                     {
                                         assert (n > 0);
 
@@ -744,7 +744,7 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
                                         do
                                         {
                                             int id;
-                                            if (fwscanf(fileIn, L"%d ", &id) == 1)
+                                            if (fscanf(fileIn, "%d ", &id) == 1)
                                             {
                                                 nAdjacencies--;
                                                 assert (nAdjacencies >= 0);
@@ -771,24 +771,24 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
                     }
                 }
 
-                while (fgetws(line, c_maxLine, fileIn))
+                while (fgets(line, c_maxLine, fileIn))
                 {
                     FrameLink*  pfl = new FrameLink;
                     FrameDataUTL*  pfd = &(pfl->data());
 
-                    assert (wcslen(line) > 0);
-					assert(wcslen(line) < c_cbFrameName);
-					line[wcslen(line) - 1] = '\0';      //Trim off the \n
-                    Strcpy(pfd->szName, line);
+                    assert (strlen(line) > 0);
+                    assert (strlen(line) < c_cbFrameName);
+                    line[strlen(line) - 1] = '\0';      //Trim off the \n
+                    strcpy(pfd->szName, line);
 
-                    ZVerify(fgetws(line, c_maxLine, fileIn));
-                    swscanf(line, L"%f %f %f",
+                    ZVerify(fgets(line, c_maxLine, fileIn));
+                    sscanf(line, "%f %f %f",
                             &(pfd->position.x),
                             &(pfd->position.y),
                             &(pfd->position.z));
 
-                    ZVerify(fgetws(line, c_maxLine, fileIn));
-                    swscanf(line, L"%f %f %f",
+                    ZVerify(fgets(line, c_maxLine, fileIn));
+                    sscanf(line, "%f %f %f",
                             &(pfd->forward.x),
                             &(pfd->forward.y),
                             &(pfd->forward.z));
@@ -812,8 +812,8 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
         {
             CachedLink*         pcl = new CachedLink;
             CachedMultiHull&    cmh = pcl->data();
-            assert (wcslen(pszFileName) < c_cbName);
-            Strcpy(cmh.m_name, pszFileName);
+            assert (strlen(pszFileName) < c_cbName);
+            strcpy(cmh.m_name, pszFileName);
             cmh.m_pMultiHull = pMultiHull;
 
             //Put it at the front of the list (since we might read another one in real soon).
@@ -824,7 +824,7 @@ MultiHullBase*  HitTest::Load(const wchar_t*    pszFileName)
     return pMultiHull;
 }
 
-HitTest*    HitTest::Create(const wchar_t*   pszFileName,
+HitTest*    HitTest::Create(const char*   pszFileName,
                             IObject*      data,
                             bool          staticF,
                             HitTestShape  htsDefault)
