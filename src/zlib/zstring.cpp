@@ -18,8 +18,8 @@ ZString::ZStringData::ZStringData(WPCC pcc)
 {
 	m_length = pcc ? wcslen(pcc) : 0;
 	size_t i;
-	char *pMBBuffer = (char *)malloc(m_length);
-	wcstombs_s(&i, pMBBuffer, (size_t)m_length, pcc, (size_t)m_length);
+	char *pMBBuffer = (char *)malloc(m_length + 1);
+	wcstombs_s(&i, pMBBuffer, (size_t)m_length + 1, pcc, (size_t)m_length + 1);
 	m_pch = new char[m_length + 1]; //Fix memory leak -Imago 8/2/09
 	m_pcc = m_pch;
 	memcpy(m_pch, pMBBuffer ? pMBBuffer : "", m_length + 1);
