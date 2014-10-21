@@ -956,13 +956,13 @@ void TCComModule<T>::OutputText(LPCTSTR pszText)
 
   // Write the text to StdOut, expanding LF's into CRLF's
   HANDLE hStdOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
-  DWORD cbWritten = sizeof(TCHAR);
+  DWORD cbWritten = sizeof(char);
   for (LPCTSTR psz = pszText, pszPrev = NULL; ZT != *psz; pszPrev = psz++)
   {
     if (LF == *psz && (!pszPrev || CR != *pszPrev))
-      ::WriteFile(hStdOut, &CR, sizeof(TCHAR), &cbWritten, NULL);
-    ::WriteFile(hStdOut, psz, sizeof(TCHAR), &cbWritten, NULL);
-    if (sizeof(TCHAR) != cbWritten)
+      ::WriteFile(hStdOut, &CR, sizeof(char), &cbWritten, NULL);
+    ::WriteFile(hStdOut, psz, sizeof(char), &cbWritten, NULL);
+    if (sizeof(char) != cbWritten)
     {
       // Get the module name
       TCHAR szModule[_MAX_PATH], szFname[_MAX_FNAME], szExt[_MAX_EXT];

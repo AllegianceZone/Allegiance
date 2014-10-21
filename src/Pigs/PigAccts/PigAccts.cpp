@@ -80,7 +80,7 @@ extern "C" int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
   }
 
   // Display status
-  _Module.Echo(TEXT("The server is running. Ctrl+C to exit."));
+  _Module.Echo(TEXT(" The server is running. Ctrl+C to exit."));
   _Module.EchoFlush();
 
   // Handle Ctrl+C and other important exiting events
