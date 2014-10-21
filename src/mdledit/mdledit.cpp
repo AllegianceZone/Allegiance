@@ -526,7 +526,7 @@ public:
         EffectWindow(
             papp,
             strCommandLine,
-            L"MDLEdit",
+            "MDLEdit",
             false,
             WinRect(0 + CD3DDevice9::Get()->GetDeviceSetupParams()->iWindowOffsetX, 
 					0 + CD3DDevice9::Get()->GetDeviceSetupParams()->iWindowOffsetY,

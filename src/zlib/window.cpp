@@ -109,6 +109,7 @@ Window::Window(
             GetModuleHandleA(NULL),
             this
         );
+		::SetWindowTextA(m_hwnd, strTitle);
 	}
 	else {
 		m_hwnd = ::CreateWindowExA(
