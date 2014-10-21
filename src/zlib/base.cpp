@@ -44,7 +44,6 @@ ZFile::ZFile( )
 ZFile::ZFile(const PathString& strPath, DWORD how) : 
     m_p(NULL)
 {
-	// BT - CSS - 12/8/2011 - Fixing 128 character path limit.
 	DWORD dwDesiredAccess = GENERIC_READ;
 	DWORD dwShareMode = FILE_SHARE_WRITE;
 	DWORD dwCreationDisposition = OPEN_EXISTING;
@@ -58,23 +57,7 @@ ZFile::ZFile(const PathString& strPath, DWORD how) :
 	if((how & OF_CREATE) == OF_CREATE)
 		dwCreationDisposition = CREATE_ALWAYS;
 
-	// Unicode markers / wide format enables up to 32K path length. 
-	PathString unicodePath("\\\\?\\");
-
-	// If the path is relative, don't use unicode marker.
-	if(strPath.Left(1) == ZString(".") || strPath.FindAny("//") == -1)
-		unicodePath = strPath;
-	else
-		unicodePath += strPath;
-
-	WCHAR* pszw = new WCHAR[unicodePath.GetLength() + 1];
-    int result = MultiByteToWideChar(CP_ACP, 0, unicodePath, unicodePath.GetLength(), pszw, unicodePath.GetLength());
-	pszw[result] = NULL;
-
-	m_handle = CreateFileW(pszw, dwDesiredAccess,  dwShareMode, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL);
-
-	delete pszw;
-	// BT - End fix.
+	m_handle = CreateFile(strPath.MakeBSTR(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, NULL);
 }
 
 ZFile::~ZFile()
