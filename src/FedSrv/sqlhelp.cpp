@@ -239,20 +239,19 @@ int InitSql(char * szRegKey, ISQLSite * pSQLSite)
   if (SQL_SUCCESS != sqlret)
     SQLWhatsWrong(SQL_HANDLE_DBC, hSqlDbc);
 
-#if 0
   SQLCHAR StrConnectionOut[1<<10];
   SQLSMALLINT cbStrConnectionOut;
-  sqlret = SQLDriverConnect(hSqlDbc, NULL, (SQLCHAR*) 
-                            "DRIVER={SQL Server};SERVER=FEDSRV", SQL_NTS, 
+  sqlret = SQLDriverConnectA(hSqlDbc, NULL, (SQLCHAR*)
+	  "DRIVER={SQL Server};PWD=AllegFed@2014!NotSecret;UID=club;DATABASE=AZFederation;SERVER=tqhlsg1ad6.database.windows.net", SQL_NTS,
                             StrConnectionOut, sizeof(StrConnectionOut), 
                             &cbStrConnectionOut, SQL_DRIVER_NOPROMPT);
-#else
+#if 0
   char szUser[64];
   char szPW[64];
   char szDatabase[64];
   strcpy (szUser, ParseCommandLine (szRegKey, "SQLUser","club"));
   strcpy (szPW, ParseCommandLine (szRegKey, "SQLPW","AllegFed@2014!NotSecret"));
-  strcpy (szDatabase, ParseCommandLine (szRegKey, "SQLSrc", "Federation"));
+  strcpy (szDatabase, ParseCommandLine (szRegKey, "SQLSrc", "AZFederation"));
   printf ("  Connecting to DSN (%s) as user (%s) with password (%s)...\n", szDatabase, szUser, szPW);
   sqlret = SQLConnectA(hSqlDbc, (SQLCHAR*) szDatabase, SQL_NTS, (SQLCHAR*) szUser, SQL_NTS, (SQLCHAR*) szPW, SQL_NTS);
 #endif
@@ -262,7 +261,7 @@ int InitSql(char * szRegKey, ISQLSite * pSQLSite)
   
    SQLCHAR scODBCver[6];
   SQLSMALLINT cbODBCver;
-  sqlret = SQLGetInfo(hSqlDbc, SQL_DRIVER_ODBC_VER, scODBCver, sizeof(scODBCver), &cbODBCver);
+  sqlret = SQLGetInfoA(hSqlDbc, SQL_DRIVER_ODBC_VER, scODBCver, sizeof(scODBCver), &cbODBCver);
   if (SQL_SUCCESS != sqlret)
     SQLWhatsWrong(SQL_HANDLE_DBC, hSqlDbc);
 
