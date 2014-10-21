@@ -24,11 +24,7 @@ copy %2objs12\AZRetail\AutoUpdate\AutoUpdate.exe %1 /Y
 copy %2objs12\AZRetail\AutoUpdate\AutoUpdate.pdb %1 /Y
 copy %2objs12\AZRetail\Reloader\Reloader.exe %1 /Y
 copy %2objs12\AZRetail\Reloader\Reloader.pdb %1 /Y
-copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.MFC\mfc120.dll" %1 /Y
-copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.MFC\mfcm120.dll" %1 /Y
 copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.MFC\mfc120u.dll" %1 /Y
-copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.MFC\mfcm120u.dll" %1 /Y
-copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.MFCLOC\mfc120enu.dll" %1 /Y
 copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.CRT\msvcp120.dll" %1 /Y
 copy "%VS120COMNTOOLS%..\..\VC\redist\x86\Microsoft.VC120.CRT\msvcr120.dll" %1 /Y
 copy %2src\license.txt %1 /Y
