@@ -5,41 +5,21 @@
       <Configuration>AZDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZDebug|X64">
-      <Configuration>AZDebug</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-Instrumented|Win32">
       <Configuration>AZRetail-Instrumented</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-Instrumented|X64">
-      <Configuration>AZRetail-Instrumented</Configuration>
-      <Platform>X64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail|Win32">
       <Configuration>AZRetail</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail|X64">
-      <Configuration>AZRetail</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-Optimized|Win32">
       <Configuration>AZRetail-Optimized</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-Optimized|X64">
-      <Configuration>AZRetail-Optimized</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-SSE2|Win32">
       <Configuration>AZRetail-SSE2</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-SSE2|X64">
-      <Configuration>AZRetail-SSE2</Configuration>
-      <Platform>X64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -58,11 +38,6 @@
     <UseOfMfc>false</UseOfMfc>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -87,26 +62,6 @@
     <UseOfMfc>false</UseOfMfc>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -122,26 +77,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs12\$(Configuration)\Guids\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">..\objs12\$(Configuration)\Guids\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs12\$(Configuration)\Guids\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">..\objs12\$(Configuration)\Guids\x64\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs12\$(Configuration)\Guids\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs12\$(Configuration)\Guids\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs12\PGO\Guids\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs12\PGO\Guids\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">..\objs12\$(Configuration)\Guids\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">..\objs12\$(Configuration)\Guids\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">..\objs12\$(Configuration)\Guids\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">..\objs12\$(Configuration)\Guids\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs12\$(Configuration)\Guids\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs12\$(Configuration)\Guids\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs12\PGO\Guids\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs12\PGO\Guids\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">..\objs12\$(Configuration)\Guids\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">..\objs12\$(Configuration)\Guids\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">..\objs12\$(Configuration)\Guids\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">..\objs12\$(Configuration)\Guids\x64\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\Guids\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\Guids\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs14\$(Configuration)\Guids\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\Guids\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs14\PGO\Guids\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs14\PGO\Guids\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs14\$(Configuration)\Guids\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\Guids\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs14\PGO\Guids\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs14\PGO\Guids\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <ClCompile>
@@ -158,26 +103,11 @@
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\objs12\AZDebug\Guids\;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\objs14\AZDebug\Guids\;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
     <PreLinkEvent>
       <Command>lib /out:$(OutDir)AGCGuid.lib $(OutDir)AGCGuid.obj</Command>
     </PreLinkEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">
     <ClCompile>
@@ -297,58 +227,6 @@
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\AGC\AGCGuid.c" />

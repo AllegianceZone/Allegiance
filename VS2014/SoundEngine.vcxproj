@@ -5,41 +5,21 @@
       <Configuration>AZDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZDebug|X64">
-      <Configuration>AZDebug</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-Instrumented|Win32">
       <Configuration>AZRetail-Instrumented</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-Instrumented|X64">
-      <Configuration>AZRetail-Instrumented</Configuration>
-      <Platform>X64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail|Win32">
       <Configuration>AZRetail</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail|X64">
-      <Configuration>AZRetail</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-Optimized|Win32">
       <Configuration>AZRetail-Optimized</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-Optimized|X64">
-      <Configuration>AZRetail-Optimized</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-SSE2|Win32">
       <Configuration>AZRetail-SSE2</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-SSE2|X64">
-      <Configuration>AZRetail-SSE2</Configuration>
-      <Platform>X64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -58,11 +38,6 @@
     <UseOfMfc>false</UseOfMfc>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -91,30 +66,6 @@
     <UseOfAtl>false</UseOfAtl>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <UseOfAtl>false</UseOfAtl>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <UseOfAtl>false</UseOfAtl>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <UseOfAtl>false</UseOfAtl>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <UseOfAtl>false</UseOfAtl>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -130,26 +81,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs12\$(Configuration)\soundengine\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">..\objs12\$(Configuration)\soundengine\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs12\$(Configuration)\soundengine\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">..\objs12\$(Configuration)\soundengine\x64\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs12\$(Configuration)\soundengine\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs12\$(Configuration)\soundengine\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs12\PGO\soundengine\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs12\PGO\soundengine\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">..\objs12\$(Configuration)\soundengine\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">..\objs12\$(Configuration)\soundengine\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">..\objs12\$(Configuration)\soundengine\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">..\objs12\$(Configuration)\soundengine\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs12\$(Configuration)\soundengine\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs12\$(Configuration)\soundengine\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs12\PGO\soundengine\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs12\PGO\soundengine\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">..\objs12\$(Configuration)\soundengine\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">..\objs12\$(Configuration)\soundengine\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">..\objs12\$(Configuration)\soundengine\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">..\objs12\$(Configuration)\soundengine\x64\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\soundengine\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\soundengine\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs14\$(Configuration)\soundengine\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\soundengine\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs14\PGO\soundengine\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs14\PGO\soundengine\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs14\$(Configuration)\soundengine\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\soundengine\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs14\PGO\soundengine\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs14\PGO\soundengine\</IntDir>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">$(DXSDK_DIR)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
@@ -157,22 +98,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;../src/Inc/OggVorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_AFXDLL;WIN32;_WINDOWS;STRICT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -288,70 +213,6 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../src/Inc;../src/ZLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_AFXDLL;WIN32;_WINDOWS;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\soundengine\ds3dbuffer.cpp" />
     <ClCompile Include="..\src\soundengine\ds3dengine.cpp" />
@@ -360,15 +221,10 @@
     <ClCompile Include="..\src\soundengine\dummysound.cpp" />
     <ClCompile Include="..\src\soundengine\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\soundengine\redbooksound.cpp" />
     <ClCompile Include="..\src\soundengine\soundbase.cpp" />

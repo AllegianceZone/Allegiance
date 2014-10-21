@@ -5,41 +5,21 @@
       <Configuration>AZDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZDebug|X64">
-      <Configuration>AZDebug</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-Instrumented|Win32">
       <Configuration>AZRetail-Instrumented</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-Instrumented|X64">
-      <Configuration>AZRetail-Instrumented</Configuration>
-      <Platform>X64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail|Win32">
       <Configuration>AZRetail</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail|X64">
-      <Configuration>AZRetail</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-Optimized|Win32">
       <Configuration>AZRetail-Optimized</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-Optimized|X64">
-      <Configuration>AZRetail-Optimized</Configuration>
-      <Platform>X64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="AZRetail-SSE2|Win32">
       <Configuration>AZRetail-SSE2</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="AZRetail-SSE2|X64">
-      <Configuration>AZRetail-SSE2</Configuration>
-      <Platform>X64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -60,12 +40,6 @@
     <UseOfAtl>Dynamic</UseOfAtl>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <UseOfAtl>false</UseOfAtl>
-    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">
     <ConfigurationType>Application</ConfigurationType>
@@ -91,26 +65,6 @@
     <UseOfMfc>false</UseOfMfc>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -126,56 +80,31 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs12\$(Configuration)\FedSrv\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">..\objs12\$(Configuration)\FedSrv\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs12\$(Configuration)\FedSrv\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">..\objs12\$(Configuration)\FedSrv\x64\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\FedSrv\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\FedSrv\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">AllSrv</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">AllSrv</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">.exe</TargetExt>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs12\$(Configuration)\FedSrv\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs12\$(Configuration)\FedSrv\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs12\PGO\FedSrv\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs12\PGO\FedSrv\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">..\objs12\$(Configuration)\FedSrv\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">..\objs12\$(Configuration)\FedSrv\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">..\objs12\$(Configuration)\FedSrv\x64\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">..\objs12\$(Configuration)\FedSrv\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs12\$(Configuration)\FedSrv\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs12\$(Configuration)\FedSrv\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs12\PGO\FedSrv\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs12\PGO\FedSrv\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">..\objs12\$(Configuration)\FedSrv\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">..\objs12\$(Configuration)\FedSrv\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">..\objs12\$(Configuration)\FedSrv\x64\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">..\objs12\$(Configuration)\FedSrv\x64\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs14\$(Configuration)\FedSrv\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\FedSrv\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs14\PGO\FedSrv\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs14\PGO\FedSrv\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">..\objs14\$(Configuration)\FedSrv\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\FedSrv\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">..\objs14\PGO\FedSrv\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">..\objs14\PGO\FedSrv\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">AllSrv</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">AllSrv</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">AllSrv</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">AllSrv</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">AllSrv</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">AllSrv</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">AllSrv</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">AllSrv</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">.exe</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">.exe</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">.exe</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">.exe</TargetExt>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">.exe</TargetExt>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">.exe</TargetExt>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">.exe</TargetExt>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
     <Midl>
@@ -217,48 +146,6 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreSpecificDefaultLibraries>msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">
-    <Midl>
-      <AdditionalIncludeDirectories>..\objs12\$(Configuration)\AGC\x64;.\$(TargetDir);..\AGC\x64;..\src\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/%(FileName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
-      <HeaderFileName>%(FileName).h</HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\src\guids;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\Inc;..\src\AGC;..\src\test\Inc;..\src\lobby;..\src\Zone;.\Igc\x64;.\FedSrv\x64;.\AGC\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ALLSRV_STANDALONE;FEDSRV;AGC_HOST;DEBUG;_DEBUG;_WIN32;_WINDOWS;_AFXDLL;_CONSOLE;_WIN32_WINNT=0x0403;WIN;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <WarningLevel>Level2</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";FEDMSG=\"FedMsg.rc\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>$(OutDir)..\..\_utility\x64\Utility.lib;$(OutDir)..\..\zlib\x64\zlib.lib;$(OutDir)..\..\igc\x64\igc.lib;$(OutDir)..\..\sharemem\x64\sharemem.lib;$(OutDir)..\..\test\TCLib\x64\TCLib.lib;$(OutDir)..\..\agc\x64\AGCGuid.lib;$(OutDir)..\..\Guids\x64\guids.lib;winmm.lib;version.lib;urlmon.lib;..\src\Lib\DirectPlay\x64\dxguid.lib;..\src\Lib\appweb\x64\appweb.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SuppressStartupBanner>false</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>netapi32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>true</GenerateMapFile>
-      <SubSystem>Console</SubSystem>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX64</TargetMachine>
       <IgnoreSpecificDefaultLibraries>msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -459,154 +346,11 @@
       <ManifestFile>$(Outdir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">
-    <Midl>
-      <AdditionalIncludeDirectories>.\$(TargetDir);..\..\AGC;..\..\src\Inc;..\objs12\$(Configuration)\AGC\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/%(FileName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
-      <HeaderFileName>%(FileName).h</HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\AGC\x64;.\x64;..\src\guids;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\Inc;..\src\AGC;..\src\test\Inc;..\src\lobby;..\src\Zone;.\Igc\x64;.\FedSrv\x64;.\$(InputDir);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ALLSRV_STANDALONE;FEDSRV;AGC_HOST;SRVLOG;_WIN32;_WINDOWS;_AFXDLL;_CONSOLE;_WIN32_WINNT=0x0403;WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <OmitDefaultLibName>false</OmitDefaultLibName>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";FEDMSG=\"FedMsg.rc\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>$(OutDir)..\..\_utility\x64\Utility.lib;$(OutDir)..\..\zlib\x64\zlib.lib;$(OutDir)..\..\igc\x64\igc.lib;$(OutDir)..\..\sharemem\x64\sharemem.lib;$(OutDir)..\..\test\TCLib\x64\TCLib.lib;$(OutDir)..\..\agc\x64\AGCGuid.lib;$(OutDir)..\..\Guids\x64\guids.lib;winmm.lib;version.lib;urlmon.lib;..\src\Lib\DirectPlay\x64\dxguid.lib;..\src\Lib\appweb\x64\appweb.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>netapi32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">
-    <Midl>
-      <AdditionalIncludeDirectories>.\$(TargetDir);..\..\AGC;..\..\src\Inc;..\objs12\$(Configuration)\AGC\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/%(FileName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
-      <HeaderFileName>%(FileName).h</HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\AGC\x64;.\x64;..\src\guids;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\Inc;..\src\AGC;..\src\test\Inc;..\src\lobby;..\src\Zone;.\Igc\x64;.\FedSrv\x64;.\$(InputDir);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ALLSRV_STANDALONE;FEDSRV;AGC_HOST;SRVLOG;_WIN32;_WINDOWS;_AFXDLL;_CONSOLE;_WIN32_WINNT=0x0403;WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <OmitDefaultLibName>false</OmitDefaultLibName>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";FEDMSG=\"FedMsg.rc\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>$(OutDir)..\..\_utility\x64\Utility.lib;$(OutDir)..\..\zlib\x64\zlib.lib;$(OutDir)..\..\igc\x64\igc.lib;$(OutDir)..\..\sharemem\x64\sharemem.lib;$(OutDir)..\..\test\TCLib\x64\TCLib.lib;$(OutDir)..\..\agc\x64\AGCGuid.lib;$(OutDir)..\..\Guids\x64\guids.lib;winmm.lib;version.lib;urlmon.lib;..\src\Lib\DirectPlay\x64\dxguid.lib;..\src\Lib\appweb\x64\appweb.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>netapi32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">
-    <Midl>
-      <AdditionalIncludeDirectories>.\$(TargetDir);..\..\AGC;..\..\src\Inc;..\objs12\$(Configuration)\AGC\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/%(FileName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
-      <HeaderFileName>%(FileName).h</HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\AGC\x64;.\x64;..\src\guids;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\Inc;..\src\AGC;..\src\test\Inc;..\src\lobby;..\src\Zone;.\Igc\x64;.\FedSrv\x64;.\$(InputDir);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ALLSRV_STANDALONE;FEDSRV;AGC_HOST;SRVLOG;_WIN32;_WINDOWS;_AFXDLL;_CONSOLE;_WIN32_WINNT=0x0403;WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <OmitDefaultLibName>false</OmitDefaultLibName>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";FEDMSG=\"FedMsg.rc\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>$(OutDir)..\..\_utility\x64\Utility.lib;$(OutDir)..\..\zlib\x64\zlib.lib;$(OutDir)..\..\igc\x64\igc.lib;$(OutDir)..\..\sharemem\x64\sharemem.lib;$(OutDir)..\..\test\TCLib\x64\TCLib.lib;$(OutDir)..\..\agc\x64\AGCGuid.lib;$(OutDir)..\..\Guids\x64\guids.lib;winmm.lib;version.lib;urlmon.lib;..\src\Lib\DirectPlay\x64\dxguid.lib;..\src\Lib\appweb\x64\appweb.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>netapi32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">
-    <Midl>
-      <AdditionalIncludeDirectories>.\$(TargetDir);..\..\AGC;..\..\src\Inc;..\objs12\$(Configuration)\AGC\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TypeLibraryName>$(TargetDir)/%(FileName).tlb</TypeLibraryName>
-      <OutputDirectory>$(TargetDir)\</OutputDirectory>
-      <HeaderFileName>%(FileName).h</HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\AGC\x64;.\x64;..\src\guids;..\src\zlib;..\src\_Utility;..\src\Igc;..\src\Inc;..\src\AGC;..\src\test\Inc;..\src\lobby;..\src\Zone;.\Igc\x64;.\FedSrv\x64;.\$(InputDir);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ALLSRV_STANDALONE;FEDSRV;AGC_HOST;SRVLOG;_WIN32;_WINDOWS;_AFXDLL;_CONSOLE;_WIN32_WINNT=0x0403;WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <OmitDefaultLibName>false</OmitDefaultLibName>
-    </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";FEDMSG=\"FedMsg.rc\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>$(OutDir)..\..\_utility\x64\Utility.lib;$(OutDir)..\..\zlib\x64\zlib.lib;$(OutDir)..\..\igc\x64\igc.lib;$(OutDir)..\..\sharemem\x64\sharemem.lib;$(OutDir)..\..\test\TCLib\x64\TCLib.lib;$(OutDir)..\..\agc\x64\AGCGuid.lib;$(OutDir)..\..\Guids\x64\guids.lib;winmm.lib;version.lib;urlmon.lib;..\src\Lib\DirectPlay\x64\dxguid.lib;..\src\Lib\appweb\x64\appweb.lib;comctl32.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>netapi32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\FedSrv\fedmsg.msg">
       <Command Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
 </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
-</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
@@ -615,22 +359,10 @@
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
 </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
-</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">mc "%(FullPath)" -r $(IntDir) -h $(IntDir)
-</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">$(IntDir)%(FileName).rc;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -654,15 +386,10 @@
     <ClCompile Include="..\src\FedSrv\fsside.cpp" />
     <ClCompile Include="..\src\FedSrv\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|X64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|X64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|X64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|X64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
     <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
