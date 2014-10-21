@@ -112,7 +112,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 
 EngineWindow::EngineWindow(	EngineApp *			papp,
-							const LPWSTR&		strCommandLine,
+							const ZString&		strCommandLine,
 							const LPWSTR&		strTitle,
 							bool				bStartFullscreen,
 							const WinRect&		rect,

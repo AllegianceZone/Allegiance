@@ -322,9 +322,8 @@ public:
         AddRef();
     }
 
-    HRESULT Initialize(const LPWSTR& lpCommandLine)
+    HRESULT Initialize(const ZString& strCommandLine)
     {
-		ZString strCommandLine = lpCommandLine;
         _controlfp(_PC_53, _MCW_PC);
 
         //
@@ -751,7 +750,7 @@ public:
 		//   Raise dialog only if "Safe Mode" activated (any software/primary/secondary switches sent) 
 		// imago 6/29/09 7/1/09 removed hardware, asgs sends this under normal conditions
 		bool bRaise = (bSoftware || bPrimary || bSecondary) ? true : false;
-		if( PromptUserForVideoSettings(bStartFullscreen, bRaise, iUseAdapter, GetModuleHandleA(NULL), pathStr , ALLEGIANCE_REGISTRY_KEY_ROOT) == false )
+		if( PromptUserForVideoSettings(bStartFullscreen, bRaise, iUseAdapter, GetModuleHandle(NULL), pathStr , ALLEGIANCE_REGISTRY_KEY_ROOT) == false )
 		{
 			return E_FAIL;
 		}
@@ -761,7 +760,7 @@ public:
         TRef<TrekWindow> pwindow = 
             TrekWindow::Create(
                 this, 
-                lpCommandLine,
+                strCommandLine.MakeBSTR(),
 				pathStr,
                 bMovies,
                 bSoftware,

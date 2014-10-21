@@ -517,7 +517,7 @@ public:
 
     MDLEditWindow(
         EffectApp* papp, 
-        const LPCWSTR& strCommandLine, 
+        const ZString& strCommandLine, 
         bool bImageTest,
         bool bTest, 
         int initialTest,

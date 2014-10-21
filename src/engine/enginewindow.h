@@ -221,7 +221,7 @@ protected:
 public:
     EngineWindow(
               EngineApp*   papp,
-        const LPWSTR&     strCommandLine,
+        const ZString&     strCommandLine,
 		const LPWSTR&     strTitle = L"",
               bool         bStartFullscreen = false,
         const WinRect&     rect             = WinRect(0, 0, -1, -1),

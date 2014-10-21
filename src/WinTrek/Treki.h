@@ -51,7 +51,7 @@ class TrekWindow : public EffectWindow {
 protected:
     TrekWindow(
         EffectApp* papp,
-        const LPWSTR&     strCommandLine,
+        const ZString&     strCommandLine,
               bool         bStartFullscreen,
         const WinRect&     rect,
         const WinPoint&    sizeMin
