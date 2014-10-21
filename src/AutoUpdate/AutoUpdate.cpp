@@ -312,23 +312,28 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
-int CAutoUpdate::Init(int argc, char* argv[])
+int CAutoUpdate::Init(int argc, wchar_t* argv[])
 {
     /* example commmand line:
      AllSrv32.exe FFFFFFFF 120000 "http://a-markcu1" "/artcomp/1850" "c:/fed/objs/artwork"
     */
+
+	
+
     if (argc != 7)
         return -2;
 
-    if (argv[1][0] != '-' && argv[1][0] != 0) // - means execute nothing after update
+    if (argv[1][0] != L'-' && argv[1][0] != 0) // - means execute nothing after update
     {
-      strncpy(m_szPostUpdateEXE, argv[1], sizeof(m_szPostUpdateEXE));
+		ZString strCommandLine1 = argv[1];
+		Strncpy(m_szPostUpdateEXE, strCommandLine1, sizeof(m_szPostUpdateEXE));
     }
     else
       m_szPostUpdateEXE[0] = 0;
 
     char szCRC[30];
-    strncpy(szCRC, argv[2], sizeof(szCRC));
+	ZString strCommandLine2 = argv[2];
+	Strncpy(szCRC, strCommandLine2, sizeof(szCRC));
     _strupr(szCRC);
 
     int nFilelistCRC = UTL::hextoi(szCRC);
@@ -336,22 +341,23 @@ int CAutoUpdate::Init(int argc, char* argv[])
     if (nFilelistCRC == 0)
         return -3;
 
-    int nFilelistSize = atoi(argv[3]);
+	ZString strCommandLine3 = argv[3];
+	int nFilelistSize = strCommandLine3.GetInteger();
 
     if (nFilelistSize == 0)
         return -4;
 
     m_pAutoDownload = CreateAutoDownload();
 
-    m_pAutoDownload->SetFTPSite(argv[4], 
-                                argv[5], 
-                                "blah", 
-                                "blah");
+	ZString strCommandLine4 = argv[4];
+	ZString strCommandLine5 = argv[5];
+	m_pAutoDownload->SetFTPSite(strCommandLine4,strCommandLine5,"blah", "blah");
 
     m_pAutoDownload->SetOfficialFileListAttributes(nFilelistCRC, 
                                                    nFilelistSize);
 
-    m_pAutoDownload->SetArtPath(argv[6]);
+	ZString strCommandLine6 = argv[6];
+	m_pAutoDownload->SetArtPath(strCommandLine6);
 
     m_pAutoDownload->SetFilelistSubDir("standalone");
 
@@ -601,7 +607,7 @@ int WINAPI wWinMain(HINSTANCE hinst, HINSTANCE, LPWSTR lpCmdLine, int)
 
     g_AutoDownloadSink.m_pdlg = &dlg;
 
-    int nResult = dlg.Init(__argc, __argv); //Imago 6/10
+	int nResult = dlg.Init(__argc, __wargv); //Imago 6/10
     if (nResult != 0)
     {
         MsgBox(0,"AutoUpdate was given an invalid commmand-line.");

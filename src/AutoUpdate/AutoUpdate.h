@@ -37,7 +37,7 @@ public:
 // Operations
 public:
 
-    int  Init(int argc, char* argv[]);
+    int  Init(int argc, wchar_t* argv[]);
     int  Run();
 
 // Handler prototypes:
