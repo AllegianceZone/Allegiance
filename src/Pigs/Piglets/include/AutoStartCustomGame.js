@@ -23,7 +23,7 @@ function AutoStartGame_Tick() {
 
 function AutoStartGameDelay() {
 	GameController = IsMissionOwner();
-	if (GameController && !Properties.Exists("ChatStartGameTimer") && !Properties.Exists("StartGameTimer")) {
+	if (GameController && "object" != typeof(Properties("ChatStartGameTimer")) && "object" != typeof(Properties("StartGameTimer"))) {
 		for (var it = new Enumerator(Game.Teams); !it.atEnd(); it.moveNext()) {
 			if (it.item().Ships.Count < MissionParams.MinTeamPlayers) {
 				Game.SendChat("Aborting launch...",1301); //voJustASecSound
@@ -32,7 +32,8 @@ function AutoStartGameDelay() {
 				return;
 			}
 		}
-		Trace("StartCustomGame..."+it.item().Name+".\n");
+		Timer.Kill();
+		Trace("StartCustomGame....\n");
 		StartCustomGame(MissionParams);
 		CreateTimer(20.0, "AutoStartGame()", -1, "AutoStartGame");
 	}

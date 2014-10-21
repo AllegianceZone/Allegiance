@@ -96,7 +96,9 @@ function StartGameTimer() {
 	GameController = IsMissionOwner();
 	for (var it = new Enumerator(Game.Teams); !it.atEnd(); it.moveNext())
 	if (!GameController || it.item().Ships.Count < MissionParams.MinTeamPlayers) {
-		Trace("aborting start...\n");
+		Game.SendChat("Aborting launch...",1301); //voJustASecSound
+		if(GameController && "object" != typeof(Properties("AutoStartGameTimer")) && "object" != typeof(Properties("AutoStartGameDelay")))
+			CreateTimer(1.0, "AutoStartGame_Tick()", -1, "AutoStartGameTimer");
 		return;
 	}
 	StartGame();
