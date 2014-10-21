@@ -80,7 +80,7 @@ function OnStateWaitingForMission(eStatePrevious) {
 		if (GameController) {
 			RoundCount++;
 			CreateTimer(3, "ChatStartGameTimer()", -1, "ChatStartGameTimer");
-			CreateTimer(30, "StartGameTimer()", -1, "StartGameTimer");
+			CreateTimer(33, "StartGameTimer()", -1, "StartGameTimer");
 		}
 		Game.SendChat("My skillz: "+(ShootSkill * 100)+"%");
 	}
@@ -93,6 +93,12 @@ function JoinTimer() {
 function StartGameTimer() {
 	Timer.Kill();
 	Trace("killed timer, Attempting to StartGame\n");
+	GameController = IsMissionOwner();
+	for (var it = new Enumerator(Game.Teams); !it.atEnd(); it.moveNext())
+	if (!GameController || it.item().Ships.Count < MissionParams.MinTeamPlayers) {
+		Trace("aborting start...\n");
+		return;
+	}
 	StartGame();
 }
 function ChatStartGameTimer() {
