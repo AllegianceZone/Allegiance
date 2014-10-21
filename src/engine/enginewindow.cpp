@@ -113,12 +113,12 @@ public:
 
 EngineWindow::EngineWindow(	EngineApp *			papp,
 							const ZString&		strCommandLine,
-							const LPWSTR&		strTitle,
+							const LPCSTR&		strTitle,
 							bool				bStartFullscreen,
 							const WinRect&		rect,
 							const WinPoint&		sizeMin,
 							HMENU				hmenu ) :
-				Window(NULL, rect, strTitle, L"", 0, hmenu),
+				Window(NULL, rect, strTitle, "", 0, hmenu),
 				m_pengine(papp->GetEngine()),
 				m_pmodeler(papp->GetModeler()),
 				m_sizeWindowed(rect.Size()),

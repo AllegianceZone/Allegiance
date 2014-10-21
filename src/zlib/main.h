@@ -43,5 +43,5 @@ int wmain( int argc, wchar_t *argv[ ])
         }
     }
 
-    return wWinMain(GetModuleHandle(NULL), NULL, strCommandLine.MakeBSTR(), SW_SHOW);
+    return wWinMain(GetModuleHandleA(NULL), NULL, strCommandLine.MakeBSTR(), SW_SHOW);
 }

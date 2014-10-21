@@ -157,10 +157,10 @@ DWORD WINAPI DDVidCreateThreadProc( LPVOID param ) {
 	bool bHide = false;
 	HWND hwndFound = NULL;
 	if (pData->bWindowed) {
-		hwndFound=FindWindowA(NULL, "Allegiance");
+		hwndFound = FindWindowA(NULL, TrekWindow::GetWindowTitle());
 	} else {
 		//this window will have our "intro" in it...
-		hwndFound = ::CreateWindowA("MS_ZLib_Window", "Intro", WS_VISIBLE|WS_POPUP, 0, 0,
+		hwndFound = ::CreateWindowA(Window::GetTopLevelWindowClassname(), "Intro", WS_VISIBLE | WS_POPUP, 0, 0,
 			GetSystemMetrics(SM_CXFULLSCREEN),GetSystemMetrics(SM_CYFULLSCREEN),NULL, NULL,
 			::GetModuleHandleA(NULL), NULL);
 		bHide = true;
@@ -2597,7 +2597,7 @@ public:
 
     TrekWindowImpl(
         EffectApp*     papp,
-        const LPWSTR& strCommandLine,
+        const ZString& strCommandLine,
 // BUILD_DX9
 		const ZString& strArtPath,
 // BUILD_DX9
@@ -11350,7 +11350,7 @@ TrekWindowImpl::FlagsWinConditionInfo          TrekWindowImpl::s_flagsWinConditi
 
 TRef<TrekWindow> TrekWindow::Create(
     EffectApp*     papp,
-    const LPWSTR& strCommandLine,
+    const ZString& strCommandLine,
 // BUILD_DX9
 	const ZString& strArtPath,					// Added for DX9 build, due to reordered startup.
 // BUILD_DX9

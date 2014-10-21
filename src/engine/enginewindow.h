@@ -222,7 +222,7 @@ public:
     EngineWindow(
               EngineApp*   papp,
         const ZString&     strCommandLine,
-		const LPWSTR&     strTitle = L"",
+		const LPCSTR&     strTitle = "",
               bool         bStartFullscreen = false,
         const WinRect&     rect             = WinRect(0, 0, -1, -1),
         const WinPoint&    sizeMin          = WinPoint(1, 1),

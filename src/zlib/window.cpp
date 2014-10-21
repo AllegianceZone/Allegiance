@@ -49,8 +49,8 @@ Window::Window():
 Window::Window(
           Window*  pwindowParent,
     const WinRect& rect,
-    const LPWSTR& strTitle,
-    const LPWSTR& strClass,
+	const ZString& strTitle,
+	const ZString& strClass,
           Style    style,
           HMENU    hmenu,
           StyleEX  styleEX
@@ -89,8 +89,8 @@ Window::Window(
     m_rect = rect;
     AdjustWindowRect(&m_rect, m_style.GetWord(), m_hmenu != NULL);
 
-    if (wcslen(strClass) == 0) {
-        m_hwnd = ::CreateWindowEx(
+    if (strClass.IsEmpty()) {
+        m_hwnd = ::CreateWindowExA(
             m_styleEX.GetWord(),
             GetTopLevelWindowClassname(),
             strTitle,
@@ -106,12 +106,12 @@ Window::Window(
             m_rect.XSize(), m_rect.YSize(),
             pwindowParent ? pwindowParent->GetHWND() : NULL,
             m_hmenu,
-            GetModuleHandle(NULL),
+            GetModuleHandleA(NULL),
             this
         );
 	}
 	else {
-		m_hwnd = ::CreateWindowEx(
+		m_hwnd = ::CreateWindowExA(
 			m_styleEX.GetWord(),
 			strClass,
 			strTitle,
@@ -128,17 +128,17 @@ Window::Window(
 			m_rect.XSize(), m_rect.YSize(),
 			pwindowParent ? pwindowParent->GetHWND() : NULL,
 			m_hmenu,
-			GetModuleHandle(NULL),
+			GetModuleHandleA(NULL),
 			this
 			);
 
 		s_mapWindow.Set(m_hwnd, this);
 
-		m_pfnWndProc = (WNDPROC)::GetWindowLong(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
-		::SetWindowLong(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc);  //x64 Imago 6/20/09
+		m_pfnWndProc = (WNDPROC)::GetWindowLongA(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
+		::SetWindowLongA(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc);  //x64 Imago 6/20/09
 	}
 
-    m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
+    m_styleEX.SetWord(::GetWindowLongA(m_hwnd, GWL_EXSTYLE));
 
     if (m_pwindowParent) {
         m_pwindowParent->AddChild(this);
@@ -149,8 +149,8 @@ Window::Window(
 BOOL Window::Create(
           Window*  pwindowParent,
     const WinRect& rect,
-          LPCWSTR   szTitle,
-          LPCWSTR   szClass,
+          LPCSTR   szTitle,
+          LPCSTR   szClass,
           Style    style,
           HMENU    hmenu,
           UINT     nID,
@@ -171,9 +171,9 @@ BOOL Window::Create(
         m_hcursor = LoadCursor(NULL, IDC_ARROW);
     }
     
-    m_hwnd = ::CreateWindowEx(
+    m_hwnd = ::CreateWindowExA(
             styleEX.GetWord(),
-            szClass ? szClass : L"Window",
+            szClass ? szClass : "Window",
             szTitle,
             m_style.GetWord(),
             m_rect.left, m_rect.top,
@@ -184,15 +184,15 @@ BOOL Window::Create(
             this);
     
     s_mapWindow.Set(m_hwnd, this);
-    m_pfnWndProc = (WNDPROC)::GetWindowLong(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
+    m_pfnWndProc = (WNDPROC)::GetWindowLongA(m_hwnd, GWLx_WNDPROC); //x64 Imago 6/20/09
 
     if ((WNDPROC)m_pfnWndProc != (WNDPROC)Win32WndProc) {
-        ::SetWindowLong(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc); //x64 Imago 6/20/09
+        ::SetWindowLongA(m_hwnd, GWLx_WNDPROC, (DWORD)Win32WndProc); //x64 Imago 6/20/09
     } else {
         m_pfnWndProc = DefWindowProcA;
     }
 
-    m_styleEX.SetWord(::GetWindowLong(m_hwnd, GWL_EXSTYLE));
+    m_styleEX.SetWord(::GetWindowLongA(m_hwnd, GWL_EXSTYLE));
     ::GetClientRect(GetHWND(), &m_rectClient);
 
     return TRUE;
@@ -251,8 +251,8 @@ void Window::CalcStyle()
         m_style.Clear(StyleSysMenu());
     }
 
-    ::SetWindowLong(m_hwnd, GWL_STYLE,   m_style.GetWord());
-    ::SetWindowLong(m_hwnd, GWL_EXSTYLE, m_styleEX.GetWord());
+    ::SetWindowLongA(m_hwnd, GWL_STYLE,   m_style.GetWord());
+    ::SetWindowLongA(m_hwnd, GWL_EXSTYLE, m_styleEX.GetWord());
 }
 
 void Window::SetTopMost(bool bTopMost)
@@ -704,7 +704,7 @@ DWORD Window::OriginalWndProc(
     WPARAM wParam,
     LPARAM lParam
 ) {
-    return CallWindowProc(m_pfnWndProc, m_hwnd, message, wParam, lParam);
+    return CallWindowProcA(m_pfnWndProc, m_hwnd, message, wParam, lParam);
 }
 
 WinPoint MakePoint(LPARAM lParam)
@@ -763,7 +763,7 @@ void Window::SetCursor(HCURSOR hcursor)
             // REVIEW: ideally we'd send a WM_NCHITTEST message to figure out 
             // which cursor to set, but if the app below the cursor was frozen
             // that could freeze us too.  
-            ::PostMessage(hwndBelowCursor, WM_SETCURSOR, (unsigned)hwndBelowCursor, 
+            ::PostMessageA(hwndBelowCursor, WM_SETCURSOR, (unsigned)hwndBelowCursor, 
                 MAKELONG(HTCLIENT, WM_MOUSEMOVE));
         }
     }
@@ -1002,7 +1002,7 @@ DWORD CALLBACK Window::Win32WndProc(
     Window* pwindow;
 
     if (message == WM_CREATE && 
-            NULL != (pwindow = (Window*)(((CREATESTRUCT *)lParam)->lpCreateParams))) {
+            NULL != (pwindow = (Window*)(((CREATESTRUCTA *)lParam)->lpCreateParams))) {
         pwindow->m_hwnd = hwnd;
         s_mapWindow.Set(hwnd, pwindow);
     } else {
@@ -1022,13 +1022,13 @@ HRESULT Window::StaticInitialize()
 {
     g_plistIdle = new TList<Window*>;
 
-    WNDCLASS wc;
+    WNDCLASSA wc;
 
     wc.style         = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc   = (WNDPROC)Win32WndProc;
     wc.cbClsExtra    = 0;
     wc.cbWndExtra    = 4;
-    wc.hInstance     = GetModuleHandle(NULL);
+    wc.hInstance     = GetModuleHandleA(NULL);
     wc.hIcon         = LoadIcon(NULL, ID_APP_ICON);
     wc.hCursor       = NULL;
 #ifdef DEBUG
@@ -1037,9 +1037,9 @@ HRESULT Window::StaticInitialize()
 	wc.hbrBackground = NULL; //imago test
 #endif
     wc.lpszMenuName  = NULL;
-    wc.lpszClassName = "MS_ZLib_Window";
+	wc.lpszClassName = GetTopLevelWindowClassname();
 
-    RegisterClass(&wc);
+    RegisterClassA(&wc);
 
     //
     // See if TrackMouseEvent exists
@@ -1138,9 +1138,9 @@ HRESULT Window::MessageLoop()
 
         bool bAnyMessage = true;
         if (g_bContinuousIdle) {
-            bAnyMessage = ::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0;
+            bAnyMessage = ::PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE) != 0;
         } else {
-            ::GetMessage(&msg, NULL, 0, 0);
+            ::GetMessageA(&msg, NULL, 0, 0);
         }
 
         if (bAnyMessage) {
@@ -1175,7 +1175,7 @@ HRESULT Window::MessageLoop()
                             }
 
                             if (!fHandled) {
-                                fHandled = (::DispatchMessage(&msg) == 0);
+                                fHandled = (::DispatchMessageA(&msg) == 0);
                             }
 
                             if (!fHandled || fForceTranslate) {
@@ -1210,10 +1210,10 @@ HRESULT Window::MessageLoop()
                         //
 
                     default:
-                        ::DispatchMessage(&msg);
+                        ::DispatchMessageA(&msg);
                         break;
                 } 
-            } while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE));
+            } while (::PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE));
         }
     }
 }
