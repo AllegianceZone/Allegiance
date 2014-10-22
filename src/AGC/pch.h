@@ -21,7 +21,7 @@
 //#ifndef _WIN32_WINNT
 //  #define _WIN32_WINNT 0x0403
 //#endif
-#define _ATL_APARTMENT_THREADED
+#define _ATL_FREE_THREADED
 
 #pragma warning(disable:4786) // identifier was truncated ... in the debug information
 #pragma warning(disable:4503) // decorated name length exceeded
