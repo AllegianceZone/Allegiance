@@ -17,26 +17,4 @@ Alliances:
 		Imbal is seriosuly bugged!  Consider reverting back to msoriginal and starting over.
 
 - Game types other than conquest?
-
-- "Nerf" options, if necessary:
-	- Visibility toggle
-	- Scan toggle
-
-
-Other/Cleanup:
-- Use MSBuild features (VS2010) to stop running the cscript custom tasks unnecessarily.
-
-- Clean linker warnings in ZLib, Utility & IGC.
-
-- Move stuff in 'Test' directory to a more logical location then delete 'Test' (Just TCLib)
-
-- Remove unneeded libs in "linker/input/add. dep." setting of all projects
-	- Done in VS2010 FZRetail
 	
-- Perform 2nd pass on cleaning .vcproj files
-	- Drop VS2005 support to speed this up.
-	
-- Perform cleaning on ..\standby
-
-- Refine all projects dependencies
-	- Done in VS2010 FZRetail
