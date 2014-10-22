@@ -1,25 +1,27 @@
 <pigbehavior language="JScript">
 //imagotrigger@gmail.com 10/14 imago.pig originally from manuel.pig and mark.pig Microsoft
 
-<script src="include\AutoStartCustomGame.js"/>
 <script src="include\common.js"/>
 <script src="include\imago.js"/>
+<script src="include\AutoStartCustomGame.js"/>
 <script>
 <![CDATA[
 
 // Settings
+/*
 var GameName = "Perpetual Brawl DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
 var KillGoal = 35;
 var DebugSpam = false;
-/*
+*/
+
 var GameName = "Bot Testing";
 var ServerName = "Imago-PC";
 var ServerAddr = "192.168.2.2";
 var KillGoal = 15;
 var DebugSpam = true;
-*/
+
 
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
