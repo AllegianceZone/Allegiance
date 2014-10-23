@@ -39,7 +39,7 @@ void CLobbyApp::OnSQLErrorRecord(SSERRORINFO * perror, OLECHAR * postrError)
  */
 bool CLobbyApp::ProcessMsgPump()
 {
-  static CTimer timerMsgPump("in message pump", 0.1f);
+	static CTempTimer timerMsgPump("in message pump", 0.1f);
   timerMsgPump.Start();
   bool fQuit = false;
 

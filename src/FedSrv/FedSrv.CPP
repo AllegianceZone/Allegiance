@@ -280,7 +280,7 @@ void SetSessionDetails()
 {
   static char rgchBuf[10<<10]; // big buffer
   char * pNext = rgchBuf;
-  static CTimer tt("setting session details", .01f);
+  static CTempTimer tt("setting session details", .01f);
   tt.Start();
   const ListFSMission * plistMission = CFSMission::GetMissions();
   for (LinkFSMission * plinkMission = plistMission->first(); plinkMission; plinkMission = plinkMission->next())
@@ -7311,9 +7311,9 @@ void DisconnectFromLobby()
 
 void ProcessNetworkMessages()
 {
-  static CTimer timerReceiveMessages("in ReceiveMessages()", .1f);
-  static CTimer timerReceiveLobbyMessages("in lobby ReceiveMessages()", .1f);
-  static CTimer timerClientRollCall("doing client roll call", .1f);
+	static CTempTimer timerReceiveMessages("in ReceiveMessages()", .1f);
+	static CTempTimer timerReceiveLobbyMessages("in lobby ReceiveMessages()", .1f);
+	static CTempTimer timerClientRollCall("doing client roll call", .1f);
 
   // receive any messages in the queue
   timerReceiveMessages.Start();
@@ -7536,7 +7536,7 @@ void ProcessNetworkMessages()
 
 void UpdateMissions(Time timeStart, Time timePrevious)
 {
-  static CTimer timerIGC("updating all IGC missions", .1f);
+	static CTempTimer timerIGC("updating all IGC missions", .1f);
   timerIGC.Start();
   static Time timLastStationUpdate(Time::Now());
   const float dtimStationUpdateInterval = 0.75f;
@@ -8310,7 +8310,7 @@ DWORD ProcessMsgPump(int dwSleep, DWORD nCount, LPHANDLE pHandles)
   Time timeBegin = Time::Now();
   DWORD dwSleep1 = dwSleep;
   DWORD dwEnd = timeBegin.clock() + dwSleep; // don't wanna use Time, because it forces use of floats
-  static CTimer timerMsgPump("in message pump", 0.25f);
+  static CTempTimer timerMsgPump("in message pump", 0.25f);
   static CTempTimer timerSingleMsg("handling single Windows msg", .01f);
   timerMsgPump.Start();
   DWORD dwWait = WAIT_TIMEOUT;
@@ -8720,7 +8720,7 @@ DWORD WINAPI ReceiveThread(LPVOID pThreadParameter)
     LoadStaticMapInfo();
   debugf("LoadStaticMapInfo result: #maps=%d\n",g.cStaticMapInfo);
 
-  CTimer timerReceiveIterations("between iterations in ReceiveThread loop", .25f);
+  CTempTimer timerReceiveIterations("between iterations in ReceiveThread loop", .25f);
 
   printf("Ready for clients.\n");
 
