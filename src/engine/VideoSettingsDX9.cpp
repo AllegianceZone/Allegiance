@@ -455,9 +455,9 @@ void SetModeData( HWND hDlg, int iCurrentDevice )
 	for( i=0; i<iCount; i++ )
 	{
 		g_VideoSettings.pDevData->GetResolutionStringByIndex( iCurrentDevice, i, szBuffer, 256 );
-		SendMessage( hControl, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>((LPCTSTR) szBuffer ) );
+		SendMessageA( hControl, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>((LPCSTR) szBuffer ) );
 	}
-	SendMessage( hControl, CB_SETCURSEL, g_VideoSettings.iCurrentMode, 0 );
+	SendMessageA( hControl, CB_SETCURSEL, g_VideoSettings.iCurrentMode, 0 );
 }
 
 
@@ -487,7 +487,7 @@ void SetAAData( HWND hDlg, int iCurrentDevice, int iCurrentMode, bool bWindowed 
 	{
 		g_VideoSettings.pDevData->GetAASettingString( 
 			iCurrentDevice, iCurrentMode, bWindowed, i, szBuffer, 256 );
-		SendMessage( hControl, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>((LPCTSTR) szBuffer ) );
+		SendMessageA( hControl, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>((LPCSTR) szBuffer ) );
 	}
 
 	// Clamp the selection value.
@@ -514,13 +514,13 @@ void SetGFXSettings( HWND hwndDlg, int iMaxTextureSize, bool bAutoGenMipmaps )
 
 	for( i=0; i<CD3DDevice9::eMTS_NumTextureSizes; i++ )
 	{
-		SendMessage( hControl, CB_ADDSTRING, 0, 
-			reinterpret_cast<LPARAM>((LPCTSTR) g_VideoSettings.pDevData->GetMaxTextureString( i ) ) );
+		SendMessageA( hControl, CB_ADDSTRING, 0, 
+			reinterpret_cast<LPARAM>((LPCSTR) g_VideoSettings.pDevData->GetMaxTextureString( i ) ) );
 	}
-	SendMessage( hControl, CB_SETCURSEL, iMaxTextureSize, 0 );
+	SendMessageA( hControl, CB_SETCURSEL, iMaxTextureSize, 0 );
 
 	hControl = GetDlgItem( hwndDlg, IDC_AUTOGENMIPMAPS );
-	SendMessage( hControl, BM_SETCHECK, (bAutoGenMipmaps == true ) ? BST_CHECKED : BST_UNCHECKED, 0 );
+	SendMessageA( hControl, BM_SETCHECK, (bAutoGenMipmaps == true ) ? BST_CHECKED : BST_UNCHECKED, 0 );
 }
 
 
@@ -626,7 +626,7 @@ INT_PTR CALLBACK ResPickerDialogProc( HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 			for( i=0; i<g_VideoSettings.pDevData->GetDeviceCount(); i++ )
 			{
 				g_VideoSettings.pDevData->GetDeviceNameByIndex( i, szBuffer, 256 );
-				SendMessage( hControl, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>((LPCTSTR) szBuffer ) );
+				SendMessageA( hControl, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>((LPCSTR) szBuffer ) );
 			}
 			
 			// Make the first option, the selected one. Once reg key stuff set up, make the last used device the selected one.
