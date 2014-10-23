@@ -1235,8 +1235,11 @@ HRESULT FedMessaging::InitDPlayClient()
 	//  <NKM> 08-Aug-2004
 	// AT some point we can set flags to DPNINITIALIZE_DISABLEPARAMVAL - but for BETA I
 	// I sugegst we leave it at this
-	//  const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL;
+#ifndef _DEBUG
+	const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL; //imago 10/14
+#else
 	const DWORD dwInitFlags = 0;
+#endif
 
 	if( FAILED( hr = m_pDirectPlayClient->Initialize( this, DPlayMsgHandler, dwInitFlags ) ) )
 	{
@@ -1282,8 +1285,11 @@ HRESULT FedMessaging::InitDPlayServer()
 	//  <NKM> 08-Aug-2004
 	// AT some point we can set flags to DPNINITIALIZE_DISABLEPARAMVAL - but for BETA I
 	// I sugegst we leave it at this
-	//  const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL;
+#ifndef _DEBUG
+	const DWORD dwInitFlags = DPNINITIALIZE_DISABLEPARAMVAL; //imago 10/14
+#else
 	const DWORD dwInitFlags = 0;
+#endif
 	ZDebugOutput("m_pDirectPlayServer->Initialize( ... )\n");
 	if( FAILED( hr = m_pDirectPlayServer->Initialize( this, DPlayMsgHandler, dwInitFlags ) ) )
 	{
