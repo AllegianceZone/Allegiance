@@ -4446,7 +4446,7 @@ HRESULT FedSrvSiteBase::OnNewConnection(FedMessaging * pthis, CFMConnection & cn
   // we don't do anything until they login
 
   // mmf 10/08 Log ip address (code provided by Imago)
-  char szRemote[52]; //Spunky #341
+	char szRemote[INET6_ADDRSTRLEN]; //Spunky #341 //imago 10/14
   pthis->GetIPAddress(cnxn, szRemote);
   debugf("New connection ID: %x IP: %s\n",cnxn.GetID(),szRemote);
 

@@ -18,6 +18,8 @@
 ** shouldn't be there (actually, set them to level 4 so I can still see
 ** them if I want to).
 */
+
+#define INET6_ADDRSTRLEN 65 //from ws2ipdef.h MS Windows SDK - Imago 10/14
 #define     _exposed
 
 #include "CRC.h"

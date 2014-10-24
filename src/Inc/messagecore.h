@@ -473,7 +473,7 @@ public:
     tt.Stop();
   }
 
-  HRESULT         GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[16]);
+  HRESULT         GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[INET6_ADDRSTRLEN]);
   HRESULT         GetListeningPort(DWORD* dwPort);
 
   //  <NKM> 07-Aug-2004

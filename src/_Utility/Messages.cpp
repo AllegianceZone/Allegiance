@@ -1632,7 +1632,7 @@ CFMGroup * FedMessaging::GetGroupFromDpid(DPID dpid)
 }
 
 
-HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[16])
+HRESULT FedMessaging::GetIPAddress(CFMConnection & cnxn, char szRemoteAddress[INET6_ADDRSTRLEN])
 {
 	//assert( m_pDirectPlayServer != 0 );
 
