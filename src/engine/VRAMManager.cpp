@@ -513,7 +513,7 @@ bool CVRAMManager::ReleaseHandle( TEXHANDLE texHandle )
 			SBank* myBank = m_sVRAM.ppBankArray[ dwBankIndex ];
 			if (myBank) {
 				LPDIRECT3DTEXTURE9 myTexture = myBank->pTexArray[ dwTexIndex ].pTexture;
-				if (myTexture) {
+				if (myTexture && !IsBadReadPtr(myTexture, sizeof(myTexture))) {
 					refCount = myTexture->Release();
 				}
 			}

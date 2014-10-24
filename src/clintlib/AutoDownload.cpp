@@ -1521,8 +1521,9 @@ bool LaunchReloaderAndExit(bool bReLaunchAllegianceAsMinimized)
     //  At this point RELOADER is running so Client needs to shutdown.
     //
 
-    // we don't need any destructors slowing us down...time to die
-    ::ExitProcess(0);
+	//imago 10/14
+    //::ExitProcess(0);
+	::PostQuitMessage(0);
 
     return true;
 }

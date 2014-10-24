@@ -369,10 +369,11 @@ public:
                   }
                   else
                   {
+					  //imago 10/14
 					  ::RegDeleteValueA(hKey,"MoveInProgress");
 					  ::DeleteFileA("FileList.txt");
-                      ::ExitProcess(0);
-                      return S_FALSE;
+                      //::ExitProcess(0);
+                      //return S_FALSE;
                   }
               }
               ::RegCloseKey(hKey);
