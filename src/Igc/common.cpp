@@ -1727,7 +1727,7 @@ bool    GotoPlan::Execute(Time  now, float  dt, bool bDodge)
 	}
 	if ((m_maskWaypoints & c_wpTarget) && !bDone && m_pship->GetWantBoost()) {
 		if ((m_wpTarget.m_pmodelTarget->GetPosition() - m_pship->GetPosition()).LengthSquared() < 4000000) {
-			stateM & ~afterburnerButtonIGC;
+			stateM &= ~afterburnerButtonIGC;
 			m_pship->SetWantBoost(false);
 		}
 	}
