@@ -8,20 +8,20 @@
 <![CDATA[
 
 // Settings
-/*
+
 var GameName = "Perpetual Brawl DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
 var KillGoal = 35;
 var DebugSpam = false;
-*/
 
+/*
 var GameName = "Bot Testing";
 var ServerName = "Imago-PC";
 var ServerAddr = "192.168.2.2";
 var KillGoal = 15;
 var DebugSpam = true;
-
+*/
 
 var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
