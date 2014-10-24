@@ -2291,11 +2291,12 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     // angled to their target
                     m_controls.jsValues[c_axisThrottle] = 0.5f + ((pi - da) / (2.0f * pi));
 
-                    const float c_fMaxOffAngle = 0.10f; //TODO skillz
+                    const float c_fMaxOffAngle = 0.05f; //TODO skillz
                     float lifespan = m_mountedWeapons[0]->GetLifespan();
 
                     // commenting this to get strafe behavior from the drones BSW 10/28/1999
                    //imago 10/14
+					/*
                     if ((!bDodge) && (t <= lifespan * 0.25f) && fTurnSkill > 0.75f)
                     {
                         //We are close and not dodging anything so ...
@@ -2313,6 +2314,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                                 state |= forwardButtonIGC;
                         }
                     }
+					*/
 
 					//imago dont _try_ to kill low kb pods & keep boost on/off automagically 10/14
 					IshipIGC* targetship = GetMyMission()->GetShip(m_commandTargets[c_cmdPlan]->GetObjectID());
@@ -2326,7 +2328,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
 					if (m_bBoost && da <= c_fMaxOffAngle && !bDodge && bLOS) state |= afterburnerButtonIGC; //TODO skillz
 
                     SetStateBits(~selectedWeaponMaskIGC,
-                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f) 
+                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 1.01f) 
 									&& (!bPod || kb > 3))
                                  ? (state | allWeaponsIGC)
                                  : state);
@@ -2377,7 +2379,7 @@ void    CshipIGC::PlotShipMove(Time          timeStop)
                     }
 
                     SetStateBits(~selectedWeaponMaskIGC,
-                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 1.01f))
+                                 ((da <= c_fMaxOffAngle) && (t <= lifespan * 0.9f))
                                  ? (state | allWeaponsIGC)
                                  : state);
 
