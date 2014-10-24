@@ -2699,6 +2699,21 @@ public:
 		HANDLE hDDVidThread = NULL;
 		ZString pathStr = GetModeler()->GetArtPath() + "/intro.avi";
 
+		// check to see if training has been run before, dont skip intro if not.... imago 10/14
+		HKEY    hKey;
+		DWORD   dwHasRunTraining = 0;
+		DWORD   dwDataSize = sizeof(dwHasRunTraining);
+		if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
+		{
+			RegQueryValueExA(hKey, "HasTrained", NULL, NULL, (LPBYTE)&dwHasRunTraining, &dwDataSize);
+			RegCloseKey(hKey);
+		}
+
+		if (!dwHasRunTraining) {
+			g_bQuickstart = false;
+			g_autoJoin = "";
+		}
+
 		if (!g_bQuickstart && bMovies && !g_bReloaded && !bSoftware &&
 		::GetFileAttributesA(pathStr) != INVALID_FILE_ATTRIBUTES && 
 		!CD3DDevice9::Get()->GetDeviceSetupParams()->iAdapterID) {
