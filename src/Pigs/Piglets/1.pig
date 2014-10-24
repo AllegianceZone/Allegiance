@@ -22,7 +22,7 @@ var KillGoal = 15;
 var DebugSpam = true;
 */
 
-var CivSelection = "Iron Coalition,Dreghklar";  //blank for Random
+var CivSelection = "Iron Coalition,Iron Coalition";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
 /*
 var ShootSkill = 0.05;
