@@ -548,6 +548,10 @@ public:
 		// Now set the art path, performed after initialise, else Modeler isn't valid.
 		GetModeler()->SetArtPath(strArtPath);
 
+		//imago 10/14 - turkey's change to modeler breaks when no hud index is set (go figure)
+		GetModeler()->BuildHudList();
+		GetModeler()->SetStyleHud("SoftwareHUD");
+
 		// load the fonts
 		TrekResources::Initialize(GetModeler());
 
@@ -755,8 +759,9 @@ public:
 
     void AddMineFieldTest()
     {
-        //TRef<Surface> psurface = GetModeler()->LoadSurface("fxminebmp", true);
+        TRef<Surface> psurface = GetModeler()->LoadSurface("fxminebmp", true);
 
+		/* imago's old minefield test for R5 10/14
 		TRef<ZFile> zf = m_pmodeler->GetFile("fxmine.png","",true);
 
 	ZFile * pFile = (ZFile*) zf;
@@ -777,21 +782,20 @@ public:
 				"fxmine", true );
 		psurface->SetColorKey(Color(0, 0, 0));
 		psurface->SetEnableColorKey(true);
+		*/
 
 
-
-		// KG - old version here
-        //for (int index = 0; index < 100; index++) {
-        //    m_pmineFieldGeo = CreateMineFieldGeo(psurface, 1, 100);
-        //    m_pgroupGeo->AddGeo(
-        //        new TransformGeo(
-        //            CreateCullGeo(m_pmineFieldGeo), 
-        //            new TranslateTransform(
-        //                Vector::RandomPosition(1000)
-        //            )
-        //        )
-        //    );
-        //}
+        for (int index = 0; index < 100; index++) {
+            m_pmineFieldGeo = CreateMineFieldGeo(psurface, 1, 100);
+            m_pgroupGeo->AddGeo(
+                new TransformGeo(
+                    CreateCullGeo(m_pmineFieldGeo), 
+                    new TranslateTransform(
+                        Vector::RandomPosition(1000)
+                    )
+                )
+            );
+        }
 
 		//aleph
 		TRef<ThingGeo> pthing = ThingGeo::Create(GetModeler(), GetTime());

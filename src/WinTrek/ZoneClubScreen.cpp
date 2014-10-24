@@ -732,6 +732,9 @@ public:
                 m_pbuttonLeaderboard->SetEnabled(true);
                 m_pbuttonSquads->SetEnabled(!g_bDisableZoneClub);
                 m_pbuttonZoneEvents->SetEnabled(!trekClient.GetCfgInfo().strZoneEventsURL.IsEmpty());
+				//imago 10/14
+				if (g_autoJoin.GetLength())
+					AddEventTarget(&ZoneClubScreen::OnButtonGames, GetWindow(), 0.01f);
             }
         }
     }
