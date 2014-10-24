@@ -1170,7 +1170,7 @@ public:
         // update the join button
         OnSelectMission((MissionInfo*)m_plistPaneGames->GetSelection());
 
-        if (g_bQuickstart)
+        if (g_bQuickstart && g_autoJoin.IsEmpty())
             OnButtonNewGame();
 
         AddEventTarget(&GameScreen::OnListChanged, trekClient.GetMissionList()->GetChangedEvent());
@@ -1691,7 +1691,7 @@ public:
             	GetWindow()->GetPopupContainer()->ClosePopup(NULL);
        	 	GetWindow()->RestoreCursor();
 			//Imago 9/14
-			if (g_autoJoin.GetLength() > 1) {
+			if (g_autoJoin.GetLength()) {
 				DWORD cookie = atoi(g_autoJoin);
 				for  (int i = 0; i < count; i++) {
 					MissionInfo* game = (MissionInfo*)plist->GetItem(i);
@@ -1700,11 +1700,13 @@ public:
 						 break;
 					}
 				}
+				g_bQuickstart = false; //we're done with all that!
+				g_autoJoin = "";
 			} else {
 				//imago 7/5/09
 				//if there are players in the lobby join the most populated server...
 				//OutputDebugString("GetCountInLobby(plist) returned "+ ZString(cPlayers) +"\n");
-				if (cPlayers) {
+				if (cPlayers && g_bQuickstart) {
 					 plist = SortingList(plist, NumPlayerCompare, true);
 					 MissionInfo* game = (MissionInfo*)plist->GetItem(0);
 					 //.. it's not a newb server and not our own game we're actually trying to insta create

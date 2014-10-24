@@ -616,6 +616,7 @@ public:
   CfgInfo() :
 	dwLobbyPort(2302),
 	dwClubPort(2304),
+	strPublicLobby(""), //imago 10/14
 	m_szConfigFile("") // KGJV: fix init value for LAN mode
   {
   }

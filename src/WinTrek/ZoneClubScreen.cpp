@@ -122,7 +122,7 @@ public:
 
         BeginConfigDownload();
 
-        if (g_bQuickstart)
+        if (g_bQuickstart && g_autoJoin.IsEmpty())
 			// mdvalley: &ZoneClubScreen:: needed.
             AddEventTarget(&ZoneClubScreen::OnButtonGames, GetWindow(), 0.01f);
 
@@ -406,7 +406,7 @@ public:
               strcpy(m_szConfig, szConfig);
         }
 
-        if (!g_bDownloadNewConfig || g_bQuickstart)  //imago added quickstart and reordered 7/4/09
+		if (!g_bDownloadNewConfig || (g_bQuickstart && g_autoJoin.IsEmpty()))  //imago added quickstart and reordered 7/4/09 - autojoin 10/14
         {
             debugf("Skipping download of config file due to command-line switch.\n");
             OnConfigDownloadDone(true, false);
@@ -445,7 +445,7 @@ public:
 
     void BeginMessageOfDayDownload()
     {
-        if (!g_bDownloadZoneMessage || g_bQuickstart) //imago 7/4/09
+		if (!g_bDownloadZoneMessage || (g_bQuickstart && g_autoJoin.IsEmpty())) //imago 7/4/09 - autojoin 10/14
         {
             debugf("Skipping download of Message Of the Day due to command-line switch.\n");
             OnMessageOfDayDone(false);
@@ -671,8 +671,8 @@ public:
                     // signal successful update/version already up-to-date
                     OnAutoUpdateSystemTermination(false, false);
 #ifndef _DEBUG
-                    m_pmsgBox = CreateMessageBox("Unable to connect to the Allegiance Zone.  CFG File is missing key components.  Please try again later.");
-                    GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
+                   // m_pmsgBox = CreateMessageBox("Unable to connect to the Allegiance Zone.  CFG File is missing key components.  Please try again later.");
+                   // GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
 #endif
                 }
             }
