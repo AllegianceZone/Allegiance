@@ -2,11 +2,12 @@
 #include "Training.h"
 
 // AGC and AllSrv Includes -- Imago remove 6/21/09, they were for TM7
-#include <agc.h>
-#include <AllSrvModuleIDL.h>
+//#include <agc.h>
+//#include <AllSrvModuleIDL.h>
+//^ had to remove again in 10/14
 
-#include "AdminSessionSecure.h"
-#include "AdminSessionSecureHost.h"
+//#include "AdminSessionSecure.h"
+//#include "AdminSessionSecureHost.h"
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -36,101 +37,103 @@ private:
     TRef<ButtonPane>                    m_pbuttonTrain;
 
 	// Imago remove 6/22/09 (for Live TM7)
-    static  IAdminGamesPtr              m_spAdminGamesPtr;
-    static  IAdminGamePtr               m_spAdminGamePtr;
+	//again on 10/14
+    //static  IAdminGamesPtr              m_spAdminGamesPtr;
+    //static  IAdminGamePtr               m_spAdminGamePtr;
 
     static  int                         m_iMissionNext;
 
 public:
     int                                 m_civID;
 // Imago remove 6/2/09 (for Live TM7)
-    class TrainLiveDialogPopup : 
-        public IPopup, 
-        public EventTargetContainer<TrainLiveDialogPopup>,
-        public TrekClientEventSink
-    {
-    private:
-        TRef<Pane>              m_ppane;
-        TRef<ButtonPane>        m_pbuttonOk;
-        TRef<ButtonPane>        m_pbuttonCancel;
-        TRef<ButtonPane>        m_pbuttonCancel2;
-        TRef<ComboPane>         m_pcomboCiv;
+	/*
+	class TrainLiveDialogPopup :
+		public IPopup,
+		public EventTargetContainer<TrainLiveDialogPopup>,
+		public TrekClientEventSink
+	{
+	private:
+		TRef<Pane>              m_ppane;
+		TRef<ButtonPane>        m_pbuttonOk;
+		TRef<ButtonPane>        m_pbuttonCancel;
+		TRef<ButtonPane>        m_pbuttonCancel2;
+		TRef<ComboPane>         m_pcomboCiv;
 
-        TrainingScreen*         m_pparent;
+		TrainingScreen*         m_pparent;
 
-    public:
+	public:
 
-        TrainLiveDialogPopup (TRef<INameSpace> pns, TrainingScreen* pparent)
-        {
-            m_pparent = pparent;
+		TrainLiveDialogPopup(TRef<INameSpace> pns, TrainingScreen* pparent)
+		{
+			m_pparent = pparent;
 
-            // find the dialog stuff in the namespace
-            CastTo (m_ppane,            pns->FindMember("TrainLiveDialog"));
-            CastTo (m_pbuttonOk,        pns->FindMember("okButtonPane"));
-            CastTo (m_pbuttonCancel,    pns->FindMember("cancelButtonPane"));
-            CastTo (m_pbuttonCancel2,   pns->FindMember("cancelButtonPane2"));
-            CastTo (m_pcomboCiv,        pns->FindMember("civComboPane"));
+			// find the dialog stuff in the namespace
+			CastTo(m_ppane, pns->FindMember("TrainLiveDialog"));
+			CastTo(m_pbuttonOk, pns->FindMember("okButtonPane"));
+			CastTo(m_pbuttonCancel, pns->FindMember("cancelButtonPane"));
+			CastTo(m_pbuttonCancel2, pns->FindMember("cancelButtonPane2"));
+			CastTo(m_pcomboCiv, pns->FindMember("civComboPane"));
 
-            // handle the ok and cancel buttons
+			// handle the ok and cancel buttons
 			// mdvalley: Pointers, Names.
-            AddEventTarget(&TrainingScreen::TrainLiveDialogPopup::OnButtonOk, m_pbuttonOk->GetEventSource());
-            AddEventTarget(&TrainingScreen::TrainLiveDialogPopup::OnButtonCancel, m_pbuttonCancel->GetEventSource());
-            AddEventTarget(&TrainingScreen::TrainLiveDialogPopup::OnButtonCancel, m_pbuttonCancel2->GetEventSource());
+			AddEventTarget(&TrainingScreen::TrainLiveDialogPopup::OnButtonOk, m_pbuttonOk->GetEventSource());
+			AddEventTarget(&TrainingScreen::TrainLiveDialogPopup::OnButtonCancel, m_pbuttonCancel->GetEventSource());
+			AddEventTarget(&TrainingScreen::TrainLiveDialogPopup::OnButtonCancel, m_pbuttonCancel2->GetEventSource());
 
-            // fill in the combo pane of civs
-            m_pcomboCiv->AddItem("Iron Coalition", 25);
-            m_pcomboCiv->AddItem("Bios", 35);
-            m_pcomboCiv->AddItem("Gigacorp", 18);
-            //m_pcomboCiv->AddItem("Belters", 101);
-        }
+			// fill in the combo pane of civs
+			m_pcomboCiv->AddItem("Iron Coalition", 25);
+			m_pcomboCiv->AddItem("Bios", 35);
+			m_pcomboCiv->AddItem("Gigacorp", 18);
+			//m_pcomboCiv->AddItem("Belters", 101);
+		}
 
-        virtual void OnClose()
-        {
-            IPopup::OnClose();
-            debugf("train live popup closed\n");
-        }
+		virtual void OnClose()
+		{
+			IPopup::OnClose();
+			debugf("train live popup closed\n");
+		}
 
-        Pane* GetPane()
-        {
-            return m_ppane;
-        }
+		Pane* GetPane()
+		{
+			return m_ppane;
+		}
 
-        void CloseThePopup (void)
-        {
-            if (m_ppopupOwner) {
-                m_ppopupOwner->ClosePopup(this);
-            } else if (m_pcontainer) {
-                m_pcontainer->ClosePopup(this);
-            }
-            GetWindow()->RestoreCursor();
-        }
-        
-        bool OnButtonOk()
-        {
-            CloseThePopup ();
+		void CloseThePopup(void)
+		{
+			if (m_ppopupOwner) {
+				m_ppopupOwner->ClosePopup(this);
+			}
+			else if (m_pcontainer) {
+				m_pcontainer->ClosePopup(this);
+			}
+			GetWindow()->RestoreCursor();
+		}
 
-            // now 
-            m_pparent->m_civID = m_pcomboCiv->GetSelection ();
-            m_pparent->DoTrainLive ();
-            return true;
-        }
+		bool OnButtonOk()
+		{
+			CloseThePopup();
 
-        bool OnButtonCancel()
-        {
-            CloseThePopup ();
+			// now 
+			m_pparent->m_civID = m_pcomboCiv->GetSelection();
+			m_pparent->DoTrainLive();
+			return true;
+		}
 
-            return true;
-        }
-    };
+		bool OnButtonCancel()
+		{
+			CloseThePopup();
+
+			return true;
+		}
+	};
     
     TRef<TrainLiveDialogPopup>          m_pTrainLivePopup;
-
-
+	*/
 public:
     TrainingScreen(Modeler* pmodeler)
     {
         // terminate existing training game if there was one
-        KillStandaloneGame ();  //no more standalone training game Imago 6/22/09
+        //KillStandaloneGame ();  //no more standalone training game Imago 6/22/09
 
         //
         // exports
@@ -156,7 +159,7 @@ public:
 		CastTo(m_pbuttonTrainMission8,      pns->FindMember("trainMission8ButtonPane"   )); //TheBored 06-JUL-07: nanite mission
         CastTo(m_pbuttonTrain,              pns->FindMember("trainButtonPane"           ));
 
-        m_pTrainLivePopup = new TrainLiveDialogPopup(pns, this); //imago 6/22/09
+        //m_pTrainLivePopup = new TrainLiveDialogPopup(pns, this); //imago 6/22/09
 
         pmodeler->UnloadNameSpace("TrainingScreen");
 
@@ -288,7 +291,7 @@ public:
                 GetWindow ()->screen (ScreenIDTrainSlideshow);
                 break;
             case Training::c_TM_7_Live:
-                TrainLive ();  // imago remove 6/22/09
+                //TrainLive ();  // imago remove 6/22/09
                 break;
         }
         return true;
@@ -435,6 +438,8 @@ public:
     }
 
 	/* Imago remved - we're not using it anymore and it's breaking the new vs express edition (gotta pay up for atl/mfc) */
+	//removed again 10/14 
+	/*
     //////////////////////////////////////////////////////////////////////////////
     //
     // Game Creation Methods
@@ -786,7 +791,7 @@ public:
         if (pstation)
             trekClient.ReplaceLoadout (pstation);
     }
-
+	*/
     //////////////////////////////////////////////////////////////////////////////
 };
 
@@ -797,8 +802,9 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 int             TrainingScreen::m_iMissionNext = Training::c_TM_1_Introduction;
 //imago removed live training mission 6/22/09
-IAdminGamesPtr  TrainingScreen::m_spAdminGamesPtr = 0;
-IAdminGamePtr   TrainingScreen::m_spAdminGamePtr = 0;
+//IAdminGamesPtr  TrainingScreen::m_spAdminGamesPtr = 0;
+//IAdminGamePtr   TrainingScreen::m_spAdminGamePtr = 0;
+
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -620,7 +620,7 @@ public:
             trekClient.GetCfgInfo().Load(m_szConfig);
         }
 
-        if (!m_bErrorOccured || g_bQuickstart) //imago 7/4/09
+        if (!m_bErrorOccured || (g_bQuickstart && g_autoJoin.IsEmpty())) //imago 7/4/09
         {
             if(!g_bSkipAutoUpdate)
             {
@@ -653,6 +653,7 @@ public:
                         //
                         // Let's do it!
                         //
+						g_bQuickstart = false; //imago 10/14
                         trekClient.m_pAutoDownload->BeginUpdate(pAutoUpdateSink, bForceFileCheck, false);
                         // m_pAutoDownload could be NULL at this point, if the autodownload system decided
                         // not to do a download after all.  This can happen if there is an error or if
@@ -669,9 +670,10 @@ public:
                     debugf("Your cfg file is missing one or more of the following:\nFilelistCRC, FilelistSize, FilelistSite, FilelistDirectory\nSkipping AutoUpdate.\n");
                     // signal successful update/version already up-to-date
                     OnAutoUpdateSystemTermination(false, false);
-
-//                    m_pmsgBox = CreateMessageBox("Unable to connect to Zone.  CFG File is missing key components.  Please try again later.");
-//                    GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
+#ifndef _DEBUG
+                    m_pmsgBox = CreateMessageBox("Unable to connect to the Allegiance Zone.  CFG File is missing key components.  Please try again later.");
+                    GetWindow()->GetPopupContainer()->OpenPopup(m_pmsgBox, false);
+#endif
                 }
             }
             else
