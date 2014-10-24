@@ -163,9 +163,11 @@ void CLobbyApp::SendGameInfo()
 			while (!iterMission.End()){
 				CFLMission* mission = iterMission.Value();
 				FMD_LS_LOBBYMISSIONINFO *info = mission->GetMissionInfo();
-				memcpy(PostData + offset,info,info->cbmsg);
-				offset += info->cbmsg;
-				iterMission.Next();
+				if (info) {
+					memcpy(PostData + offset, info, info->cbmsg);
+					offset += info->cbmsg;
+					iterMission.Next();
+				}
 			}
 			iterCnxn.Next();
 		}
