@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "7zTypes.h"
+#include "Types.h"
 
 SRes SeqInStream_Read2(ISeqInStream *stream, void *buf, size_t size, SRes errorType)
 {

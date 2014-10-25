@@ -1251,6 +1251,7 @@ HRESULT FedMessaging::InitDPlayClient()
 	// No longer check version as that is somewhat implicit
 	// in the interfaces - and as Dplay 8 is the last version of Dplay.... :)
 
+
 	return S_OK;
 }
 
@@ -1822,7 +1823,8 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const char * szSer
 	// This is how we pass "what we are looking for" to the enum callback.
 	g_guidApplication = guidApplication;
 
-	// Enumerate all StressMazeApp hosts running on IP service providers
+
+	// Enumerate all StressMazeApp hosts running on IP service providers //imago 10/14 lol @ StressMazeApp copy pasta
 	// mmf 05/07 implement WLP's LAN fix, use sync for LAN game, async otherwise
 
 	if (IsEqualGUID(FEDSRV_STANDALONE_PRIVATE_GUID, guidApplication)) {
@@ -1838,6 +1840,8 @@ HRESULT FedMessaging::EnumHostsInternal(GUID guidApplication, const char * szSer
 			0, INFINITE, 0, 0, NULL,
 			&fillerHandle, 0 );  //Fix memory leak -Imago 8/2/09
 	}
+
+
 
 	// WLP - DPLAY8 def = STDMETHOD(EnumHosts)
 	//  (THIS_ PDPN_APPLICATION_DESC const pApplicationDesc,                     &dpnAppDesc

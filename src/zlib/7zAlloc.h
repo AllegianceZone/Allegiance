@@ -1,38 +1,15 @@
-/* Alloc.h -- Memory allocation functions
-2009-02-07 : Igor Pavlov : Public domain */
+/* 7zAlloc.h -- Allocation functions
+2010-10-29 : Igor Pavlov : Public domain */
 
-#ifndef __COMMON_ALLOC_H
-#define __COMMON_ALLOC_H
+#ifndef __7Z_ALLOC_H
+#define __7Z_ALLOC_H
 
-#include <stddef.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void *SzAlloc(void *p, size_t size);
+void SzFree(void *p, void *address);
 
-void *MyAlloc(size_t size);
-void MyFree(void *address);
-
-#ifdef _WIN32
-
-void SetLargePageSize();
-
-void *MidAlloc(size_t size);
-void MidFree(void *address);
-void *BigAlloc(size_t size);
-void BigFree(void *address);
-
-#else
-
-#define MidAlloc(size) MyAlloc(size)
-#define MidFree(address) MyFree(address)
-#define BigAlloc(size) MyAlloc(size)
-#define BigFree(address) MyFree(address)
-
-#endif
-
-#ifdef __cplusplus
-}
-#endif
+void *SzAllocTemp(void *p, size_t size);
+void SzFreeTemp(void *p, void *address);
 
 #endif

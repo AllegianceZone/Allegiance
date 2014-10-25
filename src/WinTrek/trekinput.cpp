@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Training.h"
 
+#define BUFFSIZE 4096 //imago 10/14
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Forward declaration
@@ -29,6 +31,57 @@ const int ModifierControl = 2;
 const int ModifierAlt     = 4;
 const int ModifierAny     = 8;
 TMap<TrekKey,ZString>		m_KeyStringMap;
+
+//imago 10/14 (again)
+TRef<IMessageBox> pmsgBoxLoad;
+TRef<IMessageBox> pmsgBoxSave;
+typedef struct {
+	CB size;
+	char host[128];
+	char hdrs[512];
+	char uri[128];
+	char verb[16];
+	char data[BUFFSIZE];
+	TRef<IPopup> pPopup;
+} pHTTP;
+DWORD WINAPI HTTPThread(LPVOID param) {
+	pHTTP* settings = (pHTTP*)param;
+	if (Strcmp(settings->verb, "POST") == 0) {
+		ZFile * pfile = new ZFile(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".mdl");
+		if (pfile->IsValid()) {
+			ZString str = ZString((PCC)pfile->GetPointer(), pfile->GetLength());
+			char *buffer = (char*)::VirtualAlloc(NULL, str.GetLength(), MEM_COMMIT, PAGE_READWRITE);
+			int iSize = Create7z((char *)(PCC)str, str.GetLength(), buffer);
+			delete pfile;
+			if (iSize > 0) {
+				memcpy(settings->data, buffer, iSize);
+				settings->size = iSize;
+			}
+			::VirtualFree(buffer, 0, MEM_RELEASE);
+		}
+	}
+	ZString Response = UTL::DoHTTP(settings->hdrs, settings->host, settings->verb, settings->uri, settings->data, settings->size);
+	debugf("!!!! Got response: %s\n", (PCC)Response);
+	if (Strcmp(settings->verb, "POST") == 0) {
+		GetWindow()->GetPopupContainer()->ClosePopup(pmsgBoxSave);
+	}
+	else {
+		ZFile * pz7z = new ZWriteFile(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z");
+		if (pz7z->Write(Response)) {
+			delete pz7z;
+			int iBytes = Extract7z(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z", GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + "_load.mdl");
+			DeleteFileA(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z");
+			if (iBytes > 0) {
+				GetWindow()->GetInput()->LoadMap(INPUTMAP_FILE + ZString("_load"));
+				DeleteFileA(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + "_load.mdl");
+				GetWindow()->GetPopupContainer()->ClosePopup(settings->pPopup);
+			}
+		}
+		GetWindow()->GetPopupContainer()->ClosePopup(pmsgBoxLoad);
+	}
+	GetWindow()->RestoreCursor();
+	return 0;
+}
 
 class TrekInputImpl : public TrekInput {
 public:
@@ -788,15 +841,15 @@ public:
         for (int index = 0; index < TK_Max; index++) {
 			m_boolTrekKeyButtonDown[index] = false;
 			m_boolMouseTrekKeyDown[index] = false;	//8/10 #56
-        // mmf pull yp's changes for now
-			//m_pboolTrekKeyDown[index]       = false; // keyboard // yp - Your_Persona buttons get stuck patch. aug-03-2006
-            //m_ppboolTrekKeyButtonDown[index] = false;
+        // mmf pull yp's changes for now //imago put back 10/14
+			m_pboolTrekKeyDown[index]       = false; // keyboard // yp - Your_Persona buttons get stuck patch. aug-03-2006
+            m_ppboolTrekKeyButtonDown[index] = false;
         }
 		// yp - After that for loop we lose responce from most of our keys.. so..		 
 		// hack.. we reload the map, and something in there fixes it.
-		//if (!LoadMap(INPUTMAP_FILE)) {
-        //    LoadMap(DEFAULTINPUTMAP_FILE);
-        //}
+		if (!LoadMap(INPUTMAP_FILE)) {
+            LoadMap(DEFAULTINPUTMAP_FILE);
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -2226,6 +2279,7 @@ private:
     TRef<ButtonPane>            m_pbuttonCancel;
     TRef<ButtonPane>            m_pbuttonRestore;
     TRef<ButtonPane>            m_pbuttonClose;
+	TRef<ButtonPane>            m_pbuttonLoad; //imago 10/14 (again)
     TRef<ListPane>              m_plistPane;
 
     TRef<EventSourceImpl>       m_peventSource;
@@ -2298,12 +2352,13 @@ public:
         CastTo(m_pbuttonCancel,   pns->FindMember("cancelButton"));
         CastTo(m_pbuttonRestore,  pns->FindMember("restoreButton"));
         CastTo(m_pbuttonClose,    pns->FindMember("closeButton"));
+		CastTo(m_pbuttonLoad,	  pns->FindMember("loadButton")); //imago 10/14 (again)
 
 		// mdvalley: Pointers and class names
         AddEventTarget(&InputMapPopup::OnButtonOK,      m_pbuttonOK->GetEventSource());
         AddEventTarget(&InputMapPopup::OnButtonCancel,  m_pbuttonCancel->GetEventSource());
         AddEventTarget(&InputMapPopup::OnButtonRestore, m_pbuttonRestore->GetEventSource());
-        //AddEventTarget(OnButtonCancel,  m_pbuttonClose->GetEventSource());
+		AddEventTarget(&InputMapPopup::OnButtonLoad,	m_pbuttonLoad->GetEventSource()); //imago 10/14 (again)
 
         //
         // details
@@ -2339,6 +2394,9 @@ public:
         if (!LoadMap(INPUTMAP_FILE)) {
             LoadMap(DEFAULTINPUTMAP_FILE);
         }
+
+		if (trekClient.GetNameLogonZoneServer() == NULL)
+			m_pbuttonLoad->SetEnabled(false);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -2477,10 +2535,63 @@ public:
     bool OnButtonOK()
     {
         SaveMap(INPUTMAP_FILE);
-        Close();
+
+		//imago 10/14
+		if (!strlen(trekClient.GetNameLogonZoneServer())) {
+			Close();
+			return true;
+		}
+
+		pmsgBoxSave = CreateMessageBox("Saving your Keys and Controls to the server...", NULL, false, false);
+		GetWindow()->GetPopupContainer()->OpenPopup(pmsgBoxSave, true);
+
+		ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+		ZString strName = ZString(trekClient.GetNameLogonZoneServer()).Scramble(zInfo);
+
+		pHTTP settings;
+		sprintf(settings.hdrs, "Content-Type: application/octet-stream\r\nUSER: %s\r\n", (PCC)UTL::char2hex((const unsigned char*)(PCC)strName, strName.GetLength()));
+		Strcpy(settings.verb, "POST");
+		Strcpy(settings.uri, "/inputmap.cgi");
+		Strcpy(settings.host, "azforum.cloudapp.net");
+		ZeroMemory(settings.data, BUFFSIZE);
+		settings.data[0] = 0x00;
+		settings.size = 0;
+		debugf("Creating post threa\n");
+
+		DWORD tid;
+		CreateThread(NULL, 0, HTTPThread, (void*)&settings, 0, &tid);
+		Close();
         return true;
     }
 
+	//imago 10/14
+	bool OnButtonLoad()
+	{
+		if (!strlen(trekClient.GetNameLogonZoneServer()))
+			return true;
+
+		pmsgBoxLoad = CreateMessageBox("Loading your Keys and Controls from the server...", NULL, false, false);
+		GetWindow()->GetPopupContainer()->OpenPopup(pmsgBoxLoad, true);
+
+		ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
+		ZString strName = ZString(trekClient.GetNameLogonZoneServer()).Scramble(zInfo);
+
+		pHTTP settings;
+		sprintf(settings.hdrs, "USER: %s\r\n", (PCC)UTL::char2hex((const unsigned char*)(PCC)strName, strName.GetLength()));
+		Strcpy(settings.verb, "GET");
+		Strcpy(settings.uri, "/inputmap.cgi");
+		Strcpy(settings.host, "azforum.cloudapp.net");
+		settings.pPopup = this;
+		ZeroMemory(settings.data, BUFFSIZE);
+		settings.data[0] = 0x00;
+		settings.size = 0;
+
+		debugf("Creating get thread\n");
+		DWORD tid;
+		HANDLE getThread = CreateThread(NULL, 0, HTTPThread, (void*)&settings, 0, &tid);
+
+		return true;
+	}
     bool OnButtonCancel()
     {
         Close();

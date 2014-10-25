@@ -39,6 +39,8 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 				InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlags, &dwBuffLen);
 				dwFlags |= SECURITY_FLAG_IGNORE_UNKNOWN_CA;
 				InternetSetOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,&dwFlags,sizeof(dwFlags));
+				if (PostLength == 0)
+					PostData = NULL;
 				if(HttpSendRequestA(hRequest,szHdrs,strlen(szHdrs),PostData,PostLength))
 				{	
 					char pcBuffer[4096];
@@ -51,7 +53,7 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 						{
 							pcBuffer[dwBytesRead]=0x00; // Null-terminate buffer
 							debugf("%s", pcBuffer);
-							ZString Response(pcBuffer);
+							ZString Response(pcBuffer, (int)dwBytesRead);
 							return Response;
 						}
 						else
@@ -368,7 +370,26 @@ int UTL::hextoi(const char * pHex)
     return n;
 }
 
+//imago 10/14 (again)
+ZString UTL::char2hex(const unsigned char* _pArray, unsigned int _len)
+{
+	const size_t _h2alen = 256;
+	char _hex2asciiU_value[_h2alen][3];
+	for (int i = 0; i<_h2alen; i++) {
+		_snprintf(_hex2asciiU_value[i], 3, "%02X", i);
+	}
 
+	ZString str;
+	str.SetEmpty();
+	const unsigned char* pEnd = _pArray + _len;
+	const char* pHex = _hex2asciiU_value[0];
+	int iUnused = 1;
+	for (const unsigned char* pChar = _pArray; pChar != pEnd; pChar++, iUnused += 2) {
+		str += _hex2asciiU_value[*pChar][0];
+		str += _hex2asciiU_value[*pChar][1];
+	}
+	return str;
+}
 
 /*-------------------------------------------------------------------------
  * CompareFileVersion

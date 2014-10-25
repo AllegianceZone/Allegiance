@@ -1251,6 +1251,7 @@ class UTL
 		static void SetPrivilegedUsers(const char * szPrivilegedUsers, DWORD dwCookie);
 		static ZString GetPrivilegedUsers(DWORD dwCookie);
 		static bool PrivilegedUser(const char* szName, DWORD dwCookie); 
+		static ZString char2hex(const unsigned char* _pArray, unsigned int _len); //imago 10/14 (again)
 
         //Get an artwork file, downloading if needed
         //  S_OK    ... file exists and has a non-zero length

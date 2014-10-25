@@ -14,7 +14,7 @@
 #include <stdio.h>
 #endif
 
-#include "7zTypes.h" //Imago 7/10 was "Types.h"
+#include "Types.h"
 
 EXTERN_C_BEGIN
 
