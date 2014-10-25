@@ -396,6 +396,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\src\zlib\7zMyAlloc.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\src\zlib\7zStream.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">NotUsing</PrecompiledHeader>
@@ -455,6 +459,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\zlib\7zAlloc.h" />
     <ClInclude Include="..\src\zlib\7zFile.h" />
+    <ClInclude Include="..\src\zlib\7zMyAlloc.h" />
     <ClInclude Include="..\src\zlib\7zTypes.h" />
     <ClInclude Include="..\src\zlib\alloc.h" />
     <ClInclude Include="..\src\zlib\AutoCriticalSection.h" />
@@ -491,6 +496,7 @@
     <ClInclude Include="..\src\zlib\tref.h" />
     <ClInclude Include="..\src\zlib\tstack.h" />
     <ClInclude Include="..\src\zlib\tvector.h" />
+    <ClInclude Include="..\src\zlib\Types.h" />
     <ClInclude Include="..\src\zlib\vector.h" />
     <ClInclude Include="..\src\zlib\VersionInfo.h" />
     <ClInclude Include="..\src\zlib\vertex.h" />
