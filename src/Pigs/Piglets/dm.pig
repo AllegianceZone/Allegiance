@@ -9,7 +9,7 @@
 
 // Settings
 
-var GameName = "Perpetual Brawl DM";
+var GameName = "Perpetual Bot DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
 var KillGoal = 35;
