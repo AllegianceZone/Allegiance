@@ -1,3 +1,14 @@
+Revision: 5b8ebd2a5b0f3e382d078d9618699eb05b756a60
+Author: ImagoTrigger <imagotrigger@gmail.com>
+Date: 10/29/2014 06:02:05
+Message:
+hmmm, more on this alloc issue...
+----
+Modified: VS2013/Allegiance.vcxproj
+Modified: VS2013/ZLibrary.vcxproj
+Modified: src/WinTrek/trekinput.cpp
+Modified: src/zlib/minidump.cpp
+
 Version 1.2 Release (02/26/2004)
 --------------------------------
 The release is a refresh that adds additional files in the \test folder. "Pigs" were the bots the Allegiance team used for testing Allegiance. These are mostly sample scripts which will be helpful in both testing and developing intelligent drones.” 
