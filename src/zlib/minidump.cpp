@@ -4,6 +4,7 @@
 #include "7zFile.h"
 #include "LzmaEnc.h"
 #include "LzmaDec.h"
+#include "Types.h"
 
 ZString GetAppDir() {
 	char szPathName[MAX_PATH+48] = "";
@@ -201,11 +202,13 @@ int Create7z(char * in, int srcLen, char * out) {
 	size_t destLen = -1;
 	Byte * bout = new Byte[srcLen];
 	ZeroMemory(bout,srcLen);
-	int size = LzmaEncode((Byte*)bout, &destLen, (Byte*)in,  srcLen, &props, header, &headerSize, 1, NULL, &g_Alloc, &g_Alloc);
-	for (int i = 0; i < 8; i++)
-      header[headerSize++] = (Byte)(srcLen >> (8 * i));
-	memcpy(out,header,headerSize);
-	memcpy(out+headerSize,bout,destLen);
+	if (SZ_OK == LzmaEncode((Byte*)bout, &destLen, (Byte*)in, srcLen, &props, header, &headerSize, 1, NULL, &g_Alloc, &g_Alloc)) {
+		for (int i = 0; i < 8; i++)
+		  header[headerSize++] = (Byte)(srcLen >> (8 * i));
+
+		memcpy(out,header,headerSize);
+		memcpy(out+headerSize,bout,destLen);
+	}
 	return destLen + headerSize;
 }
 

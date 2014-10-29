@@ -44,44 +44,6 @@ typedef struct {
 	char data[BUFFSIZE];
 	TRef<IPopup> pPopup;
 } pHTTP;
-DWORD WINAPI HTTPThread(LPVOID param) {
-	pHTTP* settings = (pHTTP*)param;
-	if (Strcmp(settings->verb, "POST") == 0) {
-		ZFile * pfile = new ZFile(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".mdl");
-		if (pfile->IsValid()) {
-			ZString str = ZString((PCC)pfile->GetPointer(), pfile->GetLength());
-			char *buffer = (char*)::VirtualAlloc(NULL, str.GetLength(), MEM_COMMIT, PAGE_READWRITE);
-			int iSize = Create7z((char *)(PCC)str, str.GetLength(), buffer);
-			delete pfile;
-			if (iSize > 0) {
-				memcpy(settings->data, buffer, iSize);
-				settings->size = iSize;
-			}
-			::VirtualFree(buffer, 0, MEM_RELEASE);
-		}
-	}
-	ZString Response = UTL::DoHTTP(settings->hdrs, settings->host, settings->verb, settings->uri, settings->data, settings->size);
-	debugf("!!!! Got response: %s\n", (PCC)Response);
-	if (Strcmp(settings->verb, "POST") == 0) {
-		GetWindow()->GetPopupContainer()->ClosePopup(pmsgBoxSave);
-	}
-	else {
-		ZFile * pz7z = new ZWriteFile(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z");
-		if (pz7z->Write(Response)) {
-			delete pz7z;
-			int iBytes = Extract7z(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z", GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + "_load.mdl");
-			DeleteFileA(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z");
-			if (iBytes > 0) {
-				GetWindow()->GetInput()->LoadMap(INPUTMAP_FILE + ZString("_load"));
-				DeleteFileA(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + "_load.mdl");
-				GetWindow()->GetPopupContainer()->ClosePopup(settings->pPopup);
-			}
-		}
-		GetWindow()->GetPopupContainer()->ClosePopup(pmsgBoxLoad);
-	}
-	GetWindow()->RestoreCursor();
-	return 0;
-}
 
 class TrekInputImpl : public TrekInput {
 public:
@@ -2404,6 +2366,45 @@ public:
     // methods
     //
     //////////////////////////////////////////////////////////////////////////////
+
+	static DWORD WINAPI HTTPThread(LPVOID param) {
+		pHTTP* settings = (pHTTP*)param;
+		if (Strcmp(settings->verb, "POST") == 0) {
+			ZFile * pfile = new ZFile(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".mdl");
+			if (pfile->IsValid()) {
+				ZString str = ZString((PCC)pfile->GetPointer(), pfile->GetLength());
+				char *buffer = (char*)::VirtualAlloc(NULL, str.GetLength(), MEM_COMMIT, PAGE_READWRITE);
+				int iSize = Create7z((char *)(PCC)str, str.GetLength(), buffer);
+				delete pfile;
+				if (iSize > 0) {
+					memcpy(settings->data, buffer, iSize);
+					settings->size = iSize;
+				}
+				::VirtualFree(buffer, 0, MEM_RELEASE);
+			}
+		}
+		ZString Response = UTL::DoHTTP(settings->hdrs, settings->host, settings->verb, settings->uri, settings->data, settings->size);
+		debugf("!!!! Got response: %s\n", (PCC)Response);
+		if (Strcmp(settings->verb, "POST") == 0) {
+			GetWindow()->GetPopupContainer()->ClosePopup(pmsgBoxSave);
+		}
+		else {
+			ZFile * pz7z = new ZWriteFile(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z");
+			if (pz7z->Write(Response)) {
+				delete pz7z;
+				int iBytes = Extract7z(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z", GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + "_load.mdl");
+				DeleteFileA(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + ".7z");
+				if (iBytes > 0) {
+					GetWindow()->GetInput()->LoadMap(INPUTMAP_FILE + ZString("_load"));
+					DeleteFileA(GetModeler()->GetArtPath() + "/" + INPUTMAP_FILE + "_load.mdl");
+					GetWindow()->GetPopupContainer()->ClosePopup(settings->pPopup);
+				}
+			}
+			GetWindow()->GetPopupContainer()->ClosePopup(pmsgBoxLoad);
+		}
+		GetWindow()->RestoreCursor();
+		return 0;
+	}
 
     void SetMessage(const ZString& str = ZString())
     {
