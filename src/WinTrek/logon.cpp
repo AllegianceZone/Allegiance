@@ -149,7 +149,8 @@ public:
     bool OnButtonSignUp()
     {
 		// KGJV - Alleg.net registration
-        GetWindow()->ShowWebPage("http://forum.allegiancezone.com/signup");
+		//imago 6/15
+        GetWindow()->ShowWebPage("http://allegiancezone.com/signup");
         return true;
     }
 
