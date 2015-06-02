@@ -2897,7 +2897,7 @@ public:
         // Create the virtual joystick image
         //
 
-        m_pjoystickImage = CreateJoystickImage(1.0f / 2048.0f);
+        m_pjoystickImage = CreateJoystickImage(1.0f / 512.0f);
 
         //
         // Initialize what's needed to show the splash screen
