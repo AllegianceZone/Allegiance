@@ -8,12 +8,20 @@
 <![CDATA[
 
 // Settings
+/*
 var GameName = "Perpetual 1v1 DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
 var KillGoal = 99;
 var DebugSpam = false;
-
+*/
+/*
+var GameName = "Perpetual 1v1 DM";
+var ServerName = "WIN-2CMGQR70Q91";
+var ServerAddr = "69.220.31.83";
+var KillGoal = 99;
+var DebugSpam = true;
+*/
 /*
 var GameName = "Bot Testing";
 var ServerName = "Imago-PC";
@@ -22,8 +30,15 @@ var KillGoal = 15;
 var DebugSpam = true;
 */
 
+var GameName = "Perpetual 1v1 DM";
+var ServerName = "zonegamewest";
+var ServerAddr = "168.62.196.51";
+var KillGoal = 99;
+var DebugSpam = true;
+
 var CivSelection = "Iron Coalition,Iron Coalition";  //blank for Random
 var ShipSelection = "Hvy Interceptor";
+
 /*
 var ShootSkill = 0.05;
 var TurnSkill = 0.05;
