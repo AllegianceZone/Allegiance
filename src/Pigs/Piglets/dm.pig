@@ -9,11 +9,21 @@
 
 // Settings
 
+
+var GameName = "Perpetual Bot DM";
+var ServerName = "zonegamewest";
+var ServerAddr = "168.62.196.51";
+var KillGoal = 99;
+var DebugSpam = true;
+
+/*
 var GameName = "Perpetual Bot DM";
 var ServerName = "azbuildslave";
 var ServerAddr = "191.239.1.217";
 var KillGoal = 35;
 var DebugSpam = false;
+*/
+
 
 /*
 var GameName = "Bot Testing";
