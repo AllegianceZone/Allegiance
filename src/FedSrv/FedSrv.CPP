@@ -4806,6 +4806,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 		  {
 			if (pfsMission->GetStage() == STAGE_STARTED) //Spunky #177
 			{
+				/*
               if (pfmChat->cbMessage > strlen("#resign") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#resign", strlen("#resign")) == 0)
               {
 				// mmf/KGJV 09/07 allow only one ballot of each type at a time
@@ -4815,7 +4816,10 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 					NA, "Resign vote already in progress...");
                 bForward = false;
               }
-              else if (pfmChat->cbMessage > strlen("#draw") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#draw", strlen("#draw")) == 0)
+              else
+              */
+              // ^-- imago commented out resign 7/15
+              if (pfmChat->cbMessage > strlen("#draw") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#draw", strlen("#draw")) == 0)
               {
 				// mmf/KGJV 09/07 allow only one ballot of each type at a time
 				if (!pfsMission->HasBallots(BALLOT_OFFERDRAW))
@@ -4892,7 +4896,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 			  if (pfsMission->GetStage() == STAGE_STARTED)
 			  {
 				  pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
-					  NA, "#draw | #resign | #autoaccept | #autobalance [1|2|a|n] | #ban | #mutiny");
+					  NA, "#draw | #autoaccept | #autobalance [1|2|a|n] | #ban | #mutiny");
 				  bForward = false;
 			  }
 			  else if (pfsMission->GetStage() == STAGE_NOTSTARTED)
@@ -5482,7 +5486,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
           && NULL != memchr(FM_VAR_REF(pfmLogon, CharacterName), 0, c_cbName));
       TrapHackBootNoPlayer(NULL == FM_VAR_REF(pfmLogon, MissionPassword)
           || NULL != memchr(FM_VAR_REF(pfmLogon, MissionPassword), 0, c_cbGamePassword));
-      
+
 	  TrapHackBootNoPlayer(NULL != FM_VAR_REF(pfmLogon, CDKey)
           && NULL != memchr(FM_VAR_REF(pfmLogon, CDKey), 0, c_cbCDKey));
 
