@@ -137,9 +137,10 @@ public:
   }
 
   //Orion ACSS : 2009 - Made more generic
-  bool EnforceAuthentication()
+  // BT - 7/15 - CSS Integration
+  bool IsCssAuthenticationEnabled()
   {
-      return (m_dwAuthentication) ? true : false;
+	  return (m_dwCssAuthenticationEnabled > 0) ? true : false;
   }
 
   char* RetrieveAuthAddress()
@@ -152,6 +153,24 @@ public:
   bool IsFreeLobby()
   {
 	  return m_fFreeLobby;
+  }
+
+  // BT - 7/15 - CSS Service integration
+  char * GetCssServerDomain()
+  {
+	  return m_szCssServerDomain;
+  }
+
+  // BT - 7/15 - CSS Service integration
+  char * GetCssClientServicePath()
+  {
+	  return m_szCssClientServicePath;
+  }
+
+  // BT - 7/15 - CSS Service integration
+  char * GetCssLobbyServicePath()
+  {
+	  return m_szCssLobbyServicePath;
   }
 
   // BT - 12/21/2010 - ACSS integration
@@ -257,8 +276,11 @@ private:
   bool              m_fFreeLobby;
   bool              m_fCheckCDKey;
   char              m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
-  DWORD             m_dwAuthentication;
+  DWORD             m_dwCssAuthenticationEnabled;
   char				m_szAuthenticationLocation[261];
+  char				m_szCssServerDomain[2064];
+  char				m_szCssClientServicePath[2064];
+  char				m_szCssLobbyServicePath[2064];
 
   // Player list stuff
   typedef std::multimap<ZString, PlayerLocInfo, StringCmpLess> PlayerByCDKey;

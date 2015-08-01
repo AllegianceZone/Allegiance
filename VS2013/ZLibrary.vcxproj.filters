@@ -48,6 +48,7 @@
     <ClCompile Include="..\src\zlib\7zMyAlloc.c">
       <Filter>7z</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\zlib\ZDirectory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\zlib\alloc.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\src\zlib\7zMyAlloc.h">
       <Filter>7z</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\zlib\ZDirectory.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="7z">

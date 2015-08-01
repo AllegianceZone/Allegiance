@@ -242,9 +242,33 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
     }
     break;
 
-    case FM_S_HEARTBEAT:
-      // don't boot for missing roll call until we get one from them
-      pServer->SetHere();
+	case FM_S_HEARTBEAT:
+	{
+		// don't boot for missing roll call until we get one from them
+		pServer->SetHere();
+
+		// BT - 7/15 - CSS Integration \/ \/ \/
+		// Pull back a list of all bans since the last heartbeat from this server, and then send them down to the server.
+		char * lastBanCheckTimestamp = pServer->GetLastBanCheckTimestamp();
+
+		char lastBanList[4096];
+		char currentTimestamp[32];
+		CssGetBanListSinceTimestamp(lastBanCheckTimestamp, currentTimestamp, lastBanList);
+		pServer->SetLastBanCheckTimestamp(currentTimestamp);
+
+		if (strlen(lastBanList) > 0)
+		{
+			debugf("FM_S_HEARTBEAT: ban list = %s", lastBanList);
+
+			BEGIN_PFM_CREATE(*pthis, pfmBanUpdate, LS, BAN_UPDATE)
+			END_PFM_CREATE
+
+			strcpy(pfmBanUpdate->szBanList, lastBanList);
+
+			pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
+		}
+		// BT - 7/15 - CSS Integration /\ /\ /\
+	}
     break;
     
     case FM_S_PLAYER_JOINED:
@@ -325,7 +349,9 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		const char* szCharacterName = FM_VAR_REF(pfmPlayerRankRequest, szCharacterName);
 		const char* szReason = FM_VAR_REF(pfmPlayerRankRequest, szReason);
 		const char* szPassword = FM_VAR_REF(pfmPlayerRankRequest, szPassword);
-		const char* szCDKey = FM_VAR_REF(pfmPlayerRankRequest, szCDKey);
+		
+		// BT - 7/15 - CSS Integration
+		char* szCDKey = FM_VAR_REF(pfmPlayerRankRequest, szCDKey);
 
 		char szRankName[50];
 		int rankNameLen = sizeof(szRankName);
@@ -336,10 +362,12 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		double commandSigma = 0;
 		double commandMu = 0;
 		bool rankRetrieved = false;
-/*
-		if(g_pLobbyApp->EnforceAuthentication() == true)
+
+		// BT - 7/15 - CSS Integration
+		if (g_pLobbyApp->IsCssAuthenticationEnabled() == true)
 		{
-			rankRetrieved = g_pLobbyApp->GetRankForCallsign(
+			rankRetrieved = CssGetRankForCallsign(
+				g_pLobbyApp,
 				szCharacterName, 
 				&rank,
 				&sigma,
@@ -352,7 +380,6 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		}
 		else
 		{
-		*/
 			// BT - 1/27/2012 - Enables lobby to return ranks when ACSS is disabled using old callsign(rank) format.
 			rankRetrieved = true;
 
@@ -372,7 +399,18 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 					rank = atoi(rankString);
 				}
 			}
-		//}
+		}
+
+		// BT - 7/15 - CSS Integration
+		// Push the  user's loginUserName down to the server to support bans.
+		if (g_pLobbyApp->IsCssAuthenticationEnabled() == true)
+		{
+			char szUsername[100];
+			if (CssGetUsernameForUsernameOrCallsign(g_pLobbyApp, (char *)szCharacterName, szUsername, (char *) szReason) == true)
+			{
+				strcpy(szCDKey, szUsername);
+			}
+		}
 
 		BEGIN_PFM_CREATE(*pthis, pfmPlayerRankResponse, LS, PLAYER_RANK)
 			FM_VAR_PARM(PCC(szCharacterName), CB_ZTS) 
@@ -406,7 +444,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		// Set the rank to be invalid to play on any server if there was any error retrieving the rank.
 		if(rankRetrieved == false)
 			pfmPlayerRankResponse->rank = -2;
-		
+
 		debugf("Client: %s from <%s> at time %u. Rank: %ld\n", g_rgszMsgNames[pfm->fmid], cnxnFrom.GetName(), Time::Now(), pfmPlayerRankResponse->rank);
 
 		pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
@@ -503,6 +541,9 @@ CFLServer::CFLServer(CFMConnection * pcnxn) :
   m_pCounters = g_pLobbyApp->AllocatePerServerCounters(pcnxn->GetName());  
 
   Strcpy(m_szLocation,"unknown"); // KGJV #114 - default location
+
+  // BT - 7/15 - CSS Integration
+  sprintf(m_szLastBanCheckTimestamp, "0");
 }
 
 CFLServer::~CFLServer()

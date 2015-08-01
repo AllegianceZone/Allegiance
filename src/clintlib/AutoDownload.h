@@ -231,46 +231,69 @@ public:
       char szSource[MAX_PATH+20];
       char szDest[MAX_PATH+20];
 
-      while (INVALID_HANDLE_VALUE != hsearchFiles)
-      {
-        // skip directory listings "." and ".."; and filelist (filelist is moved last)
-        if (finddata.cFileName[0] != '.' &&
-            _stricmp(finddata.cFileName, "FileList.txt") != 0 &&
-            (!pSink || !pSink->ShouldFilterFile(finddata.cFileName)))
-        {
-            // setup move paths
-            strcpy(szSource, szTempPath);
-            strcat(szSource, finddata.cFileName);
-            GetFileNameWithPath(szDest, finddata.cFileName, szArtPath, ".\\");
+	  while (INVALID_HANDLE_VALUE != hsearchFiles)
+	  {
+		  if (finddata.cFileName[0] != '.' && (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
+		  {
+			  char szSubpathSource[MAX_PATH + 20];
+			  char szSubpathDest[MAX_PATH + 20];
 
-            // Move files to their dest
-            if (!MoveFilePrivate(szSource, szDest, bSkipSharingViolation, &bFilesWereSkipped, szErrorMsg, pSink))
-                return false;
+			  strcpy(szSubpathSource, szTempPath);
+			  strcat(szSubpathSource, finddata.cFileName);
+			  strcat(szSubpathSource, "\\");
 
-            // consider registering special files
-            if(pSink && pSink->ShouldRegister(szDest))
-            {
-              int nExitCode = pSink->RegisterFile(szDest);
+			  strcpy(szSubpathDest, szArtPath_);
+			  strcat(szSubpathDest, finddata.cFileName);
+			  strcat(szSubpathDest, "\\");
 
-              if (nExitCode != 0)
-              {
-                // registration failed; move file back so autoupdate attempts to register later; then abort
-                MoveFileA(szDest, szSource);
+			  // BT - 7/15 - build any subdirectories that the update might contain.
+			  ZDirectory::EnsureDirectoryExistsForFilename(szSubpathDest);
 
-                if (szErrorMsg)
-                    sprintf(szErrorMsg, "Failed to Register file %s; registration exit code(%d)", finddata.cFileName, nExitCode);
+			  if (MoveFiles(szSubpathSource, szSubpathDest, bSkipSharingViolation, pbFilesWereSkipped, bNoRegistryWrite, szErrorMsg, pSink) == false)
+				  return false;
 
-                return false;
-              }
-            }
-        }
+			  RemoveDirectoryA(szSubpathSource);
+		  }
 
-        if (!FindNextFileA(hsearchFiles, &finddata))
-        {
-          FindClose(hsearchFiles);
-          hsearchFiles = INVALID_HANDLE_VALUE;
-        }
-      }
+
+		  // skip directory listings "." and ".."; and filelist (filelist is moved last)
+		  else if (finddata.cFileName[0] != '.' &&
+			  _stricmp(finddata.cFileName, "FileList.txt") != 0 &&
+			  (!pSink || !pSink->ShouldFilterFile(finddata.cFileName)))
+		  {
+			  // setup move paths
+			  strcpy(szSource, szTempPath);
+			  strcat(szSource, finddata.cFileName);
+			  GetFileNameWithPath(szDest, finddata.cFileName, szArtPath, ".\\");
+
+			  // Move files to their dest
+			  if (!MoveFilePrivate(szSource, szDest, bSkipSharingViolation, &bFilesWereSkipped, szErrorMsg, pSink))
+				  return false;
+
+			  // consider registering special files
+			  if (pSink && pSink->ShouldRegister(szDest))
+			  {
+				  int nExitCode = pSink->RegisterFile(szDest);
+
+				  if (nExitCode != 0)
+				  {
+					  // registration failed; move file back so autoupdate attempts to register later; then abort
+					  MoveFileA(szDest, szSource);
+
+					  if (szErrorMsg)
+						  sprintf(szErrorMsg, "Failed to Register file %s; registration exit code(%d)", finddata.cFileName, nExitCode);
+
+					  return false;
+				  }
+			  }
+		  }
+
+		  if (!FindNextFileA(hsearchFiles, &finddata))
+		  {
+			  FindClose(hsearchFiles);
+			  hsearchFiles = INVALID_HANDLE_VALUE;
+		  }
+	  }
 
       //
       // finish off with moving the filelist; if no files were skipped; if files were skipped, then reloader

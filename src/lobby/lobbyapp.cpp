@@ -200,8 +200,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
   m_sGameInfoInterval(30), // doesn't really matter, but...
   m_fProtocol(true),
   m_cStaticCoreInfo(0),
-  m_vStaticCoreInfo(NULL),
-  m_dwAuthentication(0)
+  m_vStaticCoreInfo(NULL)
 #ifdef USECLUB
   ,
   m_csqlSilentThreads(0),
@@ -259,6 +258,7 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 
     DWORD dwFreeLobby;
     bSuccess = _Module.ReadFromRegistry(hk, false, "fFreeLobby", &dwFreeLobby, (unsigned long) 
+
 #ifdef USECLUB
     false
 #else    
@@ -266,6 +266,19 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 #endif    
     );
     m_fFreeLobby = !!dwFreeLobby;
+
+	// BT - 7/15 - CSS Service integration
+	m_szCssServerDomain[0] = '\0';
+	bSuccess = _Module.ReadFromRegistry(hk, true, "CssServerDomain", m_szCssServerDomain, NULL);
+
+	m_szCssClientServicePath[0] = '\0';
+	bSuccess = _Module.ReadFromRegistry(hk, true, "CssClientServicePath", m_szCssClientServicePath, NULL);
+
+	m_szCssLobbyServicePath[0] = '\0';
+	bSuccess = _Module.ReadFromRegistry(hk, true, "CssLobbyServicePath", m_szCssLobbyServicePath, NULL);
+
+	m_dwCssAuthenticationEnabled = 0;
+	bSuccess = _Module.ReadFromRegistry(hk, true, "CssAuthenticationEnabled", &m_dwCssAuthenticationEnabled, 0);
 
     DWORD dwCheckKey;
     bSuccess = _Module.ReadFromRegistry(hk, false, "fCheckCDKey", &dwCheckKey, (unsigned long) 
@@ -366,11 +379,16 @@ HRESULT CLobbyApp::Init()
     // read AutoUpdate portion of registry
     DWORD dwWantAutoDownload;
     bool bSuccess = _Module.ReadFromRegistry(hk, false, "AutoUpdateActive", &dwWantAutoDownload, 0);
+
     if(bSuccess && dwWantAutoDownload)
     {
       char szFileName[MAX_PATH+16];
-      strcpy(szFileName, _Module.GetModulePath());
-      Strcat(szFileName, "FileList.txt");
+	  strcpy(szFileName, _Module.GetModulePath());
+	  Strcat(szFileName, "FileList.txt");
+
+	  // BT - 7/15 - Enable to lobby to use a FileList.txt from the AutoUpdate folder instead of from the lobby folder. This way, only a single FileList.txt is required.
+	  _Module.ReadFromRegistry(hk, true, "AutoUpdateFileListLocation", szFileName, (DWORD)szFileName, false);
+
       CreateAutoUpdate(hk, szFileName);
     }
     else 
@@ -798,7 +816,7 @@ bool CLobbyApp::CDKeyIsValid(const char* szPlayerName, const char* szCDKey, cons
 void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, CFLMission* pMission, const char* szAddress)
 {
 
-	debugf("SetPlayerMission(): Setting player mission for: %s", szPlayerName);
+	debugf("SetPlayerMission(): Setting player mission for: %s, CDKey: %s", szPlayerName, szCDKey);
 
   ZString strPlayerName = szPlayerName;
   ZString strCDKey = szCDKey;
@@ -809,7 +827,8 @@ void CLobbyApp::SetPlayerMission(const char* szPlayerName, const char* szCDKey, 
   BootPlayersByName(strPlayerName);
 #endif
 
-  if(EnforceAuthentication() == true)
+  // BT - 7/15 - CSS Integration
+  if (IsCssAuthenticationEnabled() == true)
   {
 	  // BT - 9/11/2010 - Readding CD Key Auth on player join to the Allegiance server.
 	int resultMessageLength = 1024;

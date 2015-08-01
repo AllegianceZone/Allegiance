@@ -24,6 +24,7 @@
 
 #include "..\Zlib\zassert.h" //Imago 6/10
 #include "..\Zlib\FTPSession.h"
+#include "..\Zlib\ZDirectory.h" // BT - 7/15 - CSS Integration
 #include "..\Clintlib\AutoDownload.h" // don't included in pch because build process doesn't realize
                                       // when AutoDownload.h changes, and since this project
                                       // only has one cpp file, a pch doesn't help anyway (except

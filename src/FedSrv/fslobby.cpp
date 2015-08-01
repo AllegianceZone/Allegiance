@@ -207,7 +207,11 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 		CASTPFM(pfmPlayerRank, LS, PLAYER_RANK, pfm);
 
+		// BT - 7/15 - CSS Integration
+		// The CDKey will be overwritten with the player's login name from the CSS system if CssAuthentication is turned on 
+		// at the lobby. This will enable CSS to perform bans through the CSS web tool directly to the game server.
 		Strcpy(pqd->szCDKey, FM_VAR_REF(pfmPlayerRank, szCDKey));
+
 		Strcpy(pqd->szCharacterName, FM_VAR_REF(pfmPlayerRank, szCharacterName));
 		Strcpy(pqd->szPassword, FM_VAR_REF(pfmPlayerRank, szPassword));
 		Strcpy(pqd->szReason, FM_VAR_REF(pfmPlayerRank, szReason));
@@ -227,6 +231,35 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		pqd->commandMu = pfmPlayerRank->commandMu;
 
 		PostThreadMessage(g.idReceiveThread, wm_sql_querydone, (WPARAM) NULL, (LPARAM) pquery);
+		break;
+	}
+
+	// BT - 7/15 - CSS Integration
+	// Enable the lobby to send bans directly to the server. The bans are done by a pipe delimited list of CD keys.
+	// When the system is using CSS, then this list will be a pipe delimited list of usernames of the users CSS identities. 
+	case FM_LS_BAN_UPDATE:
+	{
+		CQLogonStats * pquery = new CQLogonStats(GotLogonDetails);
+		CQLogonStatsData * pqd = pquery->GetData();
+
+		CASTPFM(pfmBanUpdate, LS, BAN_UPDATE, pfm);
+
+		// Process the ban list, and kick off any users by using their CDKeys.
+		for (char *cdKey = strtok(pfmBanUpdate->szBanList, "|"); cdKey != NULL; cdKey = strtok(NULL, "|"))
+		{
+			const ListFSMission * plistMission = CFSMission::GetMissions();
+			for (LinkFSMission * plinkMission = plistMission->first(); plinkMission; plinkMission = plinkMission->next())
+			{
+				CFSMission * pfsMission = plinkMission->data();
+				
+				if(pfsMission->RemovePlayerByCDKey(cdKey, QuitSideReason::QSR_AdminBooted, "You have been removed from the game by a server administrator.") == true)
+					debugf("Removed player with CDKey: %s from a mission.\r\n", cdKey);
+			}
+		}
+
+		//Strcpy(pqd->szCDKey, pfmUsernameUpdate->szUsername);
+		
+		PostThreadMessage(g.idReceiveThread, wm_sql_querydone, (WPARAM)NULL, (LPARAM)pquery);
 		break;
 	}
 

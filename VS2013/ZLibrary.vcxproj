@@ -471,6 +471,7 @@
     <ClCompile Include="..\src\zlib\VersionInfo.cpp" />
     <ClCompile Include="..\src\zlib\Win32app.cpp" />
     <ClCompile Include="..\src\zlib\window.cpp" />
+    <ClCompile Include="..\src\zlib\ZDirectory.cpp" />
     <ClCompile Include="..\src\zlib\zlib.cpp" />
     <ClCompile Include="..\src\zlib\zstring.cpp" />
     <ClCompile Include="..\src\zlib\ztime.cpp" />
@@ -523,6 +524,7 @@
     <ClInclude Include="..\src\zlib\winstyles.h" />
     <ClInclude Include="..\src\zlib\zadapt.h" />
     <ClInclude Include="..\src\zlib\zassert.h" />
+    <ClInclude Include="..\src\zlib\ZDirectory.h" />
     <ClInclude Include="..\src\zlib\zlib.h" />
     <ClInclude Include="..\src\zlib\zmath.h" />
     <ClInclude Include="..\src\zlib\zreg.h" />

@@ -11,13 +11,7 @@
  * Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
-
 #include "pch.h"
-
-
-
-
-
 template<class TInterfaceClass>
 class CInternetSessionImpl :
     public TInterfaceClass
@@ -478,8 +472,6 @@ protected:
         return DOWNLOAD_PROGRESS;
     }
 
-
-    
     bool OpenDownloadFile()
     {
        //
@@ -488,6 +480,9 @@ protected:
        char szFilename[MAX_PATH+20];
        strcpy(szFilename, m_szDestFolder);
        strcat(szFilename, *m_pszFileList);
+
+	   // BT - 7/15 - Enable subdirectories for AU.
+	   ZDirectory::EnsureDirectoryExistsForFilename(szFilename);
 
        m_hFile = CreateFileA(szFilename, 
                                  GENERIC_WRITE, 

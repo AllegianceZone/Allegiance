@@ -178,7 +178,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Guids;..\src\Zone;..\src\Test\Inc;..\src\Inc\appWeb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NOAUTH;_ITERATOR_DEBUG_LEVEL=0;_ATL_STATIC_REGISTRY;ALLSRV_STANDALONE;LOBBY;_DEBUG;WIN;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CSSAUTH;XXXNOAUTH;_ITERATOR_DEBUG_LEVEL=0;_ATL_STATIC_REGISTRY;ALLSRV_STANDALONE;LOBBY;_DEBUG;WIN;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -585,6 +585,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|X64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\src\lobby\Css.cpp" />
     <ClCompile Include="..\src\Lobby\Lobby.CPP" />
     <ClCompile Include="..\src\Lobby\lobbyapp.cpp" />
     <ClCompile Include="..\src\Lobby\lobbyevents.cpp" />
@@ -619,6 +620,7 @@
     <ClInclude Include="..\src\Lobby\broadcast.h" />
     <ClInclude Include="..\src\Lobby\client.h" />
     <ClInclude Include="..\src\Lobby\counters.h" />
+    <ClInclude Include="..\src\lobby\Css.h" />
     <ClInclude Include="..\src\Lobby\Lobby.H" />
     <ClInclude Include="..\src\Lobby\lobbyapp.h" />
     <ClInclude Include="..\src\Lobby\LobbyAppSite.h" />

@@ -21,7 +21,8 @@ public:
 
     CAutoUpdateImpl() :
       m_crcFileList(0),
-      m_nFileListSize(0)
+      m_nFileListSize(0),
+	  m_ttLastFileCheck(0) // BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
     {
     }
 
@@ -50,6 +51,10 @@ public:
     void   LoadCRC(char * szFileName) 
     {
         char szErrorMsg[200+MAX_PATH];
+
+		// BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
+		strcpy(m_szFileListPath, szFileName);
+		m_ttLastFileCheck = time(0);
 
         HANDLE hFile = CreateFileA(szFileName, 
                                   GENERIC_READ, 
@@ -116,10 +121,26 @@ public:
         return m_szFTPPassword;
     }
 
+	// BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
+	// Allow the lobby to reload FileList.txt if it is modified without requireing a lobby restart.
+	void ReloadFileListIfRequired()
+	{
+		time_t currentTime = time(0);
+
+		if (currentTime - m_ttLastFileCheck > 30)
+		{
+			debugf("Reloading %s\r\n", m_szFileListPath);
+			LoadCRC(m_szFileListPath);
+		}
+	}
+
     /////////////////////////////////////////////////////////////////////////
 
     int     GetFileListCRC()    
     {
+		// BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
+		ReloadFileListIfRequired();
+
         return m_crcFileList;
     }
 
@@ -127,6 +148,9 @@ public:
 
     unsigned GetFileListSize()
     {
+		// BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
+		ReloadFileListIfRequired();
+
         return m_nFileListSize;
     }
 
@@ -140,6 +164,8 @@ private:
   char              m_szFTPPassword[MAX_PATH+1];
   int               m_crcFileList;
   unsigned          m_nFileListSize;
+  char				m_szFileListPath[MAX_PATH + 1]; // BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
+  time_t			m_ttLastFileCheck; // BT - 7/15 - Enable the lobby to pick up FileList.txt changes without restarting.
 };
 
 IAutoUpdate * g_pAutoUpdate = NULL; // NULL if AutoUpdate is disabled

@@ -146,6 +146,18 @@ public:
 
   void Pause(bool fPause);
 
+  // BT - 7/15 - CSS Integration
+  char * GetLastBanCheckTimestamp()
+  {
+	  return m_szLastBanCheckTimestamp;
+  }
+
+  // BT - 7/15 - CSS Integration
+  void SetLastBanCheckTimestamp(char * timestamp)
+  {
+	  strcpy(m_szLastBanCheckTimestamp, timestamp);
+  }
+
 private:
   
   static const CFLMission * c_AllMissions;
@@ -168,6 +180,7 @@ private:
   char m_szLocation[c_cbFileName]; // it's not a filename but we want it short
   char m_szPrivilegedUsers[512]; // Imago 6/10 #2
   char m_szVersion[18]; // Imago 6/10 #62
+  char m_szLastBanCheckTimestamp[32]; // BT - 7/15 - CSS Integration
 };
 
 #endif

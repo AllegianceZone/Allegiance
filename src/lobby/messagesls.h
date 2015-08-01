@@ -87,32 +87,6 @@ DEFINE_FEDMSG(S, PLAYER_JOINED, 209) // a new player has joined - tell the lobby
   DWORD dwMissionCookie;
 END_FEDMSG
 
-// BT - 12/21/2010 - ACSS Integration for player ranks. 
-DEFINE_FEDMSG(LS, PLAYER_RANK, 214)
-  // These items are pass thru.
-  FM_VAR_ITEM(szCharacterName); 
-  FM_VAR_ITEM(szReason);     
-  FM_VAR_ITEM(szPassword);
-  FM_VAR_ITEM(szCDKey);
-  FM_VAR_ITEM(szRankName); // Returned from the server.
-  int characterID;
-  bool fCanCheat;
-  bool fRetry;
-  DWORD dwCookie;
-  bool fValid;
-  DWORD dwConnectionID;
-
-  // These items will also be returned from the lobby server.
-  int rank;
-  double sigma;
-  double mu;
-  int commandRank;
-  double commandSigma;
-  double commandMu;
-
-END_FEDMSG
-
-
 DEFINE_FEDMSG(S, PLAYER_QUIT, 210) // a player quit the game
   FM_VAR_ITEM(szCharacterName); 
   DWORD dwMissionCookie;
@@ -137,6 +111,37 @@ END_FEDMSG
 
 DEFINE_FEDMSG(L, LOGON_SERVER_NACK, 213)  // tells game server that they can't join the lobby.
   FM_VAR_ITEM(Reason);
+END_FEDMSG
+
+// BT - 12/21/2010 - ACSS Integration for player ranks. 
+DEFINE_FEDMSG(LS, PLAYER_RANK, 214)
+	// These items are pass thru.
+	FM_VAR_ITEM(szCharacterName);
+	FM_VAR_ITEM(szReason);
+	FM_VAR_ITEM(szPassword);
+	FM_VAR_ITEM(szCDKey);
+	FM_VAR_ITEM(szRankName); // Returned from the server.
+
+	int characterID;
+	bool fCanCheat;
+	bool fRetry;
+	DWORD dwCookie;
+	bool fValid;
+	DWORD dwConnectionID;
+
+	// These items will also be returned from the lobby server.
+	int rank;
+	double sigma;
+	double mu;
+	int commandRank;
+	double commandSigma;
+	double commandMu;
+END_FEDMSG
+
+
+// BT - 7/15 - CSS Integration
+DEFINE_FEDMSG(LS, BAN_UPDATE, 215)
+	char szBanList[4096];
 END_FEDMSG
 
 #endif // _MESSAGES_LS_H_

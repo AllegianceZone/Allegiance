@@ -611,7 +611,7 @@ public:
             strcat(szDestFileName, "_");
 
             OFSTRUCT dum1/*, dum2*/;
-
+			
             unsigned cbDone = 0;
 
             const int cbBuffer = 128*1024;
@@ -654,7 +654,7 @@ public:
             do
             {
                 int nReadResult = LZRead(nSourceHandle, pBuffer, cbBuffer);
-
+			
                 if (nReadResult < 0) // a negative return value means error
                 {
                     delete[] pBuffer;
@@ -699,7 +699,7 @@ public:
 
                 if (cbDone == CAutoDownloadUtil::GetFileLength(szNewFileName))
                 {
-                    DoError("File size for %s did not match size of file with same name in FileList.txt. %s", szNewFileName, szOutOfSyncExplaination);
+					DoError("File size for %s (%ld) did not match size of file with same name in FileList.txt (%ld). %s ", szNewFileName, cbDone, cbFilesize, szOutOfSyncExplaination);
                     return true;
                 }
 
@@ -739,7 +739,7 @@ public:
                 if (ShouldRetry(szNewFileName))
                     return false;
 
-                DoError("CRC for %s did not match CRC of file with same name in FileList.txt.  %s \n ", szFileName, szOutOfSyncExplaination);
+				DoError("CRC for %s (%.8X) did not match CRC of file with same name (%.8X) in FileList.txt.  %s \n ", szFileName, nCRC, m_pFileInfo[m_cFilesDownloaded].nCRC, szOutOfSyncExplaination);
                 return true;
             }
 
@@ -1122,7 +1122,7 @@ public:
             return;
         }
         int nSize = m_file.GetLength();
-        m_pStart = new char[nSize];
+        m_pStart = new char[nSize + 1];
         m_pCurrent = m_pStart;
         if (m_file.Read(m_pCurrent, nSize) != (DWORD) nSize)
         {
@@ -1136,6 +1136,9 @@ public:
             return;
         }
         m_pEnd = m_pCurrent + nSize;
+
+		// BT - 7/15 - Don't crash if someone forgot to put an extra carriage return at the end of the file.
+		m_pCurrent[nSize] = '\0';
     }
 
     ~CLocalFilesVerifier()
@@ -1226,7 +1229,11 @@ public:
                         return false;
 
                     char * pLineEnd = strchr(m_pCurrent, '\r');
-                    *pLineEnd = '\0';
+
+					// BT - 7/15 - Don't crash if someone forgot to put an extra carriage return at the end of the file.
+					if(pLineEnd != NULL)
+						*pLineEnd = '\0';
+
                     char * szm_fileName = m_pCurrent;
 
                     systime.wMilliseconds = 0;
@@ -1236,10 +1243,18 @@ public:
                     if (m_pCreator->HasErrorOccurred())
                         return false;
 
-                    m_pCurrent = pLineEnd + 2; // + 2 to skip pass "\r\n"
+					// BT - 7/15 - Don't crash if someone forgot to put an extra carriage return at the end of the file.
+					if (pLineEnd != NULL)
+						m_pCurrent = pLineEnd + 2; // + 2 to skip pass "\r\n"
+					else
+						m_pCurrent = m_pEnd;
 
                     if(bTookAlotOfCPUTime)
                         break; // had to check CRC for this file so check how long we've taken
+
+					// That was the last item in the list.
+					if (pLineEnd == NULL)
+						break;
                 }
                 else
                 {
@@ -1325,7 +1340,10 @@ private:
 
         if (hFile == INVALID_HANDLE_VALUE)
         {
-            if(GetLastError() != ERROR_FILE_NOT_FOUND)
+			DWORD lastError = GetLastError();
+
+			// BT - 7/15 - Support sub directories in the AU file.
+			if (lastError != ERROR_FILE_NOT_FOUND && lastError != ERROR_PATH_NOT_FOUND)
             {
                 m_pCreator->DoError("Before determining if we needed to download a file, failed open local file (%s); Error Code: %d ", szFileName, GetLastError());
                 return false;

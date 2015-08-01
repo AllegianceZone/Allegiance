@@ -218,11 +218,20 @@ DWORD WINAPI LogonThread( LPVOID param ) {
 	char szReason [256];
 	int iID = 0;
 	EnterCriticalSection(g_pLobbyApp->GetLogonCS()); 
+
 #ifdef NOAUTH //imago 1/14
 	bool fValid = true;
 #else
-	bool fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason,iID);
+	bool fValid = false;
+
+	// BT - 7/15 - CSS Integration
+	if(g_pLobbyApp->IsCssAuthenticationEnabled() == true)
+		fValid = CssValidateUserLogin(g_pLobbyApp, pqd, szReason, iID);
+	else
+		fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason,iID);
+
 #endif
+
 	(fValid) ? debugf("authed!\n") : debugf("not authed!\n");
 	pqd->fValid = fValid;
 	pqd->fRetry = false;

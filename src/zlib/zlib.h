@@ -92,6 +92,7 @@
 #include "input.h"
 #include "genericlist.h"
 #include "FTPSession.h"
+#include "ZDirectory.h" // BT - 7/15 - Enable subdirectories for AU.
 
 //
 // Win32 Wrapper Classes
