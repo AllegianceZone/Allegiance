@@ -958,12 +958,53 @@ void GotLogonDetails(CQLogonStats * pquery)
   Parameters:
       PersistPlayerScoreObject
  */
-void SetCharStats(int                   characterID,
-                  CFSPlayer*            pfsPlayer,
-                  IsideIGC *            pSide,
-                  PlayerScoreObject&    pso,
-                  CFSMission*           pfsMission)
+void SetCharStats(
+	ZString				  zsGameGuid,	// BT - 7/15 - CSS Leaderboard Integration	
+	int                   characterID,
+	const char*					cdKey, // BT - 7/15 - CSS Leaderboard Integration - When CSS Auth is used, this will be the user's primary login, which lets me attach the scores to the right user.
+    CFSPlayer*            pfsPlayer,
+    IsideIGC *            pSide,
+    PlayerScoreObject&    pso,
+    CFSMission*           pfsMission)
 {
+	// BT - 7/15 - CSS Leaderboard Integration - Transmit the players scores to the lobby. This way, anyone can put
+	// up a server without having to worry about web service connectivity. 
+	BEGIN_PFM_CREATE(g.fmLobby, pfmPlayerScoreUpdate, S, PLAYER_SCORE_UPDATE)
+	END_PFM_CREATE
+
+	strcpy(pfmPlayerScoreUpdate->szCdKey, cdKey);
+	strcpy(pfmPlayerScoreUpdate->szGameGuid, (PCC)zsGameGuid);
+	pfmPlayerScoreUpdate->cArtifacts = pso.GetArtifacts();
+	pfmPlayerScoreUpdate->cAssists = pso.GetAssists();
+	pfmPlayerScoreUpdate->cAsteroidsSpotted = pso.GetAsteroidsSpotted();
+	pfmPlayerScoreUpdate->cBaseCaptures = pso.GetBaseCaptures();
+	pfmPlayerScoreUpdate->cBaseKills = pso.GetBaseKills();
+	pfmPlayerScoreUpdate->cBuilderKills = pso.GetBuilderKills();
+	pfmPlayerScoreUpdate->cCarrierKills = pso.GetCarrierKills();
+	pfmPlayerScoreUpdate->bCommandCredit = pso.GetCommandCredit();
+	pfmPlayerScoreUpdate->bCommandLose = pso.GetCommandLoser();
+	pfmPlayerScoreUpdate->bCommandWin = pso.GetCommandWinner();
+	pfmPlayerScoreUpdate->cDeaths = pso.GetDeaths();
+	pfmPlayerScoreUpdate->cEjections = pso.GetEjections();
+	pfmPlayerScoreUpdate->cFlags = pso.GetFlags();
+	pfmPlayerScoreUpdate->cKills = pso.GetKills();
+	pfmPlayerScoreUpdate->cLayerKills = pso.GetLayerKills();
+	pfmPlayerScoreUpdate->bLose = pso.GetLoser();
+	pfmPlayerScoreUpdate->cMinerKills = pso.GetMinerKills();
+	pfmPlayerScoreUpdate->cPilotBaseCaptures = pso.GetPilotBaseCaptures();
+	pfmPlayerScoreUpdate->cPilotBaseKills = pso.GetPilotBaseKills();
+	pfmPlayerScoreUpdate->cPlayerKills = pso.GetPlayerKills();
+	pfmPlayerScoreUpdate->cRescues = pso.GetRescues();
+	pfmPlayerScoreUpdate->fScore = pso.GetScore();
+	pfmPlayerScoreUpdate->cTechsRecovered = pso.GetTechsRecovered();
+	pfmPlayerScoreUpdate->dtCommanded = pso.GetTimeCommanded();
+	pfmPlayerScoreUpdate->dtPlayed = pso.GetTimePlayed();
+	pfmPlayerScoreUpdate->cWarpsSpotted = pso.GetWarpsSpotted();
+	pfmPlayerScoreUpdate->bWin = pso.GetWinner();
+
+	g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
+	// BT - 7/15 - CSS Leaderboard Integration ^^^
+
 #if !defined(ALLSRV_STANDALONE)  // mmf moved this up from further down
 	if (0.0f == pso.GetTimePlayed())
     {

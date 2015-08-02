@@ -2609,6 +2609,7 @@ void CFSMission::SaveAsOldPlayer(CFSPlayer* pfsplayer, bool bBooted)
   OldPlayerInfo&  opi = popl->data();
 
   strcpy(opi.name, pfsplayer->GetName());
+  strcpy(opi.cdKey, pfsplayer->GetCDKey()); // BT - 7/15 - CSS Leaderboard Integration
 
   PlayerScoreObject*  ppso = pfsplayer->GetPlayerScoreObject();
   opi.pso = *ppso;
@@ -3192,6 +3193,20 @@ void CFSMission::ProcessGameOver()
       }
   }
 
+  //char gameGuid[100];
+
+  GUID guid;
+  CoCreateGuid(&guid);
+
+  OLECHAR* bstrGuid;
+  StringFromCLSID(guid, &bstrGuid);
+
+  // use bstrGuid...
+  ZString zsGameGuid(bstrGuid);
+
+  // ensure memory is freed
+  ::CoTaskMemFree(bstrGuid);
+
   //Save player scores
   {
       for (pShiplink = pShips->first(); pShiplink; pShiplink = pShiplink->next())
@@ -3203,7 +3218,7 @@ void CFSMission::ProcessGameOver()
             if (pside && pside->GetObjectID() != SIDE_TEAMLOBBY)
             {
                 PlayerScoreObject*  ppso = pfsShip->GetPlayerScoreObject();
-                SetCharStats(pfsShip->GetPlayer()->GetCharacterID(), pfsShip->GetPlayer(), pside, *ppso, this);
+				SetCharStats(zsGameGuid, pfsShip->GetPlayer()->GetCharacterID(), pfsShip->GetPlayer()->GetCDKey(), pfsShip->GetPlayer(), pside, *ppso, this);
             }
         }
       }
@@ -3215,9 +3230,17 @@ void CFSMission::ProcessGameOver()
       OldPlayerInfo & opi = popl->data();
 
       if (opi.sideID != SIDE_TEAMLOBBY)
-        SetCharStats(opi.characterID, NULL, GetIGCMission()->GetSide(opi.sideID), opi.pso, this);
+		  SetCharStats(zsGameGuid, opi.characterID, opi.cdKey, NULL, GetIGCMission()->GetSide(opi.sideID), opi.pso, this);
     }
   }
+
+	// Now that all scores are transmitted to the lobby, notify the lobby that the game is complete.
+	BEGIN_PFM_CREATE(g.fmLobby, pfmGameComplete, S, GAME_COMPLETE)
+	END_PFM_CREATE
+
+	strcpy(pfmGameComplete->szGameGuid, (PCC) zsGameGuid);
+
+	g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
 
   // if this was a squads game, record the wins and losses for the squads
   if (m_misdef.misparms.bSquadGame && m_misdef.misparms.bScoresCount && m_psideWon

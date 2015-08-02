@@ -173,6 +173,12 @@ public:
 	  return m_szCssLobbyServicePath;
   }
 
+  // BT - 7/15 - CSS Service integration
+  char * GetCssGameDataServicePath()
+  {
+	  return m_szCssGameDataServicePath;
+  }
+
   // BT - 12/21/2010 - ACSS integration
   //bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen);
   //bool CDKeyIsValid(const char* szPlayerName, const char* szCDKey, const char* szAddress, char *resultMessage, int resultMessageLength);
@@ -281,6 +287,7 @@ private:
   char				m_szCssServerDomain[2064];
   char				m_szCssClientServicePath[2064];
   char				m_szCssLobbyServicePath[2064];
+  char				m_szCssGameDataServicePath[2064];
 
   // Player list stuff
   typedef std::multimap<ZString, PlayerLocInfo, StringCmpLess> PlayerByCDKey;

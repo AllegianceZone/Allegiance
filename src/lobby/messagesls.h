@@ -144,5 +144,44 @@ DEFINE_FEDMSG(LS, BAN_UPDATE, 215)
 	char szBanList[4096];
 END_FEDMSG
 
+// BT - 7/15 - CSS Leaderboard Integration
+DEFINE_FEDMSG(S, PLAYER_SCORE_UPDATE, 216) // Send the player's score back the the server for logging.
+	char szCdKey[100];
+	char szGameGuid[100];
+	float fScore;
+	short cPilotBaseKills;
+	short cPilotBaseCaptures;
+	float cWarpsSpotted;
+	float cAsteroidsSpotted;
+	float cMinerKills;
+	float cBuilderKills;
+	float cLayerKills;
+	float cCarrierKills;
+	float cPlayerKills;
+	float cBaseKills;
+	float cBaseCaptures;
+	float cTechsRecovered;
+	short cFlags;
+	short cArtifacts;
+	short cRescues;
+	short cKills;
+	short cAssists;
+	short cDeaths;
+	short cEjections;
+	float fCombatRating;
+	bool bWin;
+	bool bLose;
+	bool bCommandWin;
+	bool bCommandLose;
+	float dtPlayed;
+	float dtCommanded;
+	bool bCommandCredit;
+END_FEDMSG
+
+// BT - 7/15 - CSS Leaderboard Integration
+DEFINE_FEDMSG(S, GAME_COMPLETE, 217) // Tell the lobby that all player records have been sent, and so the lobby can tell CSS to commit the data.
+	char szGameGuid[100];
+END_FEDMSG
+
 #endif // _MESSAGES_LS_H_
 

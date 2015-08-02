@@ -277,6 +277,9 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 	m_szCssLobbyServicePath[0] = '\0';
 	bSuccess = _Module.ReadFromRegistry(hk, true, "CssLobbyServicePath", m_szCssLobbyServicePath, NULL);
 
+	m_szCssGameDataServicePath[0] = '\0';
+	bSuccess = _Module.ReadFromRegistry(hk, true, "CssGameDataServicePath", m_szCssGameDataServicePath, NULL);
+
 	m_dwCssAuthenticationEnabled = 0;
 	bSuccess = _Module.ReadFromRegistry(hk, true, "CssAuthenticationEnabled", &m_dwCssAuthenticationEnabled, 0);
 

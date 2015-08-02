@@ -67,6 +67,7 @@ class OldPlayerInfo
         int                         characterID;
         SideID                      sideID;         //Simply using this as a cookie
         char                        name[c_cbName];
+		char						cdKey[MAX_PATH]; // BT - 7/15 - CSS Leaderboard Integration
         IclusterIGC*                pclusterLifepod;
         Vector                      positionLifepod;
         unsigned char               bannedSideMask;

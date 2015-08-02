@@ -247,7 +247,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		// don't boot for missing roll call until we get one from them
 		pServer->SetHere();
 
-		// BT - 7/15 - CSS Integration \/ \/ \/
+		// BT - 7/15 - CSS Integration
 		// Pull back a list of all bans since the last heartbeat from this server, and then send them down to the server.
 		char * lastBanCheckTimestamp = pServer->GetLastBanCheckTimestamp();
 
@@ -267,7 +267,7 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 			pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
 		}
-		// BT - 7/15 - CSS Integration /\ /\ /\
+		// BT - 7/15 - CSS Integration
 	}
     break;
     
@@ -452,6 +452,30 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		break;
 	}
 
+	// BT - 7/15 - CSS Leaderboard Integration
+	case FM_S_PLAYER_SCORE_UPDATE:
+	{
+		CASTPFM(pfmPlayerScoreUpdate, S, PLAYER_SCORE_UPDATE, pfm);
+
+		debugf("FM_S_PLAYER_SCORE_UPDATE received: %s - %s - %f\r\n", pfmPlayerScoreUpdate->szCdKey, pfmPlayerScoreUpdate->szGameGuid, pfmPlayerScoreUpdate->dtPlayed);
+
+		CssSendPlayerScoreRecord(pfmPlayerScoreUpdate);
+
+		break;
+	}
+
+	// BT - 7/15 - CSS Leaderboard Integration
+	case FM_S_GAME_COMPLETE:
+	{
+		CASTPFM(pfmGameComplete, S, GAME_COMPLETE, pfm);
+
+		// BT - TODO: process the message
+		debugf("FM_S_GAME_COMPLETE received: %s\r\n", pfmGameComplete->szGameGuid);
+
+		CssCommitPlayerScoreRecords(pfmGameComplete->szGameGuid);
+
+		break;
+	}
 
     default:
       ZError("unknown message\n");

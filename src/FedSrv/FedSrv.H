@@ -397,7 +397,9 @@ CFMGroup * GetGroupSectorFlying(IclusterIGC * pCluster);
 
 CFSDrone * CreateStockDrone(IdroneTypeIGC * pdronetype, IsideIGC* pSide, IbaseIGC* pbase = NULL);
 
-void SetCharStats(int characterID, CFSPlayer* pfsPlayer, IsideIGC * pSide, PlayerScoreObject & pso, CFSMission* pfsMission);
+// BT - 7/15 - CSS Leaderboard Integration
+void SetCharStats(ZString zsGameGuid, int characterID, const char *cdKey, CFSPlayer* pfsPlayer, IsideIGC * pSide, PlayerScoreObject & pso, CFSMission* pfsMission);
+
 void RecordSquadGame(const SideListIGC*  psides, IsideIGC* psideWon);
 
 void GetInvitations(int nInvitationID, MissionID missionID);

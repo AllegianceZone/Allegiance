@@ -257,8 +257,6 @@ HRESULT FedSrvLobbySite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 			}
 		}
 
-		//Strcpy(pqd->szCDKey, pfmUsernameUpdate->szUsername);
-		
 		PostThreadMessage(g.idReceiveThread, wm_sql_querydone, (WPARAM)NULL, (LPARAM)pquery);
 		break;
 	}
