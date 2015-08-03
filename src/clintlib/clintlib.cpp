@@ -1448,7 +1448,9 @@ HRESULT BaseClient::ConnectToClub(ConnectInfo * pci) // pci is NULL if relogging
         // Let's formally announce ourselves to the server
         BEGIN_PFM_CREATE(m_fmClub, pfmLogon, C, LOGON_CLUB)
             FM_VAR_PARM(pci->szName, CB_ZTS)
-           // FM_VAR_PARM(m_ci.pZoneTicket, m_ci.cbZoneTicket)
+			// FM_VAR_PARM(m_ci.pZoneTicket, m_ci.cbZoneTicket)
+			FM_VAR_PARM(pci->szPW, CB_ZTS) // BT - 7/15 CSS Integration.
+           
         END_PFM_CREATE
         pfmLogon->verClub = ALLCLUBVER;
 
@@ -2581,23 +2583,41 @@ ZString BaseClient::LookupRankName(RankID rank, CivID civ)
         assert(!m_fm.IsConnected()) ;//|| !GetIsZoneClub());
         szRankNameTemplate = "";
     }
-    else
-    {
-      //if (!GetIsZoneClub()) //Imago REVISIT 9/14
-		  civ = -1;
-        // 'slow', but probably still fast enough
-        for (int iEntry = 0; iEntry < m_cRankInfo; iEntry++)
-        {
-            if (m_vRankInfo[iEntry].civ == civ 
-                && m_vRankInfo[iEntry].rank <= rank 
-                && m_vRankInfo[iEntry].rank >= nClosestRank)
-            {
-                szRankNameTemplate = m_vRankInfo[iEntry].RankName;
-                nClosestRank = m_vRankInfo[iEntry].rank;
-            }
-        }
-        assert(nClosestRank >= 0);
-    }
+	else
+	{
+		// BT - 7/15 CSS Integration.
+		if (rank > 0)
+		{
+			if (rank <= m_cRankInfo)
+			{
+				nClosestRank = rank;
+				szRankNameTemplate = m_vRankInfo[rank].RankName;
+			}
+			else
+			{
+				nClosestRank = m_cRankInfo;
+				szRankNameTemplate = m_vRankInfo[m_cRankInfo].RankName;
+			}
+		}
+
+		// BT - 7/15 - Removing; this was too slow. 
+
+		//  //if (!GetIsZoneClub()) //Imago REVISIT 9/14
+		//civ = -1;
+		//    // 'slow', but probably still fast enough
+		//    for (int iEntry = 0; iEntry < m_cRankInfo; iEntry++)
+		//    {
+		//        if (m_vRankInfo[iEntry].civ == civ 
+		//            && m_vRankInfo[iEntry].rank <= rank 
+		//            && m_vRankInfo[iEntry].rank >= nClosestRank)
+		//        {
+		//            szRankNameTemplate = m_vRankInfo[iEntry].RankName;
+		//            nClosestRank = m_vRankInfo[iEntry].rank;
+		//        }
+		//    }
+		//    assert(nClosestRank >= 0);
+
+	}
 
     char cbTemp[c_cbName + 8];
     sprintf(cbTemp, szRankNameTemplate, rank - nClosestRank + 1);

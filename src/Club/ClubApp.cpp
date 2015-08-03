@@ -66,7 +66,27 @@ CClubApp::CClubApp(IClubSite * plas) :
   }
   */
 //  m_pzas = CreateZoneAuthServer(); Imago 9/14
-  
+
+
+  // BT - 7/15 - CSS Service integration
+  HKEY  hk;
+  if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllClub, 0, L"", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
+  {
+	  m_szCssServerDomain[0] = '\0';
+	  _Module.ReadFromRegistry(hk, true, "CssServerDomain", m_szCssServerDomain, NULL);
+
+	  m_szCssClientServicePath[0] = '\0';
+	  _Module.ReadFromRegistry(hk, true, "CssClientServicePath", m_szCssClientServicePath, NULL);
+
+	  m_szCssLobbyServicePath[0] = '\0';
+	  _Module.ReadFromRegistry(hk, true, "CssLobbyServicePath", m_szCssLobbyServicePath, NULL);
+
+	  m_szCssGameDataServicePath[0] = '\0';
+	  _Module.ReadFromRegistry(hk, true, "CssGameDataServicePath", m_szCssGameDataServicePath, NULL);
+
+	  m_dwCssAuthenticationEnabled = 0;
+	  _Module.ReadFromRegistry(hk, true, "CssAuthenticationEnabled", &m_dwCssAuthenticationEnabled, 0);
+  }
 }
 
 CClubApp::~CClubApp()
@@ -106,8 +126,17 @@ HRESULT CClubApp::Init()
   }
 */
 
+  // BT - 7/15 CSS Integration.
+  DWORD dwPort = 2305;
+  HKEY  hk;
+  if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, HKLM_AllClub, 0, L"", REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &hk, NULL) == ERROR_SUCCESS)
+  {
+	  _Module.ReadFromRegistry(hk, false, "Port", &dwPort, (DWORD)2305);
+	  RegCloseKey(hk);
+  }
+
   // TODO: Make keep-alives an option
-  if (FAILED(hr = m_fmClients.HostSession(FEDCLUB_GUID, true, 0, true)))
+  if (FAILED(hr = m_fmClients.HostSession(FEDCLUB_GUID, true, 0, true, dwPort)))
     m_plas->LogEvent(EVENTLOG_ERROR_TYPE, "Could not host dplay session. Check for correct dplay installation");
 
   return hr;

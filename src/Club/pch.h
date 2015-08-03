@@ -51,6 +51,9 @@
 #include "ClubCounters.h"
 //#include "zauth.h" //Imago 9/16
 
+// BT - 7/15 - Enable CssSoap to be shared with the club server too.
+#include "..\lobby\messagesls.h"
+
 //$ ASYNCCLUB
 //#include "clubqueries2.h"
 

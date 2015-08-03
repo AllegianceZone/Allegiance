@@ -253,7 +253,11 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 		char lastBanList[4096];
 		char currentTimestamp[32];
-		CssGetBanListSinceTimestamp(lastBanCheckTimestamp, currentTimestamp, lastBanList);
+
+		// BT - 7/15 CSS Integration.
+		CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+		cssSoap.GetBanListSinceTimestamp(lastBanCheckTimestamp, currentTimestamp, lastBanList);
+
 		pServer->SetLastBanCheckTimestamp(currentTimestamp);
 
 		if (strlen(lastBanList) > 0)
@@ -366,8 +370,8 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		// BT - 7/15 - CSS Integration
 		if (g_pLobbyApp->IsCssAuthenticationEnabled() == true)
 		{
-			rankRetrieved = CssGetRankForCallsign(
-				g_pLobbyApp,
+			CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+			rankRetrieved = cssSoap.GetRankForCallsign(
 				szCharacterName, 
 				&rank,
 				&sigma,
@@ -406,7 +410,9 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		if (g_pLobbyApp->IsCssAuthenticationEnabled() == true)
 		{
 			char szUsername[100];
-			if (CssGetUsernameForUsernameOrCallsign(g_pLobbyApp, (char *)szCharacterName, szUsername, (char *) szReason) == true)
+
+			CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+			if (cssSoap.GetUsernameForUsernameOrCallsign((char *)szCharacterName, szUsername, (char *)szReason) == true)
 			{
 				strcpy(szCDKey, szUsername);
 			}
@@ -459,7 +465,8 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
 		debugf("FM_S_PLAYER_SCORE_UPDATE received: %s - %s - %f\r\n", pfmPlayerScoreUpdate->szCdKey, pfmPlayerScoreUpdate->szGameGuid, pfmPlayerScoreUpdate->dtPlayed);
 
-		CssSendPlayerScoreRecord(pfmPlayerScoreUpdate);
+		CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+		cssSoap.SendPlayerScoreRecord(pfmPlayerScoreUpdate);
 
 		break;
 	}
@@ -472,7 +479,8 @@ HRESULT LobbyServerSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 		// BT - TODO: process the message
 		debugf("FM_S_GAME_COMPLETE received: %s\r\n", pfmGameComplete->szGameGuid);
 
-		CssCommitPlayerScoreRecords(pfmGameComplete->szGameGuid);
+		CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+		cssSoap.CommitPlayerScoreRecords(pfmGameComplete->szGameGuid);
 
 		break;
 	}

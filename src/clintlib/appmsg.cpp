@@ -3553,6 +3553,7 @@ HRESULT BaseClient::HandleMsg(FEDMESSAGE* pfm,
         {
             CASTPFM(pfmLogonAck, S, LOGON_CLUB_ACK, pfm);
             SetZoneClubID(pfmLogonAck->nMemberID);
+			SetZoneClubUserName(pfmLogonAck->szMemberLoginName); // BT - 7/15 CSS Integration.
             m_fLoggedOnToClub = true;
             OnLogonClubAck(true, false, NULL);
         }

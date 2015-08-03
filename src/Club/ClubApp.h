@@ -98,6 +98,36 @@ public:
     return m_cRankInfo;
   }
 
+  // BT - 7/15 - CSS Service integration
+  char * GetCssServerDomain()
+  {
+	  return m_szCssServerDomain;
+  }
+
+  // BT - 7/15 - CSS Service integration
+  char * GetCssClientServicePath()
+  {
+	  return m_szCssClientServicePath;
+  }
+
+  // BT - 7/15 - CSS Service integration
+  char * GetCssLobbyServicePath()
+  {
+	  return m_szCssLobbyServicePath;
+  }
+
+  // BT - 7/15 - CSS Service integration
+  char * GetCssGameDataServicePath()
+  {
+	  return m_szCssGameDataServicePath;
+  }
+
+  // BT - 7/15 - CSS Integration
+  bool IsCssAuthenticationEnabled()
+  {
+	  return (m_dwCssAuthenticationEnabled > 0) ? true : false;
+  }
+
     /* removed Imago 9/14
 
   char * GetAuthServer()
@@ -149,6 +179,13 @@ private:
   short             m_cRankInfo;
   //char              m_szAuthServer[64];
   //char              m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
+
+  // BT - 7/15 CSS Integration.
+  char				m_szCssServerDomain[2064];
+  char				m_szCssClientServicePath[2064];
+  char				m_szCssLobbyServicePath[2064];
+  char				m_szCssGameDataServicePath[2064];
+  DWORD				m_dwCssAuthenticationEnabled;
 
 /*
   //$ ASYNCCLUB

@@ -337,7 +337,10 @@ public:
         GetWindow()->SetFocus();
         GetWindow()->SetFocus(m_peditPane);
         
-        m_strBasis = strCharacter.IsEmpty() ? trekClient.GetNameLogonClubServer() : strCharacter;
+		// BT - 7/15 CSS Integration.
+		//m_strBasis = strCharacter.IsEmpty() ? trekClient.GetNameLogonClubServer() : strCharacter;
+		m_strBasis = strCharacter.IsEmpty() ? trekClient.GetZoneClubUserName() : strCharacter;
+
         m_idBasis = strCharacter.IsEmpty() ? -2 : -1;
 
         AddEventTarget(&LeaderBoardScreen::OnButtonSearch, m_pbuttonSearch->GetEventSource());
@@ -511,7 +514,10 @@ public:
 
     bool OnButtonFindMe()
     {
-        m_strBasis = trekClient.m_szClubCharName;
+		// BT - 7/15 CSS Integration.
+        //m_strBasis = trekClient.m_szClubCharName;
+		m_strBasis = trekClient.GetZoneClubUserName();
+
         m_idBasis = NA;
         ClearListBoxes();
         UpdateData();
@@ -741,6 +747,20 @@ public:
         return -1;
     }
 
+	// BT - 7/15 CSS Integration.
+	int OffsetOfCharacter(int characterID, LeaderBoardEntry* vEntries, int cEntries)
+	{
+		for (int i = 0; i < cEntries; i++)
+		{
+			if (vEntries[i].idCharacter == characterID)
+			{
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
     int OffsetOfCharacterPrefix(const char* szCharacterPrefix, LeaderBoardEntry* vEntries, int cEntries)
     {
         for (int i = 0; i < cEntries; i++)
@@ -789,9 +809,12 @@ public:
                     && pfmLeaderBoardList->cEntries <= cLinesPerScreen * 3);
                 
                 LeaderBoardEntry* vEntriesNew = (LeaderBoardEntry*)FM_VAR_REF(pfmLeaderBoardList, ventryPlayers);
-
+			
                 int indexBasis;
-
+				
+				// BT - 7/15 CSS Integration.
+				int zoneClubID = trekClient.GetZoneClubID();
+				
                 // if we are getting the top players, set the basis to be 
                 // the first player in the list.  
                 if (m_strBasis.IsEmpty())
@@ -799,8 +822,11 @@ public:
                     m_strBasis = vEntriesNew[0].CharacterName;
                     indexBasis = 0;
                 }
-                else
-                    indexBasis = OffsetOfCharacter(m_strBasis, vEntriesNew, pfmLeaderBoardList->cEntries);
+				else
+				{
+					indexBasis = OffsetOfCharacter(m_strBasis, vEntriesNew, pfmLeaderBoardList->cEntries);
+				}
+
 
                 // if this was the first search, allow the top players in the list to have been returned
                 if (m_idBasis == -2 && indexBasis == -1 && pfmLeaderBoardList->cEntries > 0)

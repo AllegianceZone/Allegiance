@@ -175,10 +175,12 @@ int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff)
  * Returns:
  *    0. Returns a string, the contents of which are stored in a static 
  *       buffer. Multiple calls overwrite the buffer.
- *       If the desired key is not in the command line, then we check to
- *       see if a default value is supplied. If not, the registry is
- *       checked for a default value. If it's not in the registry, we get a
+ *       If the desired key is not in the command line, then the registry is
+ *       checked for a default value. Then we check to
+ *       see if a default value is supplied. If not, we get a
  *       empty result.
+ * 
+ * BT - 7/15 - Changed this so that the default is considered last, instead of the registry being last. 
  */
  char*  ParseCommandLine (char * szRegKey, char* szParameterName, char* szDefault = 0)
  {
@@ -196,19 +198,21 @@ int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff)
             *szBufferPtr++ = *location++;
         *szBufferPtr = 0;
     }
-    else if (szDefault)
-    {
-        strcpy (szBuffer, szDefault);
-    }
-    else
-    {
-        HKEY hKey;
-        DWORD dw;
-        DWORD cb = sizeof(szBuffer);
-        if (ERROR_SUCCESS == ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, szRegKey, 0, KEY_READ, &hKey))
-            RegQueryValueExA (hKey, szParameterName, NULL, &dw, (LPBYTE)szBuffer, &cb);
-        RegCloseKey(hKey);
-    }
+
+    HKEY hKey;
+    DWORD dw;
+    DWORD cb = sizeof(szBuffer);
+	if (ERROR_SUCCESS == ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, szRegKey, 0, KEY_READ, &hKey))
+	{
+		RegQueryValueExA(hKey, szParameterName, NULL, &dw, (LPBYTE)szBuffer, &cb);
+	}
+	else if(szDefault)
+	{
+		strcpy(szBuffer, szDefault);
+	}
+
+    RegCloseKey(hKey);
+
     return szBuffer;
  }
 
@@ -239,22 +243,43 @@ int InitSql(char * szRegKey, ISQLSite * pSQLSite)
   if (SQL_SUCCESS != sqlret)
     SQLWhatsWrong(SQL_HANDLE_DBC, hSqlDbc);
 
+  // BT - 7/15 CSS Integration.
+  char szCssIntegration[8];
+  strcpy(szCssIntegration, ParseCommandLine(szRegKey, "CssIntegration", "0"));
+  bool useCssIntegration = atoi(szCssIntegration) > 0;
+
   SQLCHAR StrConnectionOut[1<<10];
   SQLSMALLINT cbStrConnectionOut;
-  sqlret = SQLDriverConnectA(hSqlDbc, NULL, (SQLCHAR*)
-	  "DRIVER={SQL Server};PWD=AllegFed@2014!NotSecret;UID=club;DATABASE=AZFederation;SERVER=tqhlsg1ad6.database.windows.net", SQL_NTS,
-                            StrConnectionOut, sizeof(StrConnectionOut), 
-                            &cbStrConnectionOut, SQL_DRIVER_NOPROMPT);
-#if 0
-  char szUser[64];
-  char szPW[64];
-  char szDatabase[64];
-  strcpy (szUser, ParseCommandLine (szRegKey, "SQLUser","club"));
-  strcpy (szPW, ParseCommandLine (szRegKey, "SQLPW","AllegFed@2014!NotSecret"));
-  strcpy (szDatabase, ParseCommandLine (szRegKey, "SQLSrc", "AZFederation"));
-  printf ("  Connecting to DSN (%s) as user (%s) with password (%s)...\n", szDatabase, szUser, szPW);
-  sqlret = SQLConnectA(hSqlDbc, (SQLCHAR*) szDatabase, SQL_NTS, (SQLCHAR*) szUser, SQL_NTS, (SQLCHAR*) szPW, SQL_NTS);
-#endif
+
+  // BT - 7/15 CSS Integration - Making Club Server actually obey the registry for settings.
+  if (useCssIntegration == false)
+  {
+	  sqlret = SQLDriverConnectA(hSqlDbc, NULL, (SQLCHAR*)
+		  "DRIVER={SQL Server};PWD=AllegFed@2014!NotSecret;UID=club;DATABASE=AZFederation;SERVER=tqhlsg1ad6.database.windows.net", SQL_NTS,
+		  StrConnectionOut, sizeof(StrConnectionOut),
+		  &cbStrConnectionOut, SQL_DRIVER_NOPROMPT);
+  }
+  else
+  {
+	  char szUser[64];
+	  char szPW[64];
+	  char szDatabase[64];
+	  char szServer[128];
+	  strcpy(szUser, ParseCommandLine(szRegKey, "SQLUser", "club"));
+	  strcpy(szPW, ParseCommandLine(szRegKey, "SQLPW", "AllegFed@2014!NotSecret"));
+	  strcpy(szDatabase, ParseCommandLine(szRegKey, "SQLDatabase", "AZFederation"));
+	  strcpy(szServer, ParseCommandLine(szRegKey, "SQLServer", "localhost"));
+
+	  char sqlDsn[2048];
+	  sprintf(sqlDsn, "DRIVER={SQL Server};PWD={%s};UID=%s;DATABASE=%s;SERVER=%s;", szPW, szUser, szDatabase, szServer);
+
+	  printf("  Connecting with DSN: %s...\n", sqlDsn);
+	 
+	  sqlret = SQLDriverConnectA(hSqlDbc, NULL, (SQLCHAR*)
+		  sqlDsn, SQL_NTS,
+		  StrConnectionOut, sizeof(StrConnectionOut),
+		  &cbStrConnectionOut, SQL_DRIVER_NOPROMPT);
+  }
   
   if (SQL_SUCCESS != sqlret && SQL_SUCCESS_WITH_INFO != sqlret)
     SQLWhatsWrong(SQL_HANDLE_DBC, hSqlDbc);

@@ -38,7 +38,8 @@ typedef short RankID;
 
 DEFINE_FEDMSG(C, LOGON_CLUB, 321) 
   FM_VAR_ITEM(CharacterName); 
-  FM_VAR_ITEM(ZoneTicket);    // Encrypted
+  //FM_VAR_ITEM(ZoneTicket);    // Encrypted
+  FM_VAR_ITEM(Password); // BT - 7/15 CSS Integration.
   short verClub;    
 END_FEDMSG
 
@@ -47,6 +48,7 @@ END_FEDMSG
 
 DEFINE_FEDMSG(S, LOGON_CLUB_ACK, 323) 
   int nMemberID;
+	char szMemberLoginName[100]; // BT - 7/15 CSS Integration.
 END_FEDMSG
 
 DEFINE_FEDMSG(S, LOGON_CLUB_NACK, 324)  // tells client that they can't join the Club server

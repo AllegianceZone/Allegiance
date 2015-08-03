@@ -52,7 +52,8 @@ private:
 };
 
 // BT - 9/11/2010 - Making this usable by other classes.
-void encodeURL( char * url, char * token);
+// BT - 7/15 - Moving to CssSoap
+// void encodeURL( char * url, char * token);
 
 #endif
 

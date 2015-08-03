@@ -18,35 +18,6 @@ const DWORD CFLClient::c_dwID = 19680815;
 bool g_fLogonCRC = true; 
 #endif
 
-void encodeURL( char * url,char * token) // url = output, token gets append to url
-{
-    // wlp - we will do brute force URL encoding - it's normal alphaNumeric or it's URL encoded
-    // we will URL encode everything that is in data areas
-   
-	url = url + strlen(url) ;       // point past any existing data
-	
-	char* tokenEnd = ( token + strlen(token)); // this is where we end                    
-	for( ; token < tokenEnd ;)
-	{
-	//  filter out special characters 
-	// IF it is not (a to z) or (A to Z) or (0 to 9) then filter it
-    	if ( ((*token >= 'a') && (*token <= 'z'))     
-           | ((*token >= 'A') && (*token <= 'Z')) 
-           | ((*token >= '0') && (*token <= '9'))
-		   )
-		{
-        *(url++) = *(token++) ;   // unfiltered straight transfer
-		}
-		else // ok this needs URL encoding with percent sign followed by ascii hex value %22
-		{
-        *(url++) = '%' ;  // paste in percent sign then the 2 hex bytes
-		*(url++) = (( *token / 16 ) < 10) ? ( *token / 16) + '0' : ( *token /16 ) + ('a'-10) ;
-        *(url++) = (( *token & 0x0F ) < 10) ? ( *(token++) & 0x0F ) + '0' : ( *(token++) & 0x0F ) + ('a'-10) ;
-		}
-   }
-	*url = 0 ;  // terminate the string - should always be at the end
-}
-
 // mdvalley: 2005 needs to specify dword
 static DWORD GetRegDWORD(const char* szKey, DWORD dwDefault)
 {
@@ -225,8 +196,12 @@ DWORD WINAPI LogonThread( LPVOID param ) {
 	bool fValid = false;
 
 	// BT - 7/15 - CSS Integration
-	if(g_pLobbyApp->IsCssAuthenticationEnabled() == true)
-		fValid = CssValidateUserLogin(g_pLobbyApp, pqd, szReason, iID);
+	if (g_pLobbyApp->IsCssAuthenticationEnabled() == true)
+	{
+		CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+
+		fValid = cssSoap.ValidateUserLogin(pqd->szCharacterName, pqd->szPW, szReason, iID);
+	}
 	else
 		fValid = IsRFC2898Valid(pqd->szCharacterName,pqd->szPW,szReason,iID);
 

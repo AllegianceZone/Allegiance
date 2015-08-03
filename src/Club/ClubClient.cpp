@@ -10,6 +10,7 @@
 
 #include "pch.h"
 #include "ClubQueries.h"
+#include "CssSoap.h" // BT - 7/15 CSS Integration.
 
 const DWORD CFLClient::c_dwID = 19680815;
 
@@ -118,7 +119,7 @@ namespace
     entry.cTotalBaseCaptures = 0;
     entry.cTotalKills = 0;
     entry.cTotalDeaths = 0;
-    entry.rank = 0;
+    entry.rank = 1; // BT - 7/15 CSS Integration. - Makes the ranks render correctly on the leaderboard.
     entry.rating = 0;
     entry.cTotalWins = 0;
     entry.cTotalLosses = 0;
@@ -1359,123 +1360,153 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
   
   switch (pfm->fmid)
   {
+	
+  case FM_C_LOGON_CLUB:
+  {
+	  CASTPFM(pfmLogon, C, LOGON_CLUB, pfm);
+	  bool fValid = false; // whether we have a valid logon
+	  bool fRetry = false; // whether or not the client should retry the login
+	  char * szReason = NULL; // when fValid==false
 
-    case FM_C_LOGON_CLUB: 
-    {
-      CASTPFM(pfmLogon, C, LOGON_CLUB, pfm);
-      bool fValid = false; // whether we have a valid logon
-      bool fRetry = false; // whether or not the client should retry the login
-      char * szReason = NULL; // when fValid==false
+	  //
+	  // TODO: If a new person logs on and they are not in the database, we need to add a record for them (or maybe report error).
+	  //
 
-      //
-      // TODO: If a new person logs on and they are not in the database, we need to add a record for them (or maybe report error).
-      //
+	  // verify messaging version
+	  if (pfmLogon->verClub != ALLCLUBVER)
+	  {
+		  // tell client that his version is wrong
+		  sprintf(szBuffer, "AllClub Server's 'ClubMessaging' version (%i) is different than Client's version (%i)", ALLCLUBVER, pfmLogon->verClub);
+		  szReason = szBuffer;
+	  }
 
-      // verify messaging version
-      if(pfmLogon->verClub != ALLCLUBVER)
-      {
-          // tell client that his version is wrong
-          sprintf(szBuffer, "AllClub Server's 'ClubMessaging' version (%i) is different than Client's version (%i)", ALLCLUBVER, pfmLogon->verClub);
-          szReason = szBuffer;
-      }
+	  //Imago 9/14
+	  /*
+		else
+		{
+		LPBYTE pZoneTicket = (LPBYTE) FM_VAR_REF(pfmLogon, ZoneTicket);
+		if (pZoneTicket) // it's all in the Zone Ticket
+		{
+		//TRef<IZoneAuthServer> pzas = g_pClubApp->GetZoneAuthServer(); //Imago 9/14
 
-	//Imago 9/14
-	/*
-      else
-      {
-          LPBYTE pZoneTicket = (LPBYTE) FM_VAR_REF(pfmLogon, ZoneTicket);
-          if (pZoneTicket) // it's all in the Zone Ticket
-          {
-              //TRef<IZoneAuthServer> pzas = g_pClubApp->GetZoneAuthServer(); //Imago 9/14
+		HRESULT hr = pzas->DecryptTicket(pZoneTicket, pfmLogon->cbZoneTicket);
+		switch (hr)
+		{
+		case ZT_NO_ERROR:
+		{
+		if (lstrcmp(g_pClubApp->GetAuthServer(), pzas->GetAuthServer())) // you MUST use the auth server that we expect
+		{
+		szReason = "Your account authentication did not go through the expected server.";
+		}
+		else
+		{
+		bool fValidNow = false;
+		pClient->SetClubMember(pzas->HasToken(g_pClubApp->GetToken(), &fValidNow) && fValidNow); // Note: relies on left to right eval
+		// Bell & whistle: Give them a message if their subscription has expired, that they won't be able to change anything
+		fValid = true;
+		pClient->SetZoneID(pzas->GetAccountID());
+		}
+		}
+		break;
 
-              HRESULT hr = pzas->DecryptTicket(pZoneTicket, pfmLogon->cbZoneTicket);
-              switch (hr)
-              {
-                  case ZT_NO_ERROR:
-                  {
-                    if (lstrcmp(g_pClubApp->GetAuthServer(), pzas->GetAuthServer())) // you MUST use the auth server that we expect
-                    {
-                        szReason = "Your account authentication did not go through the expected server.";
-                    }
-                    else
-                    {
-                        bool fValidNow = false;
-                        pClient->SetClubMember(pzas->HasToken(g_pClubApp->GetToken(), &fValidNow) && fValidNow); // Note: relies on left to right eval
-                        // Bell & whistle: Give them a message if their subscription has expired, that they won't be able to change anything
-                        fValid = true;
-                        pClient->SetZoneID(pzas->GetAccountID());
-                    }
-                  }
-                  break;
+		case ZT_E_BUFFER_TOO_SMALL:
+		g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, "Club: Need to increase size of token buffer.");
+		szReason = "Internal error.";
+		break;
 
-                  case ZT_E_BUFFER_TOO_SMALL:
-                      g_pClubApp->GetSite()->LogEvent(EVENTLOG_ERROR_TYPE, "Club: Need to increase size of token buffer.");
-                      szReason = "Internal error.";
-                      break;
+		case ZT_E_AUTH_INVALID_TICKET:
+		g_pClubApp->GetSite()->LogEvent(EVENTLOG_WARNING_TYPE, "Club: Invalid ticket received.");
+		szReason = "Could not validate Zone ID.";
+		break;
 
-                  case ZT_E_AUTH_INVALID_TICKET:
-                      g_pClubApp->GetSite()->LogEvent(EVENTLOG_WARNING_TYPE, "Club: Invalid ticket received.");
-                      szReason = "Could not validate Zone ID.";
-                      break;
+		default:
+		g_pClubApp->GetSite()->LogEvent(EVENTLOG_WARNING_TYPE, "Unexpected error from zoneauth Decrypt.");
+		szReason = "Internal error.";
+		}
+		}
+		else
+		{
 
-                  default:
-                      g_pClubApp->GetSite()->LogEvent(EVENTLOG_WARNING_TYPE, "Unexpected error from zoneauth Decrypt.");
-                      szReason = "Internal error.";
-              }
-          }
-          else
-          {
+		#ifdef
+		*/
 
-#ifdef 
-		  */
-              // let mark run his little squads app on his machine
-              strncpy((char*)CharID_CharacterName, FM_VAR_REF(pfmLogon, CharacterName), sizeof(CharID_CharacterName));
-              SQL_GO(CharID);
-              if(!SQL_SUCCEEDED(SQL_GETROW(CharID)))
-              {
-                  assert(0);
-              }
-              pClient->SetZoneID(CharID_CharacterId);
-              pClient->SetClubMember(true);
-              fValid = true;
+	  // BT - 7/15 CSS Integration.
+	  char characterName[100];
+	  char reason[1024];
+	  strcpy(characterName, FM_VAR_REF(pfmLogon, CharacterName));
 
-	//Imago 9/14
-	/*
-#else
-              g_pClubApp->GetSite()->LogEvent(EVENTLOG_WARNING_TYPE, "Club: No ticket on logon.");
-              szReason = "No login credentials found.";
-#endif
-          }
-	*/
-   // }
+	  // BT - 7/15 - CSS Authentication - get the user's login name from CSS if it's enabled.
+	  if (g_pClubApp->IsCssAuthenticationEnabled() == true)
+	  {
+		  CCssSoap cssSoap(g_pClubApp->GetCssServerDomain(), g_pClubApp->GetCssClientServicePath(), g_pClubApp->GetCssLobbyServicePath(), g_pClubApp->GetCssGameDataServicePath());
 
-      if (fValid)
-      {
-          // Allow client to logon
-          pthis->SetDefaultRecipient(&cnxnFrom, FM_GUARANTEED);
-          BEGIN_PFM_CREATE(*pthis, pfmLogonAck, S, LOGON_CLUB_ACK)
-          END_PFM_CREATE
+		  int iID;
+		  if (cssSoap.ValidateUserLogin(characterName, FM_VAR_REF(pfmLogon, Password), reason, iID) == false)
+		  {
+			  szReason = reason;
+		  }
+		  else if (cssSoap.GetUsernameForUsernameOrCallsign(characterName, characterName, reason) == false)
+		  {
+			  szReason = reason;
+		  }
+		  else
+		  {
+			  pClient->SetZoneID(iID);
+			  pClient->SetClubMember(true);
+			  fValid = true;
+		  }
+	  }
+	  else // AZ Authentication will go here eventually?
+	  {
+		  // let mark run his little squads app on his machine
+		  strncpy((char*)CharID_CharacterName, FM_VAR_REF(pfmLogon, CharacterName), sizeof(CharID_CharacterName));
+		  SQL_GO(CharID);
+		  if (!SQL_SUCCEEDED(SQL_GETROW(CharID)))
+		  {
+			  assert(0);
+		  }
+		  pClient->SetZoneID(CharID_CharacterId);
+		  pClient->SetClubMember(true);
+		  fValid = true;
+	  }
+	  //Imago 9/14
+	  /*
+  #else
+  g_pClubApp->GetSite()->LogEvent(EVENTLOG_WARNING_TYPE, "Club: No ticket on logon.");
+  szReason = "No login credentials found.";
+  #endif
+  }
+  */
+	  // }
 
-          pfmLogonAck->nMemberID = pClient->GetZoneID();
+	  if (fValid)
+	  {
+		  // Allow client to logon
+		  pthis->SetDefaultRecipient(&cnxnFrom, FM_GUARANTEED);
+		  BEGIN_PFM_CREATE(*pthis, pfmLogonAck, S, LOGON_CLUB_ACK)
+			  END_PFM_CREATE
 
-          debugf("Zone ID: %d\n", pfmLogonAck->nMemberID);
+			  pfmLogonAck->nMemberID = pClient->GetZoneID();
+			  strcpy(pfmLogonAck->szMemberLoginName, characterName);
 
-          // Send them the ranking info
-          CheckRankInfo();
-          BEGIN_PFM_CREATE(*pthis, pfmRankInfo, S, CLUB_RANK_INFO)
-            FM_VAR_PARM(g_pClubApp->GetRankInfo(), sizeof(RankInfo) * g_pClubApp->GetRankInfoCount())
-          END_PFM_CREATE
-          pfmRankInfo->cRanks = g_pClubApp->GetRankInfoCount();
-      }
-      else
-      {
-          BEGIN_PFM_CREATE(*pthis, pfmLogonNack, S, LOGON_CLUB_NACK)
-            FM_VAR_PARM(szReason, CB_ZTS)
-          END_PFM_CREATE
-          pfmLogonNack->fRetry = fRetry;
-      }
-      pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
-    }
+		  debugf("Zone ID: %d\n", pfmLogonAck->nMemberID);
+
+		  // Send them the ranking info
+		  CheckRankInfo();
+		  BEGIN_PFM_CREATE(*pthis, pfmRankInfo, S, CLUB_RANK_INFO)
+			  FM_VAR_PARM(g_pClubApp->GetRankInfo(), sizeof(RankInfo) * g_pClubApp->GetRankInfoCount())
+			  END_PFM_CREATE
+			  pfmRankInfo->cRanks = g_pClubApp->GetRankInfoCount();
+	  }
+	  else
+	  {
+		  BEGIN_PFM_CREATE(*pthis, pfmLogonNack, S, LOGON_CLUB_NACK)
+			  FM_VAR_PARM(szReason, CB_ZTS)
+			  END_PFM_CREATE
+			  pfmLogonNack->fRetry = fRetry;
+	  }
+	  pthis->SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);
+  }
     break;
 
     case FM_C_LOGOFF_CLUB:
@@ -1804,7 +1835,20 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
       SQL_GO(MakeJoinRequest);
       if (SQL_SUCCEEDED(SQL_GETROW(MakeJoinRequest)))
       {
-          if (MakeJoinRequest_ErrorCode != 0)
+		  // BT - 7/15 CSS Integration.
+		  if (MakeJoinRequest_ErrorCode == 11001)
+		  {
+			  SendSquadTextMessage(pthis, cnxnFrom, "You don't have a default alias assigned to your login. Please check the forums for assistance.");
+		  }
+		  else if (MakeJoinRequest_ErrorCode == 11002)
+		  {
+			  SendSquadTextMessage(pthis, cnxnFrom, "You already have a pending request to join this Squad. Please be patient, or message the squad leader in the forums.");
+		  }
+		  else if (MakeJoinRequest_ErrorCode == 11003)
+		  {
+			  SendSquadTextMessage(pthis, cnxnFrom, "You are already a member of this squad.");
+		  }
+          else if (MakeJoinRequest_ErrorCode != 0)
           {
               SendSquadTextMessage(pthis, cnxnFrom, "Your request could not be completed; try again later.");
           }
@@ -2088,6 +2132,11 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 
       // do the query
       int characterId = (pfmLeaderBoardQuery->idBasis == -2) ? -1 : pfmLeaderBoardQuery->idBasis;
+
+	  // BT - 7/15 - When CSS Auth is on, then the zone ID is the player's login ID, and that gets everything glued to their stats.
+	  if (g_pClubApp->IsCssAuthenticationEnabled() == true)
+		  characterId = pClient->GetZoneID();
+
       nResultCount = GetResults(pfmLeaderBoardQuery->sort,
         szBasis, characterId, pfmLeaderBoardQuery->civid, 
         topPlayer, vResults, nMaxResultSize - 1);
@@ -2126,9 +2175,13 @@ HRESULT IClubClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
             ? !HasPlayerNamed(szBasis, vResults, nResultCount)
             : !HasCharacterID(characterId, vResults, nResultCount))
         {
-            ForgeResultEntry(vResults[nResultCount], szBasis, 
-                characterId, vResults[nResultCount-1].nPosition + 1);
-            nResultCount++;
+			// BT - 7/15 CSS Integration - Only add the "no results found" confusing line when someone is actually searching.
+			if (szBasis[0] != '\0' || characterId != pClient->GetZoneID())
+			{
+				ForgeResultEntry(vResults[nResultCount], szBasis,
+					characterId, vResults[nResultCount - 1].nPosition + 1);
+				nResultCount++;
+			}
         }
 
         // send the result list

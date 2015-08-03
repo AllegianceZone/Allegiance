@@ -27,10 +27,17 @@ SQLRETURN SqlGetRow(SQLHSTMT hstmt);
 int InitSql(char * szRegKey, ISQLSite * pSQLSite);
 void ShutDownSQL();
 
-#define BEGIN_SQL_DEF(SQLSITE) \
-  const int fooinitsql = InitSql(HKLM_FedSrvA, SQLSITE); // defining variable just so we can call function
+#ifdef _ALLCLUB_PCH_
+	// BT - 7/15 - Enable AllClub to use the correct SQL credentials when this file is linked into AllClub 
+	#define BEGIN_SQL_DEF(SQLSITE) \
+		  const int fooinitsql = InitSql(HKLM_AllClubA, SQLSITE); // defining variable just so we can call function
+	#define END_SQL_DEF
+#else
+	#define BEGIN_SQL_DEF(SQLSITE) \
+		  const int fooinitsql = InitSql(HKLM_FedSrvA, SQLSITE); // defining variable just so we can call function
+	#define END_SQL_DEF
+#endif
 
-#define END_SQL_DEF
 
 #define DEF_STMT(NAME, SQL) \
   SQLHSTMT g_hstmt##NAME = AddStatement((SQLCHAR *) SQL); 

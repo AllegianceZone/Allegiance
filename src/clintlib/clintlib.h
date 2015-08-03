@@ -757,6 +757,7 @@ public: //todo: make protected
     char                m_szLobbyCharName[c_cbName];// name specified when logging into Lobby server
     char                m_szIGCStaticFile[30];
     int                 m_nMemberID; // For Zone Club server
+	char				m_szMemberLoginName[100]; // BT - 7/15 - CSS Server integration.
 
     // igc
     ImissionIGC*        m_pCoreIGC;
@@ -2046,7 +2047,10 @@ public:
     virtual void RemovePlayerFromSide(PlayerInfo* pPlayerInfo, QuitSideReason reason, const char* szMessageParam = NULL);
 
     void         SetZoneClubID(int nMemberID) { m_nMemberID = nMemberID; }
+	void         SetZoneClubUserName(char *loginName) { strcpy(m_szMemberLoginName, loginName); }
+	
     int          GetZoneClubID() { return m_nMemberID; }
+	char *		 GetZoneClubUserName() { return m_szMemberLoginName; }
 
     IshipIGC*   GetLastSender(void) const
     {
