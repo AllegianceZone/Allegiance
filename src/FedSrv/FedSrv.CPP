@@ -4847,7 +4847,9 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 		  {
 			if (pfsMission->GetStage() == STAGE_STARTED) //Spunky #177
 			{
-				/*
+				
+			  // imago commented out resign. BT - 7/15 - Readded resign. 
+
               if (pfmChat->cbMessage > strlen("#resign") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#resign", strlen("#resign")) == 0)
               {
 				// mmf/KGJV 09/07 allow only one ballot of each type at a time
@@ -4858,8 +4860,9 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
                 bForward = false;
               }
               else
-              */
-              // ^-- imago commented out resign 7/15
+              // ^-- imago commented out resign 7/15 -- BT 7/15 - Readded #resign
+
+
               if (pfmChat->cbMessage > strlen("#draw") && _strnicmp(FM_VAR_REF(pfmChat, Message), "#draw", strlen("#draw")) == 0)
               {
 				// mmf/KGJV 09/07 allow only one ballot of each type at a time
@@ -4937,7 +4940,7 @@ HRESULT FedSrvSiteBase::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxnF
 			  if (pfsMission->GetStage() == STAGE_STARTED)
 			  {
 				  pfsMission->GetSite()->SendChatf(NULL, CHAT_INDIVIDUAL_NOFILTER, pfsPlayer->GetIGCShip()->GetObjectID(),
-					  NA, "#draw | #autoaccept | #autobalance [1|2|a|n] | #ban | #mutiny");
+					  NA, "#draw | #resign | #autoaccept | #autobalance [1|2|a|n] | #ban | #mutiny");
 				  bForward = false;
 			  }
 			  else if (pfsMission->GetStage() == STAGE_NOTSTARTED)

@@ -400,7 +400,12 @@ public:
             DWORD cbValue = MAX_PATH;
             char szConfig[MAX_PATH];
             szConfig[0] = '\0';
-            ::RegQueryValueExA(hKey, "CfgFile", NULL, NULL, (LPBYTE)&szConfig, &cbValue);
+
+			if (g_bBetaMode == true)	
+				::RegQueryValueExA(hKey, "BetaCfgFile", NULL, NULL, (LPBYTE)&szConfig, &cbValue);
+			else
+				::RegQueryValueExA(hKey, "CfgFile", NULL, NULL, (LPBYTE)&szConfig, &cbValue);
+
             // if it didn't succeed, we'll just use the default above
             if (strlen(szConfig) > 0)
               strcpy(m_szConfig, szConfig);

@@ -947,7 +947,13 @@ public:
         {
             DWORD   cbValue = MAX_PATH;
             char    reg_config_file_name[MAX_PATH] = {0};
-            ::RegQueryValueExA(hKey, "CfgFile", NULL, NULL, (LPBYTE)&reg_config_file_name, &cbValue);
+
+			// BT - 7/15 - CSS Integration - Enable beta mode
+			if (g_bBetaMode == true)
+				::RegQueryValueExA(hKey, "BetaCfgFile", NULL, NULL, (LPBYTE)&reg_config_file_name, &cbValue);
+			else
+				::RegQueryValueExA(hKey, "CfgFile", NULL, NULL, (LPBYTE)&reg_config_file_name, &cbValue);
+
             // if it didn't succeed, we'll just use the default above
             if (strlen (reg_config_file_name) > 0)
               Strcpy (config_file_name, reg_config_file_name);

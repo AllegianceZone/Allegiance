@@ -297,6 +297,7 @@ class  WinTrekClient :
         int               GetGrooveLevel();
         ZString           GetSavedCharacterName();
         void              SaveCharacterName(ZString strName);
+
         //imago 9/14
 		ZString           GetSavedPassword();
 		int               GetSavePassword();
@@ -330,6 +331,10 @@ extern void debugClock(const char*  file, long line = 0);
 extern bool g_bAskForCDKey;
 // wlp 2006 - add askforcallsign so we only ask if it's not passed in on commandline
 extern bool g_bAskForCallSign;  // wlp 2006
+
+extern bool g_bBetaMode; // BT - 7/15 - CSS Integration - Enable beta mode
+
+
 extern TRef<ZWriteFile> g_pzfFrameDump;
 typedef struct 
 {

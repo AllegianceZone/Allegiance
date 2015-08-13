@@ -268,7 +268,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">
     <ClCompile>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Guids;..\src\Zone;..\src\Test\Inc;..\src\Inc\appWeb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\CssSoap;..\src\ZLib;..\src\_Utility;..\src\Inc;..\src\Guids;..\src\Zone;..\src\Test\Inc;..\src\Inc\appWeb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SRVLOG;_ATL_STATIC_REGISTRY;DEBUG;ALLSRV_STANDALONE;LOBBY;_WIN32_WINNT=0x0403;WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -291,7 +291,7 @@
       <PreprocessorDefinitions>FLAVOR=\"$(ConfigurationName)\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dbghelp.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;$(OutDir)..\CssSoap\CssSoap.lib;$(OutDir)..\_utility\Utility.lib;$(OutDir)..\zlib\zlib.lib;$(OutDir)..\test\TCLib\TCLib.lib;$(OutDir)..\sharemem\sharemem.lib;$(OutDir)..\Guids\Guids.lib;Winmm.lib;urlmon.lib;..\src\Lib\DirectPlay\dxguid.lib;comctl32.lib;version.lib;ws2_32.lib;delayimp.lib;wininet.lib;lz32.lib;netapi32.lib;comsupp.lib;oledb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\src\Inc\appWeb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib;MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

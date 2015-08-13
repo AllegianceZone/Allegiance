@@ -25,6 +25,7 @@
 #include "..\Zlib\zassert.h" //Imago 6/10
 #include "..\Zlib\FTPSession.h"
 #include "..\Zlib\ZDirectory.h" // BT - 7/15 - CSS Integration
+
 #include "..\Clintlib\AutoDownload.h" // don't included in pch because build process doesn't realize
                                       // when AutoDownload.h changes, and since this project
                                       // only has one cpp file, a pch doesn't help anyway (except
@@ -38,7 +39,7 @@
  * Returns:
  *      Art Path of client as specified in registry
  */
-char * GetArtPath()
+char * GetArtPath(bool isBetaMode)
 {
     static char pathStr[MAX_PATH + 16];
 
@@ -52,7 +53,10 @@ char * GetArtPath()
     {
 
         // Get the art path from the registry
-        bResult = (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "ArtPath", NULL, &dwType, (unsigned char*)&pathStr, &cbValue));
+		if (isBetaMode == true)
+			bResult = (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "BetaArtPath", NULL, &dwType, (unsigned char*)&pathStr, &cbValue));
+		else
+			bResult = (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "ArtPath", NULL, &dwType, (unsigned char*)&pathStr, &cbValue));
 
         ::RegCloseKey(hKey);
 
@@ -324,16 +328,37 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
     char *pCmdLine = lpCmdLine;
 
-    DWORD dwProcessID = atol(pCmdLine);
+	// BT - 7/15 - CSS Integration - Enable beta update and relaunch.
+	DWORD dwProcessID = 0;
+	bool isBetaMode = false;
+	char commandLineTemp[500];
+
+	strcpy(commandLineTemp, pCmdLine);
+
+	for (char* ptr = strtok(commandLineTemp, " "); ptr != NULL; ptr = strtok(NULL, " "))
+	{
+		DWORD temp = atol(ptr);
+		if (temp != 0)
+		{
+			dwProcessID = temp;
+		}
+		else if (stricmp(ptr, "-beta") == 0)
+		{
+			isBetaMode = true;
+		}
+	}
+
+    //dwProcessID = atol(pCmdLine);
     HANDLE hProcess;
 
     if(dwProcessID == 0)
     {
-        DisplayErrorMsg("Allegiance.exe gave Reloader.exe an invalid command-line.");
+        DisplayErrorMsg("Allegiance.exe gave Reloader.exe an invalid command-line. Usage: Reloader.exe <ProcessIDOfAllegiance.exe> [-beta]");
         return 1;
     }
 
-    char * szArtPath = GetArtPath();
+	// BT - 7/15 - CSS Integration - Enable beta mode
+	char * szArtPath = GetArtPath(isBetaMode);
 
     hProcess = ::OpenProcess(PROCESS_TERMINATE, false, dwProcessID);
 
@@ -424,6 +449,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
         strncpy(szNewCommandLine, pCmdLine, 500);   // re-feed the original command-line back into Allegiance.exe
 
     strcat(szNewCommandLine, " -reloaded");
+
+	// BT - 7/15 - CSS Integration - Enable beta mode
+	if(isBetaMode == true)
+		strcat(szNewCommandLine, " -beta");
 
     if((int)ShellExecuteA(0,
                          "Open",
