@@ -179,6 +179,18 @@ public:
 	  return m_szCssGameDataServicePath;
   }
 
+  // BT - 7/15 - Send currently connected players to the CSS webservice.
+  bool GetCssGameInfoEnabled()
+  {
+	  return m_bCssGameInfoEnabled;
+  }
+
+  // BT - 7/15 - Send currently connected players to the CSS webservice.
+  bool GetAzGameInfoEnabled()
+  {
+	  return m_bAzGameInfoEnabled;
+  }
+
   // BT - 12/21/2010 - ACSS integration
   //bool CLobbyApp::GetRankForCallsign(const char* szPlayerName, int *rank, double *sigma, double *mu, int *commandRank, double *commandSigma, double *commandMu, char *rankName, int rankNameLen);
   //bool CDKeyIsValid(const char* szPlayerName, const char* szCDKey, const char* szAddress, char *resultMessage, int resultMessageLength);
@@ -188,6 +200,9 @@ public:
   void RemoveAllPlayersFromMission(CFLMission* pMission);
   void RemoveAllPlayersFromServer(CFLServer* pServer);
   CFLMission* FindPlayersMission(const char* szPlayerName);
+  
+  // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+  HRESULT GetIPAddressFromDPlayOrServerIPAddressOverride(CFMConnection &cnxn, CFLServer * pServerT, char * szRemoteAddress);
 
   bool BootPlayersByCDKey(const ZString& strCDKey, const ZString& strNameExclude = "", ZString& strOldPlayer = ZString());
 
@@ -225,6 +240,10 @@ private:
 
   void SetConstantGameInfo();
   void SetVariableGameInfo();
+
+  // BT - 7/15 - Send currently connected players to the CSS webservice.
+  void SendGameInfoToCss();
+  void SendGameInfoToAz();
   void SendGameInfo();
   void UpdatePerfCounters();
   void RollCall();
@@ -288,6 +307,9 @@ private:
   char				m_szCssClientServicePath[2064];
   char				m_szCssLobbyServicePath[2064];
   char				m_szCssGameDataServicePath[2064];
+
+  bool			    m_bCssGameInfoEnabled; // BT - 7/15 - Send currently connected players to the CSS webservice.
+  bool			    m_bAzGameInfoEnabled; // BT - 7/15 Backwards compatibility for AZ.
 
   // Player list stuff
   typedef std::multimap<ZString, PlayerLocInfo, StringCmpLess> PlayerByCDKey;

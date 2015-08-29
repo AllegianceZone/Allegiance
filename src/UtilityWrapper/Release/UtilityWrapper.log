@@ -1,0 +1,11 @@
+﻿Build started 8/8/2015 12:27:48 AM.
+     1>Project "C:\Source\git\Allegiance\src\UtilityWrapper\UtilityWrapper.vcxproj" on node 3 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\v3.5\\" /AIC:\Windows\Microsoft.NET\Framework\v3.5\ /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\v3.0\\" /AIC:\Windows\Microsoft.NET\Framework\v3.0\ /AIC:\Windows\Microsoft.NET\Framework\v2.0.50727\ /AI"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral" /Zi /clr /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"pch.h" /Fp"Release\UtilityWrapper.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /TP /FUC:\Windows\Microsoft.NET\Framework\v2.0.50727\mscorlib.dll /FUC:\Windows\Microsoft.NET\Framework\v2.0.50727\System.Data.dll /FUC:\Windows\Microsoft.NET\Framework\v2.0.50727\System.dll /FUC:\Windows\Microsoft.NET\Framework\v2.0.50727\System.Xml.dll /analyze- /errorReport:prompt /d1clr:nostdlib Stdafx.cpp
+         Stdafx.cpp
+     1>Stdafx.cpp(5): fatal error C1083: Cannot open include file: 'pch.h': No such file or directory
+     1>Done Building Project "C:\Source\git\Allegiance\src\UtilityWrapper\UtilityWrapper.vcxproj" (Rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.19

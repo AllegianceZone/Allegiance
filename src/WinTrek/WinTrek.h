@@ -297,6 +297,8 @@ class  WinTrekClient :
         int               GetGrooveLevel();
         ZString           GetSavedCharacterName();
         void              SaveCharacterName(ZString strName);
+		ZString			  GetSignupUrl(); // BT - 7/15 - CSS Integration
+		ZString			  GetAllegianceWebPage(); // BT - 7/15 - CSS Integration
 
         //imago 9/14
 		ZString           GetSavedPassword();

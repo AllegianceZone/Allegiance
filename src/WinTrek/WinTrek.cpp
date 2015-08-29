@@ -3918,12 +3918,18 @@ public:
 
     void ShowWebPage(const char* szURL)
     {
+		char url[2064];
+
 		//
 		// WLP - 2005 removed line below - this overrides all web pages to alleg.net for now
 		//  the compare doesn't work anyway
 		//   if (szURL[0] == '\0')
-		if (szURL[0] == '\0')
-			szURL = "http://www.allegiancezone.com";
+		if (szURL[0] != '\0')
+			strcpy(url, szURL);
+		else
+			strcpy(url, trekClient.GetAllegianceWebPage()); // BT - 7/15 - CSS Integration
+
+			//szURL = "http://www.allegiancezone.com";
 
         if (!IsWindows9x()) {
             /*
@@ -3933,7 +3939,7 @@ public:
             */
         }
 
-        ShellExecuteA(NULL, NULL, szURL, NULL, NULL, SW_SHOWNORMAL);
+		ShellExecuteA(NULL, NULL, url, NULL, NULL, SW_SHOWNORMAL);
     }
 
     #define idmConfigure         3

@@ -6,6 +6,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-windowed -noautoupdate -nomovies -multi -debug</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-windowed -noautoupdate -nomovies -multi -debug -beta</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

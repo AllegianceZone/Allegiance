@@ -158,6 +158,18 @@ public:
 	  strcpy(m_szLastBanCheckTimestamp, timestamp);
   }
 
+  // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+  void SetServerIPOverride(ZString ipAddress)
+  {
+	  strcpy(m_szServerIPOverride, ipAddress);
+  }
+
+  // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+  char * GetServerIPOverride()
+  {
+	  return m_szServerIPOverride;
+  }
+
 private:
   
   static const CFLMission * c_AllMissions;
@@ -181,6 +193,7 @@ private:
   char m_szPrivilegedUsers[512]; // Imago 6/10 #2
   char m_szVersion[18]; // Imago 6/10 #62
   char m_szLastBanCheckTimestamp[32]; // BT - 7/15 - CSS Integration
+  char m_szServerIPOverride[24]; // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
 };
 
 #endif

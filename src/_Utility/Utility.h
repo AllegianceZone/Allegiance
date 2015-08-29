@@ -51,7 +51,7 @@ class   Rotation;
 // handled via truncation. DB versions do not include the NULL terminator
 const int c_cbFileNameDB    = 12; // keep in sync with 
 const int c_cbDescriptionDB = 200;
-const int c_cbNameDB        = 32; // BT - 7/15 CSS Integration.
+const int c_cbNameDB        = 24;
 const int c_cbLocAbrevDB    = 8;
 const int c_cbFileName      = c_cbFileNameDB    + 1;
 const int c_cbDescription   = c_cbDescriptionDB + 1;
@@ -59,6 +59,7 @@ const int c_cbName          = c_cbNameDB        + 1;
 const int c_cbLocAbrev      = c_cbLocAbrevDB    + 1;
 const int c_cbCDKey         = 256 + 1;
 const int c_cbPassportName  = 256 + 1;
+const int c_cbServerAddressOverride = 1024 + 1; // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
 
 class _exposed List_utl
 {

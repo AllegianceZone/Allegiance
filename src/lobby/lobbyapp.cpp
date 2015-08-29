@@ -12,6 +12,7 @@
 #include <conio.h>
 #include <zreg.h>
 #include "client.h"
+#include <vector> // BT - 7/15 - Send currently connected players to the CSS webservice.
 
 ALLOC_MSG_LIST;
 CLobbyApp * g_pLobbyApp = NULL;
@@ -137,25 +138,47 @@ DWORD WINAPI PostThread( LPVOID param ) {
 	LeaveCriticalSection(&HttpCriticalSection); 
 	return 0;
 }
-void CLobbyApp::SendGameInfo()
-{
-  ZGameServerInfoMsg* gameInfo = GetGameServerInfoMsg();
-  SetVariableGameInfo();
-  //must do endian so both side of network get correct numbers
-  //gameinfo used on Unix and Intel boxes
-  //note that doing this once will invalidate all numbers
-  //so set gameInfo->info[0] numbers again.
-  ZGameInstanceInfoMsgEndian( gameInfo->info );
-  
-  //send, usually to many Ip addresses which are Zone Web servers, so add this to your game configuration
-  for (int i = 0; i < m_cReportServers; i++)
-    ZGameInfoSendTo(m_rgulIP[i], 2000, GetGameServerInfoMsg(), sizeof(m_GameInfoBuf));
 
-  //Imago 9/14
+// BT - 7/15 - Send currently connected players to the CSS webservice.
+void CLobbyApp::SendGameInfoToCss()
+{
+	if (g_pLobbyApp->GetCssGameInfoEnabled() == false)
+		return;
+
+	CCssSoap cssSoap(g_pLobbyApp->GetCssServerDomain(), g_pLobbyApp->GetCssClientServicePath(), g_pLobbyApp->GetCssLobbyServicePath(), g_pLobbyApp->GetCssGameDataServicePath());
+
+	std::vector<ConnectedPlayerInfo> connectedPlayers;
+
+	PlayerByName::iterator iterPlayer = m_playerByName.begin();
+	while (iterPlayer != m_playerByName.end())
+	{
+		ConnectedPlayerInfo connectedPlayerInfo;
+
+		char szPlayerName[256];
+		Strcpy(connectedPlayerInfo.szPlayerName, (*(*iterPlayer).second).second.GetName());
+
+		FMD_LS_LOBBYMISSIONINFO *missionInfo = (*(*iterPlayer).second).second.GetMission()->GetMissionInfo();
+		Strcpy(connectedPlayerInfo.szGameName, FM_VAR_REF(missionInfo, szGameName));
+		Strcpy(connectedPlayerInfo.szServerName, FM_VAR_REF(missionInfo, szServerName));
+		
+		connectedPlayers.push_back(connectedPlayerInfo);
+
+		iterPlayer++;
+	}
+
+	if (connectedPlayers.size() > 0)
+	{
+		cssSoap.SendConnectedPlayerInfo(connectedPlayers);
+	}
+}
+
+void CLobbyApp::SendGameInfoToAz()
+{
+	//Imago 9/14
 	if (m_fmServers.GetConnections()->GetCount() > 0) {
 		int offset = 0;
 		char * PostData = new char[BUFFSIZE];
-		ZeroMemory(PostData,BUFFSIZE);
+		ZeroMemory(PostData, BUFFSIZE);
 		ListConnections::Iterator iterCnxn(*m_fmServers.GetConnections());
 		while (!iterCnxn.End()) {
 			CFLServer * pServerT = CFLServer::FromConnection(*iterCnxn.Value());
@@ -172,24 +195,49 @@ void CLobbyApp::SendGameInfo()
 			iterCnxn.Next();
 		}
 		if (offset > 0) {
-			 pHTTP settings;
-			 Strcpy(settings.hdrs,"Content-Type: application/octet-stream\r\n");
-			 Strcpy(settings.verb,"POST");
-			 Strcpy(settings.uri,"/lobbyinfo.ashx");
-			 Strcpy(settings.host,"allegiancezone.com");
-			 ZeroMemory(settings.data,BUFFSIZE);
-			 memcpy(settings.data,PostData,offset);
-			 settings.size = offset;
-			 DWORD lpExitCode;
-			 GetExitCodeThread(m_threadPost,&lpExitCode);
-			 if (lpExitCode != STILL_ACTIVE) {
+			pHTTP settings;
+			Strcpy(settings.hdrs, "Content-Type: application/octet-stream\r\n");
+			Strcpy(settings.verb, "POST");
+			Strcpy(settings.uri, "/lobbyinfo.ashx");
+			Strcpy(settings.host, "allegiancezone.com"); 
+			ZeroMemory(settings.data, BUFFSIZE);
+			memcpy(settings.data, PostData, offset);
+			settings.size = offset;
+			DWORD lpExitCode;
+			GetExitCodeThread(m_threadPost, &lpExitCode);
+			if (lpExitCode != STILL_ACTIVE) {
 				debugf("Creating post thread.\n");
 				DWORD dum;
 				m_threadPost = CreateThread(NULL, 0, PostThread, (void*)&settings, 0, &dum);
-			 } else
-				 debugf("Post thread was still running...\n");
+			}
+			else
+				debugf("Post thread was still running...\n");
 		}
 	}
+}
+
+void CLobbyApp::SendGameInfo()
+{
+	// BT - 7/15 - Send currently connected players to the CSS webservice.
+	if (g_pLobbyApp->GetCssGameInfoEnabled() == true)
+		SendGameInfoToCss();
+
+	if (g_pLobbyApp->GetAzGameInfoEnabled() == true)
+		SendGameInfoToAz();
+	
+  ZGameServerInfoMsg* gameInfo = GetGameServerInfoMsg();
+  SetVariableGameInfo();
+  //must do endian so both side of network get correct numbers
+  //gameinfo used on Unix and Intel boxes
+  //note that doing this once will invalidate all numbers
+  //so set gameInfo->info[0] numbers again.
+  ZGameInstanceInfoMsgEndian( gameInfo->info );
+  
+  //send, usually to many Ip addresses which are Zone Web servers, so add this to your game configuration
+  for (int i = 0; i < m_cReportServers; i++)
+    ZGameInfoSendTo(m_rgulIP[i], 2000, GetGameServerInfoMsg(), sizeof(m_GameInfoBuf));
+
+  
 }
 
 CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
@@ -282,6 +330,22 @@ CLobbyApp::CLobbyApp(ILobbyAppSite * plas) :
 
 	m_dwCssAuthenticationEnabled = 0;
 	bSuccess = _Module.ReadFromRegistry(hk, true, "CssAuthenticationEnabled", &m_dwCssAuthenticationEnabled, 0);
+
+	// BT - 7/15 - Send currently connected players to the CSS webservice.
+	m_bCssGameInfoEnabled = false;
+	DWORD dwCssGameInfoEnabled = 0;
+	bSuccess = _Module.ReadFromRegistry(hk, false, "CssGameInfoEnabled", &dwCssGameInfoEnabled, 0);
+
+	if (bSuccess == true)
+		m_bCssGameInfoEnabled = dwCssGameInfoEnabled > 0;
+
+	// BT - 7/15 - Backwards compatibility for AZ.
+	m_bAzGameInfoEnabled = true;
+	DWORD dwAzGameInfoEnabled = 0;
+	bSuccess = _Module.ReadFromRegistry(hk, false, "AzGameInfoEnabled", &dwAzGameInfoEnabled, 0);
+
+	if (bSuccess == true && dwAzGameInfoEnabled == 0)
+		m_bAzGameInfoEnabled = false;
 
     DWORD dwCheckKey;
     bSuccess = _Module.ReadFromRegistry(hk, false, "fCheckCDKey", &dwCheckKey, (unsigned long) 
@@ -988,6 +1052,18 @@ CFLMission* CLobbyApp::FindPlayersMission(const char* szPlayerName)
   }
   else
     return NULL;
+}
+
+// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+HRESULT CLobbyApp::GetIPAddressFromDPlayOrServerIPAddressOverride(CFMConnection &cnxn, CFLServer * pServerT, char * szRemoteAddress)
+{
+	char * szServerAddressOverride = pServerT->GetServerIPOverride();
+	if (szServerAddressOverride != NULL && strlen(szServerAddressOverride) > 0)
+		Strcpy(szRemoteAddress, szServerAddressOverride);
+	else
+		GetFMServers().GetIPAddress(cnxn, szRemoteAddress);
+
+	return S_OK;
 }
 
 bool CLobbyApp::StringCmpLess::operator () (const ZString& str1, const ZString& str2) const

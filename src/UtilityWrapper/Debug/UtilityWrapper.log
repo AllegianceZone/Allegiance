@@ -1,0 +1,22 @@
+﻿Build started 8/1/2015 3:28:22 PM.
+     1>Project "C:\Source\git\Allegiance\src\UtilityWrapper\UtilityWrapper.vcxproj" on node 3 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\\" /AI"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\Facades\\" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"pch.h" /Fp"Debug\UtilityWrapper.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib UtilityWrapper.cpp
+         UtilityWrapper.cpp
+     1>UtilityWrapper.cpp(3): warning C4627: '#include "crc.h"': skipped when looking for precompiled header use
+                 Add directive to 'pch.h' or rebuild precompiled header
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Source\git\Allegiance\VS2013\Debug\UtilityWrapper.dll" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Source\git\Allegiance\VS2013\Debug\UtilityWrapper.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /DLL Debug\app.res
+         Debug\AssemblyInfo.obj
+         Debug\Stdafx.obj
+         Debug\UtilityWrapper.obj
+         "Debug\.NETFramework,Version=v4.5.1.AssemblyAttributes.obj"
+         C:\Source\git\Allegiance\objs12\AZDebug\Guids\Guids.lib
+         C:\Source\git\Allegiance\objs12\AZDebug\ZLib\Zlib.lib
+         C:\Source\git\Allegiance\objs12\AZDebug\_Utility\Utility.lib
+         UtilityWrapper.vcxproj -> C:\Source\git\Allegiance\VS2013\Debug\UtilityWrapper.dll
+     1>Done Building Project "C:\Source\git\Allegiance\src\UtilityWrapper\UtilityWrapper.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.55

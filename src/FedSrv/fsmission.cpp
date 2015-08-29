@@ -3850,12 +3850,15 @@ void CFSMission::QueueLobbyMissionInfo()
 	FM_VAR_PARM((PCC)(g.strLocalAddress),CB_ZTS) // KGJV #114 - ServerName
 	FM_VAR_PARM(szAddr, INET6_ADDRSTRLEN)                       // KGJV #114 - ServerAddr - placeholder here, lobby will fill it /Revisit, this can be Oct'ed and sent non variable
 	FM_VAR_PARM(PCC(UTL::GetPrivilegedUsers(-1)),CB_ZTS) //Imago 6/10
-	FM_VAR_PARM(PCC(zInfo),CB_ZTS) //Imago 7/10
+	FM_VAR_PARM(PCC(zInfo),CB_ZTS) //Imago 7/10,
+	FM_VAR_PARM((PCC)(g.strServerAddressOverride), CB_ZTS) // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
   END_PFM_CREATE
   pfmLobbyMissionInfo->dwPort = dwPort;
   pfmLobbyMissionInfo->dwCookie = GetCookie();
 
   debugf("sending lobby our mission info for %x listening on port %d\n",pfmLobbyMissionInfo->dwCookie,dwPort);
+  debugf("g.strServerAddressOverride: %s\n", g.strServerAddressOverride);
+
   // adjust the clock time to be an offset from the current time (the lobby server will fix this)
   pfmLobbyMissionInfo->dwStartTime = m_misdef.misparms.timeStart.clock() - Time::Now().clock();
 

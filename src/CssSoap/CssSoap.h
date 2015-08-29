@@ -7,6 +7,15 @@
 
 #pragma once
 
+#include <vector>
+
+struct ConnectedPlayerInfo
+{
+	char szPlayerName[256];
+	char szGameName[256];
+	char szServerName[256];
+};
+
 class CCssSoap
 {
 private:
@@ -27,5 +36,7 @@ public:
 	void GetBanListSinceTimestamp(char * lastBanCheckTimestamp, char * currentTimestamp, char * lastBanList);
 	bool SendPlayerScoreRecord(FMD_S_PLAYER_SCORE_UPDATE *pfmPlayerScoreUpdate);
 	bool CommitPlayerScoreRecords(char * szGameGuid);
+	bool SendConnectedPlayerInfo(std::vector<ConnectedPlayerInfo> connectedPlayerInfos);
+
 	void EncodeURL(char * url, char * token);
 };

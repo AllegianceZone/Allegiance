@@ -705,6 +705,10 @@ void MissionInfo::Update(FMD_LS_LOBBYMISSIONINFO* pfmLobbyMissionInfo)
 	// KGJV #114 - fill in server name & ip
 	Strncpy(m_pfmMissionDef->szServerName, FM_VAR_REF(pfmLobbyMissionInfo,szServerName), c_cbName);
 	Strncpy(m_pfmMissionDef->szServerAddr, FM_VAR_REF(pfmLobbyMissionInfo,szServerAddr), 16);
+
+	// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+	Strncpy(m_pfmMissionDef->szServerAddressOverride, FM_VAR_REF(pfmLobbyMissionInfo, szServerAddressOverride), c_cbServerAddressOverride);
+
 	UTL::SetPrivilegedUsers( ((FM_VAR_REF(pfmLobbyMissionInfo, szPrivilegedUsers) != NULL) ?  FM_VAR_REF(pfmLobbyMissionInfo, szPrivilegedUsers) : ""),m_pfmMissionDef->dwCookie); //Imago 6/10 #2
 	UTL::SetServerVersion(FM_VAR_REF(pfmLobbyMissionInfo, szServerVersion),m_pfmMissionDef->dwCookie); //Imago 7/10 #62
     m_pfmMissionDef->misparms.nTotalMaxPlayersPerGame = pfmLobbyMissionInfo->nMaxPlayersPerGame;

@@ -576,6 +576,9 @@ CFLServer::CFLServer(CFMConnection * pcnxn) :
 
   // BT - 7/15 - CSS Integration
   sprintf(m_szLastBanCheckTimestamp, "0");
+
+  // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+  sprintf(m_szServerIPOverride, "");
 }
 
 CFLServer::~CFLServer()

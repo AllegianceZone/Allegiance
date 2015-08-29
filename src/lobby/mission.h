@@ -46,6 +46,8 @@ public:
 
   void SetLobbyInfo(FMD_LS_LOBBYMISSIONINFO * plmi);
 
+  ZString GetIPAddresFromHostname(char *hostname);
+
   int GetPlayerCount()
   {
     return m_cPlayers;

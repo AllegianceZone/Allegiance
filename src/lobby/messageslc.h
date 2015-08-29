@@ -121,6 +121,7 @@ struct ServerCoreInfo
 	int  iCurGames;
 	int  iMaxGames;
 	DWORD dwCoreMask; // 32 bits mask (so max is 32 cores)
+	char szServerAddressOverride[c_cbServerAddressOverride]; // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
 };
 
 DEFINE_FEDMSG(C, GET_SERVERS_REQ, 266) // sent by clients to request the servers list

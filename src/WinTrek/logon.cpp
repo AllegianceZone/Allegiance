@@ -148,9 +148,12 @@ public:
 
     bool OnButtonSignUp()
     {
+		
 		// KGJV - Alleg.net registration
-		//imago 6/15
-        GetWindow()->ShowWebPage("http://allegiancezone.com/signup");
+		//imago 6/15 
+		// BT - 7/15 - Made signup URL settable from the registry.
+        GetWindow()->ShowWebPage(trekClient.GetSignupUrl());
+	
         return true;
     }
 

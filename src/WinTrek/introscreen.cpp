@@ -882,7 +882,7 @@ public:
         //
 
         TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, LogonLAN, 
-            "Enter a call sign to use for this game.", trekClient.GetSavedCharacterName(), "", false);
+			"Enter a call sign to use for this game.", trekClient.GetSavedCharacterName(), "", false);
         GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, false);
 
         return true;
@@ -1029,7 +1029,7 @@ public:
         {
             // pop up the call sign/login dialog
             TRef<IPopup> plogonPopup = CreateLogonPopup(m_pmodeler, this, LogonLAN, 
-                szReason, trekClient.GetSavedCharacterName(), "", false);
+				szReason, trekClient.GetSavedCharacterName(), "", false);
             GetWindow()->GetPopupContainer()->OpenPopup(plogonPopup, false);
         }
         else

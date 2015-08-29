@@ -326,6 +326,7 @@ struct Global
   ZString             strLobbyServer;
   ZString             strAuthServer;
   ZString             strLocalAddress;
+  ZString			  strServerAddressOverride; // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
   char                rgTechs[cTechs][CbTechBitName+1];
   DWORD               dwLobbyPort;
 

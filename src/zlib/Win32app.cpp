@@ -264,6 +264,9 @@ void logchat(const char* strText)
 
 void ZDebugOutputImpl(const char *psz)
 {
+	puts(psz);
+	puts("\r\n");
+
     if (g_papp)
         g_papp->DebugOutput(psz);
     else

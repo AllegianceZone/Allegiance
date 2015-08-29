@@ -31,6 +31,7 @@ DEFINE_FEDMSG(LS, LOBBYMISSIONINFO, 301)
   FM_VAR_ITEM(szServerAddr); // KGJV #114 added
   FM_VAR_ITEM(szPrivilegedUsers); // Imago 6/10 #2
   FM_VAR_ITEM(szServerVersion); // Imago 7/10 #62
+  FM_VAR_ITEM(szServerAddressOverride); // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
   DWORD			dwPort;  //multi port/process servers Imago
   DWORD         dwCookie; // how the mission is identified on the lobby
   unsigned      dwStartTime;

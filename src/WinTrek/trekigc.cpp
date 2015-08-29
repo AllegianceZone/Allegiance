@@ -3051,7 +3051,50 @@ ZString WinTrekClient::GetSavedCharacterName()
 
     return szName;
 }
-//
+
+// BT - 7/15 - CSS Integration
+// Gets the signup page url if specified in the registry, otherwise defaults to original AllegianceZone signup page.
+ZString WinTrekClient::GetSignupUrl()
+{
+	HKEY hKey;
+	DWORD dwType;
+	char szSignupUrl[2064];
+	DWORD cbSignupUrl = sizeof(szSignupUrl);
+	szSignupUrl[0] = '\0';
+
+	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
+	{
+		RegQueryValueExA(hKey, "SignupUrl", NULL, &dwType, (unsigned char*)&szSignupUrl, &cbSignupUrl);
+		RegCloseKey(hKey);
+	} 
+
+	if (!szSignupUrl || strlen(szSignupUrl) == 0)
+		strcpy(szSignupUrl, "http://allegiancezone.com/signup");
+	
+	return szSignupUrl;
+}
+
+// BT - 7/15 - CSS Integration
+// Gets the Management Root page from the registry, otherwise default back to www.allegiancezone.com page.
+ZString WinTrekClient::GetAllegianceWebPage()
+{
+	HKEY hKey;
+	DWORD dwType;
+	char szUrl[2064];
+	DWORD cbUrl = sizeof(szUrl);
+	szUrl[0] = '\0';
+
+	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, ALLEGIANCE_REGISTRY_KEY_ROOT, 0, KEY_READ, &hKey))
+	{
+		RegQueryValueExA(hKey, "ManagementWebRoot", NULL, &dwType, (unsigned char*)&szUrl, &cbUrl);
+		RegCloseKey(hKey);
+	}
+
+	if (!szUrl || strlen(szUrl) == 0)
+		strcpy(szUrl, "http://allegiancezone.com");
+
+	return szUrl;
+}
 
 void WinTrekClient::SaveCharacterName(ZString strName)
 {

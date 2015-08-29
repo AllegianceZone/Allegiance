@@ -22,8 +22,12 @@ CFLMission::CFLMission(CFLServer * pServer, CFLClient * pClientCreator) :
 {
   assert(m_pServer);
   char szRemote[INET6_ADDRSTRLEN];
-  g_pLobbyApp->GetFMServers().GetIPAddress(*m_pServer->GetConnection(), szRemote);
+
+  //g_pLobbyApp->GetFMServers().GetIPAddress(*m_pServer->GetConnection(), szRemote);
   
+  // BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+  g_pLobbyApp->GetIPAddressFromDPlayOrServerIPAddressOverride(*m_pServer->GetConnection(), pServer, szRemote);
+
   g_pLobbyApp->GetSite()->LogEvent(
         EVENTLOG_INFORMATION_TYPE, LE_MissionCreated, 
         GetCookie(), m_pServer->GetConnection()->GetName(), szRemote,
@@ -73,6 +77,14 @@ void CFLMission::SetLobbyInfo(FMD_LS_LOBBYMISSIONINFO * plmi)
 		pServer->SetServerPort(m_plmi->dwPort); //Imago 6/23/08 override port
 	}
 
+	// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+	char *pfmServerAddressOverride = FM_VAR_REF(plmi, szServerAddressOverride);
+	if (pfmServerAddressOverride != NULL && strlen(pfmServerAddressOverride) > 0)
+	{
+		ZString ipAddress = GetIPAddresFromHostname(pfmServerAddressOverride);
+		pServer->SetServerIPOverride(ipAddress);
+	}
+
 	// never advertize paused games - imago 7/1/09 removed old checks
     if (!pServer->GetPaused()) //&& 
         //(g_pLobbyApp->EnforceCDKey() || m_plmi->nNumPlayers > 0 || m_plmi->fMSArena ||
@@ -85,6 +97,20 @@ void CFLMission::SetLobbyInfo(FMD_LS_LOBBYMISSIONINFO * plmi)
   }
 }
 
+// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+ZString CFLMission::GetIPAddresFromHostname(char *hostname)
+{
+	hostent * record = gethostbyname(hostname);
+	if (record == NULL)
+	{
+		//strcpy(ipAddress, "");
+		return "";
+	}
+
+	in_addr * address = (in_addr *)record->h_addr;
+	//strcpy(ipAddress, inet_ntoa(*address));
+	return inet_ntoa(*address);
+}
 
 void CFLMission::AddPlayer()
 {
@@ -109,7 +135,12 @@ void CFLMission::NotifyCreator()
     BEGIN_PFM_CREATE(g_pLobbyApp->GetFMClients(), pfmJoinMission, L, JOIN_MISSION)
     END_PFM_CREATE
 	char szServer[INET6_ADDRSTRLEN];
-    g_pLobbyApp->GetFMServers().GetIPAddress(*GetServer()->GetConnection(), szServer);
+    
+	//g_pLobbyApp->GetFMServers().GetIPAddress(*GetServer()->GetConnection(), szServer);
+
+	// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+	g_pLobbyApp->GetIPAddressFromDPlayOrServerIPAddressOverride(*GetServer()->GetConnection(), GetServer(), szServer);
+
     assert(strlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
     Strcpy(pfmJoinMission->szServer, szServer);
     pfmJoinMission->dwCookie = GetCookie();

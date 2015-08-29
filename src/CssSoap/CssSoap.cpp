@@ -54,7 +54,7 @@ bool CCssSoap::ValidateUserLogin(char *username, char *password, char * szReason
 		   </soapenv:Body> \
 		   		</soapenv:Envelope>", password, username);
 
-
+	
 
 	int soapLength = strlen(soapBody);
 
@@ -63,6 +63,13 @@ bool CCssSoap::ValidateUserLogin(char *username, char *password, char * szReason
 	char * szToken;
 	char * szResponse = (char*)_alloca(10000);
 	Strcpy(szResponse, (PCC)Response);
+
+	puts(szHdrs);
+	puts("\r\n");
+	puts(soapBody);
+	puts("\r\n");
+	puts(szResponse);
+	puts("\r\n");
 
 	// Parse results
 	std::tr1::regex rgx("<LauncherSignInResult.*?>.*?<a:Status>(.*?)</a:Status>.*?</LauncherSignInResult>");
@@ -134,7 +141,7 @@ bool CCssSoap::GetRankForCallsign(const char* szPlayerName, int *rank, double *s
 	strcpy(callsign, "");
 	EncodeURL(callsign, playername);
 
-	sprintf(szURL, "%s?Action=GetRank&Callsign=%s", m_szCssClientServicePath, callsign);
+	sprintf(szURL, "%s?Action=GetRank&Callsign=%s", m_szCssLobbyServicePath, callsign);
 
 	ZString Response = UTL::DoHTTP(szHdrs, m_szCssServerDomain, "GET", szURL, "", 0, false);
 
@@ -344,6 +351,51 @@ bool CCssSoap::CommitPlayerScoreRecords(char * szGameGuid)
 
 	return strstr(szResponse, "<a:Succeeded>true</a:Succeeded>") >= 0;
 }
+
+// TODO: BT 7/15 - Finish making the SOAP call to send the connected player info to CSS for logging.
+bool CCssSoap::SendConnectedPlayerInfo(std::vector<ConnectedPlayerInfo> connectedPlayerInfos)
+{
+	return true;
+
+	std::vector<ConnectedPlayerInfo>::iterator iterPlayer = connectedPlayerInfos.begin();
+	while (iterPlayer != connectedPlayerInfos.end())
+	{
+		iterPlayer++;
+	}
+
+
+	/*
+	char szHdrs[512];
+	sprintf(szHdrs, "Content-Type: text/xml;charset=UTF-8\r\nSOAPAction: \"http://tempuri.org/GameData/CommitPlayerData\"");
+
+	char soapBody[4092];
+	int length = 0;
+
+	length += sprintf(soapBody,
+		"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\" xmlns:all=\"http://schemas.datacontract.org/2004/07/Allegiance.CommunitySecuritySystem.Server\"> \
+		   <soapenv:Header/> \
+		   <soapenv:Body> \
+			  <tem:CommitPlayerData> \
+				 <tem:request> \
+					<all:GameGuid>%s</all:GameGuid> \
+				 </tem:request> \
+			  </tem:CommitPlayerData> \
+		   </soapenv:Body> \
+		</soapenv:Envelope>",
+		szGameGuid);
+
+	int soapLength = strlen(soapBody);
+
+	ZString Response = UTL::DoHTTP(szHdrs, m_szCssServerDomain, "POST", m_szCssGameDataServicePath, soapBody, soapLength, true);
+
+	char * szToken;
+	char * szResponse = (char*)_alloca(10000);
+	Strcpy(szResponse, (PCC)Response);
+
+	return strstr(szResponse, "<a:Succeeded>true</a:Succeeded>") >= 0;
+	*/
+}
+
 
 void CCssSoap::EncodeURL(char * url, char * token) // url = output, token gets append to url
 {

@@ -274,14 +274,15 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 	  if(pfmLogon->verLobby != LOBBYVER) {
 		  fValid = false;
 		  szReason = "Your game's version did not get auto-updated properly.  Please try again later.";
-		  pqd->szReason = new char[strlen(szReason) + 1];
-		  Strcpy(pqd->szReason, szReason);
+		  pqd->szReason = new char[strlen(szReason) + 100];
+		  sprintf(pqd->szReason, "Your game's version did not get auto-updated properly.  Please try again later. %ld != %ld", pfmLogon->verLobby, LOBBYVER);
+		  //Strcpy(pqd->szReason, szReason);
 	  }
 
       //Imago added NACK for verson back in 8/6/09 
       if (!fValid) {
 			BEGIN_PFM_CREATE(*pthis, pfmLogonNack, L, LOGON_NACK)
-			FM_VAR_PARM(szReason, CB_ZTS)
+				FM_VAR_PARM(pqd->szReason, CB_ZTS)
 			END_PFM_CREATE
 			pfmLogonNack->fRetry = false;
 			g_pLobbyApp->GetFMClients().SendMessages(&cnxnFrom, FM_GUARANTEED, FM_FLUSH);          
@@ -344,11 +345,14 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 					if (!pServerT->GetPaused() && (pServerT->GetStaticCoreMask() != 0))// server isnt paused and has at least one core
 					{
 						strcpy_s(pSCI[i].szName,sizeof(pSCI[i].szName),iterCnxn.Value()->GetName());
-						g_pLobbyApp->GetFMServers().GetIPAddress(*iterCnxn.Value(), pSCI[i].szRemoteAddress);
 						strcpy_s(pSCI[i].szLocation,sizeof(pSCI[i].szLocation),pServerT->GetLocation());
 						pSCI[i].iCurGames = pServerT->GetCurrentGamesCount();
 						pSCI[i].iMaxGames = pServerT->GetMaxGamesAllowed();
 						pSCI[i].dwCoreMask = pServerT->GetStaticCoreMask();
+
+						// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+						g_pLobbyApp->GetIPAddressFromDPlayOrServerIPAddressOverride(*iterCnxn.Value(), pServerT, pSCI[i].szRemoteAddress);
+						
 						i++;
 					}
 				}
@@ -401,7 +405,13 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
 			if (!pServerT->GetPaused()) // not paused
 			{
 				char szRemoteAddress[INET6_ADDRSTRLEN];
-				g_pLobbyApp->GetFMServers().GetIPAddress(*iterCnxn.Value(), szRemoteAddress);
+
+				//g_pLobbyApp->GetFMServers().GetIPAddress(*iterCnxn.Value(), szRemoteAddress);
+
+				// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+				g_pLobbyApp->GetIPAddressFromDPlayOrServerIPAddressOverride(*iterCnxn.Value(), pServerT, szRemoteAddress);
+
+				
 				//IMAGO REVIEW: Sanity check on szAddr first
 				if (strcmp(szRemoteAddress,szAddr)==0) // IPs match
 				{
@@ -469,7 +479,12 @@ HRESULT LobbyClientSite::OnAppMessage(FedMessaging * pthis, CFMConnection & cnxn
         BEGIN_PFM_CREATE(*pthis, pfmJoinMission, L, JOIN_MISSION)
         END_PFM_CREATE
 		char szServer[INET6_ADDRSTRLEN];
-        g_pLobbyApp->GetFMServers().GetIPAddress(*pMission->GetServer()->GetConnection(), szServer);
+
+        //g_pLobbyApp->GetFMServers().GetIPAddress(*pMission->GetServer()->GetConnection(), szServer);
+
+		// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
+		g_pLobbyApp->GetIPAddressFromDPlayOrServerIPAddressOverride(*pMission->GetServer()->GetConnection(), pMission->GetServer(), szServer);
+
         assert(strlen(szServer) < sizeof(pfmJoinMission->szServer)); // as long as szServer is fixed length
         Strcpy(pfmJoinMission->szServer, szServer);
 		pfmJoinMission->dwPort = pMission->GetServer()->GetServerPort();	// mdvalley: pass the port to the client
