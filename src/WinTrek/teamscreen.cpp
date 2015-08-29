@@ -519,12 +519,17 @@ private:
             // if they are on our team, draw the player's wing
             if (pplayer->SideID() == trekClient.GetSideID() && !bOnLobbySide)
             {
-                psurface->DrawString(
-                    TrekResources::SmallFont(),
-                    color,
-                    WinPoint(m_viColumns[4] + 2, 0), 
-                    c_pszWingName[pplayer->GetShip()->GetWingID()]
-                );
+				// BT - 7/15 - When the team screen is shown, miners have -1 for the wingID, which causes alleg to crash.
+				int wingID = pplayer->GetShip()->GetWingID();
+				if (wingID != NA)
+				{
+					psurface->DrawString(
+						TrekResources::SmallFont(),
+						color,
+						WinPoint(m_viColumns[4] + 2, 0),
+						c_pszWingName[wingID]
+						);
+				}
             }
         }
     };

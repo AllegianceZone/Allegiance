@@ -1814,7 +1814,10 @@ class ExpandedTeamPane : public TeamPane
             // draw the player's Wing
             if (pplayer->SideID() == trekClient.GetSideID())
             {
-                psurface->DrawString(pfont, color, WinPoint(m_viColumns[4] + 2, 1), c_pszWingName[pship->GetWingID()]);
+				// BT - 7/15 - When the team screen is shown, miners have -1 for the wingID, which causes alleg to crash.
+				int wingID = pship->GetWingID();
+				if(wingID != NA)
+					psurface->DrawString(pfont, color, WinPoint(m_viColumns[4] + 2, 1), c_pszWingName[wingID]);
             }
 
 			// draw the rank: AEM 7.21.07
