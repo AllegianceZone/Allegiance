@@ -807,14 +807,24 @@ HRESULT CVRAMManager::PushRenderTarget( TEXHANDLE texHandle, DWORD dwTargetIndex
 		}
 		m_sVRAM.dwNumTargetsPushed ++;
 
-		LPDIRECT3DSURFACE9 lpRTSurface;
-		hr = pTexture->pTexture->GetSurfaceLevel( 0, &lpRTSurface );
-		_ASSERT( hr == D3D_OK );
-		hr = pDev->Device()->SetRenderTarget( dwTargetIndex, lpRTSurface );
-		_ASSERT( hr == D3D_OK );
+		// BT - 7/15 - Added try/catch
+		try
+		{
+			LPDIRECT3DSURFACE9 lpRTSurface;
+			hr = pTexture->pTexture->GetSurfaceLevel(0, &lpRTSurface);
+			_ASSERT(hr == D3D_OK);
+			hr = pDev->Device()->SetRenderTarget(dwTargetIndex, lpRTSurface);
+			_ASSERT(hr == D3D_OK);
 
-		// We've finished with the surface.
-		refCount = lpRTSurface->Release();
+			// We've finished with the surface.
+			refCount = lpRTSurface->Release();
+		}
+		catch (...)
+		{
+			// BT - 7/15 - There was a memory access error when getting GetSurfaceLevel(0), so disable the device's color buffer.
+			// It appears to happen when the chat window is being drawn while in full screen mode.
+			hr = pDev->Device()->SetRenderTarget(dwTargetIndex, NULL);
+		}
 
 		m_sVRAM.hCurrentTargetTexture = texHandle;
 
