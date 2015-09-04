@@ -1899,7 +1899,7 @@ public:
 			( HasColorKey() == true  ) )
 		{
 			// Clear render target colour and alpha.
-			LPDIRECT3DSURFACE9 pSurface;
+			LPDIRECT3DSURFACE9 pSurface = 0;
 
 			// BT - 7/15 - Added try catch to isolate a memory exception error when getting the surface during chat rendering. 
 			try
@@ -1915,11 +1915,19 @@ public:
 				// BT - 7/15 - There was a memory access error when getting GetSurfaceLevel(0).
 				// It appears to happen when the chat window is being drawn while in full screen mode.
 				debugf("Error calling pVRAMMan->GetTextureSurface()\r\n");
+
+				if(pSurface > 0)
+					pSurface->Release();
 			}
 
+			//pVRAMMan->GetTextureSurface(m_hTexture, &pSurface);
+			////			pDev->ColorFill( pSurface, &rect, (DWORD) pixel.Value() );
+			//pDev->ColorFill(pSurface, &rect, dwPixel);
+
+
 			// Must remember to release the surface.
-			if (pSurface > 0)
-				pSurface->Release();
+			/*if (pSurface > 0)
+				pSurface->Release();*/
 		}
 		else
 		{

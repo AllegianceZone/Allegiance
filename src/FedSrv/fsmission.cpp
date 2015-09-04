@@ -3857,7 +3857,7 @@ void CFSMission::QueueLobbyMissionInfo()
   pfmLobbyMissionInfo->dwCookie = GetCookie();
 
   debugf("sending lobby our mission info for %x listening on port %d\n",pfmLobbyMissionInfo->dwCookie,dwPort);
-  debugf("g.strServerAddressOverride: %s\n", g.strServerAddressOverride);
+  debugf("g.strServerAddressOverride: %s\n", (PCC) g.strServerAddressOverride);
 
   // adjust the clock time to be an offset from the current time (the lobby server will fix this)
   pfmLobbyMissionInfo->dwStartTime = m_misdef.misparms.timeStart.clock() - Time::Now().clock();

@@ -8955,8 +8955,11 @@ void LoadSettings()
 		// BT 7/15 - Enable Server to be hosted on same subnet as lobby on inside LAN.
 		if (FAILED(LoadRegString(hKey, "ServerAddressOverride", g.strServerAddressOverride)))
 		{
+			debugf("Couldn't read ServerAddressOverride from registry!");
 			g.strServerAddressOverride = "";
 		}
+
+		debugf("ServerAddressOverride from registry: %s\n", (PCC) g.strServerAddressOverride);
 
 		// KGJV #114
         if (FAILED(LoadRegString(hKey, "Location", g.strLocation)))
