@@ -178,3 +178,6 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 x86
+
+# VS2017 files
+.vs/
