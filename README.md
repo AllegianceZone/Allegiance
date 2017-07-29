@@ -1,11 +1,9 @@
-Allegiance R8
+Allegiance Zone
 ==========
-Latest development logs are at http://allegiancezone.com/development
 
-Latest installer: http://allegiancezone.com/installer
+Chat: https://allegiance-zone.slack.com
 
-Bitten: http://allegiancezone.com/bitten
 
-Chat: http://allegiancezone.com/chat
+
 
 
