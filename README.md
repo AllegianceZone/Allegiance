@@ -1,7 +1,8 @@
 Allegiance Zone
 ==========
 
-Chat: https://allegiance-zone.slack.com
+Join us on Gitter: https://gitter.im/AllegianceZone/Lobby#
+
 
 
 
