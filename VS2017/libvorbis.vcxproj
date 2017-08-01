@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="AZDebug|Win32">
+      <Configuration>AZDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="AZRetail|Win32">
+      <Configuration>AZRetail</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}</ProjectGuid>
+    <RootNamespace>libvorbis</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\OggVorbis\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">..\objs14\$(Configuration)\OggVorbis\vorbis\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\OggVorbis\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">..\objs14\$(Configuration)\OggVorbis\vorbis\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\src\Inc\OggVorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBVORBIS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <CallingConvention>Cdecl</CallingConvention>
+      <DisableSpecificWarnings>4244;4305;4127;4706</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..\src\Inc\OggVorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBVORBIS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4244;4100;4267;4189;4305;4127;4706;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <CallingConvention>Cdecl</CallingConvention>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Lib>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\OggVorbis\analysis.c" />
+    <ClCompile Include="..\src\OggVorbis\bitrate.c" />
+    <ClCompile Include="..\src\OggVorbis\block.c" />
+    <ClCompile Include="..\src\OggVorbis\codebook.c" />
+    <ClCompile Include="..\src\OggVorbis\envelope.c" />
+    <ClCompile Include="..\src\OggVorbis\floor0.c" />
+    <ClCompile Include="..\src\OggVorbis\floor1.c" />
+    <ClCompile Include="..\src\OggVorbis\info.c" />
+    <ClCompile Include="..\src\OggVorbis\lookup.c" />
+    <ClCompile Include="..\src\OggVorbis\lpc.c" />
+    <ClCompile Include="..\src\OggVorbis\lsp.c" />
+    <ClCompile Include="..\src\OggVorbis\mapping0.c" />
+    <ClCompile Include="..\src\OggVorbis\mdct.c" />
+    <ClCompile Include="..\src\OggVorbis\psy.c" />
+    <ClCompile Include="..\src\OggVorbis\registry.c" />
+    <ClCompile Include="..\src\OggVorbis\res0.c" />
+    <ClCompile Include="..\src\OggVorbis\sharedbook.c" />
+    <ClCompile Include="..\src\OggVorbis\smallft.c" />
+    <ClCompile Include="..\src\OggVorbis\synthesis.c" />
+    <ClCompile Include="..\src\OggVorbis\vorbisenc.c" />
+    <ClCompile Include="..\src\OggVorbis\window.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\OggVorbis\vorbis.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\OggVorbis\backends.h" />
+    <ClInclude Include="..\src\OggVorbis\bitrate.h" />
+    <ClInclude Include="..\src\OggVorbis\codebook.h" />
+    <ClInclude Include="..\src\Inc\OggVorbis\codec.h" />
+    <ClInclude Include="..\src\OggVorbis\codec_internal.h" />
+    <ClInclude Include="..\src\OggVorbis\envelope.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\floor_all.h" />
+    <ClInclude Include="..\src\OggVorbis\books\floor\floor_books.h" />
+    <ClInclude Include="..\src\OggVorbis\highlevel.h" />
+    <ClInclude Include="..\src\OggVorbis\lookup.h" />
+    <ClInclude Include="..\src\OggVorbis\lookup_data.h" />
+    <ClInclude Include="..\src\OggVorbis\lpc.h" />
+    <ClInclude Include="..\src\OggVorbis\lsp.h" />
+    <ClInclude Include="..\src\OggVorbis\masking.h" />
+    <ClInclude Include="..\src\OggVorbis\mdct.h" />
+    <ClInclude Include="..\src\OggVorbis\misc.h" />
+    <ClInclude Include="..\src\OggVorbis\os.h" />
+    <ClInclude Include="..\src\OggVorbis\psy.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\psych_11.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\psych_16.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\psych_44.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\psych_8.h" />
+    <ClInclude Include="..\src\OggVorbis\registry.h" />
+    <ClInclude Include="..\src\OggVorbis\books\coupled\res_books_stereo.h" />
+    <ClInclude Include="..\src\OggVorbis\books\uncoupled\res_books_uncoupled.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\residue_16.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\residue_44.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\residue_44u.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\residue_8.h" />
+    <ClInclude Include="..\src\OggVorbis\scales.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_11.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_16.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_22.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_32.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_44.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_44u.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_8.h" />
+    <ClInclude Include="..\src\OggVorbis\modes\setup_X.h" />
+    <ClInclude Include="..\src\OggVorbis\smallft.h" />
+    <ClInclude Include="..\src\Inc\OggVorbis\vorbisenc.h" />
+    <ClInclude Include="..\src\Inc\OggVorbis\vorbisfile.h" />
+    <ClInclude Include="..\src\OggVorbis\window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libogg.vcxproj">
+      <Project>{15cbfeff-7965-41f5-b4e2-21e8795c9159}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
