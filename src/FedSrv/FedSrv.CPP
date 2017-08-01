@@ -8844,6 +8844,9 @@ void LoadSettings()
 	// Explicitly initialize the global data structure
 	g.Init();
 
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile("C:\\Alleg\\Server\\dream.xml");
+
 	// defaults for reg keys:
 	// fTimeout,                     1              1-okay to timeout clients
 	// fWantInt3,                    1              1-want to hit an Int3 on asserts

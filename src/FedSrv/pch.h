@@ -24,6 +24,8 @@
 // browse info overflow warnings for STL objects
 #pragma warning(disable : 4786)
 
+#include "tinyxml2.h"
+
 // Standard C Includes
 #include <conio.h>
 #include <string.h>
@@ -122,7 +124,6 @@ extern Global g;
 
 
 #include "regkey.h"
-
 
 /////////////////////////////////////////////////////////////////////////////
 // This is included very last since it conflicts with <atlwin.h>, included

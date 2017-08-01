@@ -394,6 +394,7 @@
     </ClCompile>
     <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
     <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
+    <ClCompile Include="..\src\FedSrv\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\FedSrv\AdminGame.rgs" />
@@ -441,6 +442,7 @@
     <ClInclude Include="..\src\FedSrv\pch.h" />
     <ClInclude Include="..\src\FedSrv\resource.h" />
     <ClInclude Include="..\src\FedSrv\srvqueries.h" />
+    <ClInclude Include="..\src\FedSrv\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\src\FedSrv\AllSrvModuleIDL.idl" />
