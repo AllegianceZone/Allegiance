@@ -3,7 +3,7 @@
 **
 **  File:    treasureSetIGC.h
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Header for the CtreasureSetIGC class. This file was initially created by
@@ -20,108 +20,108 @@
 // CtreasureSetIGC
 class CtreasureSetIGC : public ItreasureSetIGC
 {
-    public:
-        CtreasureSetIGC(void)
-        :
-            m_data(NULL)
-        {
-        }
+public:
+	CtreasureSetIGC(void)
+		:
+		m_data(NULL)
+	{
+	}
 
-        ~CtreasureSetIGC(void)
-        {
-            delete [] (char*)m_data;
-        }
+	~CtreasureSetIGC(void)
+	{
+		delete[](char*)m_data;
+	}
 
-    // IbaseIGC
-        virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
-        virtual void            Terminate(void)
-        {
-			if (m_pMission) //imago 10/13
-				m_pMission->DeleteTreasureSet(this);
-        }
+	// IbaseIGC
+	virtual HRESULT         Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+	virtual void            Terminate(void)
+	{
+		if (m_pMission) //imago 10/13
+			m_pMission->DeleteTreasureSet(this);
+	}
 
-        virtual int             Export(void* data) const;
+	virtual int             Export(void* data) const;
 
-        virtual ObjectType      GetObjectType(void) const
-        {
-            return OT_treasureSet;
-        }
+	virtual ObjectType      GetObjectType(void) const
+	{
+		return OT_treasureSet;
+	}
 
-        virtual ObjectID        GetObjectID(void) const
-        {
-            return m_data->treasureSetID;
-        }
+	virtual ObjectID        GetObjectID(void) const
+	{
+		return m_data->treasureSetID;
+	}
 
-    // ItreasureSetIGC
-        virtual const char*                 GetName(void) const
-        {
-            return m_data->name;
-        }
-    // Imago added
-        virtual short                       GetSize(void) const
-        {
-            return m_maxTreasureData;
-        }
-    // ^
-        virtual bool                        GetZoneOnly(void) const
-        {
-            return m_data->bZoneOnly;
-        }
+	// ItreasureSetIGC
+	virtual const char*                 GetName(void) const
+	{
+		return m_data->name;
+	}
+	// Imago added
+	virtual short                       GetSize(void) const
+	{
+		return m_maxTreasureData;
+	}
+	// ^
+	virtual bool                        GetZoneOnly(void) const
+	{
+		return m_data->bZoneOnly;
+	}
 
-        virtual void                        AddTreasureData(TreasureCode tc, ObjectID oid, unsigned char chance)
-        {
-            if (m_data->nTreasureData == m_maxTreasureData)
-            {
-                //Not enough space to add one ... reallocate a larger array
-                int oldSize = sizeof(DataTreasureSetIGC) + sizeof(TreasureData) *
-                                                           m_maxTreasureData;
-                const int c_increment = 10;
-                int newSize = oldSize + sizeof(TreasureData) * c_increment;
+	virtual void                        AddTreasureData(TreasureCode tc, ObjectID oid, unsigned char chance)
+	{
+		if (m_data->nTreasureData == m_maxTreasureData)
+		{
+			//Not enough space to add one ... reallocate a larger array
+			int oldSize = sizeof(DataTreasureSetIGC) + sizeof(TreasureData) *
+				m_maxTreasureData;
+			const int c_increment = 10;
+			int newSize = oldSize + sizeof(TreasureData) * c_increment;
 
-                m_maxTreasureData += c_increment;
+			m_maxTreasureData += c_increment;
 
-                DataTreasureSetIGC*    newData = (DataTreasureSetIGC*)(new char [newSize]);
-                memcpy(newData, m_data, oldSize);
-                delete [] (char*)m_data;
+			DataTreasureSetIGC*    newData = (DataTreasureSetIGC*)(new char[newSize]);
+			memcpy(newData, m_data, oldSize);
+			delete[](char*)m_data;
 
-                m_data = newData;
-            }
+			m_data = newData;
+		}
 
-            TreasureData*   ptd = m_data->treasureData0() + m_data->nTreasureData;
+		TreasureData*   ptd = m_data->treasureData0() + m_data->nTreasureData;
 
-            ptd->treasureCode = tc;
-            ptd->treasureID = oid;
-            ptd->chance = chance;
+		ptd->treasureCode = tc;
+		ptd->treasureID = oid;
+		ptd->chance = chance;
 
-            m_totalTreasureChance += chance;
-            m_data->nTreasureData++;
-        }
+		m_totalTreasureChance += chance;
+		m_data->nTreasureData++;
+	}
 
-        virtual const TreasureData&         GetRandomTreasureData(void) const
-        {
-            assert (m_totalTreasureChance >= 1);
+	virtual const TreasureData&         GetRandomTreasureData(void) const
+	{
+		assert(m_totalTreasureChance >= 1);
 
-            int r = randomInt(1, m_totalTreasureChance);
+		int r = randomInt(1, m_totalTreasureChance);
 
-            TreasureData*   ptd = m_data->treasureData0();
-            while (true)
-            {
-                r -= ptd->chance;
+		TreasureData*   ptd = m_data->treasureData0();
+		while (true)
+		{
+			r -= ptd->chance;
 
-                if (r <= 0)
-                    return *ptd;
+			if (r <= 0)
+				return *ptd;
 
-                ptd++;
+			ptd++;
 
-                assert (ptd < (m_data->treasureData0() + m_data->nTreasureData));
-            }
-        }
+			assert(ptd < (m_data->treasureData0() + m_data->nTreasureData));
+		}
+	}
 
-    private:
-        ImissionIGC*            m_pMission;
-        DataTreasureSetIGC*     m_data;
-        short                   m_totalTreasureChance;
-        short                   m_maxTreasureData;
+private:
+	ImissionIGC*            m_pMission;
+	DataTreasureSetIGC*     m_data;
+	short                   m_totalTreasureChance;
+	short                   m_maxTreasureData;
 };
 
 #endif //__TREASURESETIGC_H_

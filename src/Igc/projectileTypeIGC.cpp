@@ -3,7 +3,7 @@
 **
 **  File:	projectileTypeIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CprojectileTypeIGC class. This file was initially created by
@@ -19,31 +19,31 @@
 // CprojectileTypeIGC
 HRESULT     CprojectileTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-    ZRetailAssert (data && (dataSize == sizeof(DataProjectileTypeIGC)));
-    {
-        m_data = *((DataProjectileTypeIGC*)data);
+	ZRetailAssert(data && (dataSize == sizeof(DataProjectileTypeIGC)));
+	{
+		m_data = *((DataProjectileTypeIGC*)data);
 
-        if (iswalpha(m_data.modelName[0]))
-            pMission->GetIgcSite()->Preload(m_data.modelName, iswalpha(m_data.textureName[0])
-                                                              ? m_data.textureName
-                                                              : NULL);
-        else
-            pMission->GetIgcSite()->Preload(NULL, m_data.textureName);
+		if (iswalpha(m_data.modelName[0]))
+			pMission->GetIgcSite()->Preload(m_data.modelName, iswalpha(m_data.textureName[0])
+				? m_data.textureName
+				: NULL);
+		else
+			pMission->GetIgcSite()->Preload(NULL, m_data.textureName);
 
-        pMission->AddProjectileType(this);
-    }
+		pMission->AddProjectileType(this);
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 int         CprojectileTypeIGC::Export(void* data) const
 {
-    if (data)
-        *((DataProjectileTypeIGC*)data) = m_data;
+	if (data)
+		*((DataProjectileTypeIGC*)data) = m_data;
 
-    return sizeof(DataProjectileTypeIGC);
+	return sizeof(DataProjectileTypeIGC);
 }
 

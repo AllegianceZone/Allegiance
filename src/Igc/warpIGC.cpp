@@ -3,7 +3,7 @@
 **
 **  File:	warpIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CwarpIGC class. This file was initially created by
@@ -20,36 +20,36 @@
 // CwarpIGC
 HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    TmodelIGC<IwarpIGC>::Initialize(pMission, now, data, dataSize);
+	TmodelIGC<IwarpIGC>::Initialize(pMission, now, data, dataSize);
 
-    ZRetailAssert (data && (dataSize == sizeof(DataWarpIGC)));
-    {
-        DataWarpIGC*  dataWarp = (DataWarpIGC*)data;
-        m_warpDef = dataWarp->warpDef;
+	ZRetailAssert(data && (dataSize == sizeof(DataWarpIGC)));
+	{
+		DataWarpIGC*  dataWarp = (DataWarpIGC*)data;
+		m_warpDef = dataWarp->warpDef;
 
-        IclusterIGC*    cluster = pMission->GetCluster(dataWarp->clusterID);
-        ZRetailAssert (cluster);
-        {
-            //  , use the real texture name
-            HRESULT rc = LoadWarp(dataWarp->warpDef.textureName,
-                                  dataWarp->warpDef.iconName,
-                                  c_mtStatic | c_mtHitable | c_mtSeenBySide | c_mtPredictable);
+		IclusterIGC*    cluster = pMission->GetCluster(dataWarp->clusterID);
+		ZRetailAssert(cluster);
+		{
+			//  , use the real texture name
+			HRESULT rc = LoadWarp(dataWarp->warpDef.textureName,
+				dataWarp->warpDef.iconName,
+				c_mtStatic | c_mtHitable | c_mtSeenBySide | c_mtPredictable);
 
-            assert (SUCCEEDED(rc));
-            {
-                SetRadius((float)m_warpDef.radius);
+			assert(SUCCEEDED(rc));
+			{
+				SetRadius((float)m_warpDef.radius);
 
-                SetPosition(dataWarp->position);
-                SetVelocity(Vector::GetZero());
+				SetPosition(dataWarp->position);
+				SetVelocity(Vector::GetZero());
 
-                {
-                    Orientation o(dataWarp->forward);
-                    SetOrientation(o);
-                }
-                SetRotation(dataWarp->rotation);
-                SetCluster(cluster);
+				{
+					Orientation o(dataWarp->forward);
+					SetOrientation(o);
+				}
+				SetRotation(dataWarp->rotation);
+				SetCluster(cluster);
 
-                SetMass(0.0f);
+				SetMass(0.0f);
 				// KG- hack for unmovable alephs (to avoid a IGC file format change)
 				// aleph name with a leading '*' denotes a fixed position aleph
 				// so remove the '*' from the name and set m_bFixedPosition to true
@@ -63,15 +63,15 @@ HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* da
 					if (dataWarp->name[1] == '+')//Andon: Added for if the aleph is both unmoved and mass limited
 					{
 						ZString name = dataWarp->name;
-						int MassFind = name.Find(':',0); 
-						char* mass = &(dataWarp->name[MassFind+2]); 
+						int MassFind = name.Find(':', 0);
+						char* mass = &(dataWarp->name[MassFind + 2]);
 						m_MassLimit = atoi(mass);
-						name.ReplaceAll(":" ,'('); //Replaces the : with a (
+						name.ReplaceAll(":", '('); //Replaces the : with a (
 						const char* alephname = &(name[2]); //Removes the leading '*+'
 						char* newAlephName = new char[25];
 						const char* nameSuffix = ")"; //Adds a ) to the end
-						strncpy(newAlephName, alephname, strlen(alephname)+1);
-						strncat(newAlephName, nameSuffix, strlen(nameSuffix)+1);
+						strncpy(newAlephName, alephname, strlen(alephname) + 1);
+						strncat(newAlephName, nameSuffix, strlen(nameSuffix) + 1);
 						SetName(newAlephName);
 					}
 					else
@@ -83,49 +83,49 @@ HRESULT     CwarpIGC::Initialize(ImissionIGC* pMission, Time now, const void* da
 				else if (dataWarp->name[0] == '+')
 				{
 					ZString name = dataWarp->name;
-					int MassFind = name.Find(':',0);
-					char* mass = &(dataWarp->name[MassFind+1]);
+					int MassFind = name.Find(':', 0);
+					char* mass = &(dataWarp->name[MassFind + 1]);
 					m_MassLimit = atoi(mass);
-					name.ReplaceAll(":" ,'('); //Replaces the : with a (
+					name.ReplaceAll(":", '('); //Replaces the : with a (
 					const char* alephname = &(name[1]);//Skip the leading '+'
 					char* newAlephName = new char[25];
 					const char* nameSuffix = ")"; //Adds a ) to the end
-					strncpy(newAlephName, alephname, strlen(alephname)+1);
-					strncat(newAlephName, nameSuffix, strlen(nameSuffix)+1);
+					strncpy(newAlephName, alephname, strlen(alephname) + 1);
+					strncat(newAlephName, nameSuffix, strlen(nameSuffix) + 1);
 					SetName(newAlephName);
 				}
 				else
 				{
-                	SetName(dataWarp->name);
+					SetName(dataWarp->name);
 					m_MassLimit = -1;
 				}
 
-                SetSignature(dataWarp->signature);
+				SetSignature(dataWarp->signature);
 
-                pMission->AddWarp(this);
-            }
-        }
-    }
+				pMission->AddWarp(this);
+			}
+		}
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 int         CwarpIGC::Export(void* data) const
 {
-    if (data)
-    {
-        DataWarpIGC*  dataWarp = (DataWarpIGC*)data;
-        dataWarp->warpDef = m_warpDef;
+	if (data)
+	{
+		DataWarpIGC*  dataWarp = (DataWarpIGC*)data;
+		dataWarp->warpDef = m_warpDef;
 
-        dataWarp->position = GetPosition();
-        dataWarp->forward = GetOrientation().GetForward();
-        dataWarp->rotation = GetRotation();
+		dataWarp->position = GetPosition();
+		dataWarp->forward = GetOrientation().GetForward();
+		dataWarp->rotation = GetRotation();
 
-        assert (GetCluster());
-        dataWarp->clusterID = GetCluster()->GetObjectID();
-        UTL::putName(dataWarp->name, GetName());
-        dataWarp->signature = GetSignature();
-    }
+		assert(GetCluster());
+		dataWarp->clusterID = GetCluster()->GetObjectID();
+		UTL::putName(dataWarp->name, GetName());
+		dataWarp->signature = GetSignature();
+	}
 
-    return sizeof(DataWarpIGC);
+	return sizeof(DataWarpIGC);
 }

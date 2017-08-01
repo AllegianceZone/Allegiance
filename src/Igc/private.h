@@ -3,7 +3,7 @@
 **
 **  File:	private.h
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Header file for all things that are internal to the IGC library
@@ -13,5 +13,5 @@
 */
 
 #ifndef private_h
-    #define private_h
+#define private_h
 #endif

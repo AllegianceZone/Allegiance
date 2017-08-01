@@ -3,7 +3,7 @@
 **
 **  File:	mineTypeIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CmineTypeIGC class. This file was initially created by
@@ -19,24 +19,24 @@
 // CmineTypeIGC
 HRESULT     CmineTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-    ZRetailAssert (data && (dataSize == sizeof(DataMineTypeIGC)));
-    {
-        m_data = *((DataMineTypeIGC*)data);
+	ZRetailAssert(data && (dataSize == sizeof(DataMineTypeIGC)));
+	{
+		m_data = *((DataMineTypeIGC*)data);
 
-        pMission->AddExpendableType(this);
-    }
+		pMission->AddExpendableType(this);
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 int         CmineTypeIGC::Export(void* data) const
 {
-    if (data)
-        *((DataMineTypeIGC*)data) = m_data;
+	if (data)
+		*((DataMineTypeIGC*)data) = m_data;
 
-    return sizeof(DataMineTypeIGC);
+	return sizeof(DataMineTypeIGC);
 }
 

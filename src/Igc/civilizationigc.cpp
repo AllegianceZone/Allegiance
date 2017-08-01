@@ -3,7 +3,7 @@
 **
 **  File:	civilizationIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CcivilizationIGC class. This file was initially created by
@@ -18,50 +18,50 @@
 /////////////////////////////////////////////////////////////////////////////
 // CcivilizationIGC
 HRESULT         CcivilizationIGC::Initialize(ImissionIGC*   pMission,
-                                             Time           now,
-                                             const void*    data,
-                                             int            dataSize)
+	Time           now,
+	const void*    data,
+	int            dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-	ZRetailAssert (data && (dataSize == sizeof(DataCivilizationIGC)));
-    m_data = *((DataCivilizationIGC*)data);
+	ZRetailAssert(data && (dataSize == sizeof(DataCivilizationIGC)));
+	m_data = *((DataCivilizationIGC*)data);
 
-    pMission->AddCivilization(this);
+	pMission->AddCivilization(this);
 
-    m_pstInitial = pMission->GetStationType(m_data.initialStationTypeID);
-    assert (m_pstInitial);
-    m_pstInitial->AddRef();
-    assert (m_pstInitial->HasCapability(c_sabmRestart));
+	m_pstInitial = pMission->GetStationType(m_data.initialStationTypeID);
+	assert(m_pstInitial);
+	m_pstInitial->AddRef();
+	assert(m_pstInitial->HasCapability(c_sabmRestart));
 
-    m_phtLifepod = pMission->GetHullType(m_data.lifepod);
-    assert (m_phtLifepod);
-    m_phtLifepod->AddRef();
+	m_phtLifepod = pMission->GetHullType(m_data.lifepod);
+	assert(m_phtLifepod);
+	m_phtLifepod->AddRef();
 
-    return S_OK;
+	return S_OK;
 }
 
 void            CcivilizationIGC::Terminate(void)
 {
-    assert (m_pstInitial);
-    m_pstInitial->Release();
-    m_pstInitial = NULL;
+	assert(m_pstInitial);
+	m_pstInitial->Release();
+	m_pstInitial = NULL;
 
-    assert (m_phtLifepod);
-    m_phtLifepod->Release();
-    m_phtLifepod = NULL;
+	assert(m_phtLifepod);
+	m_phtLifepod->Release();
+	m_phtLifepod = NULL;
 
-    m_pMission->DeleteCivilization(this);
+	m_pMission->DeleteCivilization(this);
 }
 
 int             CcivilizationIGC::Export(void*  data) const
 {
-    if (data)
-    {
-        *((DataCivilizationIGC*)data) = m_data;
-    }
+	if (data)
+	{
+		*((DataCivilizationIGC*)data) = m_data;
+	}
 
-    return sizeof(DataCivilizationIGC);
+	return sizeof(DataCivilizationIGC);
 }
 

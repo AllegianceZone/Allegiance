@@ -3,7 +3,7 @@
 **
 **  File:	partTypeIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CpartTypeIGC class. This file was initially created by
@@ -18,45 +18,45 @@
 /////////////////////////////////////////////////////////////////////////////
 // CpartTypeIGC
 HRESULT         CpartTypeIGC::Initialize(ImissionIGC*   pMission,
-                                         Time           now,
-                                         const void*    data,
-                                         int            dataSize)
+	Time           now,
+	const void*    data,
+	int            dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-    ZRetailAssert (data && (dataSize >= sizeof(DataPartTypeIGC)));
-    {
-        //Note ... we need to allocate & copy the DataHullTypeIGC + the variable length fields
-        m_dataSize = dataSize;
-        m_data = (DataPartTypeIGC*)(new char [m_dataSize]);
-        assert (m_data);
-        memcpy(m_data, data, m_dataSize);
+	ZRetailAssert(data && (dataSize >= sizeof(DataPartTypeIGC)));
+	{
+		//Note ... we need to allocate & copy the DataHullTypeIGC + the variable length fields
+		m_dataSize = dataSize;
+		m_data = (DataPartTypeIGC*)(new char[m_dataSize]);
+		assert(m_data);
+		memcpy(m_data, data, m_dataSize);
 
-        if (m_data->successorPartID != NA)
-        {
-            m_pptSuccessor = pMission->GetPartType(m_data->successorPartID);
-            assert (m_pptSuccessor);
-        }
+		if (m_data->successorPartID != NA)
+		{
+			m_pptSuccessor = pMission->GetPartType(m_data->successorPartID);
+			assert(m_pptSuccessor);
+		}
 
-        pMission->AddPartType(this);
-    }
+		pMission->AddPartType(this);
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 
 void        CpartTypeIGC::Terminate(void)
 {
-    m_pMission->DeletePartType(this);
+	m_pMission->DeletePartType(this);
 }
 
 int         CpartTypeIGC::Export(void*  data) const
 {
-    if (data)
-        memcpy(data, m_data, m_dataSize);
+	if (data)
+		memcpy(data, m_data, m_dataSize);
 
-    return m_dataSize;
+	return m_dataSize;
 }
 
 
@@ -65,35 +65,35 @@ int         CpartTypeIGC::Export(void*  data) const
 
 const char* IpartTypeIGC::GetEquipmentTypeName(EquipmentType et)
 {
-    switch (et)
-    {
-    case ET_ChaffLauncher:
-        return "chaff";
+	switch (et)
+	{
+	case ET_ChaffLauncher:
+		return "chaff";
 
-    case ET_Weapon:
-        return "weapon";
+	case ET_Weapon:
+		return "weapon";
 
-    case ET_Magazine:
-        return "missile";
+	case ET_Magazine:
+		return "missile";
 
-    case ET_Dispenser:
-        return "mine";
+	case ET_Dispenser:
+		return "mine";
 
-    case ET_Shield:
-        return "shield";
+	case ET_Shield:
+		return "shield";
 
-    case ET_Cloak:
-        return "cloak";
+	case ET_Cloak:
+		return "cloak";
 
-    case ET_Pack:
-        return "ammo";
+	case ET_Pack:
+		return "ammo";
 
-    case ET_Afterburner:
-        return "afterburner";
+	case ET_Afterburner:
+		return "afterburner";
 
-    default:
-        assert(false);
-        return "";
-    }
+	default:
+		assert(false);
+		return "";
+	}
 }
 

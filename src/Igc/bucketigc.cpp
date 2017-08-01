@@ -3,7 +3,7 @@
 **
 **  File:	bucketIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CbucketIGC class. This file was initially created by
@@ -18,99 +18,99 @@
 /////////////////////////////////////////////////////////////////////////////
 // CbucketIGC
 HRESULT         CbucketIGC::Initialize(ImissionIGC* pMission,
-                                       Time         now,
-                                       const void*  data,
-                                       int          dataSize)
+	Time         now,
+	const void*  data,
+	int          dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-	ZRetailAssert (data && (dataSize == sizeof(DataBucketIGC)));
-    m_data = *((DataBucketIGC*)data);
+	ZRetailAssert(data && (dataSize == sizeof(DataBucketIGC)));
+	m_data = *((DataBucketIGC*)data);
 
-    assert (m_data.side);
-    m_data.side->AddRef();
+	assert(m_data.side);
+	m_data.side->AddRef();
 
-    m_price = m_data.buyable->GetPrice();
-    m_timeToBuild = m_data.buyable->GetTimeToBuild();
+	m_price = m_data.buyable->GetPrice();
+	m_timeToBuild = m_data.buyable->GetTimeToBuild();
 
-    //See if there is a predecessor bucket
-    if (m_data.buyable->GetObjectType() == OT_development)
-    {
-        IdevelopmentIGC*    pdevelopment = (IdevelopmentIGC*)(m_data.buyable);
-        if ((!pdevelopment->GetTechOnly()) && pdevelopment->GetEffectTechs().GetAllZero())
-        {
-            //A tech that affects only a side's global attributes.
-            //Check for other buckets which do exactly the same thing
-            Money                       price = pdevelopment->GetPrice();
-            const GlobalAttributeSet&   gas = pdevelopment->GetGlobalAttributeSet();
+	//See if there is a predecessor bucket
+	if (m_data.buyable->GetObjectType() == OT_development)
+	{
+		IdevelopmentIGC*    pdevelopment = (IdevelopmentIGC*)(m_data.buyable);
+		if ((!pdevelopment->GetTechOnly()) && pdevelopment->GetEffectTechs().GetAllZero())
+		{
+			//A tech that affects only a side's global attributes.
+			//Check for other buckets which do exactly the same thing
+			Money                       price = pdevelopment->GetPrice();
+			const GlobalAttributeSet&   gas = pdevelopment->GetGlobalAttributeSet();
 
-            //Go backwards to get the last possible development
-            for (BucketLinkIGC* pbl = m_data.side->GetBuckets()->last(); (pbl != NULL); pbl = pbl->txen())
-            {
-                IbucketIGC*     pbucket = pbl->data();
-                IbuyableIGC*    pbuyable = pbucket->GetBuyable();
-                if (pbuyable->GetObjectType() == OT_development)
-                {
-                    IdevelopmentIGC*    pd = (IdevelopmentIGC*)pbuyable;
-                    if ((!pd->GetTechOnly()) && (pd->GetPrice() <= price) && pd->GetEffectTechs().GetAllZero())
-                    {
-                        //Look at that ... a equally or less expensive development that affects only global attributes
-                        //do they affect the same global attributes the same way?
-                        if (pd->GetGlobalAttributeSet() == gas)
-                        {
-                            pbucket->AddRef();
-                            m_pbucketPredecessor = pbucket;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+			//Go backwards to get the last possible development
+			for (BucketLinkIGC* pbl = m_data.side->GetBuckets()->last(); (pbl != NULL); pbl = pbl->txen())
+			{
+				IbucketIGC*     pbucket = pbl->data();
+				IbuyableIGC*    pbuyable = pbucket->GetBuyable();
+				if (pbuyable->GetObjectType() == OT_development)
+				{
+					IdevelopmentIGC*    pd = (IdevelopmentIGC*)pbuyable;
+					if ((!pd->GetTechOnly()) && (pd->GetPrice() <= price) && pd->GetEffectTechs().GetAllZero())
+					{
+						//Look at that ... a equally or less expensive development that affects only global attributes
+						//do they affect the same global attributes the same way?
+						if (pd->GetGlobalAttributeSet() == gas)
+						{
+							pbucket->AddRef();
+							m_pbucketPredecessor = pbucket;
+							break;
+						}
+					}
+				}
+			}
+		}
 
-        if (pdevelopment->GetObjectID() != c_didTeamMoney)
-        {
-            m_price = (Money)(m_price * m_data.side->GetGlobalAttributeSet().GetAttribute(c_gaDevelopmentCost));
-            m_timeToBuild = (DWORD)(m_timeToBuild * m_data.side->GetGlobalAttributeSet().GetAttribute(c_gaDevelopmentTime));
-        }
-    }
+		if (pdevelopment->GetObjectID() != c_didTeamMoney)
+		{
+			m_price = (Money)(m_price * m_data.side->GetGlobalAttributeSet().GetAttribute(c_gaDevelopmentCost));
+			m_timeToBuild = (DWORD)(m_timeToBuild * m_data.side->GetGlobalAttributeSet().GetAttribute(c_gaDevelopmentTime));
+		}
+	}
 
-    m_data.side->AddBucket(this);
+	m_data.side->AddBucket(this);
 
-    assert (m_data.buyable);
-    m_data.buyable->AddRef();
+	assert(m_data.buyable);
+	m_data.buyable->AddRef();
 
-    m_lastUpdate = now;
+	m_lastUpdate = now;
 
-    return S_OK;
+	return S_OK;
 }
 
 void            CbucketIGC::Terminate(void)
 {
-    AddRef();
+	AddRef();
 
-    assert (m_data.side);
+	assert(m_data.side);
 
-    if (m_pbucketPredecessor)
-    {
-        m_pbucketPredecessor->Release();
-        m_pbucketPredecessor = NULL;
-    }
-    m_pMission->GetIgcSite()->BucketChangeEvent(c_bcTerminated, this);
+	if (m_pbucketPredecessor)
+	{
+		m_pbucketPredecessor->Release();
+		m_pbucketPredecessor = NULL;
+	}
+	m_pMission->GetIgcSite()->BucketChangeEvent(c_bcTerminated, this);
 
-    assert (m_data.side);
-    m_data.side->DeleteBucket(this);
-    m_data.side->Release();
-    m_data.side = NULL;
+	assert(m_data.side);
+	m_data.side->DeleteBucket(this);
+	m_data.side->Release();
+	m_data.side = NULL;
 
-    assert (m_data.buyable);
-    m_data.buyable->Release();
-    m_data.buyable = NULL;
+	assert(m_data.buyable);
+	m_data.buyable->Release();
+	m_data.buyable = NULL;
 
-    Release();
+	Release();
 }
 
 int             CbucketIGC::Export(void*  data) const
 {
-    return NA;
+	return NA;
 }

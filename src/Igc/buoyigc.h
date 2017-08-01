@@ -3,7 +3,7 @@
 **
 **  File:	buoyIGC.h
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Header for the CbuoyIGC class. This file was initially created by
@@ -20,80 +20,80 @@
 
 class CbuoyIGC : public TmodelIGC<IbuoyIGC>
 {
-    public:
-        CbuoyIGC(void);
-        ~CbuoyIGC(void);
+public:
+	CbuoyIGC(void);
+	~CbuoyIGC(void);
 
-    public:
-    // IbaseIGC
-	    virtual HRESULT             Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
-	    virtual void                Terminate(void);
-        virtual int                 Export(void* data) const;
+public:
+	// IbaseIGC
+	virtual HRESULT             Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+	virtual void                Terminate(void);
+	virtual int                 Export(void* data) const;
 
-        virtual ObjectType          GetObjectType(void) const
-        {
-            return OT_buoy;
-        }
+	virtual ObjectType          GetObjectType(void) const
+	{
+		return OT_buoy;
+	}
 
-        virtual ObjectID    GetObjectID(void) const
-        {
-            return m_buoyID;
-        }
+	virtual ObjectID    GetObjectID(void) const
+	{
+		return m_buoyID;
+	}
 
-    // ImodelIGC
-        virtual void                SetCluster(IclusterIGC* cluster)
-        {
-            AddRef();
+	// ImodelIGC
+	virtual void                SetCluster(IclusterIGC* cluster)
+	{
+		AddRef();
 
-            {
-                IclusterIGC*    c = GetCluster();
-                if (c)
-                    c->DeleteModel(this);
-            }
+		{
+			IclusterIGC*    c = GetCluster();
+			if (c)
+				c->DeleteModel(this);
+		}
 
-            TmodelIGC<IbuoyIGC>::SetCluster(cluster);
+		TmodelIGC<IbuoyIGC>::SetCluster(cluster);
 
-            if (cluster)
-                cluster->AddModel(this);
+		if (cluster)
+			cluster->AddModel(this);
 
-            Release();
-        }
+		Release();
+	}
 
-        virtual void                 SetVisibleF(bool   vf) const
-        {
-        }
+	virtual void                 SetVisibleF(bool   vf) const
+	{
+	}
 
-        virtual bool                 GetVisibleF(void) const
-        {
-            return (m_nConsumers > 0);
-        }
-        virtual void                 SetRender(unsigned char render)
-        {
-        }
+	virtual bool                 GetVisibleF(void) const
+	{
+		return (m_nConsumers > 0);
+	}
+	virtual void                 SetRender(unsigned char render)
+	{
+	}
 
-    // IbuoyIGC
-        virtual void                 AddConsumer(void)
-        {
-            m_nConsumers++;
-        }
-        virtual void                 ReleaseConsumer(void)
-        {
-            m_nConsumers--;
-            assert (m_nConsumers >= 0);
+	// IbuoyIGC
+	virtual void                 AddConsumer(void)
+	{
+		m_nConsumers++;
+	}
+	virtual void                 ReleaseConsumer(void)
+	{
+		m_nConsumers--;
+		assert(m_nConsumers >= 0);
 
-            if (m_nConsumers == 0)
-                Terminate();
-        }
+		if (m_nConsumers == 0)
+			Terminate();
+	}
 
-        virtual BuoyType             GetBuoyType(void)
-        {
-            return m_type;
-        }
+	virtual BuoyType             GetBuoyType(void)
+	{
+		return m_type;
+	}
 
-    private:
-        short    m_nConsumers;
-        BuoyID   m_buoyID;
-        BuoyType m_type;
+private:
+	short    m_nConsumers;
+	BuoyID   m_buoyID;
+	BuoyType m_type;
 };
 
 #endif //__BUOYIGC_H_

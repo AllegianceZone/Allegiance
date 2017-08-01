@@ -3,7 +3,7 @@
 **
 **  File:	chaffTypeIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CchaffTypeIGC class. This file was initially created by
@@ -19,28 +19,28 @@
 // CchaffTypeIGC
 HRESULT     CchaffTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-    HRESULT hr = S_OK;
+	HRESULT hr = S_OK;
 
-    if (data && (dataSize == sizeof(DataChaffTypeIGC)))
-    {
-        m_data = *((DataChaffTypeIGC*)data);
+	if (data && (dataSize == sizeof(DataChaffTypeIGC)))
+	{
+		m_data = *((DataChaffTypeIGC*)data);
 
-        pMission->AddExpendableType(this);
-    }
-    else
-        hr = E_INVALIDARG;
+		pMission->AddExpendableType(this);
+	}
+	else
+		hr = E_INVALIDARG;
 
-    return hr;
+	return hr;
 }
 
 int         CchaffTypeIGC::Export(void* data) const
 {
-    if (data)
-        *((DataChaffTypeIGC*)data) = m_data;
+	if (data)
+		*((DataChaffTypeIGC*)data) = m_data;
 
-    return sizeof(DataChaffTypeIGC);
+	return sizeof(DataChaffTypeIGC);
 }
 

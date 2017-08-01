@@ -3,7 +3,7 @@
 **
 **  File:	buoyIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CbuoyIGC class. This file was initially created by
@@ -21,8 +21,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // CbuoyIGC
 CbuoyIGC::CbuoyIGC(void)
-:
-    m_nConsumers(0)
+	:
+	m_nConsumers(0)
 {
 }
 
@@ -32,63 +32,63 @@ CbuoyIGC::~CbuoyIGC(void)
 
 HRESULT CbuoyIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    TmodelIGC<IbuoyIGC>::Initialize(pMission, now, data, dataSize);
+	TmodelIGC<IbuoyIGC>::Initialize(pMission, now, data, dataSize);
 
-    ZRetailAssert (data && (dataSize == sizeof(DataBuoyIGC)));
-    DataBuoyIGC*  dataBuoy = (DataBuoyIGC*)data;
+	ZRetailAssert(data && (dataSize == sizeof(DataBuoyIGC)));
+	DataBuoyIGC*  dataBuoy = (DataBuoyIGC*)data;
 
-    LoadDecal("buoy", "buoyicon",
-              Color(1.0f, 1.0f, 1.0f, 1.0f),
-              false,
-              1.0f,
-              c_mtStatic | c_mtPredictable);
+	LoadDecal("buoy", "buoyicon",
+		Color(1.0f, 1.0f, 1.0f, 1.0f),
+		false,
+		1.0f,
+		c_mtStatic | c_mtPredictable);
 
-    SetRadius(20.0f);
-    SetPosition(dataBuoy->position);
-    {
-        Rotation    r(Vector(0.0f, 0.0f, 1.0f), 0.5f);
-        SetRotation(r);
-    }
-    m_type = dataBuoy->type;
+	SetRadius(20.0f);
+	SetPosition(dataBuoy->position);
+	{
+		Rotation    r(Vector(0.0f, 0.0f, 1.0f), 0.5f);
+		SetRotation(r);
+	}
+	m_type = dataBuoy->type;
 
-    m_buoyID = (dataBuoy->buoyID == NA) ? pMission->GenerateNewBuoyID() : dataBuoy->buoyID;
+	m_buoyID = (dataBuoy->buoyID == NA) ? pMission->GenerateNewBuoyID() : dataBuoy->buoyID;
 
-    IclusterIGC* pcluster = pMission->GetCluster(dataBuoy->clusterID);
+	IclusterIGC* pcluster = pMission->GetCluster(dataBuoy->clusterID);
 
-    if (dataBuoy->type == c_buoyCluster)
-        SetSecondaryName(pcluster->GetName());
-    else
-        SetSecondaryName("waypoint");
+	if (dataBuoy->type == c_buoyCluster)
+		SetSecondaryName(pcluster->GetName());
+	else
+		SetSecondaryName("waypoint");
 
-    SetMass(0.0f);
+	SetMass(0.0f);
 
-    pMission->AddBuoy(this);
+	pMission->AddBuoy(this);
 
-    SetCluster(pcluster);
+	SetCluster(pcluster);
 
-    return S_OK;
+	return S_OK;
 }
 
 void    CbuoyIGC::Terminate(void)
 {
-    AddRef();
+	AddRef();
 
-    GetMyMission()->DeleteBuoy(this);
+	GetMyMission()->DeleteBuoy(this);
 	TmodelIGC<IbuoyIGC>::Terminate();
 
-    Release();
+	Release();
 }
 
 int     CbuoyIGC::Export(void*    data) const
 {
-    if (data)
-    {
-        DataBuoyIGC*  dataBuoy = (DataBuoyIGC*)data;
+	if (data)
+	{
+		DataBuoyIGC*  dataBuoy = (DataBuoyIGC*)data;
 
-        dataBuoy->position = GetPosition();
-        dataBuoy->clusterID = GetCluster()->GetObjectID();
-        dataBuoy->type = m_type;
-    }
+		dataBuoy->position = GetPosition();
+		dataBuoy->clusterID = GetCluster()->GetObjectID();
+		dataBuoy->type = m_type;
+	}
 
-    return sizeof(DataBuoyIGC);
+	return sizeof(DataBuoyIGC);
 }
