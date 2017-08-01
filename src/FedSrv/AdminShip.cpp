@@ -1,19 +1,19 @@
 
 /*-------------------------------------------------------------------------
  * fedsrv\AdminShip.CPP
- * 
- * Implementation of CAdminShip.  
- * 
- * Owner: 
- * 
+ *
+ * Implementation of CAdminShip.
+ *
+ * Owner:
+ *
  * Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
 #include "pch.h"
 
 
-/////////////////////////////////////////////////////////////////////////////
-// CAdminShip
+ /////////////////////////////////////////////////////////////////////////////
+ // CAdminShip
 
 TC_OBJECT_EXTERN_NON_CREATEABLE_IMPL(CAdminShip)
 
@@ -25,7 +25,7 @@ CAdminShip::CAdminShip()
 {
 }
 
-                                                               
+
 
 /*-------------------------------------------------------------------------
  * get_Pilot()
@@ -35,21 +35,21 @@ CAdminShip::CAdminShip()
  */
 STDMETHODIMP CAdminShip::get_User(IAdminUser** ppUser)
 {
-  CFSShip* pfsShip = (CFSShip*)GetIGC()->GetPrivateData(); // Igc2Host(GetIGC());
+	CFSShip* pfsShip = (CFSShip*)GetIGC()->GetPrivateData(); // Igc2Host(GetIGC());
 
-  if (pfsShip->IsPlayer())
-  {
-    CFSPlayer *pfsPlayer = pfsShip->GetPlayer();
+	if (pfsShip->IsPlayer())
+	{
+		CFSPlayer *pfsPlayer = pfsShip->GetPlayer();
 
-    RETURN_FAILED (pfsPlayer->CAdminSponsor<CAdminUser>::Make(IID_IAdminUser, (void**)ppUser));
+		RETURN_FAILED(pfsPlayer->CAdminSponsor<CAdminUser>::Make(IID_IAdminUser, (void**)ppUser));
 
-    pfsPlayer->CAdminSponsor<CAdminUser>::GetLimb()->Init(pfsPlayer);
-  }
-  else
-  {
-    *ppUser = NULL; 
-    //  CLEAROUT(ppUser, (IAdminUser*)NULL);
-  }
+		pfsPlayer->CAdminSponsor<CAdminUser>::GetLimb()->Init(pfsPlayer);
+	}
+	else
+	{
+		*ppUser = NULL;
+		//  CLEAROUT(ppUser, (IAdminUser*)NULL);
+	}
 
-  return S_OK;
+	return S_OK;
 }

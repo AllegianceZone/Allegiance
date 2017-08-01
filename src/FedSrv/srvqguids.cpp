@@ -1,10 +1,10 @@
 /*-------------------------------------------------------------------------
   srvqguids.cpp
-  
+
   Guids for srvqueries
-  
-  Owner: 
-  
+
+  Owner:
+
   Copyright 1986-2000 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 

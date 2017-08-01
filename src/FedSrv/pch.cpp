@@ -1,16 +1,16 @@
 /*-------------------------------------------------------------------------
  * pch.cpp
- * 
+ *
  * Precompiled header for fedsrv
- * 
- * Owner: 
- * 
+ *
+ * Owner:
+ *
  * Copyright 1986-1998 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
 #include "pch.h"
 
-//#include <atlbase.h>
+ //#include <atlbase.h>
 
 #ifdef _ATL_STATIC_REGISTRY
 #include <statreg.h>

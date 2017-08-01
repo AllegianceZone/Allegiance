@@ -8,27 +8,27 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CAdminEventLoggerHook
-class ATL_NO_VTABLE CAdminEventLoggerHook : 
-  public IAGCEventLoggerHook,
-  public CComObjectRootEx<CComMultiThreadModel>
+class ATL_NO_VTABLE CAdminEventLoggerHook :
+	public IAGCEventLoggerHook,
+	public CComObjectRootEx<CComMultiThreadModel>
 {
-// Declarations
+	// Declarations
 public:
-  DECLARE_PROTECT_FINAL_CONSTRUCT()
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
-// Interface Map
+	// Interface Map
 public:
-  BEGIN_COM_MAP(CAdminEventLoggerHook)
-    COM_INTERFACE_ENTRY(IAGCEventLoggerHook)
-  END_COM_MAP()
+	BEGIN_COM_MAP(CAdminEventLoggerHook)
+		COM_INTERFACE_ENTRY(IAGCEventLoggerHook)
+	END_COM_MAP()
 
-// Implementation
+	// Implementation
 private:
-  static void EventLogged(CQLogEvent* pquery);
+	static void EventLogged(CQLogEvent* pquery);
 
-// IAGCEventLoggerHook Interface Methods
+	// IAGCEventLoggerHook Interface Methods
 public:
-  STDMETHODIMP LogEvent(IAGCEvent* pEvent, VARIANT_BOOL bSynchronous);
+	STDMETHODIMP LogEvent(IAGCEvent* pEvent, VARIANT_BOOL bSynchronous);
 };
 
 

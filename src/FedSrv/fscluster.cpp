@@ -1,25 +1,25 @@
 /*-------------------------------------------------------------------------
  * fscluster.cpp
- * 
+ *
  * Implementation of FedSrv class Cluster (aka Sector)
- * 
+ *
  * Maker: a-markcu
- * 
+ *
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
 #include "pch.h"
 
-/*-------------------------------------------------------------------------
- * CFSCluster::CFSCluster()
- *-------------------------------------------------------------------------
- */
+ /*-------------------------------------------------------------------------
+  * CFSCluster::CFSCluster()
+  *-------------------------------------------------------------------------
+  */
 CFSCluster::CFSCluster(TRef<IclusterIGC> pCluster) :
 
-  m_pIclusterIGC(pCluster),
-  m_pClusterGroups(NULL)
+	m_pIclusterIGC(pCluster),
+	m_pClusterGroups(NULL)
 {
-  pCluster->SetPrivateData((DWORD)this);  // link to IGC CLuster
+	pCluster->SetPrivateData((DWORD)this);  // link to IGC CLuster
 }
 
 
@@ -29,5 +29,5 @@ CFSCluster::CFSCluster(TRef<IclusterIGC> pCluster) :
  */
 CFSCluster::~CFSCluster()
 {
-  m_pIclusterIGC->SetPrivateData((DWORD)NULL);  // unlink from IGC CLuster
+	m_pIclusterIGC->SetPrivateData((DWORD)NULL);  // unlink from IGC CLuster
 }

@@ -18,9 +18,9 @@
 #ifndef _DBGUTIL_H
 #define _DBGUTIL_H
 
-//#ifndef _UTILCORE_H
-//#include "utilcore.h"
-//#endif
+ //#ifndef _UTILCORE_H
+ //#include "utilcore.h"
+ //#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,10 +68,10 @@ extern "C" {
 #define IfNotRelease(x) x
 #endif
 
-/*---------------------------------------------------------------------------
-	Assert
- ---------------------------------------------------------------------------*/
-	
+ /*---------------------------------------------------------------------------
+	 Assert
+  ---------------------------------------------------------------------------*/
+
 #define Panic()						Assert0(FDbgFalse(), TEXT("Panic"))
 #define Panic0(szFmt)				Assert0(FDbgFalse(), TEXT(szFmt))
 #define Panic1(szFmt, p1)			Assert1(FDbgFalse(), TEXT(szFmt), p1)
@@ -214,25 +214,25 @@ DBG_API(void)		DbgTraceV(LPCSTR szFormat, char FAR *pvargs);
 
 #ifndef NOENTRYEXITTRACE
 
-    //
-    // @class This class is used in the DBG_PROC_ENTRY macro below.
-    //
-    class DbgProcEntryClass
-    {
-      public:                                                            
-        DbgProcEntryClass(LPCSTR szFunctionName)  { m_lpszName = szFunctionName; Trace1("> Enter %s", szFunctionName); }
-        ~DbgProcEntryClass()                      { Trace1("< Exit %s", m_lpszName); }
-      private:
-        LPCSTR m_lpszName;
-    };
+	//
+	// @class This class is used in the DBG_PROC_ENTRY macro below.
+	//
+class DbgProcEntryClass
+{
+public:
+	DbgProcEntryClass(LPCSTR szFunctionName) { m_lpszName = szFunctionName; Trace1("> Enter %s", szFunctionName); }
+	~DbgProcEntryClass() { Trace1("< Exit %s", m_lpszName); }
+private:
+	LPCSTR m_lpszName;
+};
 
-    //
-    // @func Macro that causes the name of a function to get printed to debug output when the function is entered
-    //  and when it is exited.  This is done by using C++ contructor and destructor.  Place the call to DBG_PROC_ENTRY
-    //  at the to of each function that you wish to see debug traces for its entry and exit.  The uCategory parameter
-    //  is used to clasify the module that this function is in.
-    //
-    #define DBG_PROC_ENTRY(szFunctionName)                    DbgProcEntryClass _DbgProcEntryClassObject(szFunctionName)
+//
+// @func Macro that causes the name of a function to get printed to debug output when the function is entered
+//  and when it is exited.  This is done by using C++ contructor and destructor.  Place the call to DBG_PROC_ENTRY
+//  at the to of each function that you wish to see debug traces for its entry and exit.  The uCategory parameter
+//  is used to clasify the module that this function is in.
+//
+#define DBG_PROC_ENTRY(szFunctionName)                    DbgProcEntryClass _DbgProcEntryClassObject(szFunctionName)
 #else
 #define DBG_PROC_ENTRY(szFunctionName)  /* nothing */	
 #endif  //NOENTRYEXITTRACE
@@ -269,7 +269,7 @@ typedef struct dbiTag
 	// which triggers an INT 3. If no debugger is running, the INT 3
 	// is handled internally, and execution continues.
 	BOOL	fStopOnAssert;
-	
+
 } DebugInfo;
 
 typedef struct
