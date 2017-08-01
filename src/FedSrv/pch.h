@@ -1,10 +1,10 @@
 /*-------------------------------------------------------------------------
  * pch.h
- * 
+ *
  * Headers for fedsrv
- * 
- * Owner: 
- * 
+ *
+ * Owner:
+ *
  * Copyright 1986-1998 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 #ifndef _FEDSRV_PCH_
@@ -17,7 +17,7 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
-//#include "appWeb\appWeb.h" //Imago - updated to 2.4.2-2 XP  9/14 5.x
+ //#include "appWeb\appWeb.h" //Imago - updated to 2.4.2-2 XP  9/14 5.x
 
 #define _ATL_STATIC_REGISTRY
 
@@ -44,13 +44,13 @@
 
 // ZLib Includes
 #if !defined(ALLSRV_STANDALONE)
-  #define __MODULE__ "AllSrv"
+#define __MODULE__ "AllSrv"
 #else // !defined(ALLSRV_STANDALONE)
-  #define __MODULE__ "AllSrv"
+#define __MODULE__ "AllSrv"
 #endif // !defined(ALLSRV_STANDALONE)
 #include <guids.h>
 #include <zlib.h>
-                     
+
 #include "resource.h"
 #include <utility.h>
 #include <igc.h>

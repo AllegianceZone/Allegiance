@@ -1,11 +1,11 @@
 
 /*-------------------------------------------------------------------------
  * fedsrv\AllSrvModule.H
- * 
- * This part of AllSrv contains Service-related functions and COM/ATL support.  
- * 
- * Owner: 
- * 
+ *
+ * This part of AllSrv contains Service-related functions and COM/ATL support.
+ *
+ * Owner:
+ *
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
@@ -15,13 +15,13 @@
 #define _ALLSRV_MOD_
 
 #ifndef STRICT
-  #define STRICT
+#define STRICT
 #endif
 
-// Imago removed
-//#ifndef _WIN32_WINNT
-//  #define _WIN32_WINNT 0x0400
-//#endif
+ // Imago removed
+ //#ifndef _WIN32_WINNT
+ //  #define _WIN32_WINNT 0x0400
+ //#endif
 #define _ATL_FREE_THREADED
 
 #include <atlbase.h>
@@ -33,80 +33,80 @@
 
 class CServiceModule : public CComModule
 {
-// Construction / Destruction
+	// Construction / Destruction
 public:
-  CServiceModule() :
-    m_fCOMStarted(false)
+	CServiceModule() :
+		m_fCOMStarted(false)
 #if defined(SRV_PARENT)
 		,
 		m_iPIDID(0)
 #endif
-  {
-  }
-  HRESULT      Init(HINSTANCE hInst);
-  void         Term();
-  HRESULT      InitAGC();
-  void         TermAGC();
+	{
+	}
+	HRESULT      Init(HINSTANCE hInst);
+	void         Term();
+	HRESULT      InitAGC();
+	void         TermAGC();
 
-// Attributes
+	// Attributes
 public:
-  BOOL         IsInstalled(); // returns TRUE iff AllSrv was properly installed (either as Service or EXE)
-  BOOL         IsInstalledAsService(); // returns TRUE iff AllSrv is installed as an NT service.
-  BOOL         IsInServiceControlManager(); // TRUE iff AllSrv is an NT service (by checking the Service Control Manager)
-  HRESULT      get_EventLog(IAGCEventLogger** ppEventLogger);
+	BOOL         IsInstalled(); // returns TRUE iff AllSrv was properly installed (either as Service or EXE)
+	BOOL         IsInstalledAsService(); // returns TRUE iff AllSrv is installed as an NT service.
+	BOOL         IsInServiceControlManager(); // TRUE iff AllSrv is an NT service (by checking the Service Control Manager)
+	HRESULT      get_EventLog(IAGCEventLogger** ppEventLogger);
 
-// Operations
+	// Operations
 public:
-  HRESULT      RegisterServer(BOOL bReRegister, BOOL bRegTypeLib, BOOL bService, int argc, char * argv[]);
-  HRESULT      UnregisterServer();
+	HRESULT      RegisterServer(BOOL bReRegister, BOOL bRegTypeLib, BOOL bService, int argc, char * argv[]);
+	HRESULT      UnregisterServer();
 
-  void         RegisterCOMObjects();
-  void         RevokeCOMObjects();
+	void         RegisterCOMObjects();
+	void         RevokeCOMObjects();
 
-  VOID         RunAsExecutable();
-  //imago - parent/child server tracking functions 6/23/08
+	VOID         RunAsExecutable();
+	//imago - parent/child server tracking functions 6/23/08
 #if defined(SRV_PARENT)  
-  void         BreakChildren();
-  DWORD		   GetOutgoingPort(void);													//remember the last port used to 
-  void		   SetOutgoingPort(DWORD dwPort);											//handle game creation requests from lobby
+	void         BreakChildren();
+	DWORD		   GetOutgoingPort(void);													//remember the last port used to 
+	void		   SetOutgoingPort(DWORD dwPort);											//handle game creation requests from lobby
 
-  void		   AddPID(DWORD dwProcessId){ m_dwPIDs[m_iPIDID]=dwProcessId; m_iPIDID++; }
-  
-  void		   InitPIDs();																//also remember children pids for cleanup and
-  int		   GetChildCount(){return m_iPIDID;}										//provide accurate count to the server list 
+	void		   AddPID(DWORD dwProcessId) { m_dwPIDs[m_iPIDID] = dwProcessId; m_iPIDID++; }
+
+	void		   InitPIDs();																//also remember children pids for cleanup and
+	int		   GetChildCount() { return m_iPIDID; }										//provide accurate count to the server list 
 #endif 
-  BOOL         InstallService(int argc, char * argv[]);
-  BOOL         RemoveService(void);
+	BOOL         InstallService(int argc, char * argv[]);
+	BOOL         RemoveService(void);
 
-  static void  WINAPI ServiceMain(DWORD dwArgc, LPSTR* lpszArgv);
+	static void  WINAPI ServiceMain(DWORD dwArgc, LPSTR* lpszArgv);
 
-  void         SetCOMStarted(bool fCOMStarted) { m_fCOMStarted = fCOMStarted; }
-  bool         WasCOMStarted() { return m_fCOMStarted; }
+	void         SetCOMStarted(bool fCOMStarted) { m_fCOMStarted = fCOMStarted; }
+	bool         WasCOMStarted() { return m_fCOMStarted; }
 
-  void         StopAllsrv();
+	void         StopAllsrv();
 
-// Implementation
+	// Implementation
 protected:
-  static void  WINAPI StartServerTerminateThread();
-  static void  WINAPI ServiceControl(DWORD dwCode);
-  static void  SetSvcStatus(DWORD state, DWORD exitcode);
-  static DWORD WINAPI ServerTerminateThread(DWORD dwUnused);
-  static DWORD WINAPI MTAKeepAliveThunk(void* pvThis);
-         void  MTAKeepAliveThread();
+	static void  WINAPI StartServerTerminateThread();
+	static void  WINAPI ServiceControl(DWORD dwCode);
+	static void  SetSvcStatus(DWORD state, DWORD exitcode);
+	static DWORD WINAPI ServerTerminateThread(DWORD dwUnused);
+	static DWORD WINAPI MTAKeepAliveThunk(void* pvThis);
+	void  MTAKeepAliveThread();
 
-// Data Members
+	// Data Members
 protected:
-  bool          m_fCOMStarted;       // true if a COM call started the server
-//  HANDLE        m_hEventStopRunningAsEXE; 
-  TCHandle      m_shthMTA;           // thread handle of MTA keep-alive thread
-  TCHandle      m_shevtMTAReady;     // event to sync MTA keep-alive thread
-  TCHandle      m_shevtMTAExit;      // event to sync MTA keep-alive thread
-  HRESULT       m_hrMTAKeepAlive;    // HRESULT from MTA keep-alive thread
-  IAGCEventLoggerPtr m_spEventLogger;
+	bool          m_fCOMStarted;       // true if a COM call started the server
+  //  HANDLE        m_hEventStopRunningAsEXE; 
+	TCHandle      m_shthMTA;           // thread handle of MTA keep-alive thread
+	TCHandle      m_shevtMTAReady;     // event to sync MTA keep-alive thread
+	TCHandle      m_shevtMTAExit;      // event to sync MTA keep-alive thread
+	HRESULT       m_hrMTAKeepAlive;    // HRESULT from MTA keep-alive thread
+	IAGCEventLoggerPtr m_spEventLogger;
 #if defined(SRV_PARENT)
-  DWORD			m_dwMPort;				// our outgoing port last used to connect to g.dwLobby -Imago
-  DWORD			m_dwPIDs[98];	     // simple array of process identifiers, we don't use key 0 for simplicity
-  int			m_iPIDID;			// last used pid key, gets re-calculated each hand-off
+	DWORD			m_dwMPort;				// our outgoing port last used to connect to g.dwLobby -Imago
+	DWORD			m_dwPIDs[98];	     // simple array of process identifiers, we don't use key 0 for simplicity
+	int			m_iPIDID;			// last used pid key, gets re-calculated each hand-off
 #endif
 };
 

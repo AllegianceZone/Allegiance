@@ -4,28 +4,28 @@
 
 /////////////////////////////////////////////////////////////////////////////
 //
-class ATL_NO_VTABLE CAdminSessionClass : 
-  public CComClassFactory,
-  public IAdminSessionClass
+class ATL_NO_VTABLE CAdminSessionClass :
+	public CComClassFactory,
+	public IAdminSessionClass
 {
-// Interface Map
+	// Interface Map
 public:
-  BEGIN_COM_MAP(CAdminSessionClass)
-    COM_INTERFACE_ENTRY(IAdminSessionClass)
+	BEGIN_COM_MAP(CAdminSessionClass)
+		COM_INTERFACE_ENTRY(IAdminSessionClass)
 		COM_INTERFACE_ENTRY_CHAIN(CComClassFactory)
-  END_COM_MAP()
+	END_COM_MAP()
 
-// Implementation
+	// Implementation
 protected:
-  static bool IsEqualBSTR(BSTR bstr1, BSTR bstr2);
+	static bool IsEqualBSTR(BSTR bstr1, BSTR bstr2);
 
-// IClassFactory Interface Methods
+	// IClassFactory Interface Methods
 public:
-  STDMETHODIMP CreateInstance(IUnknown* pUnkOuter, REFIID riid, void** ppvObject);
+	STDMETHODIMP CreateInstance(IUnknown* pUnkOuter, REFIID riid, void** ppvObject);
 
-// IAdminSessionClass Interface Methods
+	// IAdminSessionClass Interface Methods
 public:
-  STDMETHODIMP CreateSession(IAdminSessionHost* pHost, IAdminSession** ppSession);
+	STDMETHODIMP CreateSession(IAdminSessionHost* pHost, IAdminSession** ppSession);
 };
 
 

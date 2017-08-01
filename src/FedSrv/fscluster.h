@@ -1,10 +1,10 @@
 /*-------------------------------------------------------------------------
  * fscluster.h
- * 
+ *
  * Declaration of FedSrv class Cluster (aka Sector)
- * 
+ *
  * Maker: a-markcu
- * 
+ *
  * Copyright 1986-1999 Microsoft Corporation, All Rights Reserved
  *-----------------------------------------------------------------------*/
 
@@ -19,37 +19,37 @@ class CFSCluster
 {
 public:
 
-  CFSCluster(TRef<IclusterIGC>  pCluster);
-  virtual ~CFSCluster();
-  
-  IclusterIGC *                 GetClusterIGC()                   {return m_pIclusterIGC;}
-  ClusterGroups *               GetClusterGroups()                {return m_pClusterGroups;}
-  void                          SetClusterGroups(ClusterGroups *p){m_pClusterGroups=p;}
+	CFSCluster(TRef<IclusterIGC>  pCluster);
+	virtual ~CFSCluster();
 
-  void                          AddFlyingPlayer(CFSPlayer* p)
-  {
-      assert (p);
-      assert (m_playersFlying.find(p) == NULL);
+	IclusterIGC *                 GetClusterIGC() { return m_pIclusterIGC; }
+	ClusterGroups *               GetClusterGroups() { return m_pClusterGroups; }
+	void                          SetClusterGroups(ClusterGroups *p) { m_pClusterGroups = p; }
 
-      m_playersFlying.last(p);
-  }
+	void                          AddFlyingPlayer(CFSPlayer* p)
+	{
+		assert(p);
+		assert(m_playersFlying.find(p) == NULL);
 
-  void                          RemoveFlyingPlayer(CFSPlayer* p)
-  {
-      assert (p);
-      PlayerLink*   ppl = m_playersFlying.find(p);
-      assert (ppl);
-      delete ppl;
-  }
+		m_playersFlying.last(p);
+	}
 
-  const PlayerList*             GetFlyingPlayers(void) const
-  {
-      return& m_playersFlying;
-  }
+	void                          RemoveFlyingPlayer(CFSPlayer* p)
+	{
+		assert(p);
+		PlayerLink*   ppl = m_playersFlying.find(p);
+		assert(ppl);
+		delete ppl;
+	}
+
+	const PlayerList*             GetFlyingPlayers(void) const
+	{
+		return&m_playersFlying;
+	}
 
 private:
-  
-  IclusterIGC *                 m_pIclusterIGC;
-  ClusterGroups *               m_pClusterGroups;   // not user here yet, always NULL currently
-  PlayerList                    m_playersFlying;
+
+	IclusterIGC *                 m_pIclusterIGC;
+	ClusterGroups *               m_pClusterGroups;   // not user here yet, always NULL currently
+	PlayerList                    m_playersFlying;
 };

@@ -8,16 +8,16 @@
 #define CCOLPARMMAX 20 // same for columns or parameters (combined)
 enum SQLPARM
 {
-  SQL_IN_PARM,    // input parameters to sql statements OR stored procs
-  SQL_OUT_PARM,   // output parameter to sql statement, NOT stored procedure
-  SQL_OUT_PROC,   // stored proc return values or stored proc out-only parameters
-  SQL_INOUT_PROC  // stored proc in/out parameters
+	SQL_IN_PARM,    // input parameters to sql statements OR stored procs
+	SQL_OUT_PARM,   // output parameter to sql statement, NOT stored procedure
+	SQL_OUT_PROC,   // stored proc return values or stored proc out-only parameters
+	SQL_INOUT_PROC  // stored proc in/out parameters
 };
 
 class ISQLSite : public IObject
 {
 public:
-  virtual int OnMessageBox(const char * strText, const char * strCaption, UINT nType) = 0;
+	virtual int OnMessageBox(const char * strText, const char * strCaption, UINT nType) = 0;
 };
 
 SQLHSTMT AddStatement(SQLCHAR * scSQL);
