@@ -3,7 +3,7 @@
 **
 **  File:	stdafx.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      The standard ATL stdafx file. This file was initially created by

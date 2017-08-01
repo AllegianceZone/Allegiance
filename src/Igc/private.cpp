@@ -3,7 +3,7 @@
 **
 **  File:	private.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation file for all things that are internal to the IGC library

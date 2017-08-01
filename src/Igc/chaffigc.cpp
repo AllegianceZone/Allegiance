@@ -3,7 +3,7 @@
 **
 **  File:	chaffIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CchaffIGC class. This file was initially created by
@@ -33,55 +33,55 @@ CchaffIGC::~CchaffIGC(void)
 
 HRESULT CchaffIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    TmodelIGC<IchaffIGC>::Initialize(pMission, now, data, dataSize);
+	TmodelIGC<IchaffIGC>::Initialize(pMission, now, data, dataSize);
 
-    ZRetailAssert (data && (dataSize == sizeof(DataChaffIGC)));
-    DataChaffIGC*  dataChaff = (DataChaffIGC*)data;
+	ZRetailAssert(data && (dataSize == sizeof(DataChaffIGC)));
+	DataChaffIGC*  dataChaff = (DataChaffIGC*)data;
 
-    m_pChaffTypeData = (DataChaffTypeIGC*)(dataChaff->pchafftype->GetData());
+	m_pChaffTypeData = (DataChaffTypeIGC*)(dataChaff->pchafftype->GetData());
 
-    LoadDecal(m_pChaffTypeData->textureName, NULL,
-              Color(1.0f, 1.0f, 1.0f, 1.0f),
-              false,
-              1.0f,
-              c_mtNotPickable | c_mtPredictable);
+	LoadDecal(m_pChaffTypeData->textureName, NULL,
+		Color(1.0f, 1.0f, 1.0f, 1.0f),
+		false,
+		1.0f,
+		c_mtNotPickable | c_mtPredictable);
 
-    Time    time0 = pMission->GetIgcSite()->ClientTimeFromServerTime(dataChaff->time0);
+	Time    time0 = pMission->GetIgcSite()->ClientTimeFromServerTime(dataChaff->time0);
 
-    SetRadius(1.0f);
-    SetPosition(dataChaff->p0 + (now - time0) * dataChaff->v0);
-    SetVelocity(dataChaff->v0);
+	SetRadius(1.0f);
+	SetPosition(dataChaff->p0 + (now - time0) * dataChaff->v0);
+	SetVelocity(dataChaff->v0);
 
-    {
-        Rotation    r(Vector(0.0f, 0.0f, 1.0f), 2.75f);
-        SetRotation(r);
-    }
+	{
+		Rotation    r(Vector(0.0f, 0.0f, 1.0f), 2.75f);
+		SetRotation(r);
+	}
 
-    SetMass(0.0f);
+	SetMass(0.0f);
 
-    m_timeExpire = time0 + m_pChaffTypeData->lifespan;
+	m_timeExpire = time0 + m_pChaffTypeData->lifespan;
 
-    SetCluster(dataChaff->pcluster);
+	SetCluster(dataChaff->pcluster);
 
-    return S_OK;
+	return S_OK;
 }
 
 void    CchaffIGC::Terminate(void)
 {
-    AddRef();
+	AddRef();
 	TmodelIGC<IchaffIGC>::Terminate();
-    Release();
+	Release();
 }
 
 void    CchaffIGC::Update(Time now)
 {
-    float   dtLeft = m_timeExpire - now;
-    if (dtLeft <= 0.0f)
-        Terminate();
-    else
-    {
-        float   r = m_pChaffTypeData->radius * (1.0f - dtLeft / m_pChaffTypeData->lifespan);
-        SetRadius(r > 1.0f ? r : 1.0f);
-        TmodelIGC<IchaffIGC>::Update(now);
-    }
+	float   dtLeft = m_timeExpire - now;
+	if (dtLeft <= 0.0f)
+		Terminate();
+	else
+	{
+		float   r = m_pChaffTypeData->radius * (1.0f - dtLeft / m_pChaffTypeData->lifespan);
+		SetRadius(r > 1.0f ? r : 1.0f);
+		TmodelIGC<IchaffIGC>::Update(now);
+	}
 }

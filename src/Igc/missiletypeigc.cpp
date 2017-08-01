@@ -3,7 +3,7 @@
 **
 **  File:	missileTypeIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CmissileTypeIGC class. This file was initially created by
@@ -19,34 +19,34 @@
 // CmissileTypeIGC
 HRESULT     CmissileTypeIGC::Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-    ZRetailAssert (data && (dataSize == sizeof(DataMissileTypeIGC)));
-    {
-        m_data = *((DataMissileTypeIGC*)data);
+	ZRetailAssert(data && (dataSize == sizeof(DataMissileTypeIGC)));
+	{
+		m_data = *((DataMissileTypeIGC*)data);
 
-        if (iswalpha(m_data.modelName[0]))
-        {
-            pMission->GetIgcSite()->Preload(m_data.modelName, iswalpha(m_data.textureName[0])
-                                                              ? m_data.textureName
-                                                              : NULL);
-            HitTest::Load(m_data.modelName);
-        }
-        else
-            pMission->GetIgcSite()->Preload(NULL, m_data.textureName);
+		if (iswalpha(m_data.modelName[0]))
+		{
+			pMission->GetIgcSite()->Preload(m_data.modelName, iswalpha(m_data.textureName[0])
+				? m_data.textureName
+				: NULL);
+			HitTest::Load(m_data.modelName);
+		}
+		else
+			pMission->GetIgcSite()->Preload(NULL, m_data.textureName);
 
-        pMission->AddExpendableType(this);
-    }
+		pMission->AddExpendableType(this);
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 int         CmissileTypeIGC::Export(void* data) const
 {
-    if (data)
-        *((DataMissileTypeIGC*)data) = m_data;
+	if (data)
+		*((DataMissileTypeIGC*)data) = m_data;
 
-    return sizeof(DataMissileTypeIGC);
+	return sizeof(DataMissileTypeIGC);
 }
 

@@ -3,7 +3,7 @@
 **
 **  File:	developmentIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CdevelopmentIGC class. This file was initially created by
@@ -18,48 +18,48 @@
 /////////////////////////////////////////////////////////////////////////////
 // CdevelopmentIGC
 HRESULT         CdevelopmentIGC::Initialize(ImissionIGC* pMission,
-                                            Time         now,
-                                            const void*  data,
-                                            int          dataSize)
+	Time         now,
+	const void*  data,
+	int          dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-	ZRetailAssert (data && (dataSize == sizeof(DataDevelopmentIGC)));
-    m_data = *((DataDevelopmentIGC*)data);
+	ZRetailAssert(data && (dataSize == sizeof(DataDevelopmentIGC)));
+	m_data = *((DataDevelopmentIGC*)data);
 
-    pMission->AddDevelopment(this);
+	pMission->AddDevelopment(this);
 
-    if (m_data.developmentID == c_didTeamMoney)
-    {
-        m_techOnly = false;     //Wining the game is not "tech only"
-    }
-    else
-    {
-        m_techOnly = true;
-        for (int i = 0; (i < c_gaMax); i++)
-        {
-            if (m_data.gas.GetAttribute(i) != 1.0f)
-            {
-                m_techOnly = false;
-                break;
-            }
-        }
-    }
+	if (m_data.developmentID == c_didTeamMoney)
+	{
+		m_techOnly = false;     //Wining the game is not "tech only"
+	}
+	else
+	{
+		m_techOnly = true;
+		for (int i = 0; (i < c_gaMax); i++)
+		{
+			if (m_data.gas.GetAttribute(i) != 1.0f)
+			{
+				m_techOnly = false;
+				break;
+			}
+		}
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 void            CdevelopmentIGC::Terminate(void)
 {
-    m_pMission->DeleteDevelopment(this);
+	m_pMission->DeleteDevelopment(this);
 }
 
 int             CdevelopmentIGC::Export(void*  data) const
 {
-    if (data)
-        *((DataDevelopmentIGC*)data) = m_data;
+	if (data)
+		*((DataDevelopmentIGC*)data) = m_data;
 
-    return sizeof(DataDevelopmentIGC);
+	return sizeof(DataDevelopmentIGC);
 }
 

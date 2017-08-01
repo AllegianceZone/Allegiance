@@ -3,7 +3,7 @@
 **
 **  File:	afterburnerIGC.h
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Header for the CafterburnerIGC class. This file was initially created by
@@ -20,162 +20,162 @@
 // CafterburnerIGC
 class CafterburnerIGC : public IafterburnerIGC
 {
-    public:
-        CafterburnerIGC(void);
+public:
+	CafterburnerIGC(void);
 
-// IbaseIGC
-        virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
-        virtual void    Terminate(void);
-        virtual void    Update(Time now);
+	// IbaseIGC
+	virtual HRESULT Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+	virtual void    Terminate(void);
+	virtual void    Update(Time now);
 
-        virtual ObjectType  GetObjectType(void) const
-        {
-            return OT_afterburner;
-        }
+	virtual ObjectType  GetObjectType(void) const
+	{
+		return OT_afterburner;
+	}
 
-        virtual ImissionIGC*    GetMission(void) const
-        {
-            return m_pMission;
-        }
+	virtual ImissionIGC*    GetMission(void) const
+	{
+		return m_pMission;
+	}
 
-// IpartIGC
-        virtual EquipmentType    GetEquipmentType(void) const
-        {
-            return ET_Afterburner;
-        }
+	// IpartIGC
+	virtual EquipmentType    GetEquipmentType(void) const
+	{
+		return ET_Afterburner;
+	}
 
-        virtual IpartTypeIGC*    GetPartType(void) const
-        {
-            return m_partType;
-        }
+	virtual IpartTypeIGC*    GetPartType(void) const
+	{
+		return m_partType;
+	}
 
-        virtual IshipIGC*        GetShip(void) const
-        {
-            return m_ship;
-        }
-        virtual void             SetShip(IshipIGC* newVal, Mount mount);
+	virtual IshipIGC*        GetShip(void) const
+	{
+		return m_ship;
+	}
+	virtual void             SetShip(IshipIGC* newVal, Mount mount);
 
-        virtual Mount            GetMountID(void) const
-        {
-            return m_mountID;
-        }
-        virtual void             SetMountID(Mount newVal);
+	virtual Mount            GetMountID(void) const
+	{
+		return m_mountID;
+	}
+	virtual void             SetMountID(Mount newVal);
 
-        virtual bool             fActive(void) const
-        {
-            return m_fActive;
-        }
+	virtual bool             fActive(void) const
+	{
+		return m_fActive;
+	}
 
-        virtual void             Activate(void)
-        {
-            assert (m_ship);
+	virtual void             Activate(void)
+	{
+		assert(m_ship);
 
-            if (!m_fActive)
-            {
-                m_ship->ChangeSignature(m_typeData->signature);
-                m_fActive = true;
-                m_power = 0.0f;
-            }
-        }
-        virtual void             Deactivate(void)
-        {
-            assert (m_ship);
-
-            if (m_fActive)
-            {
-                m_ship->ChangeSignature(-m_typeData->signature);
-                m_fActive = false;
-                m_power = 0.0f;
-            }
-        }
-        virtual void             Reset()
-        {
-        }
-
-        virtual float            GetMass(void) const
-        {
-            return m_typeData->mass;
-        }
-
-        virtual Money            GetPrice(void) const
-        {
-            return m_typeData->price;
-        }
-
-    // IafterburnerIGC
-        virtual float    GetFuelConsumption(void) const
-        {
-            return m_typeData->fuelConsumption;
-        }
-		virtual float	 GetMaxThrustWithGA(void) const //TheRock 15-8-2009
+		if (!m_fActive)
 		{
-			return m_typeData->maxThrust * GetShip()->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaThrust);
+			m_ship->ChangeSignature(m_typeData->signature);
+			m_fActive = true;
+			m_power = 0.0f;
 		}
-        virtual float    GetMaxThrust(void) const
-        {
-            return m_typeData->maxThrust;
-        }
-        virtual float    GetOnRate(void) const
-        {
-            return m_typeData->onRate;
-        }
-        virtual float    GetOffRate(void) const
-        {
-            return m_typeData->offRate;
-        }
+	}
+	virtual void             Deactivate(void)
+	{
+		assert(m_ship);
 
-        virtual float    GetPower(void) const
-        {
-            return m_power;
-        }
+		if (m_fActive)
+		{
+			m_ship->ChangeSignature(-m_typeData->signature);
+			m_fActive = false;
+			m_power = 0.0f;
+		}
+	}
+	virtual void             Reset()
+	{
+	}
 
-        virtual void     SetPower(float p)
-        {
-            assert (p >= 0.0f);
-            assert (p <= 1.0f);
-            if (p != 0.0f)
-                Activate();
+	virtual float            GetMass(void) const
+	{
+		return m_typeData->mass;
+	}
 
-            m_power = p;
-        }
+	virtual Money            GetPrice(void) const
+	{
+		return m_typeData->price;
+	}
 
-        virtual void     IncrementalUpdate(Time lastUpdate, Time now, bool bUseFuel);
+	// IafterburnerIGC
+	virtual float    GetFuelConsumption(void) const
+	{
+		return m_typeData->fuelConsumption;
+	}
+	virtual float	 GetMaxThrustWithGA(void) const //TheRock 15-8-2009
+	{
+		return m_typeData->maxThrust * GetShip()->GetSide()->GetGlobalAttributeSet().GetAttribute(c_gaThrust);
+	}
+	virtual float    GetMaxThrust(void) const
+	{
+		return m_typeData->maxThrust;
+	}
+	virtual float    GetOnRate(void) const
+	{
+		return m_typeData->onRate;
+	}
+	virtual float    GetOffRate(void) const
+	{
+		return m_typeData->offRate;
+	}
 
-        virtual SoundID  GetInteriorSound(void) const
-        {
-            return m_typeData->interiorSound;
-        }
-        virtual SoundID  GetExteriorSound(void) const
-        {
-            return m_typeData->exteriorSound;
-        }
+	virtual float    GetPower(void) const
+	{
+		return m_power;
+	}
 
-        virtual float    GetMountedFraction(void) const
-        {
-            return m_mountedFraction;
-        }
-        virtual void     SetMountedFraction(float f)
-        {
-            m_mountedFraction = f;
-            if (f != 1.0f)
-                Deactivate();
-        }
+	virtual void     SetPower(float p)
+	{
+		assert(p >= 0.0f);
+		assert(p <= 1.0f);
+		if (p != 0.0f)
+			Activate();
 
-        virtual void    Arm(void)
-        {
-            m_mountedFraction = 1.0f;
-        }
+		m_power = p;
+	}
 
-    private:
-        ImissionIGC*                    m_pMission;
-        const DataAfterburnerTypeIGC*   m_typeData;
-        IpartTypeIGC*                   m_partType;
-        IshipIGC*                       m_ship;
-        float                           m_power;
-        float                           m_mountedFraction;
+	virtual void     IncrementalUpdate(Time lastUpdate, Time now, bool bUseFuel);
 
-        Mount                           m_mountID;
-        bool                            m_fActive;
+	virtual SoundID  GetInteriorSound(void) const
+	{
+		return m_typeData->interiorSound;
+	}
+	virtual SoundID  GetExteriorSound(void) const
+	{
+		return m_typeData->exteriorSound;
+	}
+
+	virtual float    GetMountedFraction(void) const
+	{
+		return m_mountedFraction;
+	}
+	virtual void     SetMountedFraction(float f)
+	{
+		m_mountedFraction = f;
+		if (f != 1.0f)
+			Deactivate();
+	}
+
+	virtual void    Arm(void)
+	{
+		m_mountedFraction = 1.0f;
+	}
+
+private:
+	ImissionIGC*                    m_pMission;
+	const DataAfterburnerTypeIGC*   m_typeData;
+	IpartTypeIGC*                   m_partType;
+	IshipIGC*                       m_ship;
+	float                           m_power;
+	float                           m_mountedFraction;
+
+	Mount                           m_mountID;
+	bool                            m_fActive;
 };
 
 #endif //__AFTERBURNERIGC_H_

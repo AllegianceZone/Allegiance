@@ -3,7 +3,7 @@
 **
 **  File:	projectileIGC.h
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Header for the CprojectileIGC class. This file was initially created by
@@ -20,83 +20,83 @@
 
 class CprojectileIGC : public TmodelIGC<IprojectileIGC>
 {
-    public:
-        CprojectileIGC(void);
-        ~CprojectileIGC(void);
+public:
+	CprojectileIGC(void);
+	~CprojectileIGC(void);
 
-    public:
-    // IbaseIGC
-	    virtual HRESULT             Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
-	    virtual void                Terminate(void);
-        virtual void                Update(Time now);
-        virtual int                 Export(void* data);
+public:
+	// IbaseIGC
+	virtual HRESULT             Initialize(ImissionIGC* pMission, Time now, const void* data, int dataSize);
+	virtual void                Terminate(void);
+	virtual void                Update(Time now);
+	virtual int                 Export(void* data);
 
-        virtual ObjectType          GetObjectType(void) const
-        {
-            return OT_projectile;
-        }
+	virtual ObjectType          GetObjectType(void) const
+	{
+		return OT_projectile;
+	}
 
-    // ImodelIGC
-        virtual void                SetCluster(IclusterIGC* cluster)
-        {
-            AddRef();
+	// ImodelIGC
+	virtual void                SetCluster(IclusterIGC* cluster)
+	{
+		AddRef();
 
-            {
-                IclusterIGC*    c = GetCluster();
-                if (c)
-                    c->DeleteModel(this);
-            }
+		{
+			IclusterIGC*    c = GetCluster();
+			if (c)
+				c->DeleteModel(this);
+		}
 
-            TmodelIGC<IprojectileIGC>::SetCluster(cluster);
+		TmodelIGC<IprojectileIGC>::SetCluster(cluster);
 
-            if (cluster)
-                cluster->AddModel(this);
+		if (cluster)
+			cluster->AddModel(this);
 
-            Release();
-        }
+		Release();
+	}
 
-        virtual void                HandleCollision(Time       timeCollision,
-                                                    float                  tCollision,
-                                                    const CollisionEntry&  entry,
-                                                    ImodelIGC* pModel);
+	virtual void                HandleCollision(Time       timeCollision,
+		float                  tCollision,
+		const CollisionEntry&  entry,
+		ImodelIGC* pModel);
 
-    // IprojectileIGC
-        virtual IprojectileTypeIGC* GetProjectileType(void) const
-        {
-            return m_projectileType;
-        }
-        virtual ImodelIGC*           GetLauncher(void) const
-        {
-            return m_launcher;
-        }
-        virtual void                SetLauncher(ImodelIGC* newVal)
-        {
-            assert (!m_launcher);       //Only set once
-            assert (newVal);
+	// IprojectileIGC
+	virtual IprojectileTypeIGC* GetProjectileType(void) const
+	{
+		return m_projectileType;
+	}
+	virtual ImodelIGC*           GetLauncher(void) const
+	{
+		return m_launcher;
+	}
+	virtual void                SetLauncher(ImodelIGC* newVal)
+	{
+		assert(!m_launcher);       //Only set once
+		assert(newVal);
 
-            newVal->AddRef();
-            m_launcher = newVal;
+		newVal->AddRef();
+		m_launcher = newVal;
 
-            GetHitTest()->SetNoHit(m_launcher->GetHitTest());
-            SetSide(m_launcher->GetSide());
-        }
-        virtual void                SetGunner(IshipIGC* newVal)
-        {
-            assert (!m_launcher);       //Only set once
-            assert (newVal);
+		GetHitTest()->SetNoHit(m_launcher->GetHitTest());
+		SetSide(m_launcher->GetSide());
+	}
+	virtual void                SetGunner(IshipIGC* newVal)
+	{
+		assert(!m_launcher);       //Only set once
+		assert(newVal);
 
-            newVal->AddRef();
-            m_launcher = newVal;
+		newVal->AddRef();
+		m_launcher = newVal;
 
-            GetHitTest()->SetNoHit(newVal->GetParentShip()->GetHitTest());
-            SetSide(m_launcher->GetSide());
-        }
+		GetHitTest()->SetNoHit(newVal->GetParentShip()->GetHitTest());
+		SetSide(m_launcher->GetSide());
+	}
 
-    private:
-        IprojectileTypeIGC* m_projectileType;
-        ImodelIGC*          m_launcher;
-        ExplosionData*      m_pExplosionData;
-        Time                m_timeExpire;
+private:
+	IprojectileTypeIGC* m_projectileType;
+	ImodelIGC*          m_launcher;
+	ExplosionData*      m_pExplosionData;
+	Time                m_timeExpire;
 };
 
 #endif //__PROJECTILEIGC_H_

@@ -3,7 +3,7 @@
 **
 **  File:	droneTypeIGC.cpp
 **
-**  Author: 
+**  Author:
 **
 **  Description:
 **      Implementation of the CdroneTypeIGC class. This file was initially created by
@@ -18,41 +18,41 @@
 /////////////////////////////////////////////////////////////////////////////
 // CdroneTypeIGC
 HRESULT         CdroneTypeIGC::Initialize(ImissionIGC*  pMission,
-                                         Time           now,
-                                         const void*    data,
-                                         int            dataSize)
+	Time           now,
+	const void*    data,
+	int            dataSize)
 {
-    assert (pMission);
-    m_pMission = pMission;
+	assert(pMission);
+	m_pMission = pMission;
 
-	ZRetailAssert (data && (dataSize == sizeof(DataDroneTypeIGC)));
+	ZRetailAssert(data && (dataSize == sizeof(DataDroneTypeIGC)));
 
-    memcpy(&m_data, data, dataSize);
+	memcpy(&m_data, data, dataSize);
 
-    m_petLaid = (m_data.etidLaid == NA)
-                ? NULL
-                : pMission->GetExpendableType(m_data.etidLaid);
+	m_petLaid = (m_data.etidLaid == NA)
+		? NULL
+		: pMission->GetExpendableType(m_data.etidLaid);
 
 	// KGJV - fix for debug mode - to remove later
-    //assert ((m_petLaid != NULL) == (m_data.pilotType == c_ptLayer));
+	//assert ((m_petLaid != NULL) == (m_data.pilotType == c_ptLayer));
 
-    pMission->AddDroneType(this);
+	pMission->AddDroneType(this);
 
-    return S_OK;
+	return S_OK;
 }
 
 void            CdroneTypeIGC::Terminate(void)
 {
-    assert (m_pMission);
+	assert(m_pMission);
 
-    m_pMission->DeleteDroneType(this);
+	m_pMission->DeleteDroneType(this);
 }
 
 int             CdroneTypeIGC::Export(void*  data) const
 {
-    if (data)
-        *((DataDroneTypeIGC*)data) = m_data;
+	if (data)
+		*((DataDroneTypeIGC*)data) = m_data;
 
-    return sizeof(DataDroneTypeIGC);
+	return sizeof(DataDroneTypeIGC);
 }
 
