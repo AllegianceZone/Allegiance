@@ -325,7 +325,7 @@ struct Global
 	DWORD               dwServerGITCookie;
 	ZString             strLobbyServer;
 	ZString             strAuthServer;
-	ZString             strLocalAddress;
+	ZString             strPublicName;
 	char                rgTechs[cTechs][CbTechBitName + 1];
 	DWORD               dwLobbyPort;
 
@@ -340,9 +340,8 @@ struct Global
 	int				  cMaxGames;	   // max games allowed, reg entry
 	ZString			  strLocation;     // Location, reg entry
 
-	/* pkk May 6th: Disabled bandwidth patch
 	// w0dk4 Bandwidth Patch
-	unsigned int		  cMaxBandwidth;*/
+	unsigned int		  cMaxBandwidth;
 	int				  MaxNewbRank; //Imago #174
 	bool                fProtocol;
 	bool                fPaused;

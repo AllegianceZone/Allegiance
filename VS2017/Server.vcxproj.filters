@@ -176,4 +176,7 @@
       <Filter>AGC</Filter>
     </Midl>
   </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\src\FedSrv\config.xml" />
+  </ItemGroup>
 </Project>

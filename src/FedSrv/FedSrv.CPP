@@ -7296,9 +7296,9 @@ void CheckForNoShows()
 				break; // deleting 1 mission per check is plenty
 			}
 		}
-		}
-	//#endif
 	}
+	//#endif
+}
 
 
 void DisconnectFromLobby()
@@ -8196,7 +8196,7 @@ HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not overr
 #else
 		FEDLOBBYSERVERS_GUID,
 #endif
-		PCC(g.strLobbyServer), PCC(g.strLocalAddress), g.dwLobbyPort);		// mdvalley: forced to lobby port
+		PCC(g.strLobbyServer), PCC(g.strPublicName), g.dwLobbyPort);		// mdvalley: forced to lobby port
 	if (FAILED(hr))
 	{
 		printf("failed.\n", PCC(g.strLobbyServer));
@@ -8839,13 +8839,13 @@ DWORD WINAPI ReceiveThread(LPVOID pThreadParameter)
  * Purpose:
  *    Load static server settings
  */
-void LoadSettings()
+bool LoadSettings(const char* filePath)
 {
 	// Explicitly initialize the global data structure
 	g.Init();
 
 	tinyxml2::XMLDocument doc;
-	doc.LoadFile("C:\\Alleg\\Server\\dream.xml");
+	doc.LoadFile(filePath);
 
 	// defaults for reg keys:
 	// fTimeout,                     1              1-okay to timeout clients
@@ -8861,150 +8861,137 @@ void LoadSettings()
 	g.strArtPath = szModule;
 
 
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//
-	//   If you update this section, please update srvconfig to allow support
-	//   without resorting to regedit.
-	//
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	HKEY hKey;
-	DWORD dwType;
-	DWORD dwValue;
-	DWORD cbValue;
-	if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, HKLM_FedSrv, 0, KEY_READ, &hKey))
-	{
-		if (FAILED(LoadRegString(hKey, "AuthServer", g.strAuthServer)))
-			g.strAuthServer = "Pointweb01"; // default for all developers
+	if (doc.Error()) {
+		if (doc.ErrorID() == tinyxml2::XML_ERROR_FILE_NOT_FOUND)
+		{
+			printf("Error loading config.xml\n");
+			printf(doc.GetErrorStr1());
+			printf("\nWas not found.");
+		}
+		else {
+			doc.PrintError();
+		}
+		return false;
+	}
 
-		ZString zUsers;
-		if (!FAILED(LoadRegString(hKey, "PrivilegedUsers", zUsers))) {
+	tinyxml2::XMLElement* nodeRoot = doc.FirstChildElement("Allegiance");
+
+	if (!nodeRoot) {
+		printf("Config.xml expected <Allegiance> as its first Element.\n");
+		return false;
+	}
+
+	tinyxml2::XMLElement* nodeFedSrv = nodeRoot->FirstChildElement("FedSrv");
+	if (!nodeFedSrv) {
+		printf("Config.xml expected <FedSrv> under <Allegiance> but it was missing.\n");
+		return false;
+	}
+
+	if (nodeFedSrv != 0) {
+		g.strAuthServer = "Pointweb01";
+		const char* atAuthServer = nodeFedSrv->Attribute("AuthServer");
+		if (atAuthServer) {
+			g.strAuthServer = atAuthServer;
+		}
+
+		const char* atPrivilegedUsers = nodeFedSrv->Attribute("PrivilegedUsers");
+		if (atPrivilegedUsers) {
+			ZString zUsers = atPrivilegedUsers;
 			ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
 			UTL::SetPrivilegedUsers((PCC)zUsers.Scramble(zInfo), -1); //Imago 6/10
 		}
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		// w0dk4 Bandwidth Patch - removed registry-check and set tickrate to 20 so client bandwidth settings are not fooled
-		// g.nUpdatesPerSecond = 20;
-		// mmf leave this in, server admins should have control of this even if clients are not getting the bandwidth
-		//     they expect from the 'rough' data rate w0dk4 added
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "nUpdatesPerSecond", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.nUpdatesPerSecond = dwValue;
-		else
-			g.nUpdatesPerSecond = 30;
+		g.nUpdatesPerSecond = 30;
+		nodeFedSrv->QueryIntAttribute("nUpdatesPerSecond", &g.nUpdatesPerSecond);
 
-
-		// mmf log to file on SRVLOG define as well as _DEBUG
 #ifdef _DEBUG
 #define SRVLOG
 #endif
 
-#ifdef SRVLOG // mmf changed this from _DEBUG
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS != ::RegQueryValueExA(hKey, "nDebugMask", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			dwValue = FED_DEBUG_FILE;
-		g_app.SetDebug(dwValue);
+#ifdef SRVLOG 
+		unsigned int srvlogMask = 0;
+		nodeFedSrv->QueryUnsignedAttribute("nDebugMask", &srvlogMask);
+		g_app.SetDebug(srvlogMask);
+
 #endif
 
-		// Standalone servers do not need a LobbyServer registry value because
-		// they always get it from the CFG file.
-		//#if !defined(ALLSRV_STANDALONE)  Imago 6/10
-		LoadRegString(hKey, "LobbyServer", g.strLobbyServer);
-		//#endif // !defined(ALLSRV_STANDALONE)
-
-		// Use winsock-provided address for clients, unless overridden (e.g. dual nic)
-		// KGJV #114 localaddress isnt used anymore by DP8 so we use it as public userfriendly server name
-		// KGJV #114 TODO: eventually rename 'LocalAdresss' to something more appropriate now, PublicName for instance.
-		if (FAILED(LoadRegString(hKey, "LocalAddress", g.strLocalAddress)))
-		{
-			WSADATA WSAData;
-			char szHostName[20]; // length of machine name--also long enough for ip address if that's what we get
-			WSAStartup(MAKEWORD(1, 1), &WSAData);
-			gethostname(szHostName, sizeof(szHostName));
-			WSACleanup();
-			g.strLocalAddress = szHostName;
+		const char* atLobbyServer = nodeFedSrv->Attribute("LobbyServer");
+		if (atLobbyServer) {
+			g.strLobbyServer = atLobbyServer;
 		}
 
-		// KGJV #114
-		if (FAILED(LoadRegString(hKey, "Location", g.strLocation)))
-		{
+		const char* atPublicName = nodeFedSrv->Attribute("PublicName");
+		if (atPublicName) {
+			g.strPublicName = atPublicName;
+		}
+		else {
+			WSADATA WSAData;
+			char szPublicName[20]; // length of machine name--also long enough for ip address if that's what we get
+			WSAStartup(MAKEWORD(1, 1), &WSAData);
+			gethostname(szPublicName, sizeof(szPublicName));
+			WSACleanup();
+			g.strPublicName = szPublicName;
+		}
+
+
+		const char* atLocation = nodeFedSrv->Attribute("Location");
+		if (atLocation) {
+			g.strLocation = atLocation;
+		}
+		else {
 			g.strLocation = "unknown";
 		}
 
-		// KGJV #114
-		g.cMaxGames = 99; // default max game
-		cbValue = sizeof(dwValue);
-		RegQueryValueExA(hKey, "MaxGames", NULL, &dwType, (unsigned char*)&g.cMaxGames, &cbValue);
 
-		/* pkk May 6th: Disabled bandwidth patch
-		// w0dk4 Bandwidth Patch
+		g.cMaxGames = 99;
+		nodeFedSrv->QueryIntAttribute("MaxGames", &g.cMaxGames);
+
+
 		g.cMaxBandwidth = 32;
-		dwValue=0;
-		cbValue = sizeof(dwValue);
-		RegQueryValueEx(hKey, "MaxBandwidth", NULL, &dwType, (unsigned char*)&g.cMaxBandwidth, &cbValue);*/
+		nodeFedSrv->QueryUnsignedAttribute("MaxBandwidth", &g.cMaxBandwidth);
 
 
-		ZString strArtPath;
-		if (SUCCEEDED(LoadRegString(hKey, "ArtPath", strArtPath)))
-		{
+		const char* atArtPath = nodeFedSrv->Attribute("ArtPath");
+		if (atArtPath) {
+			ZString strArtPath = ZString(atArtPath);
 			if (strArtPath.Right(1) != "\\")
 				strArtPath += "\\";
 			g.strArtPath = strArtPath;
 		}
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fWantInt3", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fWantInt3 = !!dwValue;
-		else g.fWantInt3 = true;
+		g.fWantInt3 = false;
+		nodeFedSrv->QueryBoolAttribute("fWantInt3", &g.fWantInt3);
 
-		//Imago 7/10 DIE ASGS DIE
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "MaxNewbRank", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.MaxNewbRank = dwValue;
-		else g.MaxNewbRank = 4;
-		//
+		g.MaxNewbRank = 4;
+		nodeFedSrv->QueryIntAttribute("MaxNewbRank", &g.MaxNewbRank);
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fProtocol", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fProtocol = !!dwValue;
-		else g.fProtocol = true;
+		g.fProtocol = false;
+		nodeFedSrv->QueryBoolAttribute("fProtocol", &g.fProtocol);
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fDoublePrecision", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fDoublePrecision = !!dwValue;
-		else g.fDoublePrecision = true;
+		g.fDoublePrecision = true;
+		nodeFedSrv->QueryBoolAttribute("fDoublePrecision", &g.fDoublePrecision);
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fTimeout", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fTimeOut = !!dwValue;
-		else g.fTimeOut = true;
+		g.fTimeOut = false; // I Dont think this is used anymore
+		nodeFedSrv->QueryBoolAttribute("fTimeout", &g.fTimeOut);
 
 		//#if !defined(ALLSRV_STANDALONE) Imago revived 6/10
-		  /*
-		  dwValue=0;
-		  cbValue = sizeof(dwValue);
-		  if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "SQLThreadsNotify", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			  g.csqlNotifyThreads = dwValue;
-		  else g.csqlNotifyThreads = 3;
+		/*
+		g.csqlNotifyThreads = 3;
+		nodeFedSrv->QueryUnsignedAttribute("SQLThreadsNotify", &g.csqlNotifyThreads);
 
-		  dwValue=0;
-		  cbValue = sizeof(dwValue);
-		  if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "SQLThreadsSilent", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			  g.csqlSilentThreads = dwValue;
-		  else g.csqlSilentThreads = 2;
+		g.csqlSilentThreads = 2;
+		nodeFedSrv->QueryUnsignedAttribute("SQLThreadsSilent", &g.csqlSilentThreads);
 
-		  if (FAILED(LoadRegString(hKey, "SQLConfig", g.strSQLConfig)))
-			g.strSQLConfig.Empty(); // default for all developers
-		//#endif // !defined(ALLSRV_STANDALONE)
+		const char* atSQLConfig = nodeFedSrv->Attribute("SQLConfig");
+		if (atSQLConfig) {
+			g.strSQLConfig = atSQLConfig;
+		}
+		else {
+			g.strSQLConfig.Empty();
+		}
 		*/
-		::RegCloseKey(hKey);
 	}
+	return true;
 }
 
 /*-------------------------------------------------------------------------
@@ -9557,8 +9544,18 @@ void UnregisterAllSrv(char *szServerName)
 //
 int __cdecl main(int argc, char *argv[])
 {
-	// Load the global settings from the registry
-	LoadSettings();
+	// Load the global settings from the config file
+	// TODO: Make this load from next to the executable
+	// Set default g.strArtPath to "Artwork" under the EXE directory
+	CHAR szConfigFilePath[_MAX_PATH];
+	CHAR szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
+	GetModuleFileNameA(NULL, szConfigFilePath, sizeofArray(szConfigFilePath));
+	_splitpath(szConfigFilePath, szDrive, szDir, NULL, NULL);
+	_makepath(szConfigFilePath, szDrive, szDir, "config.xml", NULL);
+
+	if (!LoadSettings(szConfigFilePath)) {
+		return 1;
+	}
 
 	// set the FPU to double precision, instead of long double
 	// (this makes FP compares a little safer)

@@ -455,6 +455,15 @@
       <Project>{a8e7888a-84ac-485e-9fb2-35382c003e0b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\src\FedSrv\config.xml">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">true</ExcludedFromBuild>
+    </Xsd>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
