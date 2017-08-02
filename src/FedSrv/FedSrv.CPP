@@ -9545,8 +9545,6 @@ void UnregisterAllSrv(char *szServerName)
 int __cdecl main(int argc, char *argv[])
 {
 	// Load the global settings from the config file
-	// TODO: Make this load from next to the executable
-	// Set default g.strArtPath to "Artwork" under the EXE directory
 	CHAR szConfigFilePath[_MAX_PATH];
 	CHAR szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
 	GetModuleFileNameA(NULL, szConfigFilePath, sizeofArray(szConfigFilePath));
