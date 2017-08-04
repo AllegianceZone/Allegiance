@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="AZDebug|Win32">
       <Configuration>AZDebug</Configuration>
@@ -456,15 +456,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="..\src\FedSrv\config.xml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">true</ExcludedFromBuild>
-    </Xsd>
+    <Xml Include="..\src\FedSrv\config.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="CopyFiles">
+	<Copy
+		SourceFiles="..\src\FedSrv\config.xml"
+		DestinationFolder="$(TargetDir)" 
+	/>	  
+  </Target>
 </Project>

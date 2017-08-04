@@ -177,6 +177,6 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="..\src\FedSrv\config.xml" />
+    <Xml Include="..\src\FedSrv\config.xml" />
   </ItemGroup>
 </Project>

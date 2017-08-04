@@ -22,7 +22,26 @@
     Location=""
     ArtPath=""
     fWantInt3="false"
-    />
+    ConfigFile="http://autoupdate.allegiancezone.com/config/AZDev.cfg">
+    <Games>
+      <Game
+        Name="a"
+        Core="aa"
+        LockOpen="true"
+        MinRank="0"
+        MaxRank="3"
+        Password="wtfdude"
+        />
+      <Game
+        Name="b"
+        Core="BB"
+        LockOpen="false"
+        MinRank="3"
+        MaxRank="6"
+        Password=""
+        />
+    </Games>
+  </FedSrv>
   <AllLobby />
   <AllClub />
 </Allegiance>

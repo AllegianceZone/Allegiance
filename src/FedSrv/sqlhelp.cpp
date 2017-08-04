@@ -200,15 +200,6 @@ char*  ParseCommandLine(char * szRegKey, char* szParameterName, char* szDefault 
 	{
 		strcpy(szBuffer, szDefault);
 	}
-	else
-	{
-		HKEY hKey;
-		DWORD dw;
-		DWORD cb = sizeof(szBuffer);
-		if (ERROR_SUCCESS == ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, szRegKey, 0, KEY_READ, &hKey))
-			RegQueryValueExA(hKey, szParameterName, NULL, &dw, (LPBYTE)szBuffer, &cb);
-		RegCloseKey(hKey);
-	}
 	return szBuffer;
 }
 

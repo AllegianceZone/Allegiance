@@ -221,6 +221,20 @@ public:
 	int bitnum;
 };
 
+struct DefaultGame {
+		DefaultGame() : lockOpen(true), minRank(0), maxRank(30) {
+			name.SetEmpty();
+			core.SetEmpty();
+			password.SetEmpty();
+		}
+	bool lockOpen;
+	unsigned int minRank;
+	unsigned int maxRank;
+	ZString name;
+	ZString core;
+	ZString password;
+};
+
 struct Global
 {
 	Global() :
@@ -273,6 +287,7 @@ struct Global
 		strLobbyServer.SetEmpty();
 		strAuthServer.SetEmpty();
 		strArtPath.SetEmpty();
+		strConfigFile.SetEmpty();
 		//#if !defined(ALLSRV_STANDALONE)
 		  //  strSQLConfig.Empty();
 		//#endif    
@@ -305,6 +320,7 @@ struct Global
 	ZString             strArtPath;
 	char                m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
 	int                 nUpdatesPerSecond;
+	int					nMaxPlayersPerGame;
 #ifdef USEAUTH
 	TRef<IZoneAuthServer> pzas;
 #endif
@@ -335,6 +351,9 @@ struct Global
 	short               cStaticMapInfo;
 
 	// KGJV #114 - cores list for create game
+	int				    nDefaultGames; // sz of vDefaultGames
+	DefaultGame*		vDefaultGames; // array of default games
+
 	StaticCoreInfo*     vStaticCoreInfo; //array of core file name
 	int				  cStaticCoreInfo; // nb of cores, 0 if none
 	int				  cMaxGames;	   // max games allowed, reg entry
@@ -346,6 +365,7 @@ struct Global
 	bool                fProtocol;
 	bool                fPaused;
 	bool                fDoublePrecision;
+	ZString				strConfigFile;
 	//  CAdminSponsor<CAdminGames>  sponsorGames;
   //#if !defined(ALLSRV_STANDALONE) Imago commented 6/10
    // CSQLCore            sql;

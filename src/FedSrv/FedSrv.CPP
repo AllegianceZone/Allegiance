@@ -7760,15 +7760,11 @@ IHTTPSession * BeginConfigDownload()
 	Strcpy(szConfig, "http://autoupdate.allegiancezone.com/config/AZDev.cfg"); //Imago 6/10 9/14
 #endif
 
-	CRegKey key;
-	if (ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv, KEY_READ))
+	
+	if (!g.strConfigFile.IsEmpty())
 	{
-		ZString strConfig;
-		if (SUCCEEDED(LoadRegString(key, "cfgfile", strConfig)))
-		{
-			// if reg value exists copy over default
-			Strcpy(szConfig, PCC(strConfig));
-		}
+		// if custom value exists overwrite the default
+		Strcpy(szConfig, PCC(g.strConfigFile));
 	}
 
 	// WLP 2006 - added next line of code to force server to report invalid config
@@ -8397,7 +8393,7 @@ DWORD ProcessMsgPump(int dwSleep, DWORD nCount, LPHANDLE pHandles)
  * StartDefaultGames
  *-------------------------------------------------------------------------
  * Purpose:
- *    Starts any games listed in the registry
+ *    Starts any games listed in the config.xml
  */
 void StartDefaultGames()
 {
@@ -8413,28 +8409,10 @@ void StartDefaultGames()
 	MissionParams mpClean;
 	mpClean.Reset();
 
-	// we access the registry here because these keys don't need to be saved as globals.
-	HKEY hKey;
-	DWORD dwType;
-	DWORD dwValue;
-	DWORD cbValue;
-	if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, HKLM_FedSrv, 0, KEY_READ, &hKey))
-	{
-		// get the max players per game to use.from the registry
-		cbValue = sizeof(dwValue);
 		// MaxPlayersPerGame not used for AZ
 #if defined(ALLSRV_STANDALONE)
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "MaxPlayersPerGame", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			mp.nTotalMaxPlayersPerGame = min(c_cMaxPlayersPerGame, (short)dwValue);
-		else
-			mp.nTotalMaxPlayersPerGame = c_cMaxPlayersPerGame;
+		mp.nTotalMaxPlayersPerGame = g.nMaxPlayersPerGame;
 #endif
-
-		// lock the games open, if requested.
-		// KGJV #92 - do this per game (see below) instead of global
-		//cbValue = sizeof(dwValue);
-		//if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "LockOpen", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-		//  mp.bLockGameOpen = !!dwValue;
 
 #if defined(ALLSRV_STANDALONE)
 		mp.nMinPlayersPerTeam = 1;
@@ -8444,9 +8422,6 @@ void StartDefaultGames()
 #else
 		mp.bObjectModelCreated = false; // FAZ: default games are not zone games
 #endif
-
-		HRESULT hr = S_OK;
-		int iGame = 1;
 
 		// Imago: children latch onto their parents mission 6/25/08
 #if defined(SRV_CHILD)
@@ -8482,145 +8457,100 @@ void StartDefaultGames()
 		debugf("Starting game \"%s\"(%s) with core: %s - minrank=%d - maxrank=%d\n", mp.strGameName, (mp.bLockGameOpen == 1) ? "LockOpen" : "Not LockOpen", mp.szIGCStaticFile, mp.iMinRank, mp.iMaxRank);
 #else
 	// Imago: otherwise do the regular gig
-		while (SUCCEEDED(hr))
-		{
+
+		for (int gameCount = 0; gameCount < g.nDefaultGames; gameCount++) {
 			char cbValueName[24];
 			ZString strGameName;
 
-			// look for a registry key Game#
-			sprintf(cbValueName, "Game%d", iGame);
-			hr = LoadRegString(hKey, cbValueName, strGameName);
+			// copy the new name into the mission parameters
+			strncpy(mp.strGameName, PCC((g.vDefaultGames + gameCount)->name), c_cbGameName);
+			mp.strGameName[c_cbGameName - 1] = '\0';
+			assert(!mp.Invalid());
 
-			if (SUCCEEDED(hr))
-			{
-				// copy the new name into the mission parameters
-				strncpy(mp.strGameName, strGameName, c_cbGameName);
-				mp.strGameName[c_cbGameName - 1] = '\0';
-				assert(!mp.Invalid());
+			strncpy(mp.szIGCStaticFile, PCC((g.vDefaultGames + gameCount)->core), c_cbFileName);
 
-				// -Imago
-				// look for a core/map for Game#
-				ZString strCore;
-				sprintf(cbValueName, "Core%d", iGame);
-				LoadRegString(hKey, cbValueName, strCore);
-				strncpy(mp.szIGCStaticFile, strCore, c_cbFileName);
+			mp.bLockGameOpen = (g.vDefaultGames + gameCount)->lockOpen;
 
-				// -Imago
-				// look for a core/map for Map#
-				// -KGJV : should we lock game settings when custom map specified. If so need 'GameParameters#' too ?
-				// removed map# for now
-				ZString strMap;
-				//wsprintf(cbValueName, "Map%d", iGame);
-				//LoadRegString(hKey, cbValueName, strMap);
-				//strncpy(mp.szCustomMapFile, strMap, c_cbFileName);
+			mp.iMinRank = (g.vDefaultGames + gameCount)->minRank;
 
-				// KGJV #92 - LockOpen# option  per game
-				// dword value - 1 to lockopen
-				sprintf(cbValueName, "LockOpen%d", iGame);
-				cbValue = sizeof(dwValue);
-				if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, cbValueName, NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-					mp.bLockGameOpen = !!dwValue;
-				else
-					mp.bLockGameOpen = mpClean.bLockGameOpen; // fetch default value
+			mp.iMaxRank = (g.vDefaultGames + gameCount)->maxRank;
 
-				// KGJV #92 - MinRank# option  per game
-				// string value (but numeric)
-				ZString strRankParam;
-				sprintf(cbValueName, "MinRank%d", iGame);
-				if (LoadRegString(hKey, cbValueName, strRankParam) == S_OK)
-					sscanf(strRankParam, "%hd", &(mp.iMinRank));
-				else
-					mp.iMinRank = mpClean.iMinRank; // fetch default value
+			strncpy(mp.strGamePassword, PCC((g.vDefaultGames + gameCount)->password), sizeof(mp.strGamePassword));
 
-				// KGJV #92 - MinRank# option  per game
-				// string value (but numeric)
-				sprintf(cbValueName, "MaxRank%d", iGame);
-				if (LoadRegString(hKey, cbValueName, strRankParam) == S_OK)
-					sscanf(strRankParam, "%hd", &(mp.iMaxRank));
-				else
-					mp.iMaxRank = mpClean.iMaxRank; // fetch default value
-
-				// KGJV -09/2008, added: Password# game parameter
-				ZString strPassword;
-				sprintf(cbValueName, "Password%d", iGame);
-				if (LoadRegString(hKey, cbValueName, strPassword) == S_OK)
-					strcpy_s(mp.strGamePassword, sizeof(mp.strGamePassword), PCC(strPassword));
-
-				// KGJV #92 - display LockOpen/Min/Maxrank and removed map name
-				printf("Starting game \"%s\"(%s) with core: %s - minrank=%d - maxrank=%d\n", mp.strGameName, (mp.bLockGameOpen == 1) ? "LockOpen" : "Not LockOpen", mp.szIGCStaticFile, mp.iMinRank, mp.iMaxRank);
+			printf("Starting game \"%s\"(%s) with core: %s - minrank=%d - maxrank=%d\n", mp.strGameName, (mp.bLockGameOpen == 1) ? "LockOpen" : "Not LockOpen", mp.szIGCStaticFile, mp.iMinRank, mp.iMaxRank);
 
 #if !defined(SRV_PARENT)
-				// Create the new mission
-				FedSrvSite * psiteFedSrv = new FedSrvSite();
-				CFSMission * pfsMissionNew = new CFSMission(mp, NULL, psiteFedSrv, psiteFedSrv, NULL, NULL);
+			// Create the new mission
+			FedSrvSite * psiteFedSrv = new FedSrvSite();
+			CFSMission * pfsMissionNew = new CFSMission(mp, NULL, psiteFedSrv, psiteFedSrv, NULL, NULL);
 
-				// tell the lobby about the mission
-				if (g.fmLobby.IsConnected())
-				{
-					BEGIN_PFM_CREATE(g.fmLobby, pfmNewMission, S, NEW_MISSION)
-						END_PFM_CREATE
-						pfmNewMission->dwIGCMissionID = pfsMissionNew->GetIGCMission()->GetMissionID();
+			// tell the lobby about the mission
+			if (g.fmLobby.IsConnected())
+			{
+				BEGIN_PFM_CREATE(g.fmLobby, pfmNewMission, S, NEW_MISSION)
+					END_PFM_CREATE
+					pfmNewMission->dwIGCMissionID = pfsMissionNew->GetIGCMission()->GetMissionID();
 
-					g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
-				}
-#else //start default games in their own process
-				STARTUPINFO si;
-				PROCESS_INFORMATION pi;
-				ZeroMemory(&si, sizeof(si));
-				si.cb = sizeof(si);
-				ZeroMemory(&pi, sizeof(pi));
-				char szCmd[255]; char szName[32]; char szFile[32];
-				ZString strName = mp.strGameName;
-				ZString strFile = mp.szIGCStaticFile;
-				si.lpTitle = mp.strGameName;
-				Strcpy(szName, (PCC)strName);
-				Strcpy(szFile, (PCC)strFile);
-				sprintf(szCmd, "AllSrv.exe \"%s\" %s %x", szName, szFile, iGame);
-
-				// Create a NULL dacl to give "everyone" access
-				SECURITY_DESCRIPTOR sd;
-				SECURITY_ATTRIBUTES sa = { sizeof(sa), &sd, false };
-				InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
-				SetSecurityDescriptorDacl(&sd, true, NULL, FALSE);
-
-				if (!CreateProcess(
-					NULL,                   // No module name (use command line).
-					szCmd,
-					NULL,
-					NULL,
-					FALSE,                  // Set handle inheritance to FALSE.
-					CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE, // we're destined to do amazing things
-					NULL,                   // Use parent's environment block.
-					NULL,                   // Use parent's starting directory.
-					&si,                    // Pointer to STARTUPINFO structure.
-					&pi)                   // Pointer to PROCESS_INFORMATION structure.
-					)
-				{
-					debugf("CreateProcess failed (%d).\n", GetLastError());
-				}
-
-				_Module.AddPID(pi.dwProcessId);
-				char strFilename[10] = "\0";
-				sprintf(strFilename, "%d.pid", pi.dwProcessId);
-				UTL::SaveFile(strFilename, "1", 2, NULL, false);
-				CloseHandle(pi.hProcess);
-				CloseHandle(pi.hThread);
-				g.bRestarting = true;
-				Sleep(1000);
-#endif
+				g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
 			}
-			++iGame;
+#else //start default games in their own process
+			STARTUPINFO si;
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&si, sizeof(si));
+			si.cb = sizeof(si);
+			ZeroMemory(&pi, sizeof(pi));
+			char szCmd[255]; char szName[32]; char szFile[32];
+			ZString strName = mp.strGameName;
+			ZString strFile = mp.szIGCStaticFile;
+			si.lpTitle = mp.strGameName;
+			Strcpy(szName, (PCC)strName);
+			Strcpy(szFile, (PCC)strFile);
+			sprintf(szCmd, "AllSrv.exe \"%s\" %s %x", szName, szFile, iGame);
+
+			// Create a NULL dacl to give "everyone" access
+			SECURITY_DESCRIPTOR sd;
+			SECURITY_ATTRIBUTES sa = { sizeof(sa), &sd, false };
+			InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+			SetSecurityDescriptorDacl(&sd, true, NULL, FALSE);
+
+			if (!CreateProcess(
+				NULL,                   // No module name (use command line).
+				szCmd,
+				NULL,
+				NULL,
+				FALSE,                  // Set handle inheritance to FALSE.
+				CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE, // we're destined to do amazing things
+				NULL,                   // Use parent's environment block.
+				NULL,                   // Use parent's starting directory.
+				&si,                    // Pointer to STARTUPINFO structure.
+				&pi)                   // Pointer to PROCESS_INFORMATION structure.
+				)
+			{
+				debugf("CreateProcess failed (%d).\n", GetLastError());
+			}
+
+			_Module.AddPID(pi.dwProcessId);
+			char strFilename[10] = "\0";
+			sprintf(strFilename, "%d.pid", pi.dwProcessId);
+			UTL::SaveFile(strFilename, "1", 2, NULL, false);
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+			g.bRestarting = true;
+			Sleep(1000);
+#endif
+
 		}
 
+
 #endif
-		RegCloseKey(hKey);
+
 #if defined(SRV_PARENT) //reload ourselves to free the mission handles
 		if (g.bRestarting) {
 			Sleep(1000);
 			PostQuitMessage(0);
 		}
 #endif
-	}
+
 }
 //#endif
 
@@ -8904,6 +8834,9 @@ bool LoadSettings(const char* filePath)
 		g.nUpdatesPerSecond = 30;
 		nodeFedSrv->QueryIntAttribute("nUpdatesPerSecond", &g.nUpdatesPerSecond);
 
+		g.nMaxPlayersPerGame = 20;
+		nodeFedSrv->QueryIntAttribute("MaxPlayersPerGame", &g.nMaxPlayersPerGame);
+
 #ifdef _DEBUG
 #define SRVLOG
 #endif
@@ -8974,6 +8907,11 @@ bool LoadSettings(const char* filePath)
 		g.fTimeOut = false; // I Dont think this is used anymore
 		nodeFedSrv->QueryBoolAttribute("fTimeout", &g.fTimeOut);
 
+		const char* cfgFile = nodeFedSrv->Attribute("ConfigFile");
+		if (cfgFile) {
+			g.strConfigFile = ZString(cfgFile);
+		}
+
 		//#if !defined(ALLSRV_STANDALONE) Imago revived 6/10
 		/*
 		g.csqlNotifyThreads = 3;
@@ -8990,6 +8928,40 @@ bool LoadSettings(const char* filePath)
 			g.strSQLConfig.Empty();
 		}
 		*/
+
+		// load up default games.
+		tinyxml2::XMLElement* nodeGames = nodeFedSrv->FirstChildElement("Games");
+		if (nodeGames) {
+			printf("Loading Default games from Games node in config.xml\n");
+
+			tinyxml2::XMLElement* nodeIter = nodeGames->FirstChildElement("Game");
+			int nGames = 0;
+			for (; 
+				nodeIter; 
+				nodeIter = nodeIter->NextSiblingElement("Game")) {
+				nGames++;
+			}
+			g.nDefaultGames = nGames;
+			g.vDefaultGames = new DefaultGame[g.nDefaultGames];
+
+			nodeIter = nodeGames->FirstChildElement("Game");
+			nGames = 0;
+			for (;
+				nodeIter;
+				nodeIter = nodeIter->NextSiblingElement("Game")) {
+				
+				(g.vDefaultGames + nGames)->name = ZString(nodeIter->Attribute("Name"));
+				(g.vDefaultGames + nGames)->core = ZString(nodeIter->Attribute("Core"));
+				(g.vDefaultGames + nGames)->password = ZString(nodeIter->Attribute("Password"));
+				nodeIter->QueryBoolAttribute("LockOpen", &((g.vDefaultGames + nGames)->lockOpen));
+				nodeIter->QueryUnsignedAttribute("MinRank", &((g.vDefaultGames + nGames)->minRank));
+				nodeIter->QueryUnsignedAttribute("MaxRank", &((g.vDefaultGames + nGames)->maxRank));
+
+				nGames++;
+			}
+		}
+		
+
 	}
 	return true;
 }
