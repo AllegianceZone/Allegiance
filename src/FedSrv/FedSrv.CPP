@@ -9563,7 +9563,7 @@ int __cdecl main(int argc, char *argv[])
 	RETURN_FAILED(hr);
 
 	char szSvcName[64];
-	strcpy(szSvcName, c_szSvcName);
+	strcpy(szSvcName, PCC(g.c_szSvcName));
 #if defined(SRV_PARENT)
 	SERVICE_TABLE_ENTRY rgSTE[] =
 	{
@@ -9851,7 +9851,7 @@ int __cdecl main(int argc, char *argv[])
 		printf("                                   (see root makefile for required env vars).\n");
 #endif // !defined(ALLSRV_STANDALONE)
 		if (IsWinNT())
-			printf("\nTo start this service (when installed as NT service): net start %s\n", c_szSvcName);
+			printf("\nTo start this service (when installed as NT service): net start %s\n", PCC(g.c_szSvcName));
 		//      ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
 	}
 #endif // Imago

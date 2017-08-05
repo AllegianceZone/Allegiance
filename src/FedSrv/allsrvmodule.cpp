@@ -197,7 +197,7 @@ BOOL CServiceModule::IsInServiceControlManager()
 
 	if (hSCM != NULL)
 	{
-		SC_HANDLE hService = ::OpenServiceA(hSCM, c_szSvcName, SERVICE_QUERY_CONFIG);
+		SC_HANDLE hService = ::OpenServiceA(hSCM, g.c_szSvcName, SERVICE_QUERY_CONFIG);
 		if (hService != NULL)
 		{
 			bResult = TRUE;
@@ -274,7 +274,7 @@ HRESULT CServiceModule::InitAGC()
 
 	// Initialize the event logger object
 	CComBSTR bstrEventSource(__MODULE__);
-	CComBSTR bstrRegKey("HKLM\\" HKLM_FedSrvA);
+	CComBSTR bstrRegKey("HKLM\\"  "Software\\Microsoft\\Microsoft Games\\Allegiance\\1.3" "\\Server");
 	IAGCEventLoggerPrivatePtr spPrivate(m_spEventLogger);
 	hr = spPrivate->Initialize(bstrEventSource, bstrRegKey);
 	ZSucceeded(hr);
@@ -688,7 +688,7 @@ BOOL CServiceModule::InstallService(int argc, char * argv[])
 	}
 
 	schSvc = CreateServiceA(schMgr,
-		c_szSvcName,
+		g.c_szSvcName,
 		"MS Allegiance Game Server",
 		SERVICE_ALL_ACCESS,
 		SERVICE_WIN32_OWN_PROCESS,
@@ -751,7 +751,7 @@ BOOL CServiceModule::InstallService(int argc, char * argv[])
 
 	CloseServiceHandle(schSvc);
 	CloseServiceHandle(schMgr);
-	printf("%s service installed.\n", c_szSvcName);
+	printf("%s service installed.\n", PCC(g.c_szSvcName));
 
 	if (szUserName)
 	{
@@ -786,11 +786,11 @@ BOOL CServiceModule::RemoveService(void)
 		return FALSE;
 	}
 
-	schSvc = OpenServiceA(schMgr, c_szSvcName, SERVICE_ALL_ACCESS);
+	schSvc = OpenServiceA(schMgr, g.c_szSvcName, SERVICE_ALL_ACCESS);
 
 	if (!schSvc)
 	{
-		printf("Unable to open %s service.  Service not removed.\n", c_szSvcName);
+		printf("Unable to open %s service.  Service not removed.\n", PCC(g.c_szSvcName));
 		CloseServiceHandle(schMgr);
 		return FALSE;
 	}
@@ -799,18 +799,18 @@ BOOL CServiceModule::RemoveService(void)
 
 	if (ss.dwCurrentState != SERVICE_STOPPED)
 	{
-		printf("Unable to remove %s service while it is running.\n", c_szSvcName);
+		printf("Unable to remove %s service while it is running.\n", PCC(g.c_szSvcName));
 		CloseServiceHandle(schSvc);
 		CloseServiceHandle(schMgr);
 		return FALSE;
 	}
 
 	if (DeleteService(schSvc))
-		printf("%s removed (as an NT Service).\n", c_szSvcName);
+		printf("%s removed (as an NT Service).\n", PCC(g.c_szSvcName));
 	else
 	{
 		char szBuf[MAX_PATH];
-		sprintf(szBuf, "Unable to delete %s service.\n", c_szSvcName);
+		sprintf(szBuf, "Unable to delete %s service.\n", PCC(g.c_szSvcName));
 
 		DWORD dwErrorCode(GetLastError());
 		PrintSystemErrorMessage(szBuf, dwErrorCode);
@@ -1132,7 +1132,7 @@ void WINAPI CServiceModule::ServiceMain(
 {
 	HRESULT hr;
 
-	g.ssh = RegisterServiceCtrlHandlerA(c_szSvcName, ServiceControl);
+	g.ssh = RegisterServiceCtrlHandlerA(g.c_szSvcName, ServiceControl);
 
 	if (!g.ssh)
 	{

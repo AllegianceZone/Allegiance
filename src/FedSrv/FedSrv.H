@@ -284,6 +284,7 @@ struct Global
 	void Init()
 	{
 		// Explicitly initialize the ZString objects
+		c_szSvcName = "AllSrv";
 		strLobbyServer.SetEmpty();
 		strAuthServer.SetEmpty();
 		strArtPath.SetEmpty();
@@ -339,6 +340,7 @@ struct Global
 	int                 cBytesToOthers; // other than the player logging on
 
 	DWORD               dwServerGITCookie;
+	ZString				c_szSvcName;
 	ZString             strLobbyServer;
 	ZString             strAuthServer;
 	ZString             strPublicName;

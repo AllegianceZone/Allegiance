@@ -123,8 +123,6 @@ extern Global g;
 #include "dbgutil.h"
 
 
-#include "regkey.h"
-
 /////////////////////////////////////////////////////////////////////////////
 // This is included very last since it conflicts with <atlwin.h>, included
 // indirectly by <TCAtl.h>.
