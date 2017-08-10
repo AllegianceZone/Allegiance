@@ -409,7 +409,6 @@
     <None Include="..\src\FedSrv\DPMono.rgs" />
     <None Include="..\src\FedSrv\fedsrv.ico" />
     <None Include="..\src\FedSrv\fedsrv.rc2" />
-    <None Include="..\src\FedSrv\regini.txt" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\FedSrv\FedSrv.RC" />
@@ -462,9 +461,6 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="CopyFiles">
-	<Copy
-		SourceFiles="..\src\FedSrv\config.xml"
-		DestinationFolder="$(TargetDir)" 
-	/>	  
+    <Copy SourceFiles="..\src\FedSrv\config.xml" DestinationFolder="$(TargetDir)" />
   </Target>
 </Project>

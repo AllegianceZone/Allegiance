@@ -51,9 +51,6 @@
     <None Include="..\src\FedSrv\fedsrv.rc2">
       <Filter>Resources</Filter>
     </None>
-    <None Include="..\src\FedSrv\regini.txt">
-      <Filter>Resources</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\FedSrv\AdminEventLoggerHook.cpp">

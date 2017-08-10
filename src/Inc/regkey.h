@@ -17,11 +17,7 @@
 
 // KGJV - added lobby & club - Imago 10/1
 #if !defined(ALLSRV_STANDALONE)
-  const char c_szSvcName[] = "AllSrv";
-//#define HKLM_FedSrv        "SYSTEM\\CurrentControlSet\\Services\\AllSrv"
-  #define HKLM_FedSrv		 ALLEGIANCE_REGISTRY_KEY_ROOT L"\\Server"
-#define HKLM_FedSrvA        ALLEGIANCE_REGISTRY_KEY_ROOTA "\\Server"
-  #define HKLM_AllSrvUI      HKLM_FedSrv
+  #define HKLM_AllSrvUI      ALLEGIANCE_REGISTRY_KEY_ROOT L"\\Server"
 //#define HKLM_AllLobby		 "SYSTEM\\CurrentControlSet\\Services\\AllLobby"
   #define HKLM_AllLobby		 ALLEGIANCE_REGISTRY_KEY_ROOT L"\\AllLobby"
   #define HKLM_AllClub		 ALLEGIANCE_REGISTRY_KEY_ROOT L"\\AllClub"
