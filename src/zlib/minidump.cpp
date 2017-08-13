@@ -15,8 +15,8 @@ ZString GetAppDir() {
 	return ZString(szPathName);
 }
 
-static void *SzAlloc(void *p, size_t size) { p = p; return MidAlloc(size); }
-static void SzFree(void *p, void *address) { p = p; MidFree(address); }
+static void *SzAlloc(void *p, size_t size) { p = p; return malloc(size); }
+static void SzFree(void *p, void *address) { p = p; free(address); }
 static ISzAlloc g_Alloc = { SzAlloc, SzFree };
 
 #define IN_BUF_SIZE (1 << 8)
