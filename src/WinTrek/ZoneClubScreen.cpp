@@ -389,9 +389,9 @@ public:
     void BeginConfigDownload()
     {
 #ifdef _ALLEGIANCE_PROD_
-        strcpy(m_szConfig, "http://azcdn.blob.core.windows.net/config/AZ.cfg");  //imago updated 7/4/09 9/14
+        strcpy(m_szConfig, "http://autoupdate.allegiancezone.com/config/AZ.cfg");  //imago updated 7/4/09 9/14
 #else
-		strcpy(m_szConfig, "http://azcdn.blob.core.windows.net/config/AZDev.cfg");  //imago updated 6/10 9/14
+		strcpy(m_szConfig, "http://autoupdate.allegiancezone.com/config/AZDev.cfg");  //imago updated 6/10 9/14
 #endif
         HKEY hKey;
 

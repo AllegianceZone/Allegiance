@@ -4147,34 +4147,34 @@ void CfgInfo::Load(const char * szConfig)
     const char * c_szCfgApp = "Allegiance";
     char szStr[128]; // random number;
     
-    GetPrivateProfileStringA(c_szCfgApp, "ZAuth", "imago.buildvideogames.com", 
+    GetPrivateProfileStringA(c_szCfgApp, "ZAuth", "azforum.cloudapp.net", 
                                   szStr, sizeof(szStr), szConfig);
     strZAuth = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "ClubLobby", "imago.buildvideogames.com",
+	GetPrivateProfileStringA(c_szCfgApp, "ClubLobby", "allegiancezone.cloudapp.net",
                                    szStr, sizeof(szStr), szConfig);
     strClubLobby = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "PublicLobby", "imago.buildvideogames.com",
+	GetPrivateProfileStringA(c_szCfgApp, "PublicLobby", "allegiancezone.cloudapp.net",
                                    szStr, sizeof(szStr), szConfig);
     strPublicLobby = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "Club", "imago.buildvideogames.com",
+	GetPrivateProfileStringA(c_szCfgApp, "Club", "allegiancezone.cloudapp.net",
                                    szStr, sizeof(szStr), szConfig);
     strClub = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "ClubMessageURL", "http://azcdn.blob.core.windows.net/config/club/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
+	GetPrivateProfileStringA(c_szCfgApp, "ClubMessageURL", "http://autoupdate.allegiancezone.com/config/club/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
                                    szStr, sizeof(szStr), szConfig);
     strClubMessageURL = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "PublicMessageURL", "http://azcdn.blob.core.windows.net/config/beta/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
+	GetPrivateProfileStringA(c_szCfgApp, "PublicMessageURL", "http://autoupdate.allegiancezone.com/config/beta/motd.mdl", // http://a-markcu1/test/messageoftheday.mdl
                                    szStr, sizeof(szStr), szConfig);
     strPublicMessageURL = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "ZoneEventsURL", "http://azcdn.blob.core.windows.net/config/event/events.mdl", szStr, sizeof(szStr), szConfig);
+	GetPrivateProfileStringA(c_szCfgApp, "ZoneEventsURL", "http://autoupdate.allegiancezone.com/config/event/events.mdl", szStr, sizeof(szStr), szConfig);
     strZoneEventsURL = szStr;
 
-	GetPrivateProfileStringA(c_szCfgApp, "ZoneEventDetailsURL", "http://azcdn.blob.core.windows.net/config/event/",
+	GetPrivateProfileStringA(c_szCfgApp, "ZoneEventDetailsURL", "http://autoupdate.allegiancezone.com/config/event/",
                                    szStr, sizeof(szStr), szConfig);
     strZoneEventDetailsURL = szStr;
 
