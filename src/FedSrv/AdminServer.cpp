@@ -334,57 +334,7 @@ STDMETHODIMP CAdminServer::get_MachineName(BSTR * pbstrMachine)
 //
 STDMETHODIMP CAdminServer::put_LobbyServer(BSTR bstrLobbyServer)
 {
-#if defined(ALLSRV_STANDALONE)
-	return Error("This method is not intended for standalone servers");
-#endif
-
-	// Connect to the specified lobby, if any
-	if (BSTRLen(bstrLobbyServer))
-	{
-		USES_CONVERSION;
-		LPCSTR pszLobbyServer = OLE2CA(bstrLobbyServer);
-
-		// Fail if any games are running and bstrLobbyServer is different
-		if (0 != _stricmp(pszLobbyServer, g.strLobbyServer))
-		{
-			const ListFSMission * plistMission = CFSMission::GetMissions();
-			if (plistMission->n())
-				return Error(IDS_E_LOBBYSERVER_GAMES_EXIST, IID_IAdminServer);
-		}
-
-		HRESULT hr = ConnectToLobby(NULL);
-		if (FAILED(hr))
-		{
-#if !defined(ALLSRV_STANDALONE)
-			_AGCModule.TriggerEvent(NULL, AllsrvEventID_ConnectError, "", -1, -1, -1, 0);
-#endif // !defined(ALLSRV_STANDALONE)
-			return Error(IDS_E_CONNECT_LOBBY, IID_IAdminServer);
-		}
-
-		// Save the new LobbyServer value to the registry
-#if !defined(ALLSRV_STANDALONE)
-		CRegKey key;
-		LONG lr = key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv);
-		if (ERROR_SUCCESS != lr)
-		{
-			g.fmLobby.Shutdown();
-			_AGCModule.TriggerEvent(NULL, AllsrvEventID_ConnectError, "", -1, -1, -1, 0);
-			return HRESULT_FROM_WIN32(lr);
-		}
-		key.SetValue(pszLobbyServer, "LobbyServer");
-#endif // !defined(ALLSRV_STANDALONE)
-
-	}
-	else
-	{
-		// Disconnect from current lobby, if any
-		DisconnectFromLobby();
-		assert(!g.fmLobby.IsConnected());
-		g.strLobbyServer.SetEmpty();
-	}
-
-	// Indicate success
-	return S_OK;
+	return Error("This method no longer supported. Restart the server with a new config file.");
 }
 
 
