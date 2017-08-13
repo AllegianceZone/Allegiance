@@ -4143,7 +4143,7 @@ public:
 		{
 			ZString dVer, dYY, dMM, dDD;
 			dVer = ZVersionInfo().GetStringValue("FileVersion").Right(6);
-			dR = ZVersionInfo().GetProductVersionString().Middle(3,1); //Imago good till R10
+			dR = ZVersionInfo().GetProductVersionString().Middle(3,1); // TODO: Imago good till R10
 			dDD = dVer.Right(2);
 			dMM = dVer.Middle(2,2);
 			dYY = dVer.Middle(0,2);
