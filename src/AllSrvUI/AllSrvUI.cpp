@@ -50,21 +50,7 @@ void CAllSrvUIApp::GetArtPath(char * szArtPath)
 {
   strcpy(szArtPath, ".\\Artwork\\");
 
-  CRegKey key;
-  if (ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv, KEY_READ))
-  {
-    ZString strArtPath;
-    if (SUCCEEDED(LoadRegString(key, "Artpath", strArtPath)))
-    {
-      // if reg value exists copy over default
-      strncpy(szArtPath, PCC(strArtPath), MAX_PATH);
-    }
-    // ensure last character is a backslash
-    int nLast = max(0, strlen(szArtPath)-1);
-    if (szArtPath[nLast] != '\\' || szArtPath[nLast] != '/')
-      szArtPath[nLast+1] = '\\';
-    szArtPath[nLast+2] = 0;
-  }
+  // TODO: Use same code for artwork path that AllSrv uses 
 }
 
 
