@@ -385,6 +385,15 @@
     <ClCompile Include="..\src\FedSrv\fsmission.cpp" />
     <ClCompile Include="..\src\FedSrv\fsship.cpp" />
     <ClCompile Include="..\src\FedSrv\fsside.cpp" />
+    <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
+    <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
+    <ClCompile Include="..\src\FedSrv\tinyxml2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\FedSrv\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">Create</PrecompiledHeader>
@@ -392,9 +401,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
-    <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
-    <ClCompile Include="..\src\FedSrv\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\FedSrv\AdminGame.rgs" />
@@ -438,10 +444,16 @@
     <ClInclude Include="..\src\FedSrv\fsmission.h" />
     <ClInclude Include="..\src\FedSrv\fsship.h" />
     <ClInclude Include="..\src\FedSrv\fsside.h" />
-    <ClInclude Include="..\src\FedSrv\pch.h" />
     <ClInclude Include="..\src\FedSrv\resource.h" />
     <ClInclude Include="..\src\FedSrv\srvqueries.h" />
-    <ClInclude Include="..\src\FedSrv\tinyxml2.h" />
+    <ClInclude Include="..\src\FedSrv\tinyxml2.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\FedSrv\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\src\FedSrv\AllSrvModuleIDL.idl" />
