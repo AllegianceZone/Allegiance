@@ -550,7 +550,7 @@ public:
 
 		//imago 10/14 - turkey's change to modeler breaks when no hud index is set (go figure)
 		GetModeler()->BuildHudList();
-		GetModeler()->SetStyleHud("SoftwareHUD");
+		GetModeler()->SetStyleHud("Software"); // "SoftwareHUD does not exist
 
 		// load the fonts
 		TrekResources::Initialize(GetModeler());

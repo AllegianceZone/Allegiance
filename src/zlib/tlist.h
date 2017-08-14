@@ -143,9 +143,11 @@ private:
         ListNode* pfind = GetFirst();
 
         while (pfind) {
-            if (m_fnEquals(((const TValue&)pfind->m_value), value)) {
-                return pfind;
-            }
+			const ZString& zv = value;
+			const ZString& mpv = pfind->m_value;
+			if (mpv == zv) {
+				return pfind;
+			}
             pfind = pfind->GetNext();
         }
 

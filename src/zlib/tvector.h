@@ -349,7 +349,9 @@ public:
     int Find(const TValue& value)
     {
         for (int index = 0; index < m_count; index++) {
-            if (m_fnEquals(((const TValue&)m_pvalue[index]), value)) {
+			const ZString& zv = value;
+			const ZString& mpv = m_pvalue[index];
+            if (mpv == zv) {
                 return index;
             }
         }
