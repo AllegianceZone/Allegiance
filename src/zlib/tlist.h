@@ -143,9 +143,9 @@ private:
         ListNode* pfind = GetFirst();
 
         while (pfind) {
-            if (m_fnEquals(((const TValue&)pfind->m_value), value)) {
-                return pfind;
-            }
+			if (m_fnEquals(((const TValue&)pfind->m_value), value)) {
+				return pfind;		 
+			}
             pfind = pfind->GetNext();
         }
 
