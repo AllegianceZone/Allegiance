@@ -2552,8 +2552,8 @@ public:
 		pHTTP settings;
 		sprintf(settings.hdrs, "Content-Type: application/octet-stream\r\nUSER: %s\r\n", (PCC)UTL::char2hex((const unsigned char*)(PCC)strName, strName.GetLength()));
 		Strcpy(settings.verb, "POST");
-		Strcpy(settings.uri, "/inputmap.cgi");
-		Strcpy(settings.host, "azforum.cloudapp.net");
+		Strcpy(settings.uri, "/inputmap.ashx");
+		Strcpy(settings.host, "allegiancezone.com");
 		ZeroMemory(settings.data, BUFFSIZE);
 		settings.data[0] = 0x00;
 		settings.size = 0;
@@ -2580,8 +2580,8 @@ public:
 		pHTTP settings;
 		sprintf(settings.hdrs, "USER: %s\r\n", (PCC)UTL::char2hex((const unsigned char*)(PCC)strName, strName.GetLength()));
 		Strcpy(settings.verb, "GET");
-		Strcpy(settings.uri, "/inputmap.cgi");
-		Strcpy(settings.host, "azforum.cloudapp.net");
+		Strcpy(settings.uri, "/inputmap.ashx");
+		Strcpy(settings.host, "allegiancezone.com");
 		settings.pPopup = this;
 		ZeroMemory(settings.data, BUFFSIZE);
 		settings.data[0] = 0x00;
