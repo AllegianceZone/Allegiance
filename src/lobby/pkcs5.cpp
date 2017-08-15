@@ -445,7 +445,7 @@ bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason, int & iID)
 {
 	char szHdrs[512];
 	sprintf(szHdrs,"USER: %s\r\n",szUser);
-	ZString Response = UTL::DoHTTP(szHdrs,"allegiancezone.com","GET","/lobbylogin.ashx","",0,true);
+	ZString Response = UTL::DoHTTP(szHdrs,"allegiancezone.com","GET","/lobbylogon.ashx","",0,true);
 	char * szToken;
 	char * szRes = (char*)_alloca(512);
 	Strcpy(szRes,(PCC)Response);
