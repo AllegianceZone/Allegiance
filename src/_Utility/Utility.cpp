@@ -37,7 +37,7 @@ ZString UTL::DoHTTP(char * szHdrs, char * szHost, char * szVerb, char * szUri, c
 				DWORD dwFlags;
 				DWORD dwBuffLen = sizeof(dwFlags);
 				InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,(LPVOID)&dwFlags, &dwBuffLen);
-				dwFlags |= SECURITY_FLAG_IGNORE_UNKNOWN_CA;
+				dwFlags |= SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_CN_INVALID;
 				InternetSetOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,&dwFlags,sizeof(dwFlags));
 				if (PostLength == 0)
 					PostData = NULL;
