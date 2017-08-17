@@ -24,11 +24,11 @@ SQLHSTMT AddStatement(SQLCHAR * scSQL);
 int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff);
 SQLRETURN SqlGo(SQLHSTMT hstmt);
 SQLRETURN SqlGetRow(SQLHSTMT hstmt);
-int InitSql(char * szRegKey, ISQLSite * pSQLSite);
+int InitSql(ISQLSite * pSQLSite);
 void ShutDownSQL();
 
 #define BEGIN_SQL_DEF(SQLSITE) \
-  const int fooinitsql = InitSql(HKLM_FedSrvA, SQLSITE); // defining variable just so we can call function
+  const int fooinitsql = InitSql(SQLSITE); // defining variable just so we can call function
 
 #define END_SQL_DEF
 

@@ -7296,9 +7296,9 @@ void CheckForNoShows()
 				break; // deleting 1 mission per check is plenty
 			}
 		}
-		}
-	//#endif
 	}
+	//#endif
+}
 
 
 void DisconnectFromLobby()
@@ -7760,15 +7760,11 @@ IHTTPSession * BeginConfigDownload()
 	Strcpy(szConfig, "http://azcdn.blob.core.windows.net/config/AZDev.cfg"); //Imago 6/10 9/14
 #endif
 
-	CRegKey key;
-	if (ERROR_SUCCESS == key.Open(HKEY_LOCAL_MACHINE, HKLM_FedSrv, KEY_READ))
+	
+	if (!g.strConfigFile.IsEmpty())
 	{
-		ZString strConfig;
-		if (SUCCEEDED(LoadRegString(key, "cfgfile", strConfig)))
-		{
-			// if reg value exists copy over default
-			Strcpy(szConfig, PCC(strConfig));
-		}
+		// if custom value exists overwrite the default
+		Strcpy(szConfig, PCC(g.strConfigFile));
 	}
 
 	// WLP 2006 - added next line of code to force server to report invalid config
@@ -8196,7 +8192,7 @@ HRESULT ConnectToLobby(const char * pszLobby_OverrideCFG /* NULL == do not overr
 #else
 		FEDLOBBYSERVERS_GUID,
 #endif
-		PCC(g.strLobbyServer), PCC(g.strLocalAddress), g.dwLobbyPort);		// mdvalley: forced to lobby port
+		PCC(g.strLobbyServer), PCC(g.strPublicName), g.dwLobbyPort);		// mdvalley: forced to lobby port
 	if (FAILED(hr))
 	{
 		printf("failed.\n", PCC(g.strLobbyServer));
@@ -8397,7 +8393,7 @@ DWORD ProcessMsgPump(int dwSleep, DWORD nCount, LPHANDLE pHandles)
  * StartDefaultGames
  *-------------------------------------------------------------------------
  * Purpose:
- *    Starts any games listed in the registry
+ *    Starts any games listed in the config.xml
  */
 void StartDefaultGames()
 {
@@ -8413,28 +8409,10 @@ void StartDefaultGames()
 	MissionParams mpClean;
 	mpClean.Reset();
 
-	// we access the registry here because these keys don't need to be saved as globals.
-	HKEY hKey;
-	DWORD dwType;
-	DWORD dwValue;
-	DWORD cbValue;
-	if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, HKLM_FedSrv, 0, KEY_READ, &hKey))
-	{
-		// get the max players per game to use.from the registry
-		cbValue = sizeof(dwValue);
 		// MaxPlayersPerGame not used for AZ
 #if defined(ALLSRV_STANDALONE)
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "MaxPlayersPerGame", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			mp.nTotalMaxPlayersPerGame = min(c_cMaxPlayersPerGame, (short)dwValue);
-		else
-			mp.nTotalMaxPlayersPerGame = c_cMaxPlayersPerGame;
+		mp.nTotalMaxPlayersPerGame = g.nMaxPlayersPerGame;
 #endif
-
-		// lock the games open, if requested.
-		// KGJV #92 - do this per game (see below) instead of global
-		//cbValue = sizeof(dwValue);
-		//if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "LockOpen", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-		//  mp.bLockGameOpen = !!dwValue;
 
 #if defined(ALLSRV_STANDALONE)
 		mp.nMinPlayersPerTeam = 1;
@@ -8444,9 +8422,6 @@ void StartDefaultGames()
 #else
 		mp.bObjectModelCreated = false; // FAZ: default games are not zone games
 #endif
-
-		HRESULT hr = S_OK;
-		int iGame = 1;
 
 		// Imago: children latch onto their parents mission 6/25/08
 #if defined(SRV_CHILD)
@@ -8482,145 +8457,100 @@ void StartDefaultGames()
 		debugf("Starting game \"%s\"(%s) with core: %s - minrank=%d - maxrank=%d\n", mp.strGameName, (mp.bLockGameOpen == 1) ? "LockOpen" : "Not LockOpen", mp.szIGCStaticFile, mp.iMinRank, mp.iMaxRank);
 #else
 	// Imago: otherwise do the regular gig
-		while (SUCCEEDED(hr))
-		{
+
+		for (int gameCount = 0; gameCount < g.nDefaultGames; gameCount++) {
 			char cbValueName[24];
 			ZString strGameName;
 
-			// look for a registry key Game#
-			sprintf(cbValueName, "Game%d", iGame);
-			hr = LoadRegString(hKey, cbValueName, strGameName);
+			// copy the new name into the mission parameters
+			strncpy(mp.strGameName, PCC((g.vDefaultGames + gameCount)->name), c_cbGameName);
+			mp.strGameName[c_cbGameName - 1] = '\0';
+			assert(!mp.Invalid());
 
-			if (SUCCEEDED(hr))
-			{
-				// copy the new name into the mission parameters
-				strncpy(mp.strGameName, strGameName, c_cbGameName);
-				mp.strGameName[c_cbGameName - 1] = '\0';
-				assert(!mp.Invalid());
+			strncpy(mp.szIGCStaticFile, PCC((g.vDefaultGames + gameCount)->core), c_cbFileName);
 
-				// -Imago
-				// look for a core/map for Game#
-				ZString strCore;
-				sprintf(cbValueName, "Core%d", iGame);
-				LoadRegString(hKey, cbValueName, strCore);
-				strncpy(mp.szIGCStaticFile, strCore, c_cbFileName);
+			mp.bLockGameOpen = (g.vDefaultGames + gameCount)->lockOpen;
 
-				// -Imago
-				// look for a core/map for Map#
-				// -KGJV : should we lock game settings when custom map specified. If so need 'GameParameters#' too ?
-				// removed map# for now
-				ZString strMap;
-				//wsprintf(cbValueName, "Map%d", iGame);
-				//LoadRegString(hKey, cbValueName, strMap);
-				//strncpy(mp.szCustomMapFile, strMap, c_cbFileName);
+			mp.iMinRank = (g.vDefaultGames + gameCount)->minRank;
 
-				// KGJV #92 - LockOpen# option  per game
-				// dword value - 1 to lockopen
-				sprintf(cbValueName, "LockOpen%d", iGame);
-				cbValue = sizeof(dwValue);
-				if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, cbValueName, NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-					mp.bLockGameOpen = !!dwValue;
-				else
-					mp.bLockGameOpen = mpClean.bLockGameOpen; // fetch default value
+			mp.iMaxRank = (g.vDefaultGames + gameCount)->maxRank;
 
-				// KGJV #92 - MinRank# option  per game
-				// string value (but numeric)
-				ZString strRankParam;
-				sprintf(cbValueName, "MinRank%d", iGame);
-				if (LoadRegString(hKey, cbValueName, strRankParam) == S_OK)
-					sscanf(strRankParam, "%hd", &(mp.iMinRank));
-				else
-					mp.iMinRank = mpClean.iMinRank; // fetch default value
+			strncpy(mp.strGamePassword, PCC((g.vDefaultGames + gameCount)->password), sizeof(mp.strGamePassword));
 
-				// KGJV #92 - MinRank# option  per game
-				// string value (but numeric)
-				sprintf(cbValueName, "MaxRank%d", iGame);
-				if (LoadRegString(hKey, cbValueName, strRankParam) == S_OK)
-					sscanf(strRankParam, "%hd", &(mp.iMaxRank));
-				else
-					mp.iMaxRank = mpClean.iMaxRank; // fetch default value
-
-				// KGJV -09/2008, added: Password# game parameter
-				ZString strPassword;
-				sprintf(cbValueName, "Password%d", iGame);
-				if (LoadRegString(hKey, cbValueName, strPassword) == S_OK)
-					strcpy_s(mp.strGamePassword, sizeof(mp.strGamePassword), PCC(strPassword));
-
-				// KGJV #92 - display LockOpen/Min/Maxrank and removed map name
-				printf("Starting game \"%s\"(%s) with core: %s - minrank=%d - maxrank=%d\n", mp.strGameName, (mp.bLockGameOpen == 1) ? "LockOpen" : "Not LockOpen", mp.szIGCStaticFile, mp.iMinRank, mp.iMaxRank);
+			printf("Starting game \"%s\"(%s) with core: %s - minrank=%d - maxrank=%d\n", mp.strGameName, (mp.bLockGameOpen == 1) ? "LockOpen" : "Not LockOpen", mp.szIGCStaticFile, mp.iMinRank, mp.iMaxRank);
 
 #if !defined(SRV_PARENT)
-				// Create the new mission
-				FedSrvSite * psiteFedSrv = new FedSrvSite();
-				CFSMission * pfsMissionNew = new CFSMission(mp, NULL, psiteFedSrv, psiteFedSrv, NULL, NULL);
+			// Create the new mission
+			FedSrvSite * psiteFedSrv = new FedSrvSite();
+			CFSMission * pfsMissionNew = new CFSMission(mp, NULL, psiteFedSrv, psiteFedSrv, NULL, NULL);
 
-				// tell the lobby about the mission
-				if (g.fmLobby.IsConnected())
-				{
-					BEGIN_PFM_CREATE(g.fmLobby, pfmNewMission, S, NEW_MISSION)
-						END_PFM_CREATE
-						pfmNewMission->dwIGCMissionID = pfsMissionNew->GetIGCMission()->GetMissionID();
+			// tell the lobby about the mission
+			if (g.fmLobby.IsConnected())
+			{
+				BEGIN_PFM_CREATE(g.fmLobby, pfmNewMission, S, NEW_MISSION)
+					END_PFM_CREATE
+					pfmNewMission->dwIGCMissionID = pfsMissionNew->GetIGCMission()->GetMissionID();
 
-					g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
-				}
-#else //start default games in their own process
-				STARTUPINFO si;
-				PROCESS_INFORMATION pi;
-				ZeroMemory(&si, sizeof(si));
-				si.cb = sizeof(si);
-				ZeroMemory(&pi, sizeof(pi));
-				char szCmd[255]; char szName[32]; char szFile[32];
-				ZString strName = mp.strGameName;
-				ZString strFile = mp.szIGCStaticFile;
-				si.lpTitle = mp.strGameName;
-				Strcpy(szName, (PCC)strName);
-				Strcpy(szFile, (PCC)strFile);
-				sprintf(szCmd, "AllSrv.exe \"%s\" %s %x", szName, szFile, iGame);
-
-				// Create a NULL dacl to give "everyone" access
-				SECURITY_DESCRIPTOR sd;
-				SECURITY_ATTRIBUTES sa = { sizeof(sa), &sd, false };
-				InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
-				SetSecurityDescriptorDacl(&sd, true, NULL, FALSE);
-
-				if (!CreateProcess(
-					NULL,                   // No module name (use command line).
-					szCmd,
-					NULL,
-					NULL,
-					FALSE,                  // Set handle inheritance to FALSE.
-					CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE, // we're destined to do amazing things
-					NULL,                   // Use parent's environment block.
-					NULL,                   // Use parent's starting directory.
-					&si,                    // Pointer to STARTUPINFO structure.
-					&pi)                   // Pointer to PROCESS_INFORMATION structure.
-					)
-				{
-					debugf("CreateProcess failed (%d).\n", GetLastError());
-				}
-
-				_Module.AddPID(pi.dwProcessId);
-				char strFilename[10] = "\0";
-				sprintf(strFilename, "%d.pid", pi.dwProcessId);
-				UTL::SaveFile(strFilename, "1", 2, NULL, false);
-				CloseHandle(pi.hProcess);
-				CloseHandle(pi.hThread);
-				g.bRestarting = true;
-				Sleep(1000);
-#endif
+				g.fmLobby.SendMessages(g.fmLobby.GetServerConnection(), FM_GUARANTEED, FM_FLUSH);
 			}
-			++iGame;
+#else //start default games in their own process
+			STARTUPINFO si;
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&si, sizeof(si));
+			si.cb = sizeof(si);
+			ZeroMemory(&pi, sizeof(pi));
+			char szCmd[255]; char szName[32]; char szFile[32];
+			ZString strName = mp.strGameName;
+			ZString strFile = mp.szIGCStaticFile;
+			si.lpTitle = mp.strGameName;
+			Strcpy(szName, (PCC)strName);
+			Strcpy(szFile, (PCC)strFile);
+			sprintf(szCmd, "AllSrv.exe \"%s\" %s %x", szName, szFile, iGame);
+
+			// Create a NULL dacl to give "everyone" access
+			SECURITY_DESCRIPTOR sd;
+			SECURITY_ATTRIBUTES sa = { sizeof(sa), &sd, false };
+			InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+			SetSecurityDescriptorDacl(&sd, true, NULL, FALSE);
+
+			if (!CreateProcess(
+				NULL,                   // No module name (use command line).
+				szCmd,
+				NULL,
+				NULL,
+				FALSE,                  // Set handle inheritance to FALSE.
+				CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE, // we're destined to do amazing things
+				NULL,                   // Use parent's environment block.
+				NULL,                   // Use parent's starting directory.
+				&si,                    // Pointer to STARTUPINFO structure.
+				&pi)                   // Pointer to PROCESS_INFORMATION structure.
+				)
+			{
+				debugf("CreateProcess failed (%d).\n", GetLastError());
+			}
+
+			_Module.AddPID(pi.dwProcessId);
+			char strFilename[10] = "\0";
+			sprintf(strFilename, "%d.pid", pi.dwProcessId);
+			UTL::SaveFile(strFilename, "1", 2, NULL, false);
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+			g.bRestarting = true;
+			Sleep(1000);
+#endif
+
 		}
 
+
 #endif
-		RegCloseKey(hKey);
+
 #if defined(SRV_PARENT) //reload ourselves to free the mission handles
 		if (g.bRestarting) {
 			Sleep(1000);
 			PostQuitMessage(0);
 		}
 #endif
-	}
+
 }
 //#endif
 
@@ -8839,10 +8769,13 @@ DWORD WINAPI ReceiveThread(LPVOID pThreadParameter)
  * Purpose:
  *    Load static server settings
  */
-void LoadSettings()
+bool LoadSettings(const char* filePath)
 {
 	// Explicitly initialize the global data structure
 	g.Init();
+
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile(filePath);
 
 	// defaults for reg keys:
 	// fTimeout,                     1              1-okay to timeout clients
@@ -8858,150 +8791,179 @@ void LoadSettings()
 	g.strArtPath = szModule;
 
 
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//
-	//   If you update this section, please update srvconfig to allow support
-	//   without resorting to regedit.
-	//
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	HKEY hKey;
-	DWORD dwType;
-	DWORD dwValue;
-	DWORD cbValue;
-	if (ERROR_SUCCESS == ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, HKLM_FedSrv, 0, KEY_READ, &hKey))
-	{
-		if (FAILED(LoadRegString(hKey, "AuthServer", g.strAuthServer)))
-			g.strAuthServer = "Pointweb01"; // default for all developers
+	if (doc.Error()) {
+		if (doc.ErrorID() == tinyxml2::XML_ERROR_FILE_NOT_FOUND)
+		{
+			printf("Error loading config.xml\n");
+			printf(doc.GetErrorStr1());
+			printf("\nWas not found.");
+		}
+		else {
+			doc.PrintError();
+		}
+		return false;
+	}
 
-		ZString zUsers;
-		if (!FAILED(LoadRegString(hKey, "PrivilegedUsers", zUsers))) {
+	tinyxml2::XMLElement* nodeRoot = doc.FirstChildElement("Allegiance");
+
+	if (!nodeRoot) {
+		printf("Config.xml expected <Allegiance> as its first Element.\n");
+		return false;
+	}
+
+	tinyxml2::XMLElement* nodeFedSrv = nodeRoot->FirstChildElement("FedSrv");
+	if (!nodeFedSrv) {
+		printf("Config.xml expected <FedSrv> under <Allegiance> but it was missing.\n");
+		return false;
+	}
+
+	if (nodeFedSrv != 0) {
+		g.strAuthServer = "Pointweb01";
+		const char* atAuthServer = nodeFedSrv->Attribute("AuthServer");
+		if (atAuthServer) {
+			g.strAuthServer = atAuthServer;
+		}
+
+		const char* atPrivilegedUsers = nodeFedSrv->Attribute("PrivilegedUsers");
+		if (atPrivilegedUsers) {
+			ZString zUsers = atPrivilegedUsers;
 			ZVersionInfo vi; ZString zInfo = (LPCSTR)vi.GetCompanyName(); zInfo += (LPCSTR)vi.GetLegalCopyright();
 			UTL::SetPrivilegedUsers((PCC)zUsers.Scramble(zInfo), -1); //Imago 6/10
 		}
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		// w0dk4 Bandwidth Patch - removed registry-check and set tickrate to 20 so client bandwidth settings are not fooled
-		// g.nUpdatesPerSecond = 20;
-		// mmf leave this in, server admins should have control of this even if clients are not getting the bandwidth
-		//     they expect from the 'rough' data rate w0dk4 added
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "nUpdatesPerSecond", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.nUpdatesPerSecond = dwValue;
-		else
-			g.nUpdatesPerSecond = 30;
+		g.nUpdatesPerSecond = 30;
+		nodeFedSrv->QueryIntAttribute("nUpdatesPerSecond", &g.nUpdatesPerSecond);
 
+		g.nMaxPlayersPerGame = 20;
+		nodeFedSrv->QueryIntAttribute("MaxPlayersPerGame", &g.nMaxPlayersPerGame);
 
-		// mmf log to file on SRVLOG define as well as _DEBUG
 #ifdef _DEBUG
 #define SRVLOG
 #endif
 
-#ifdef SRVLOG // mmf changed this from _DEBUG
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS != ::RegQueryValueExA(hKey, "nDebugMask", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			dwValue = FED_DEBUG_FILE;
-		g_app.SetDebug(dwValue);
+#ifdef SRVLOG 
+		unsigned int srvlogMask = 0;
+		nodeFedSrv->QueryUnsignedAttribute("nDebugMask", &srvlogMask);
+		g_app.SetDebug(srvlogMask);
+
 #endif
 
-		// Standalone servers do not need a LobbyServer registry value because
-		// they always get it from the CFG file.
-		//#if !defined(ALLSRV_STANDALONE)  Imago 6/10
-		LoadRegString(hKey, "LobbyServer", g.strLobbyServer);
-		//#endif // !defined(ALLSRV_STANDALONE)
-
-		// Use winsock-provided address for clients, unless overridden (e.g. dual nic)
-		// KGJV #114 localaddress isnt used anymore by DP8 so we use it as public userfriendly server name
-		// KGJV #114 TODO: eventually rename 'LocalAdresss' to something more appropriate now, PublicName for instance.
-		if (FAILED(LoadRegString(hKey, "LocalAddress", g.strLocalAddress)))
-		{
-			WSADATA WSAData;
-			char szHostName[20]; // length of machine name--also long enough for ip address if that's what we get
-			WSAStartup(MAKEWORD(1, 1), &WSAData);
-			gethostname(szHostName, sizeof(szHostName));
-			WSACleanup();
-			g.strLocalAddress = szHostName;
+		const char* atLobbyServer = nodeFedSrv->Attribute("LobbyServer");
+		if (atLobbyServer) {
+			g.strLobbyServer = atLobbyServer;
 		}
 
-		// KGJV #114
-		if (FAILED(LoadRegString(hKey, "Location", g.strLocation)))
-		{
+		const char* atPublicName = nodeFedSrv->Attribute("PublicName");
+		if (atPublicName) {
+			g.strPublicName = atPublicName;
+		}
+		else {
+			WSADATA WSAData;
+			char szPublicName[20]; // length of machine name--also long enough for ip address if that's what we get
+			WSAStartup(MAKEWORD(1, 1), &WSAData);
+			gethostname(szPublicName, sizeof(szPublicName));
+			WSACleanup();
+			g.strPublicName = szPublicName;
+		}
+
+
+		const char* atLocation = nodeFedSrv->Attribute("Location");
+		if (atLocation) {
+			g.strLocation = atLocation;
+		}
+		else {
 			g.strLocation = "unknown";
 		}
 
-		// KGJV #114
-		g.cMaxGames = 99; // default max game
-		cbValue = sizeof(dwValue);
-		RegQueryValueExA(hKey, "MaxGames", NULL, &dwType, (unsigned char*)&g.cMaxGames, &cbValue);
 
-		/* pkk May 6th: Disabled bandwidth patch
-		// w0dk4 Bandwidth Patch
+		g.cMaxGames = 99;
+		nodeFedSrv->QueryIntAttribute("MaxGames", &g.cMaxGames);
+
+
 		g.cMaxBandwidth = 32;
-		dwValue=0;
-		cbValue = sizeof(dwValue);
-		RegQueryValueEx(hKey, "MaxBandwidth", NULL, &dwType, (unsigned char*)&g.cMaxBandwidth, &cbValue);*/
+		nodeFedSrv->QueryUnsignedAttribute("MaxBandwidth", &g.cMaxBandwidth);
 
 
-		ZString strArtPath;
-		if (SUCCEEDED(LoadRegString(hKey, "ArtPath", strArtPath)))
-		{
+		const char* atArtPath = nodeFedSrv->Attribute("ArtPath");
+		if (atArtPath) {
+			ZString strArtPath = ZString(atArtPath);
 			if (strArtPath.Right(1) != "\\")
 				strArtPath += "\\";
 			g.strArtPath = strArtPath;
 		}
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fWantInt3", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fWantInt3 = !!dwValue;
-		else g.fWantInt3 = true;
+		g.fWantInt3 = false;
+		nodeFedSrv->QueryBoolAttribute("fWantInt3", &g.fWantInt3);
 
-		//Imago 7/10 DIE ASGS DIE
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "MaxNewbRank", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.MaxNewbRank = dwValue;
-		else g.MaxNewbRank = 4;
-		//
+		g.MaxNewbRank = 4;
+		nodeFedSrv->QueryIntAttribute("MaxNewbRank", &g.MaxNewbRank);
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fProtocol", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fProtocol = !!dwValue;
-		else g.fProtocol = true;
+		g.fProtocol = false;
+		nodeFedSrv->QueryBoolAttribute("fProtocol", &g.fProtocol);
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fDoublePrecision", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fDoublePrecision = !!dwValue;
-		else g.fDoublePrecision = true;
+		g.fDoublePrecision = true;
+		nodeFedSrv->QueryBoolAttribute("fDoublePrecision", &g.fDoublePrecision);
 
-		dwValue = 0;
-		cbValue = sizeof(dwValue);
-		if (ERROR_SUCCESS == ::RegQueryValueExA(hKey, "fTimeout", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			g.fTimeOut = !!dwValue;
-		else g.fTimeOut = true;
+		g.fTimeOut = false; // I Dont think this is used anymore
+		nodeFedSrv->QueryBoolAttribute("fTimeout", &g.fTimeOut);
+
+		const char* cfgFile = nodeFedSrv->Attribute("ConfigFile");
+		if (cfgFile) {
+			g.strConfigFile = ZString(cfgFile);
+		}
 
 		//#if !defined(ALLSRV_STANDALONE) Imago revived 6/10
-		  /*
-		  dwValue=0;
-		  cbValue = sizeof(dwValue);
-		  if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "SQLThreadsNotify", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			  g.csqlNotifyThreads = dwValue;
-		  else g.csqlNotifyThreads = 3;
+		/*
+		g.csqlNotifyThreads = 3;
+		nodeFedSrv->QueryUnsignedAttribute("SQLThreadsNotify", &g.csqlNotifyThreads);
 
-		  dwValue=0;
-		  cbValue = sizeof(dwValue);
-		  if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, "SQLThreadsSilent", NULL, &dwType, (unsigned char*)&dwValue, &cbValue))
-			  g.csqlSilentThreads = dwValue;
-		  else g.csqlSilentThreads = 2;
+		g.csqlSilentThreads = 2;
+		nodeFedSrv->QueryUnsignedAttribute("SQLThreadsSilent", &g.csqlSilentThreads);
 
-		  if (FAILED(LoadRegString(hKey, "SQLConfig", g.strSQLConfig)))
-			g.strSQLConfig.Empty(); // default for all developers
-		//#endif // !defined(ALLSRV_STANDALONE)
+		const char* atSQLConfig = nodeFedSrv->Attribute("SQLConfig");
+		if (atSQLConfig) {
+			g.strSQLConfig = atSQLConfig;
+		}
+		else {
+			g.strSQLConfig.Empty();
+		}
 		*/
-		::RegCloseKey(hKey);
+
+		// load up default games.
+		tinyxml2::XMLElement* nodeGames = nodeFedSrv->FirstChildElement("Games");
+		if (nodeGames) {
+			printf("Loading Default games from Games node in config.xml\n");
+
+			tinyxml2::XMLElement* nodeIter = nodeGames->FirstChildElement("Game");
+			int nGames = 0;
+			for (; 
+				nodeIter; 
+				nodeIter = nodeIter->NextSiblingElement("Game")) {
+				nGames++;
+			}
+			g.nDefaultGames = nGames;
+			g.vDefaultGames = new DefaultGame[g.nDefaultGames];
+
+			nodeIter = nodeGames->FirstChildElement("Game");
+			nGames = 0;
+			for (;
+				nodeIter;
+				nodeIter = nodeIter->NextSiblingElement("Game")) {
+				
+				(g.vDefaultGames + nGames)->name = ZString(nodeIter->Attribute("Name"));
+				(g.vDefaultGames + nGames)->core = ZString(nodeIter->Attribute("Core"));
+				(g.vDefaultGames + nGames)->password = ZString(nodeIter->Attribute("Password"));
+				nodeIter->QueryBoolAttribute("LockOpen", &((g.vDefaultGames + nGames)->lockOpen));
+				nodeIter->QueryUnsignedAttribute("MinRank", &((g.vDefaultGames + nGames)->minRank));
+				nodeIter->QueryUnsignedAttribute("MaxRank", &((g.vDefaultGames + nGames)->maxRank));
+
+				nGames++;
+			}
+		}
+		
+
 	}
+	return true;
 }
 
 /*-------------------------------------------------------------------------
@@ -9554,8 +9516,16 @@ void UnregisterAllSrv(char *szServerName)
 //
 int __cdecl main(int argc, char *argv[])
 {
-	// Load the global settings from the registry
-	LoadSettings();
+	// Load the global settings from the config file
+	CHAR szConfigFilePath[_MAX_PATH];
+	CHAR szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
+	GetModuleFileNameA(NULL, szConfigFilePath, sizeofArray(szConfigFilePath));
+	_splitpath(szConfigFilePath, szDrive, szDir, NULL, NULL);
+	_makepath(szConfigFilePath, szDrive, szDir, "config.xml", NULL);
+
+	if (!LoadSettings(szConfigFilePath)) {
+		return 1;
+	}
 
 	// set the FPU to double precision, instead of long double
 	// (this makes FP compares a little safer)
@@ -9593,7 +9563,7 @@ int __cdecl main(int argc, char *argv[])
 	RETURN_FAILED(hr);
 
 	char szSvcName[64];
-	strcpy(szSvcName, c_szSvcName);
+	strcpy(szSvcName, PCC(g.c_szSvcName));
 #if defined(SRV_PARENT)
 	SERVICE_TABLE_ENTRY rgSTE[] =
 	{
@@ -9881,7 +9851,7 @@ int __cdecl main(int argc, char *argv[])
 		printf("                                   (see root makefile for required env vars).\n");
 #endif // !defined(ALLSRV_STANDALONE)
 		if (IsWinNT())
-			printf("\nTo start this service (when installed as NT service): net start %s\n", c_szSvcName);
+			printf("\nTo start this service (when installed as NT service): net start %s\n", PCC(g.c_szSvcName));
 		//      ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
 	}
 #endif // Imago

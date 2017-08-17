@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="AZDebug|Win32">
       <Configuration>AZDebug</Configuration>
@@ -385,6 +385,8 @@
     <ClCompile Include="..\src\FedSrv\fsmission.cpp" />
     <ClCompile Include="..\src\FedSrv\fsship.cpp" />
     <ClCompile Include="..\src\FedSrv\fsside.cpp" />
+    <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
+    <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
     <ClCompile Include="..\src\FedSrv\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">Create</PrecompiledHeader>
@@ -392,8 +394,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Optimized|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-Instrumented|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
-    <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
+    <ClCompile Include="..\src\FedSrv\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\FedSrv\AdminGame.rgs" />
@@ -408,7 +409,6 @@
     <None Include="..\src\FedSrv\DPMono.rgs" />
     <None Include="..\src\FedSrv\fedsrv.ico" />
     <None Include="..\src\FedSrv\fedsrv.rc2" />
-    <None Include="..\src\FedSrv\regini.txt" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\FedSrv\FedSrv.RC" />
@@ -438,9 +438,10 @@
     <ClInclude Include="..\src\FedSrv\fsmission.h" />
     <ClInclude Include="..\src\FedSrv\fsship.h" />
     <ClInclude Include="..\src\FedSrv\fsside.h" />
-    <ClInclude Include="..\src\FedSrv\pch.h" />
     <ClInclude Include="..\src\FedSrv\resource.h" />
     <ClInclude Include="..\src\FedSrv\srvqueries.h" />
+    <ClInclude Include="..\src\FedSrv\pch.h" />
+    <ClInclude Include="..\src\FedSrv\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\src\FedSrv\AllSrvModuleIDL.idl" />
@@ -453,7 +454,13 @@
       <Project>{a8e7888a-84ac-485e-9fb2-35382c003e0b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\src\FedSrv\config.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="CopyFiles">
+    <Copy SourceFiles="..\src\FedSrv\config.xml" DestinationFolder="$(TargetDir)" />
+  </Target>
 </Project>

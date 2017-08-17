@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Allegiance>
+  <FedSrv
+    MaxPlayersPerGame="20"
+    LockOpen="false"
+    cbValueName=""
+    nUpdatesPerSecond="25"
+    nDebugMask="2"
+    MaxGames="2"
+    MaxBandwidth="10"
+    MaxNewbRank="4"
+    fProtocol="1"
+    fDoublePrecision="1"
+    fTimeout="0"
+    SQLThreadsNotify="2"
+    SQLThreadsSilent="1"
+    SQLConfig=""
+    AuthServer="Pointweb01-wat"
+    PrivilegedUsers="foo,bar"
+    LobbyServer=""
+    PublicName=""
+    Location=""
+    ArtPath=""
+    fWantInt3="false"
+    ConfigFile="http://autoupdate.allegiancezone.com/config/AZDev.cfg">
+    <Games>
+      <Game
+        Name="a"
+        Core="aa"
+        LockOpen="true"
+        MinRank="0"
+        MaxRank="3"
+        Password="dude"
+        />
+      <Game
+        Name="b"
+        Core="BB"
+        LockOpen="false"
+        MinRank="3"
+        MaxRank="6"
+        Password=""
+        />
+    </Games>
+  </FedSrv>
+  <AllLobby />
+  <AllClub />
+</Allegiance>

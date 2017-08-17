@@ -105,8 +105,7 @@ CFSMission::CFSMission(
 	//m_misdef.misparms.iGoalTerritoryPercentage = 75;  //NYI
 	//m_misdef.misparms.iRandomEncounters = 2;  //NYI
 
-	// KGJV fix: fill in server friendly name so clients can display it
-	strcpy_s(m_misdef.szServerName, sizeof(m_misdef.szServerName), g.strLocalAddress);
+	strcpy_s(m_misdef.szServerName, sizeof(m_misdef.szServerName), g.strPublicName);
 
 	psiteMission->Create(this);
 
@@ -3824,7 +3823,7 @@ void CFSMission::QueueLobbyMissionInfo()
 		FM_VAR_PARM(nSquadCount ? rgSquadIDs : NULL, nSquadCount * sizeof(SquadID))
 		FM_VAR_PARM((PCC)m_strDetailsFiles, CB_ZTS)
 		FM_VAR_PARM(m_misdef.misparms.szIGCStaticFile, CB_ZTS)
-		FM_VAR_PARM((PCC)(g.strLocalAddress), CB_ZTS) // KGJV #114 - ServerName
+		FM_VAR_PARM((PCC)(g.strPublicName), CB_ZTS) 
 		FM_VAR_PARM(szAddr, INET6_ADDRSTRLEN)                       // KGJV #114 - ServerAddr - placeholder here, lobby will fill it /Revisit, this can be Oct'ed and sent non variable
 		FM_VAR_PARM(PCC(UTL::GetPrivilegedUsers(-1)), CB_ZTS) //Imago 6/10
 		FM_VAR_PARM(PCC(zInfo), CB_ZTS) //Imago 7/10

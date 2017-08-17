@@ -180,7 +180,7 @@ int AddCol(void * pvBuff, SQLSMALLINT ssiCType, SQLPARM parmtype, int cbBuff)
  *       checked for a default value. If it's not in the registry, we get a
  *       empty result.
  */
-char*  ParseCommandLine(char * szRegKey, char* szParameterName, char* szDefault = 0)
+char*  ParseCommandLine(char* szParameterName, char* szDefault = 0)
 {
 	static  char    szBuffer[64];
 	LPSTR          szCommandLine = GetCommandLineA();
@@ -200,15 +200,6 @@ char*  ParseCommandLine(char * szRegKey, char* szParameterName, char* szDefault 
 	{
 		strcpy(szBuffer, szDefault);
 	}
-	else
-	{
-		HKEY hKey;
-		DWORD dw;
-		DWORD cb = sizeof(szBuffer);
-		if (ERROR_SUCCESS == ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, szRegKey, 0, KEY_READ, &hKey))
-			RegQueryValueExA(hKey, szParameterName, NULL, &dw, (LPBYTE)szBuffer, &cb);
-		RegCloseKey(hKey);
-	}
 	return szBuffer;
 }
 
@@ -222,7 +213,7 @@ char*  ParseCommandLine(char * szRegKey, char* szParameterName, char* szDefault 
  *    0. Returns a value only so we can call it during global initialization,
  *        before any code blocks execute.
  */
-int InitSql(char * szRegKey, ISQLSite * pSQLSite)
+int InitSql(ISQLSite * pSQLSite)
 {
 	g_pSQLSite = pSQLSite;
 
@@ -249,9 +240,6 @@ int InitSql(char * szRegKey, ISQLSite * pSQLSite)
 	char szUser[64];
 	char szPW[64];
 	char szDatabase[64];
-	strcpy(szUser, ParseCommandLine(szRegKey, "SQLUser", "club"));
-	strcpy(szPW, ParseCommandLine(szRegKey, "SQLPW", "AllegFed@2014!NotSecret"));
-	strcpy(szDatabase, ParseCommandLine(szRegKey, "SQLSrc", "AZFederation"));
 	printf("  Connecting to DSN (%s) as user (%s) with password (%s)...\n", szDatabase, szUser, szPW);
 	sqlret = SQLConnectA(hSqlDbc, (SQLCHAR*)szDatabase, SQL_NTS, (SQLCHAR*)szUser, SQL_NTS, (SQLCHAR*)szPW, SQL_NTS);
 #endif

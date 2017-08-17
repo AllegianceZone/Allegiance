@@ -221,6 +221,20 @@ public:
 	int bitnum;
 };
 
+struct DefaultGame {
+		DefaultGame() : lockOpen(true), minRank(0), maxRank(30) {
+			name.SetEmpty();
+			core.SetEmpty();
+			password.SetEmpty();
+		}
+	bool lockOpen;
+	unsigned int minRank;
+	unsigned int maxRank;
+	ZString name;
+	ZString core;
+	ZString password;
+};
+
 struct Global
 {
 	Global() :
@@ -270,9 +284,11 @@ struct Global
 	void Init()
 	{
 		// Explicitly initialize the ZString objects
+		c_szSvcName = "AllSrv";
 		strLobbyServer.SetEmpty();
 		strAuthServer.SetEmpty();
 		strArtPath.SetEmpty();
+		strConfigFile.SetEmpty();
 		//#if !defined(ALLSRV_STANDALONE)
 		  //  strSQLConfig.Empty();
 		//#endif    
@@ -305,6 +321,7 @@ struct Global
 	ZString             strArtPath;
 	char                m_szToken[24]; // sizeof(_ZONETICKET_TOKEN.szToken)
 	int                 nUpdatesPerSecond;
+	int					nMaxPlayersPerGame;
 #ifdef USEAUTH
 	TRef<IZoneAuthServer> pzas;
 #endif
@@ -323,9 +340,10 @@ struct Global
 	int                 cBytesToOthers; // other than the player logging on
 
 	DWORD               dwServerGITCookie;
+	ZString				c_szSvcName;
 	ZString             strLobbyServer;
 	ZString             strAuthServer;
-	ZString             strLocalAddress;
+	ZString             strPublicName;
 	char                rgTechs[cTechs][CbTechBitName + 1];
 	DWORD               dwLobbyPort;
 
@@ -335,18 +353,21 @@ struct Global
 	short               cStaticMapInfo;
 
 	// KGJV #114 - cores list for create game
+	int				    nDefaultGames; // sz of vDefaultGames
+	DefaultGame*		vDefaultGames; // array of default games
+
 	StaticCoreInfo*     vStaticCoreInfo; //array of core file name
 	int				  cStaticCoreInfo; // nb of cores, 0 if none
 	int				  cMaxGames;	   // max games allowed, reg entry
 	ZString			  strLocation;     // Location, reg entry
 
-	/* pkk May 6th: Disabled bandwidth patch
 	// w0dk4 Bandwidth Patch
-	unsigned int		  cMaxBandwidth;*/
+	unsigned int		  cMaxBandwidth;
 	int				  MaxNewbRank; //Imago #174
 	bool                fProtocol;
 	bool                fPaused;
 	bool                fDoublePrecision;
+	ZString				strConfigFile;
 	//  CAdminSponsor<CAdminGames>  sponsorGames;
   //#if !defined(ALLSRV_STANDALONE) Imago commented 6/10
    // CSQLCore            sql;

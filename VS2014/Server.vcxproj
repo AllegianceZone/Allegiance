@@ -384,6 +384,7 @@
     <ClCompile Include="..\src\FedSrv\fsmission.cpp" />
     <ClCompile Include="..\src\FedSrv\fsship.cpp" />
     <ClCompile Include="..\src\FedSrv\fsside.cpp" />
+    <ClCompile Include="..\src\FedSrv\tinyxml2.cpp" />
     <ClCompile Include="..\src\FedSrv\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AZRetail-SSE2|Win32'">Create</PrecompiledHeader>
@@ -440,6 +441,7 @@
     <ClInclude Include="..\src\FedSrv\pch.h" />
     <ClInclude Include="..\src\FedSrv\resource.h" />
     <ClInclude Include="..\src\FedSrv\srvqueries.h" />
+    <ClInclude Include="..\src\FedSrv\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\src\FedSrv\AllSrvModuleIDL.idl" />

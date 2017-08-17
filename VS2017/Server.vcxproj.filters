@@ -13,6 +13,9 @@
     <Filter Include="Query">
       <UniqueIdentifier>{5d807bb8-9591-48be-b3b0-6b0193236ce6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TinyXml2">
+      <UniqueIdentifier>{42bbe0bc-1fd9-4d57-b52f-d10904bbf2b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\FedSrv\AdminGame.rgs">
@@ -49,9 +52,6 @@
       <Filter>Resources</Filter>
     </None>
     <None Include="..\src\FedSrv\fedsrv.rc2">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include="..\src\FedSrv\regini.txt">
       <Filter>Resources</Filter>
     </None>
   </ItemGroup>
@@ -99,6 +99,9 @@
     <ClCompile Include="..\src\FedSrv\pch.cpp" />
     <ClCompile Include="..\src\FedSrv\srvqguids.cpp" />
     <ClCompile Include="..\src\FedSrv\sqlhelp.cpp" />
+    <ClCompile Include="..\src\FedSrv\tinyxml2.cpp">
+      <Filter>TinyXml2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\FedSrv\FedSrv.RC">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="..\src\FedSrv\srvqueries.h" />
     <ClInclude Include="..\src\FedSrv\fedsrvsql.h" />
+    <ClInclude Include="..\src\FedSrv\tinyxml2.h">
+      <Filter>TinyXml2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\FedSrv\fedmsg.msg">
@@ -173,5 +179,8 @@
     <Midl Include="..\src\FedSrv\AllSrvModuleIDL.idl">
       <Filter>AGC</Filter>
     </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\src\FedSrv\config.xml" />
   </ItemGroup>
 </Project>
