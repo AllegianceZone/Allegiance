@@ -445,7 +445,14 @@ bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason, int & iID)
 {
 	char szHdrs[512];
 	sprintf(szHdrs,"USER: %s\r\n",szUser);
-	ZString Response = UTL::DoHTTP(szHdrs,"azforum.cloudapp.net","GET","/lobbylogon.cgi","",0,true);
+	sprintf(szHdrs, "PASSWORD: %s\r\n", szPass);
+	ZString Response = UTL::DoHTTP(szHdrs,"allegiancezone.com","GET","/lobbylogon.ashx","",0,true);
+	// a good response is like
+	// OK\t{id}\t{username}\t{active}\t{suspended_till}\n
+	// a bad one is like
+	// NOPE\t{count_members_searched}\n
+	// an error is like
+	// NOPE\t\n{message}\n{stacktrace}
 	char * szToken;
 	char * szRes = (char*)_alloca(512);
 	Strcpy(szRes,(PCC)Response);
@@ -455,39 +462,31 @@ bool IsRFC2898Valid(char * szUser, char * szPass, char * szReason, int & iID)
 		Strcpy(szReason,"Allegiance Zone logon service error! (1) Please visit allegiancezone.com for status updates!");
 		return false;
 	}
+
 	char * szID = strtok(NULL, szDelimit); 
 	iID = atoi(szID);
 	if (iID <= 0) {
 		Strcpy(szReason,"Allegiance Zone logon service error! (2) Please visit allegiancezone.com for status updates!");
 		return false;
 	}
+
 	char * szName = strtok(NULL, szDelimit); 
 	if (strcmp (szName,szUser) != 0) {
 		Strcpy(szReason,"Allegiance Zone logon service error! (3) Please visit allegiancezone.com for status updates!");
 		return false;
 	}
-	char * szHash = strtok(NULL, szDelimit); 
-	char * szSalt = strtok(NULL, szDelimit); 
+
 	char * szActive = strtok(NULL, szDelimit);
 	if (strcmp (szActive,"1") != 0) {
 		Strcpy(szReason,"Your account is not active.  Please make sure you verify your email address when signing up.  Visit allegiancezone.com for details.");
 		return false;
 	}
+
 	char * szDate = strtok(NULL, szDelimit);
 	if (strlen(szDate) > 1) {
 		sprintf(szReason,"Your account is suspended until %s!  Please visit allegiancezone.com for details.",szDate);
 		return false;
 	}
 
-	unsigned long length = 32;
-	unsigned char key[32];
-	PKCS5_PBKDF2_HMAC((unsigned char*)szPass,strlen(szPass),(unsigned char*)szSalt,32,64000,length,key);
-	char hexstr[65];
-	int i;
-	for (i=0; i<32; i++) {
-		sprintf(hexstr+i*2, "%02x", key[i]);
-	}
-	hexstr[64] = 0;
-	Strcpy(szReason,"Incorrect Zone I.D. / Password.  Both are case sensitive.");
-	return (strcmp (hexstr,szHash) == 0) ? true : false;
+	return true;
 }

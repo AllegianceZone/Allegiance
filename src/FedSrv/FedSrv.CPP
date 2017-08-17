@@ -7755,9 +7755,9 @@ IHTTPSession * BeginConfigDownload()
 
 	char szConfig[MAX_PATH];
 #ifdef _ALLEGIANCE_PROD_
-	Strcpy(szConfig, "http://autoupdate.allegiancezone.com/config/AZ.cfg"); //Imago 6/10 9/14
+	Strcpy(szConfig, "http://azcdn.blob.core.windows.net/config/AZ.cfg"); //Imago 6/10 9/14
 #else
-	Strcpy(szConfig, "http://autoupdate.allegiancezone.com/config/AZDev.cfg"); //Imago 6/10 9/14
+	Strcpy(szConfig, "http://azcdn.blob.core.windows.net/config/AZDev.cfg"); //Imago 6/10 9/14
 #endif
 
 	

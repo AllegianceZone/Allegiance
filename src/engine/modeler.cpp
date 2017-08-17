@@ -2190,7 +2190,7 @@ public:
 		HANDLE hFind;
 		WIN32_FIND_DATAA findFileData;
 
-		m_vStyleHudName.PushEnd("Default");
+		m_vStyleHudName.PushEnd(ZString("Default"));
 
 		ZString hudpath = GetArtPath() + "/Mods/*";
 

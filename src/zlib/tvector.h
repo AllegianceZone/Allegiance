@@ -11,7 +11,7 @@
 
 template<
     class TValue,
-    class EqualsFunctionType  = DefaultNoEquals,
+    class EqualsFunctionType  = DefaultEquals,
     class CompareFunctionType = DefaultNoCompare
 >
 class TVector {
@@ -349,7 +349,7 @@ public:
     int Find(const TValue& value)
     {
         for (int index = 0; index < m_count; index++) {
-            if (m_fnEquals(((const TValue&)m_pvalue[index]), value)) {
+			if (m_fnEquals(((const TValue&)m_pvalue[index]), value)) {
                 return index;
             }
         }
